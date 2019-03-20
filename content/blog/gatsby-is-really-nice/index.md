@@ -1,7 +1,7 @@
 ---
 title: Gatsby is really nice
 date: "2019-03-19T22:04:00.000Z"
-description: None yet
+description: And we're live, folks!
 ---
 
 No, Gatsby is really amazing.
