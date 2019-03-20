@@ -12,7 +12,7 @@ export default function BlogPostTemplate(props) {
   const { previous, next } = props.pageContext
 
   return (
-    <Layout location={this.props.location} title={siteTitle}>
+    <Layout location={props.location} title={siteTitle}>
       <SEO
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
