@@ -28,7 +28,17 @@ export default function BlogPostTemplate(props) {
       >
         {post.frontmatter.date}
       </p>
+
       <div dangerouslySetInnerHTML={{ __html: post.html }} />
+
+      <small>
+        Tags:{" "}
+        {post.frontmatter.tags.map((each, index) => (
+          <span style={{ color: "#A6B1BB", margin: 3 }} key={index}>
+            {each}
+          </span>
+        ))}
+      </small>
       <hr
         style={{
           marginBottom: rhythm(1),
@@ -80,6 +90,7 @@ export const pageQuery = graphql`
         title
         date(formatString: "MMMM DD, YYYY")
         description
+        tags
       }
     }
   }
