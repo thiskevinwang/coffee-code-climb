@@ -1,11 +1,12 @@
 ---
 title: Gatsby is really nice
 date: "2019-03-19T22:04:00.000Z"
+description: None yet
 ---
 
 No, Gatsby is really amazing.
 
-This is all I have to say right now, as I'm trying to push as many changes I can as part of a ramp-up to get this blog up and running. It's 10:08 PM and I have to sleep soon, then get back to work tomorrow.
+This is all I have to say right now, as I'm trying to push as many changes as Ican as part of a ramp-up to get this blog up and running. It's 10:08 PM and I have to sleep soon, then get back to work tomorrow.
 
 I'm learning Gatsby right now, as a I go, so here's the [Gatsby Docs](https://www.gatsbyjs.org/), for both you and me 😆.
 
