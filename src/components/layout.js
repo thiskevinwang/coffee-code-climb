@@ -1,11 +1,19 @@
+// @flow
+
 import React from "react"
 import { Link } from "gatsby"
 
 import { rhythm, scale } from "../utils/typography"
 
-export default function Layout({ location, title, children }) {
-  const rootPath = `${__PATH_PREFIX__}/`
-  let header
+type Props = {
+  children: React$Node,
+  location: Location,
+  title: string,
+}
+
+export default function Layout({ location, title, children }: Props) {
+  const rootPath: string = `${__PATH_PREFIX__}/`
+  let header: React$Node
 
   if (location.pathname === rootPath) {
     header = (
