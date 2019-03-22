@@ -38,8 +38,15 @@ function Bio() {
               }}
             />
             <p>
-              A blog by <strong>{author}</strong>.{` `}
-              <a href={`https://twitter.com/${social.twitter}`}>Twitter</a>
+              A blog by{" "}
+              <strong>
+                <a href={`https://twitter.com/${social.twitter}`}>{author}</a>
+              </strong>
+              .{" "}
+              <i>
+                Jazz Guitarist → Barista → Healthcare Startup Potato → Rock
+                Climber → Programmer → ?
+              </i>
             </p>
           </div>
         )
