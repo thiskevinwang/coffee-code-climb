@@ -3,10 +3,14 @@ import PropTypes from "prop-types"
 
 // Utilities
 import kebabCase from "lodash/kebabCase"
+import { rhythm } from "../utils/typography"
 
 // Components
 import { Helmet } from "react-helmet"
 import { Link, graphql } from "gatsby"
+import Bio from "../components/bio"
+import Layout from "../components/layout"
+// import SEO from "../components/seo"
 
 const TagsPage = ({
   data: {
@@ -15,23 +19,30 @@ const TagsPage = ({
       siteMetadata: { title },
     },
   },
-}) => (
-  <div>
-    <Helmet title={title} />
-    <div>
-      <h1>Tags</h1>
-      <ul>
-        {group.map(tag => (
-          <li key={tag.fieldValue}>
-            <Link to={`/tags/${kebabCase(tag.fieldValue)}/`}>
-              {tag.fieldValue} ({tag.totalCount})
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-)
+  location,
+}) => {
+  return (
+    <Layout location={location} title={title}>
+      <div>
+        <Helmet title={title} />
+        <div>
+          <h1>Tags</h1>
+          <ul>
+            {group.map(tag => (
+              <li key={tag.fieldValue}>
+                <Link to={`/tags/${kebabCase(tag.fieldValue)}/`}>
+                  {tag.fieldValue} ({tag.totalCount})
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <hr />
+      <Bio />
+    </Layout>
+  )
+}
 
 TagsPage.propTypes = {
   data: PropTypes.shape({
