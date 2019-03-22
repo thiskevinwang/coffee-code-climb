@@ -38,7 +38,11 @@ const TagsPage = ({
           </ul>
         </div>
       </div>
-      <hr />
+      <hr
+        style={{
+          marginBottom: rhythm(1),
+        }}
+      />
       <Bio />
     </Layout>
   )
