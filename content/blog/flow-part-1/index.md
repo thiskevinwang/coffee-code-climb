@@ -2,8 +2,7 @@
 title: "@flow, Part 1"
 date: "2019-03-21T16:43:47.433Z"
 description: My experience with this nifty tool.
-tags: [flow, facebook, type-checking, javascript, coffee]
-isDraft: false
+tags: [flow, facebook, type-checking, javascript, Code]
 ---
 
 > FLOW IS A STATIC TYPE CHECKER FOR JAVASCRIPT.
