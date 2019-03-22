@@ -6,6 +6,9 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm } from "../utils/typography"
 
+// Tools
+import includes from "lodash/includes"
+
 const KEYWORDS = [
   `blog`,
   `gatsby`,
@@ -22,7 +25,17 @@ const KEYWORDS = [
   `nextjs`,
 ]
 
-function Post({ key, linkTo, date, title, description, excerpt, isDraft }) {
+type Props = {
+  key: string,
+  linkTo: string,
+  date: string,
+  title: string,
+  description: string,
+  excerpt: string,
+  tags: Array<string>,
+}
+
+function Post({ key, linkTo, date, title, description, excerpt, tags }: Props) {
   return (
     <>
       <h3
@@ -31,7 +44,9 @@ function Post({ key, linkTo, date, title, description, excerpt, isDraft }) {
         }}
       >
         <Link style={{ boxShadow: `none` }} to={linkTo}>
-          {isDraft && <code>draft</code>} {title}
+          {title} {includes(tags, "coffee") && "☕️"}
+          {includes(tags, "Code") && "💻"}
+          {includes(tags, "climbing") && "🧗🏻‍♂️"}
         </Link>
       </h3>
       <small>{date}</small>
@@ -65,7 +80,7 @@ class BlogIndex extends React.Component {
                 title={title}
                 description={node.frontmatter.description}
                 excerpt={node.excerpt}
-                isDraft={node.frontmatter.isDraft || null}
+                tags={node.frontmatter.tags}
               />
             </>
           )
