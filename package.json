@@ -12,6 +12,7 @@
     "@material-ui/icons": "^3.0.2",
     "gatsby": "^2.2.1",
     "gatsby-image": "^2.0.34",
+    "gatsby-plugin-amazon-onetag": "^1.0.0",
     "gatsby-plugin-feed": "^2.0.15",
     "gatsby-plugin-flow": "^1.0.4",
     "gatsby-plugin-google-analytics": "^2.0.17",
