@@ -1,5 +1,6 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import kebabCase from "lodash/kebabCase"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -33,10 +34,14 @@ export default function BlogPostTemplate(props) {
 
       <small>
         Tags:{" "}
-        {post.frontmatter.tags.map((each, index) => (
-          <span style={{ color: "#A6B1BB", margin: 3 }} key={index}>
-            {each}
-          </span>
+        {post.frontmatter.tags.map((tag, index) => (
+          <Link
+            to={`/tags/${kebabCase(tag)}/`}
+            style={{ color: "#A6B1BB", margin: 3 }}
+            key={index}
+          >
+            {tag}
+          </Link>
         ))}
       </small>
       <hr
