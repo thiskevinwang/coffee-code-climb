@@ -36,10 +36,6 @@ export default function Layout({ location, title, children }: Props) {
             {title}
           </Link>
         </h1>
-        <h4 style={{ color: "#A6B1BB" }}>
-          A blog about the above, and maybe some jazz guitar, food, and random
-          gizmos and gadgets.
-        </h4>
       </>
     )
   } else {
