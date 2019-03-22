@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.9.2",
+    "@material-ui/icons": "^3.0.2",
     "gatsby": "^2.2.1",
     "gatsby-image": "^2.0.34",
     "gatsby-plugin-feed": "^2.0.15",
