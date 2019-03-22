@@ -2,8 +2,10 @@
 
 import React from "react"
 import { Link } from "gatsby"
+import MobileDrawer from "./MobileDrawer"
 
 import { rhythm, scale } from "../utils/typography"
+import { isMobile } from "react-device-detect"
 
 type Props = {
   children: React$Node,
@@ -69,6 +71,18 @@ export default function Layout({ location, title, children }: Props) {
       }}
     >
       <header>{header}</header>
+      {isMobile && (
+        <MobileDrawer
+          style={{
+            zIndex: 99,
+            position: "fixed",
+            right: 0,
+            bottom: 0,
+            marginRight: 30,
+            marginBottom: 60,
+          }}
+        />
+      )}
       <main>{children}</main>
       <footer>
         <a href="https://github.com/thiskevinwang/coffee-code-climb">Github</a>{" "}
