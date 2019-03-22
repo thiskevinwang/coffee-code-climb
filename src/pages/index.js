@@ -8,6 +8,8 @@ import { rhythm } from "../utils/typography"
 
 // Tools
 import includes from "lodash/includes"
+import kebabCase from "lodash/kebabCase"
+import map from "lodash/map"
 
 const KEYWORDS = [
   `blog`,
@@ -36,6 +38,9 @@ type Props = {
 }
 
 function Post({ key, linkTo, date, title, description, excerpt, tags }: Props) {
+  //_.map + _.kebabCase each tag in frontmatter.tags
+  let kebabTags = map(tags, tag => kebabCase(tag))
+
   return (
     <>
       <h3
@@ -44,9 +49,9 @@ function Post({ key, linkTo, date, title, description, excerpt, tags }: Props) {
         }}
       >
         <Link style={{ boxShadow: `none` }} to={linkTo}>
-          {title} {includes(tags, "coffee") && "☕️"}
-          {includes(tags, "Code") && "💻"}
-          {includes(tags, "climbing") && "🧗🏻‍♂️"}
+          {title} {includes(kebabTags, "coffee") && "☕️"}
+          {includes(kebabTags, "code") && "💻"}
+          {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}
         </Link>
       </h3>
       <small>{date}</small>
