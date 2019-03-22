@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: `.env`,
+})
+
 module.exports = {
   siteMetadata: {
     title: `Coffee ☕️ Code 💻 Climb 🧗🏻‍♂️`,
@@ -9,6 +13,20 @@ module.exports = {
     },
   },
   plugins: [
+    {
+      resolve: `gatsby-plugin-amazon-onetag`,
+      options: {
+        // Grab this from https://affiliate-program.amazon.com/home/tools/onetag
+        adInstanceId: process.env.GATSBY_AD_INSTANCE_ID,
+
+        // Include Amazon oneTag in development.
+        // Defaults to false meaning Amazon oneTag will only be loaded in production.
+        includeInDevelopment: true,
+
+        // Default marketplace is US
+        marketplace: "US",
+      },
+    },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -37,6 +55,13 @@ module.exports = {
             resolve: `gatsby-remark-responsive-iframe`,
             options: {
               wrapperStyle: `margin-bottom: 1.0725rem`,
+            },
+          },
+          {
+            resolve: "gatsby-remark-embed-youtube",
+            options: {
+              width: 800,
+              height: 400,
             },
           },
           `gatsby-remark-prismjs`,

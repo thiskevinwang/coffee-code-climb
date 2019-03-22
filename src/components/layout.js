@@ -87,6 +87,13 @@ export default function Layout({ location, title, children }: Props) {
       <footer>
         <a href="https://github.com/thiskevinwang/coffee-code-climb">Github</a>{" "}
         | <code>{new Date().toISOString()}</code>
+        <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
+        <script
+          async
+          src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${
+            process.env.GATSBY_AD_INSTANCE_ID
+          }`}
+        />
       </footer>
     </div>
   )
