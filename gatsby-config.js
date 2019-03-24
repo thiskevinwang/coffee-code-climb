@@ -7,9 +7,11 @@ module.exports = {
     title: `Coffee ☕️ Code 💻 Climb 🧗🏻‍♂️`,
     author: `Kevin Wang`,
     description: `A blog about all things coffee, coding, and rock climbing.`,
-    siteUrl: `https://thekevinwang.com`,
+    siteUrl: `https://coffeecodeclimb.com/`,
     social: {
       twitter: `thekevinwang`,
+      github: `thiskevinwang`,
+      instagram: `thekevinwang`,
     },
   },
   plugins: [
