@@ -10,6 +10,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.2",
     "@material-ui/icons": "^3.0.2",
+    "auth0-js": "^9.10.1",
     "gatsby": "^2.2.1",
     "gatsby-image": "^2.0.34",
     "gatsby-plugin-amazon-onetag": "^1.0.0",
