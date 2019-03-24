@@ -2,6 +2,7 @@ import React from "react"
 import { Link, navigate } from "gatsby"
 import { getUser, isLoggedIn, logout } from "../services/auth"
 import Paper from "@material-ui/core/Paper"
+import { isSafari, isFirefox } from "react-device-detect"
 
 export default () => {
   const content = { message: "", login: true }
@@ -14,7 +15,11 @@ export default () => {
     <Paper
       style={{
         background: "white",
-        position: "sticky",
+        position: isSafari
+          ? `-webkit-sticky`
+          : isFirefox
+          ? `-moz-sticky`
+          : `sticky`,
         top: 15,
         left: 0,
         display: "flex",
