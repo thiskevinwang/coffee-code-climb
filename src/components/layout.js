@@ -71,7 +71,7 @@ export default function Layout({ location, title, children }: Props) {
         padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
       }}
     >
-      <NavBar />
+      <NavBar location={location} />
       <header>{header}</header>
       <MobileDrawer
         style={{
