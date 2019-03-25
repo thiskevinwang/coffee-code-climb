@@ -97,7 +97,10 @@ export default function MobileDrawer({ style }) {
       {/* <Button onClick={toggleDrawer("left", true)}>Navigate</Button> */}
       {/* <Button onClick={toggleDrawer("right", true)}>Open Right</Button> */}
       {/* <Button onClick={toggleDrawer("top", true)}>Open Top</Button> */}
-      <Fab onClick={toggleDrawer("bottom", true)}>
+      <Fab
+        style={{ backgroundColor: "white" }}
+        onClick={toggleDrawer("bottom", true)}
+      >
         {!state.bottom ? <UnfoldMore /> : <UnfoldLess />}
       </Fab>
       <Drawer open={state.left} onClose={toggleDrawer("left", false)}>
