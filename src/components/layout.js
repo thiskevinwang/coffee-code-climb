@@ -3,6 +3,7 @@
 import React from "react"
 import { Link } from "gatsby"
 import MobileDrawer from "./MobileDrawer"
+import NavBar from "./NavBar"
 
 import { rhythm, scale } from "../utils/typography"
 import { isMobile } from "react-device-detect"
@@ -70,6 +71,7 @@ export default function Layout({ location, title, children }: Props) {
         padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
       }}
     >
+      <NavBar location={location} />
       <header>{header}</header>
       <MobileDrawer
         style={{
