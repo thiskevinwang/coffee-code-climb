@@ -85,17 +85,15 @@ class BlogIndex extends React.Component {
         {posts.map(({ node }) => {
           const title = node.frontmatter.title || node.fields.slug
           return (
-            <>
-              <Post
-                key={node.fields.slug}
-                linkTo={node.fields.slug}
-                date={node.frontmatter.date}
-                title={title}
-                description={node.frontmatter.description}
-                excerpt={node.excerpt}
-                tags={node.frontmatter.tags}
-              />
-            </>
+            <Post
+              key={node.fields.slug}
+              linkTo={node.fields.slug}
+              date={node.frontmatter.date}
+              title={title}
+              description={node.frontmatter.description}
+              excerpt={node.excerpt}
+              tags={node.frontmatter.tags}
+            />
           )
         })}
       </Layout>
