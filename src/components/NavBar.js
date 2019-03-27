@@ -25,13 +25,18 @@ export default function NavBar({ location }) {
     <Paper
       style={{
         background: "white",
-        position: isMobile
-          ? `sticky`
-          : isSafari
-          ? `-webkit-sticky`
-          : isFirefox
-          ? `-moz-sticky`
-          : `sticky`,
+        position: `${(() => {
+          switch (true) {
+            case isMobile:
+              return `sticky`
+            case isSafari:
+              return `-webkit-sticky`
+            case isFirefox:
+              return `-moz-sticky`
+            default:
+              return `sticky`
+          }
+        })()}`,
         top: `${rhythm(1)}`,
         left: 0,
         display: "flex",
