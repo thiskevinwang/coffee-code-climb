@@ -5,7 +5,7 @@ import { Link } from "gatsby"
 import MobileDrawer from "./MobileDrawer"
 import NavBar from "./NavBar"
 
-import { rhythm, scale } from "../utils/typography"
+import { rhythm, scale } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
 
 type Props = {

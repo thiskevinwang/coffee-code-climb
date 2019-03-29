@@ -5,7 +5,7 @@ import kebabCase from "lodash/kebabCase"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
-import { rhythm, scale } from "../utils/typography"
+import { rhythm, scale } from "@src/utils/typography"
 
 export default function BlogPostTemplate(props) {
   const post = props.data.markdownRemark
