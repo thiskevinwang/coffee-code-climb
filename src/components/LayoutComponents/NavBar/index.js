@@ -6,7 +6,7 @@ import Paper from "@material-ui/core/Paper"
 import { isSafari, isFirefox, isMobile } from "react-device-detect"
 import { rhythm } from "@src/utils/typography"
 import Avatar from "@material-ui/core/Avatar"
-import { Hello } from "../../tsComponent.tsx"
+import { Hello } from "../Hello"
 
 export default function NavBar({ location }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
@@ -57,8 +57,7 @@ export default function NavBar({ location }) {
         </>
       ) : (
         <small>
-          <Hello />
-          {location.pathname !== rootPath ? "😊" : "NavBar, coming soon! 👷‍♀️🚛"}
+          <Hello page={location.pathname} date={new Date()} />
         </small>
       )}
       <small>
