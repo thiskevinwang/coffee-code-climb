@@ -13,6 +13,8 @@ module.exports = {
     },
   },
   plugins: [
+    `gatsby-plugin-typescript`,
+    "gatsby-plugin-tslint",
     {
       resolve: `gatsby-plugin-amazon-onetag`,
       options: {
@@ -25,6 +27,13 @@ module.exports = {
 
         // Default marketplace is US
         marketplace: "US",
+      },
+    },
+    {
+      resolve: `gatsby-plugin-alias-imports`,
+      options: {
+        alias: { "@src": "src" },
+        extensions: [],
       },
     },
     {

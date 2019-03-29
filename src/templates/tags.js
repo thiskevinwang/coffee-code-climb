@@ -8,7 +8,7 @@ import Layout from "../components/layout"
 // import SEO from "../components/seo"
 
 // Utilities
-import { rhythm } from "../utils/typography"
+import { rhythm } from "@src/utils/typography"
 
 const Tags = ({ pageContext, data, location }) => {
   const { tag } = pageContext

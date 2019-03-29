@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 
 // Utilities
 import kebabCase from "lodash/kebabCase"
-import { rhythm } from "../utils/typography"
+import { rhythm } from "@src/utils/typography"
 
 // Components
 import { Helmet } from "react-helmet"
