@@ -2,8 +2,9 @@
 
 import React from "react"
 import { Link } from "gatsby"
-import MobileDrawer from "./MobileDrawer"
-import NavBar from "./NavBar"
+// import MobileDrawer from "./MobileDrawer"
+// import NavBar from "./NavBar"
+import { MobileDrawer, NavBar } from "./LayoutComponents"
 
 import { rhythm, scale } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
