@@ -1,4 +1,7 @@
-<!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
+[![Netlify Status](https://api.netlify.com/api/v1/badges/cc83e140-a946-4ba8-9e15-7d29f7a7075b/deploy-status)](https://app.netlify.com/sites/musing-pare-709e6b/deploys)
+[![Maintainability](https://api.codeclimate.com/v1/badges/6b0371560091a51a5fd6/maintainability)](https://codeclimate.com/github/thiskevinwang/coffee-code-climb/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/6b0371560091a51a5fd6/test_coverage)](https://codeclimate.com/github/thiskevinwang/coffee-code-climb/test_coverage)
+
 <p align="center">
   <a href="https://www.gatsbyjs.org">
     <img alt="Gatsby" src="https://www.gatsbyjs.org/monogram.svg" width="60" />

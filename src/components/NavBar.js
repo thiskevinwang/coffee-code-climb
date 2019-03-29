@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react"
-import { Link, navigate } from "gatsby"
+import React, { useState } from "react"
+import { Link } from "gatsby"
 // import { getUser, isLoggedIn, logout } from "../services/auth"
 // import auth from "../utils/auth"
 import Paper from "@material-ui/core/Paper"
 import { isSafari, isFirefox, isMobile } from "react-device-detect"
-import { rhythm, scale } from "../utils/typography"
+import { rhythm } from "../utils/typography"
 import Avatar from "@material-ui/core/Avatar"
 
 export default function NavBar({ location }) {
@@ -25,13 +25,18 @@ export default function NavBar({ location }) {
     <Paper
       style={{
         background: "white",
-        position: isMobile
-          ? `sticky`
-          : isSafari
-          ? `-webkit-sticky`
-          : isFirefox
-          ? `-moz-sticky`
-          : `sticky`,
+        position: `${(() => {
+          switch (true) {
+            case isMobile:
+              return `sticky`
+            case isSafari:
+              return `-webkit-sticky`
+            case isFirefox:
+              return `-moz-sticky`
+            default:
+              return `sticky`
+          }
+        })()}`,
         top: `${rhythm(1)}`,
         left: 0,
         display: "flex",
@@ -51,11 +56,11 @@ export default function NavBar({ location }) {
         </>
       ) : (
         <small>
-          {location.pathname != rootPath ? "😊" : "NavBar, coming soon! 👷‍♀️🚛"}
+          {location.pathname !== rootPath ? "😊" : "NavBar, coming soon! 👷‍♀️🚛"}
         </small>
       )}
       <small>
-        {location.pathname != rootPath && (
+        {location.pathname !== rootPath && (
           <>
             <Link
               to="/"
@@ -69,7 +74,7 @@ export default function NavBar({ location }) {
             {" | "}
           </>
         )}
-        {authenticated && location.pathname != "/app/profile" && (
+        {authenticated && location.pathname !== "/app/profile" && (
           <>
             <Link
               to="/app/profile"

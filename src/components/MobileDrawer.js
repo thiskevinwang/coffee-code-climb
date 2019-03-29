@@ -3,11 +3,11 @@ import { Link } from "gatsby"
 
 // import { makeStyles } from "@material-ui/styles"
 import Drawer from "@material-ui/core/Drawer"
-import Button from "@material-ui/core/Button"
+// import Button from "@material-ui/core/Button"
 import Fab from "@material-ui/core/Fab"
 
 import List from "@material-ui/core/List"
-import Divider from "@material-ui/core/Divider"
+// import Divider from "@material-ui/core/Divider"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
@@ -41,8 +41,8 @@ export default function MobileDrawer({ style }) {
     <div className={classes.list}>
       <List>
         {["All Tags"].map((text, index) => (
-          <Link to="/tags">
-            <ListItem button key={text}>
+          <Link to="/tags" key={text}>
+            <ListItem button>
               <ListItemIcon>
                 <Bookmarks />
               </ListItemIcon>
@@ -66,31 +66,31 @@ export default function MobileDrawer({ style }) {
     </div>
   )
 
-  const fullList = (
-    <div className={classes.fullList}>
-      <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  )
+  // const fullList = (
+  //   <div className={classes.fullList}>
+  //     <List>
+  //       {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
+  //         <ListItem button key={text}>
+  //           <ListItemIcon>
+  //             {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+  //           </ListItemIcon>
+  //           <ListItemText primary={text} />
+  //         </ListItem>
+  //       ))}
+  //     </List>
+  //     <Divider />
+  //     <List>
+  //       {["All mail", "Trash", "Spam"].map((text, index) => (
+  //         <ListItem button key={text}>
+  //           <ListItemIcon>
+  //             {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+  //           </ListItemIcon>
+  //           <ListItemText primary={text} />
+  //         </ListItem>
+  //       ))}
+  //     </List>
+  //   </div>
+  // )
 
   return (
     <div style={style}>
@@ -103,7 +103,7 @@ export default function MobileDrawer({ style }) {
       >
         {!state.bottom ? <UnfoldMore /> : <UnfoldLess />}
       </Fab>
-      <Drawer open={state.left} onClose={toggleDrawer("left", false)}>
+      {/* <Drawer open={state.left} onClose={toggleDrawer("left", false)}>
         <div
           tabIndex={0}
           role="button"
@@ -112,8 +112,8 @@ export default function MobileDrawer({ style }) {
         >
           {sideList}
         </div>
-      </Drawer>
-      <Drawer
+      </Drawer> */}
+      {/* <Drawer
         anchor="top"
         open={state.top}
         onClose={toggleDrawer("top", false)}
@@ -126,7 +126,7 @@ export default function MobileDrawer({ style }) {
         >
           {fullList}
         </div>
-      </Drawer>
+      </Drawer> */}
       <Drawer
         anchor="bottom"
         open={state.bottom}
