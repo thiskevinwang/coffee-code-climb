@@ -14,6 +14,7 @@ module.exports = {
   },
   plugins: [
     `gatsby-plugin-typescript`,
+    "gatsby-plugin-tslint",
     {
       resolve: `gatsby-plugin-amazon-onetag`,
       options: {
