@@ -13,6 +13,7 @@ module.exports = {
     },
   },
   plugins: [
+    `gatsby-plugin-typescript`,
     {
       resolve: `gatsby-plugin-amazon-onetag`,
       options: {
