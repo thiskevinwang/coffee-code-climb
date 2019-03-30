@@ -5,6 +5,10 @@ description: My experience with this nifty tool.
 tags: [flow, facebook, type-checking, javascript, Code]
 ---
 
+#### Update: [PART 2](/flow-part-2)
+
+---
+
 > FLOW IS A STATIC TYPE CHECKER FOR JAVASCRIPT.
 
 ## I like to install flow wherever I go
