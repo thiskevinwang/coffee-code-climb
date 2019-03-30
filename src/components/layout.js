@@ -85,7 +85,11 @@ export default function Layout({ location, title, children }: Props) {
       <main>{children}</main>
       <footer>
         <a href="https://github.com/thiskevinwang/coffee-code-climb">Github</a>{" "}
-        | <code>{new Date().toISOString()}</code>
+        {process.env.NODE_ENV === "development" && (
+          <>
+            | <code>{new Date().toISOString()}</code>
+          </>
+        )}
         <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
         <script
           async
