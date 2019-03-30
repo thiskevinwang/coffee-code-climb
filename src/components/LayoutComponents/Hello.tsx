@@ -1,6 +1,6 @@
 import * as React from "react"
 
-const MESSAGES: Array<string> = [
+const MESSAGES: Array<String> = [
   "Sunday already?!",
   "Ugh, Monday",
   "Tuesdays... meh",
@@ -14,23 +14,24 @@ export interface HelloProps {
   date: Date
 }
 
-interface HelloState {
-  isHovered: boolean
+// A class may only implement another class or interface
+type HelloState = {
+  isHovered: Boolean
 }
 
 // 'HelloProps' describes the shape of props.
 export class Hello extends React.Component<HelloProps, HelloState> {
-  state = {
+  state: HelloState = {
     isHovered: false,
   }
 
-  _handleOnClick = (): void => {
+  _handleOnClick(): void {
     alert(`This message is my first TypeScript component!`)
   }
 
-  render() {
+  render(): JSX.Element {
     let { date }: { date: Date } = this.props
-    let { isHovered } = this.state
+    let { isHovered }: { isHovered: Boolean } = this.state
     return (
       <span
         onClick={this._handleOnClick}
@@ -41,7 +42,7 @@ export class Hello extends React.Component<HelloProps, HelloState> {
           this.setState({ isHovered: !isHovered })
         }}
         style={{
-          opacity: `${this.state.isHovered ? 0.5 : 1}`,
+          opacity: isHovered ? 0.5 : 1,
           transition: `opacity 322ms ease-in-out`,
         }}
       >
