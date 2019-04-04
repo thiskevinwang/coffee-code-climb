@@ -1,3 +1,4 @@
+// @flow
 import React from "react"
 import { Link, graphql } from "gatsby"
 
@@ -5,6 +6,7 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm } from "@src/utils/typography"
+import { CommentCount } from "disqus-react"
 
 // Tools
 import includes from "lodash/includes"
@@ -43,9 +45,26 @@ type Props = {
   description: string,
   excerpt: string,
   tags: Array<string>,
+  id: string,
+  disqusShortname: string,
+  disqusConfig: {
+    identifier: string,
+    title: string,
+  },
 }
 
-function Post({ key, linkTo, date, title, description, excerpt, tags }: Props) {
+function Post({
+  key,
+  linkTo,
+  date,
+  title,
+  description,
+  excerpt,
+  tags,
+  id,
+  disqusShortname,
+  disqusConfig,
+}: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
 
@@ -62,7 +81,10 @@ function Post({ key, linkTo, date, title, description, excerpt, tags }: Props) {
           {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}
         </Link>
       </h3>
-      <small>{date}</small>
+      <small>
+        {date} |{" "}
+        <CommentCount shortname={disqusShortname} config={disqusConfig} />
+      </small>
       <p
         dangerouslySetInnerHTML={{
           __html: description || excerpt,
@@ -84,6 +106,12 @@ class BlogIndex extends React.Component {
         <Bio />
         {posts.map(({ node }) => {
           const title = node.frontmatter.title || node.fields.slug
+          const disqusShortname = "coffeecodeclimb-1"
+          const disqusConfig = {
+            identifier: node.id,
+            title: title,
+          }
+
           return (
             <Post
               key={node.fields.slug}
@@ -93,6 +121,9 @@ class BlogIndex extends React.Component {
               description={node.frontmatter.description}
               excerpt={node.excerpt}
               tags={node.frontmatter.tags}
+              id={node.id}
+              disqusShortname={disqusShortname}
+              disqusConfig={disqusConfig}
             />
           )
         })}
@@ -113,6 +144,7 @@ export const pageQuery = graphql`
     allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
       edges {
         node {
+          id
           excerpt
           fields {
             slug
