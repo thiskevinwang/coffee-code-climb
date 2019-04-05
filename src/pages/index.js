@@ -106,7 +106,10 @@ class BlogIndex extends React.Component {
         <Bio />
         {posts.map(({ node }) => {
           const title = node.frontmatter.title || node.fields.slug
-          const disqusShortname = "coffeecodeclimb-1"
+          const disqusShortname =
+            process.env.NODE_ENV === "production"
+              ? "coffeecodeclimb"
+              : "coffeecodeclimb-1"
           const disqusConfig = {
             identifier: node.id,
             title: title,

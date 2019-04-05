@@ -14,7 +14,10 @@ export default function BlogPostTemplate(props) {
   const siteTitle = props.data.site.siteMetadata.title
   const { previous, next } = props.pageContext
 
-  const disqusShortname = "coffeecodeclimb-1"
+  const disqusShortname =
+    process.env.NODE_ENV === "production"
+      ? "coffeecodeclimb"
+      : "coffeecodeclimb-1"
   const disqusConfig = {
     identifier: post.id,
     title: post.frontmatter.title,
