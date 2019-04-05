@@ -1,6 +1,8 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
+import { DiscussionEmbed, CommentCount } from "disqus-react"
+import Paper from "@material-ui/core/Paper"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -11,6 +13,12 @@ export default function BlogPostTemplate(props) {
   const post = props.data.markdownRemark
   const siteTitle = props.data.site.siteMetadata.title
   const { previous, next } = props.pageContext
+
+  const disqusShortname = "coffeecodeclimb-1"
+  const disqusConfig = {
+    identifier: post.id,
+    title: post.frontmatter.title,
+  }
 
   return (
     <Layout location={props.location} title={siteTitle}>
@@ -27,7 +35,8 @@ export default function BlogPostTemplate(props) {
           marginTop: rhythm(-1),
         }}
       >
-        {post.frontmatter.date}
+        {post.frontmatter.date} |{" "}
+        <CommentCount shortname={disqusShortname} config={disqusConfig} />
       </p>
 
       <div dangerouslySetInnerHTML={{ __html: post.html }} />
@@ -75,6 +84,10 @@ export default function BlogPostTemplate(props) {
           )}
         </li>
       </ul>
+
+      <Paper style={{ padding: rhythm(1), marginBottom: rhythm(1) }}>
+        <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
+      </Paper>
     </Layout>
   )
 }
