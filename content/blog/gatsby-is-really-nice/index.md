@@ -2,7 +2,7 @@
 title: Gatsby is really nice
 date: "2019-03-19T22:04:00.000Z"
 description: And we're live, folks!
-tags: ["gatsby", "First", "blog", "Code"]
+tags: ["gatsby", "first", "blog", "code"]
 ---
 
 No, Gatsby is really amazing.
