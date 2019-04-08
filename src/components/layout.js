@@ -98,11 +98,11 @@ export default function Layout({ location, title, children }: Props) {
   }
 
   // Spring animation
-  const { x } = useSpring({
-    from: { x: 0 },
-    x: currentY / (window.innerHeight / 4),
-    // config: { duration: 1000 },
-  })
+  // const { x } = useSpring({
+  //   from: { x: 0 },
+  //   x: currentY / (window.innerHeight / 4),
+  //   // config: { duration: 1000 },
+  // })
   const props = useSpring({
     from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
     to: {
@@ -110,9 +110,9 @@ export default function Layout({ location, title, children }: Props) {
       opacity: 1,
     },
     delay: 200,
-    onRest: e => {
-      console.log("spring has finished")
-    },
+    // onRest: e => {
+    //   console.log("spring has finished")
+    // },
     // onFrame: e => {
     //   console.log(e)
     // },
