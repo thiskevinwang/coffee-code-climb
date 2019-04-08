@@ -1,6 +1,7 @@
 // @flow
 
 import React from "react"
+import { useSpring, animated } from "react-spring"
 import { Link } from "gatsby"
 // import MobileDrawer from "./MobileDrawer"
 // import NavBar from "./NavBar"
@@ -81,6 +82,12 @@ export default function Layout({ location, title, children }: Props) {
       </h3>
     )
   }
+
+  // Spring animation
+  const props = useSpring({
+    to: { transform: "translate3d(0px,0,0) scale(1)", opacity: 1 },
+    from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
+  })
   return (
     <>
       <span style={styles.bg1} />
@@ -93,7 +100,9 @@ export default function Layout({ location, title, children }: Props) {
         }}
       >
         <NavBar location={location} />
-        <header>{header}</header>
+
+        <animated.header style={props}>{header}</animated.header>
+
         <MobileDrawer
           style={{
             zIndex: 99,
