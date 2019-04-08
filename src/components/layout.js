@@ -8,7 +8,7 @@ import { Link } from "gatsby"
 import { MobileDrawer, NavBar } from "./LayoutComponents"
 
 import { rhythm, scale } from "@src/utils/typography"
-import { isMobile } from "react-device-detect"
+// import { isMobile } from "react-device-detect"
 
 const DARK = "#DCC2FF"
 const DARKER = "#B9B0E8"
@@ -42,7 +42,9 @@ export default function Layout({ location, title, children }: Props) {
 
   // Hook for updating currentY state
   // This gets passed to NavBar's `pageYOffset` props
-  const [currentY, setCurrentY] = useState(window.pageYOffset)
+  const [currentY: number, setCurrentY: () => any] = useState(
+    window.pageYOffset
+  )
 
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
@@ -96,10 +98,26 @@ export default function Layout({ location, title, children }: Props) {
   }
 
   // Spring animation
-  const props = useSpring({
-    to: { transform: "translate3d(0px,0,0) scale(1)", opacity: 1 },
-    from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
+  const { x } = useSpring({
+    from: { x: 0 },
+    x: currentY / (window.innerHeight / 4),
+    // config: { duration: 1000 },
   })
+  const props = useSpring({
+    from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
+    to: {
+      transform: "translate3d(0px,0,0) scale(1)",
+      opacity: 1,
+    },
+    delay: 200,
+    onRest: e => {
+      console.log("spring has finished")
+    },
+    // onFrame: e => {
+    //   console.log(e)
+    // },
+  })
+
   return (
     <>
       <span style={styles.bg1} />
@@ -116,7 +134,25 @@ export default function Layout({ location, title, children }: Props) {
           opacity={currentY / (window.innerHeight / 2)}
         />
 
-        <animated.header style={props}>{header}</animated.header>
+        <animated.header
+          style={{
+            ...props,
+            // transform: x
+            //   .interpolate({
+            //     range: [0, 1],
+            //     output: [1, 3],
+            //   })
+            //   .interpolate(x => `scale(${x})`),
+            // opacity: x
+            //   .interpolate({
+            //     range: [0, 0.25, 0.5, 0.75, 1],
+            //     output: [1, 0.75, 0.5, 0.25, 0],
+            //   })
+            //   .interpolate(x => x),
+          }}
+        >
+          {header}
+        </animated.header>
 
         <MobileDrawer
           style={{
