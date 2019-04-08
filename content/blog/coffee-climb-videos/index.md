@@ -2,7 +2,7 @@
 title: Coffee & Climbing Videos
 date: "2019-03-22T15:40:03.243Z"
 description: I wish I had more time to make these!
-tags: ["climbing", "youtube", "videos", "coffee", Sony, a6500, DSLR, camera]
+tags: ["climbing", "youtube", "videos", "coffee", sony, a6500, dslr, camera]
 ---
 
 ## Still getting the hang of Gatsby and...

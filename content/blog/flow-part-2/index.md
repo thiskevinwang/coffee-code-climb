@@ -2,7 +2,7 @@
 title: "@flow, Part 2, and TypeScript"
 date: "2019-03-29T19:15:50.534Z"
 description: Hectic week of work and interviews. Wrote my first bit of TypeScript. (This blog's codebase is now 96.4% JavaScript, and 3.6% TypeScript!)
-tags: [typescript, javascript, flow, Code, interviews, Hooks, scoot networks]
+tags: [typescript, javascript, flow, code, interviews, hooks, scoot networks]
 ---
 
 #### [part 1](/flow-part-1)

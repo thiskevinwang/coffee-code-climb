@@ -6,15 +6,15 @@ tags:
   [
     coffee,
     climbing,
-    Toby's Estate,
+    toby's estate,
     souffle,
     pancakes,
-    Gatsby,
+    gatsby,
     open source,
     chinatown,
     weekend,
     code,
-    Auth0,
+    auth0,
   ]
 ---
 
