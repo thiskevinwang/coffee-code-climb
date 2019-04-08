@@ -5,7 +5,7 @@ import { isSafari, isFirefox, isMobile } from "react-device-detect"
 import { rhythm } from "@src/utils/typography"
 import { Hello } from "../Hello"
 
-export default function NavBar({ location }) {
+export default function NavBar({ location, opacity }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
 
   return (
@@ -19,6 +19,7 @@ export default function NavBar({ location }) {
         justifyContent: "space-between",
         left: 0,
         marginBottom: `${rhythm(1)}`,
+        opacity: opacity,
         padding: `0 ${rhythm(3 / 4)}`,
         position: `${(() => {
           switch (true) {

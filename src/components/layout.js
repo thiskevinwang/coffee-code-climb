@@ -1,6 +1,6 @@
 // @flow
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { useSpring, animated } from "react-spring"
 import { Link } from "gatsby"
 // import MobileDrawer from "./MobileDrawer"
@@ -39,6 +39,18 @@ type Props = {
 export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
   let header: React$Node
+
+  // Hook for updating currentY state
+  // This gets passed to NavBar's `pageYOffset` props
+  const [currentY, setCurrentY] = useState(window.pageYOffset)
+
+  // Attach scroll event listener to window when <Layout /> mounts
+  useEffect(() => {
+    window.addEventListener("scroll", () => {
+      setCurrentY(window.pageYOffset)
+      // console.log(currentY)
+    })
+  }, [])
 
   if (location.pathname === rootPath) {
     header = (
@@ -99,7 +111,10 @@ export default function Layout({ location, title, children }: Props) {
           padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
         }}
       >
-        <NavBar location={location} />
+        <NavBar
+          location={location}
+          opacity={currentY / (window.innerHeight / 2)}
+        />
 
         <animated.header style={props}>{header}</animated.header>
 
