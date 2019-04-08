@@ -9,6 +9,26 @@ import { MobileDrawer, NavBar } from "./LayoutComponents"
 import { rhythm, scale } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
 
+const DARK = "#DCC2FF"
+const DARKER = "#B9B0E8"
+const MID = "#CFD5FF"
+const LIGHTER = "#B0C6E8"
+const LIGHT = "#C2E9FF"
+const styles = {
+  bg1: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    height: `50%`,
+    width: `100%`,
+    background: `linear-gradient(150deg, ${DARK} 15%, ${DARKER} 35%, ${MID} 55%, ${LIGHTER} 70%, ${LIGHT} 94%)`,
+    opacity: 0.7,
+    transform: `skewY(-6deg)`,
+    transformOrigin: `top left`,
+    zIndex: -10,
+  },
+}
+
 type Props = {
   children: React$Node,
   location: Location,
@@ -62,42 +82,47 @@ export default function Layout({ location, title, children }: Props) {
     )
   }
   return (
-    <div
-      style={{
-        marginLeft: `auto`,
-        marginRight: `auto`,
-        maxWidth: rhythm(24),
-        padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
-      }}
-    >
-      <NavBar location={location} />
-      <header>{header}</header>
-      <MobileDrawer
+    <>
+      <span style={styles.bg1} />
+      <div
         style={{
-          zIndex: 99,
-          position: "fixed",
-          right: 0,
-          bottom: 0,
-          marginRight: 30,
-          marginBottom: 60,
+          marginLeft: `auto`,
+          marginRight: `auto`,
+          maxWidth: rhythm(24),
+          padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
         }}
-      />
-      <main>{children}</main>
-      <footer>
-        <a href="https://github.com/thiskevinwang/coffee-code-climb">Github</a>{" "}
-        {process.env.NODE_ENV === "development" && (
-          <>
-            | <code>{new Date().toISOString()}</code>
-          </>
-        )}
-        <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
-        <script
-          async
-          src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${
-            process.env.GATSBY_AD_INSTANCE_ID
-          }`}
+      >
+        <NavBar location={location} />
+        <header>{header}</header>
+        <MobileDrawer
+          style={{
+            zIndex: 99,
+            position: "fixed",
+            right: 0,
+            bottom: 0,
+            marginRight: 30,
+            marginBottom: 60,
+          }}
         />
-      </footer>
-    </div>
+        <main>{children}</main>
+        <footer>
+          <a href="https://github.com/thiskevinwang/coffee-code-climb">
+            Github
+          </a>{" "}
+          {process.env.NODE_ENV === "development" && (
+            <>
+              | <code>{new Date().toISOString()}</code>
+            </>
+          )}
+          <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
+          <script
+            async
+            src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${
+              process.env.GATSBY_AD_INSTANCE_ID
+            }`}
+          />
+        </footer>
+      </div>
+    </>
   )
 }
