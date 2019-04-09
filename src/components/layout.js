@@ -99,7 +99,7 @@ export default function Layout({ location, title, children }: Props) {
   // Spring animation
   const { x } = useSpring({
     from: { x: 1 },
-    x: currentY / (window.innerHeight / 4),
+    x: typeof window !== "undefined" ? currentY / (window.innerHeight / 4) : 0,
   })
   // const props = useSpring({
   //   from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
