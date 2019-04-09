@@ -1,6 +1,6 @@
 // @flow
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { useSpring, animated } from "react-spring"
 import { Link } from "gatsby"
 // import MobileDrawer from "./MobileDrawer"
@@ -8,7 +8,7 @@ import { Link } from "gatsby"
 import { MobileDrawer, NavBar } from "./LayoutComponents"
 
 import { rhythm, scale } from "@src/utils/typography"
-import { isMobile } from "react-device-detect"
+// import { isMobile } from "react-device-detect"
 
 const DARK = "#DCC2FF"
 const DARKER = "#B9B0E8"
@@ -39,6 +39,19 @@ type Props = {
 export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
   let header: React$Node
+
+  // Hook for updating currentY state
+  // This gets passed to NavBar's `pageYOffset` props
+  const [currentY: number, setCurrentY: () => any] = useState(0)
+
+  // Attach scroll event listener to window when <Layout /> mounts
+  useEffect(() => {
+    typeof window !== "undefined" &&
+      window.addEventListener("scroll", () => {
+        setCurrentY(window.pageYOffset)
+        // console.log(currentY)
+      })
+  }, [])
 
   if (location.pathname === rootPath) {
     header = (
@@ -84,10 +97,26 @@ export default function Layout({ location, title, children }: Props) {
   }
 
   // Spring animation
+  // const { x } = useSpring({
+  //   from: { x: 0 },
+  //   x: currentY / (window.innerHeight / 4),
+  //   // config: { duration: 1000 },
+  // })
   const props = useSpring({
-    to: { transform: "translate3d(0px,0,0) scale(1)", opacity: 1 },
     from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
+    to: {
+      transform: "translate3d(0px,0,0) scale(1)",
+      opacity: 1,
+    },
+    delay: 200,
+    // onRest: e => {
+    //   console.log("spring has finished")
+    // },
+    // onFrame: e => {
+    //   console.log(e)
+    // },
   })
+
   return (
     <>
       <span style={styles.bg1} />
@@ -99,9 +128,34 @@ export default function Layout({ location, title, children }: Props) {
           padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
         }}
       >
-        <NavBar location={location} />
+        <NavBar
+          location={location}
+          opacity={
+            typeof window !== "undefined"
+              ? currentY / (window.innerHeight / 2)
+              : 0
+          }
+        />
 
-        <animated.header style={props}>{header}</animated.header>
+        <animated.header
+          style={{
+            ...props,
+            // transform: x
+            //   .interpolate({
+            //     range: [0, 1],
+            //     output: [1, 3],
+            //   })
+            //   .interpolate(x => `scale(${x})`),
+            // opacity: x
+            //   .interpolate({
+            //     range: [0, 0.25, 0.5, 0.75, 1],
+            //     output: [1, 0.75, 0.5, 0.25, 0],
+            //   })
+            //   .interpolate(x => x),
+          }}
+        >
+          {header}
+        </animated.header>
 
         <MobileDrawer
           style={{

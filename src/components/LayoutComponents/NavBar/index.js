@@ -1,31 +1,26 @@
 import React, { useState } from "react"
 import { Link } from "gatsby"
-// import { getUser, isLoggedIn, logout } from "../services/auth"
-// import auth from "../utils/auth"
 import Paper from "@material-ui/core/Paper"
 import { isSafari, isFirefox, isMobile } from "react-device-detect"
 import { rhythm } from "@src/utils/typography"
-import Avatar from "@material-ui/core/Avatar"
 import { Hello } from "../Hello"
 
-export default function NavBar({ location }) {
+export default function NavBar({ location, opacity }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const [authenticated, setAuthenticated] = useState(false)
-
-  // function login() {
-  //   auth.login()
-  //   setAuthenticated(auth.isAuthenticated())
-  // }
-
-  // function logout() {
-  //   auth.logout()
-  //   setAuthenticated(auth.isAuthenticated())
-  // }
 
   return (
     <Paper
       style={{
+        alignItems: "center",
         background: "white",
+        display: "flex",
+        flex: "1",
+        height: 70,
+        justifyContent: "space-between",
+        left: 0,
+        marginBottom: `${rhythm(1)}`,
+        opacity: opacity,
+        padding: `0 ${rhythm(3 / 4)}`,
         position: `${(() => {
           switch (true) {
             case isMobile:
@@ -39,27 +34,13 @@ export default function NavBar({ location }) {
           }
         })()}`,
         top: `${rhythm(1)}`,
-        left: 0,
-        display: "flex",
-        flex: "1",
-        justifyContent: "space-between",
-        alignItems: "center",
-        height: 70,
-        padding: `0 ${rhythm(3 / 4)}`,
-        marginBottom: `${rhythm(1)}`,
         zIndex: 9999,
       }}
     >
-      {authenticated ? (
-        <>
-          <Avatar sizes={"large"} alt={"TODO"} src={"TODO"} />
-          {/* {auth.getUserName() && <small>{auth.getUserName()}</small>} */}
-        </>
-      ) : (
-        <small>
-          <Hello page={location.pathname} date={new Date()} />
-        </small>
-      )}
+      <small>
+        <Hello page={location.pathname} date={new Date()} />
+      </small>
+
       <small>
         {location.pathname !== rootPath && (
           <>
@@ -72,63 +53,7 @@ export default function NavBar({ location }) {
             >
               Home
             </Link>
-            {" | "}
           </>
-        )}
-        {authenticated && location.pathname !== "/app/profile" && (
-          <>
-            <Link
-              to="/app/profile"
-              style={{
-                boxShadow: "none",
-                lineHeight: "37px",
-              }}
-            >
-              Profile
-            </Link>{" "}
-            |{" "}
-          </>
-        )}
-        {/* {isLoggedIn() ? (
-          <a
-            href="/"
-            onClick={event => {
-              event.preventDefault()
-              logout(() => navigate(`/app/login`))
-            }}
-          >
-            Logout
-          </a>
-        ) : null} */}
-        {!authenticated && (
-          <span>
-            <a
-              href="#"
-              onClick={null}
-              style={{
-                boxShadow: "none",
-                lineHeight: "37px",
-              }}
-            >
-              Log In
-            </a>
-          </span>
-        )}
-        {authenticated && (
-          <span>
-            <a
-              href="#"
-              onClick={null}
-              style={{
-                boxShadow: "none",
-                lineHeight: "37px",
-              }}
-            >
-              Log Out
-            </a>
-            {/* <span> | </span> */}
-            {/* <Subscribe auth={auth} /> */}
-          </span>
         )}
       </small>
     </Paper>
