@@ -120,9 +120,12 @@ export default function Layout({ location, title, children }: Props) {
     <>
       <NavBar
         location={location}
+        // TODO: refactor logic to cap opacity at 1
         opacity={
           typeof window !== "undefined"
-            ? currentY / (window.innerHeight / 2)
+            ? currentY / (window.innerHeight / 2) > 1
+              ? 1
+              : currentY / (window.innerHeight / 2)
             : 0
         }
       />
