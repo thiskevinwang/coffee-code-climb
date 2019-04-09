@@ -19,6 +19,9 @@ export default function NavBar({ location, opacity }) {
         justifyContent: "space-between",
         left: 0,
         marginBottom: `${rhythm(1)}`,
+        marginLeft: `auto`,
+        marginRight: `auto`,
+        maxWidth: rhythm(24),
         opacity: opacity,
         padding: `0 ${rhythm(3 / 4)}`,
         position: `${(() => {
