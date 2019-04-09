@@ -97,25 +97,24 @@ export default function Layout({ location, title, children }: Props) {
   }
 
   // Spring animation
-  // const { x } = useSpring({
-  //   from: { x: 0 },
-  //   x: currentY / (window.innerHeight / 4),
-  //   // config: { duration: 1000 },
-  // })
-  const props = useSpring({
-    from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
-    to: {
-      transform: "translate3d(0px,0,0) scale(1)",
-      opacity: 1,
-    },
-    delay: 200,
-    // onRest: e => {
-    //   console.log("spring has finished")
-    // },
-    // onFrame: e => {
-    //   console.log(e)
-    // },
+  const { x } = useSpring({
+    from: { x: 1 },
+    x: currentY / (window.innerHeight / 4),
   })
+  // const props = useSpring({
+  //   from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
+  //   to: {
+  //     transform: "translate3d(0px,0,0) scale(1)",
+  //     opacity: 1,
+  //   },
+  //   delay: 200,
+  //   // onRest: e => {
+  //   //   console.log("spring has finished")
+  //   // },
+  //   // onFrame: e => {
+  //   //   console.log(e)
+  //   // },
+  // })
 
   return (
     <>
@@ -139,19 +138,18 @@ export default function Layout({ location, title, children }: Props) {
 
         <animated.header
           style={{
-            ...props,
-            // transform: x
-            //   .interpolate({
-            //     range: [0, 1],
-            //     output: [1, 3],
-            //   })
-            //   .interpolate(x => `scale(${x})`),
-            // opacity: x
-            //   .interpolate({
-            //     range: [0, 0.25, 0.5, 0.75, 1],
-            //     output: [1, 0.75, 0.5, 0.25, 0],
-            //   })
-            //   .interpolate(x => x),
+            transform: x
+              .interpolate({
+                range: [0, 1, 2],
+                output: [1, 3, 3],
+              })
+              .interpolate(x => `scale(${x})`),
+            opacity: x
+              .interpolate({
+                range: [0, 1, 2],
+                output: [1, 0, 0],
+              })
+              .interpolate(x => x),
           }}
         >
           {header}
