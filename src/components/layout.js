@@ -118,71 +118,72 @@ export default function Layout({ location, title, children }: Props) {
 
   return (
     <>
-      <span style={styles.bg1} />
-      <div
-        style={{
-          marginLeft: `auto`,
-          marginRight: `auto`,
-          maxWidth: rhythm(24),
-          padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
-        }}
-      >
-        <NavBar
-          location={location}
-          opacity={
-            typeof window !== "undefined"
-              ? currentY / (window.innerHeight / 2)
-              : 0
-          }
-        />
-
-        <animated.header
+      <NavBar
+        location={location}
+        opacity={
+          typeof window !== "undefined"
+            ? currentY / (window.innerHeight / 2)
+            : 0
+        }
+      />
+      <div style={{ overflowX: "hidden" }}>
+        <span style={styles.bg1} />
+        <div
           style={{
-            transform: x
-              .interpolate({
-                range: [0, 1, 2],
-                output: [1, 3, 3],
-              })
-              .interpolate(x => `scale(${x})`),
-            opacity: x
-              .interpolate({
-                range: [0, 1, 2],
-                output: [1, 0, 0],
-              })
-              .interpolate(x => x),
+            marginLeft: `auto`,
+            marginRight: `auto`,
+            maxWidth: rhythm(24),
+            padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
           }}
         >
-          {header}
-        </animated.header>
+          <animated.header
+            style={{
+              transform: x
+                .interpolate({
+                  range: [0, 1, 2],
+                  output: [1, 3, 3],
+                })
+                .interpolate(x => `scale(${x})`),
+              opacity: x
+                .interpolate({
+                  range: [0, 1, 2],
+                  output: [1, 0, 0],
+                })
+                .interpolate(x => x),
+            }}
+          >
+            {header}
+          </animated.header>
 
-        <MobileDrawer
-          style={{
-            zIndex: 99,
-            position: "fixed",
-            right: 0,
-            bottom: 0,
-            marginRight: 30,
-            marginBottom: 60,
-          }}
-        />
-        <main>{children}</main>
-        <footer>
-          <a href="https://github.com/thiskevinwang/coffee-code-climb">
-            Github
-          </a>{" "}
-          {process.env.NODE_ENV === "development" && (
-            <>
-              | <code>{new Date().toISOString()}</code>
-            </>
-          )}
-          <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
-          <script
-            async
-            src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${
-              process.env.GATSBY_AD_INSTANCE_ID
-            }`}
+          <MobileDrawer
+            style={{
+              zIndex: 99,
+              position: "fixed",
+              right: 0,
+              bottom: 0,
+              marginRight: 30,
+              marginBottom: 60,
+            }}
           />
-        </footer>
+          <main>{children}</main>
+          <footer>
+            <a href="https://github.com/thiskevinwang/coffee-code-climb">
+              Github
+            </a>{" "}
+            {process.env.NODE_ENV === "development" && (
+              <>
+                | <code>{new Date().toISOString()}</code>
+              </>
+            )}
+            <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
+            <script
+              async
+              src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${
+                process.env.GATSBY_AD_INSTANCE_ID
+              }`}
+            />
+          </footer>
+        </div>
       </div>
     </>
   )
