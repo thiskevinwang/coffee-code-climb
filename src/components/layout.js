@@ -42,16 +42,15 @@ export default function Layout({ location, title, children }: Props) {
 
   // Hook for updating currentY state
   // This gets passed to NavBar's `pageYOffset` props
-  const [currentY: number, setCurrentY: () => any] = useState(
-    window.pageYOffset
-  )
+  const [currentY: number, setCurrentY: () => any] = useState(0)
 
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
-    window.addEventListener("scroll", () => {
-      setCurrentY(window.pageYOffset)
-      // console.log(currentY)
-    })
+    typeof window !== "undefined" &&
+      window.addEventListener("scroll", () => {
+        setCurrentY(window.pageYOffset)
+        // console.log(currentY)
+      })
   }, [])
 
   if (location.pathname === rootPath) {
@@ -131,7 +130,11 @@ export default function Layout({ location, title, children }: Props) {
       >
         <NavBar
           location={location}
-          opacity={currentY / (window.innerHeight / 2)}
+          opacity={
+            typeof window !== "undefined"
+              ? currentY / (window.innerHeight / 2)
+              : 0
+          }
         />
 
         <animated.header
