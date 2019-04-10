@@ -10,6 +10,7 @@ export default function NavBar({ location, opacity }) {
 
   return (
     <Paper
+      className={"navbar"}
       style={{
         alignItems: "center",
         background: "white",
@@ -24,22 +25,29 @@ export default function NavBar({ location, opacity }) {
         maxWidth: rhythm(24),
         opacity: opacity,
         padding: `0 ${rhythm(3 / 4)}`,
-        position: `${(() => {
-          switch (true) {
-            case isMobile:
-              return `sticky`
-            case isSafari:
-              return `-webkit-sticky`
-            case isFirefox:
-              return `-moz-sticky`
-            default:
-              return `sticky`
-          }
-        })()}`,
+        // position: `${(() => {
+        //   switch (true) {
+        //     case isMobile:
+        //       return `sticky`
+        //     case isSafari:
+        //       return `-webkit-sticky`
+        //     case isFirefox:
+        //       return `-moz-sticky`
+        //     default:
+        //       return `sticky`
+        //   }
+        // })()}`,
         top: `${rhythm(1)}`,
         zIndex: 9999,
       }}
     >
+      <style jsx>{`
+        .navbar {
+          position: -webkit-sticky;
+          position: sticky;
+        }
+      `}</style>
+
       <small>
         <Hello page={location.pathname} date={new Date()} />
       </small>
