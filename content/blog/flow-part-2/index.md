@@ -71,7 +71,7 @@ Looking at the code, (unless you are one of the original authors of the project,
 
 Consider the following. Is `userId` a `string`? Is it a `number`? Is it an `object`. What would be inside that object?...
 
-```
+```js
 this.state = {
   userId: "",
 }
@@ -81,7 +81,7 @@ this.state = {
 
 ...and then later, it gets set like
 
-```
+```js
 //  data = {
 //    _id: 100,
 //    name: "Theodore",
@@ -94,10 +94,10 @@ this.setState({ userId: data })
 
 This is why I introduced [flow](https://flow.org/) + "type annotation" to that codebase at Dearest. It allowed me (and anyone else) to add type annotations at the top of `.js` files:
 
-```
+```flow
 type UserId = {
   _id: number,
-  name: string
+  name: string,
 }
 ```
 
