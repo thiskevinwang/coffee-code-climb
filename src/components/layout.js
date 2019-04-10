@@ -28,7 +28,55 @@ const styles = {
     transformOrigin: `top left`,
     zIndex: -10,
   },
+  dottedBackground: {
+    position: "fixed",
+    top: 0,
+    right: 0,
+    height: `100%`,
+    width: `30%`,
+    transform: `skewX(6deg)`,
+    transformOrigin: `top right`,
+  },
 }
+
+const dbgStyleTag = (
+  <style jsx>{`
+    .dotted-background {
+      padding: 2.25em 1.6875em;
+      background-image: -webkit-repeating-radial-gradient(
+        center center,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.2) 1px,
+        transparent 1px,
+        transparent 100%
+      );
+      background-image: -moz-repeating-radial-gradient(
+        center center,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.2) 1px,
+        transparent 1px,
+        transparent 100%
+      );
+      background-image: -ms-repeating-radial-gradient(
+        center center,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.2) 1px,
+        transparent 1px,
+        transparent 100%
+      );
+      background-image: repeating-radial-gradient(
+        center center,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.2) 1px,
+        transparent 1px,
+        transparent 100%
+      );
+      -webkit-background-size: 5px 5px;
+      -moz-background-size: 5px 5px;
+      background-size: 5px 5px;
+    }
+  `}</style>
+)
 
 type Props = {
   children: React$Node,
@@ -134,6 +182,10 @@ export default function Layout({ location, title, children }: Props) {
       />
       <div style={{ overflowX: "hidden" }}>
         <span style={styles.bg1} />
+        <span className={"dotted-background"} style={styles.dottedBackground}>
+          {dbgStyleTag}
+        </span>
+
         <div
           style={{
             marginLeft: `auto`,
