@@ -46,11 +46,14 @@ export default function Layout({ location, title, children }: Props) {
 
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
+    const handleScroll = () => {
+      setCurrentY(window.pageYOffset)
+    }
     typeof window !== "undefined" &&
-      window.addEventListener("scroll", () => {
-        setCurrentY(window.pageYOffset)
-        // console.log(currentY)
-      })
+      window.addEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
   }, [])
 
   if (location.pathname === rootPath) {
