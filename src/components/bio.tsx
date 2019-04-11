@@ -11,11 +11,25 @@ import Image from "gatsby-image"
 
 import { rhythm } from "@src/utils/typography"
 
+interface Data {
+  avatar: {
+    childImageSharp: any
+  }
+  site: {
+    siteMetadata: {
+      author: string
+      social: {
+        twitter: string
+      }
+    }
+  }
+}
+
 function Bio() {
   return (
     <StaticQuery
       query={bioQuery}
-      render={data => {
+      render={(data: Data) => {
         const { author, social } = data.site.siteMetadata
         return (
           <div
