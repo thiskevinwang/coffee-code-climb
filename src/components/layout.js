@@ -1,11 +1,10 @@
-// @flow
-
 import React, { useState, useEffect } from "react"
 import { useSpring, animated } from "react-spring"
 import { Link } from "gatsby"
 // import MobileDrawer from "./MobileDrawer"
 // import NavBar from "./NavBar"
 import { MobileDrawer, NavBar } from "./LayoutComponents"
+import { Paper } from "@material-ui/core"
 
 import { rhythm, scale } from "@src/utils/typography"
 // import { isMobile } from "react-device-detect"
@@ -36,6 +35,18 @@ const styles = {
     width: `30%`,
     transform: `skewX(6deg)`,
     transformOrigin: `top right`,
+  },
+  draggableGlass: {
+    width: 200,
+    height: 200,
+    // glass-like
+    background: `linear-gradient(150deg, rgba(255,255,255,0.9) 15%, rgba(255,255,255,0.2) 35%, rgba(255,255,255,0.5) 55%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0.8) 94%)`,
+    zIndex: 9999,
+    position: "absolute",
+    borderTop: `3px solid ${LIGHT}`,
+    borderLeft: `3px solid ${LIGHTER}`,
+    borderRight: `3px solid ${DARKER}`,
+    borderBottom: `3px solid ${DARK}`,
   },
 }
 
@@ -167,8 +178,61 @@ export default function Layout({ location, title, children }: Props) {
   //   // },
   // })
 
+  const [d, setD] = useState({ x: 100, y: 100 })
+  const [drag, toggleDrag] = useState(false)
   return (
     <>
+      <Paper
+        className={`draggable-glass`}
+        style={{ ...styles.draggableGlass, left: d.x, top: d.y }}
+        onMouseDown={() => {
+          toggleDrag(true)
+        }}
+        onTouchStart={e => {
+          toggleDrag(true)
+        }}
+        onMouseUp={() => {
+          toggleDrag(false)
+        }}
+        onTouchEnd={() => {
+          toggleDrag(false)
+        }}
+        onMouseLeave={() => {
+          toggleDrag(false)
+        }}
+        onMouseMove={e => {
+          e.preventDefault()
+          // clientXY for relative-to-screen
+          //  ex. with position: fixed
+          // pageXY for relative-to-element
+          //  ex. with position: absolute
+
+          // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
+          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
+          // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
+        }}
+        onTouchMove={e => {
+          let { pageX, pageY } = e.changedTouches[0]
+          e.preventDefault()
+          // e.stopPropagation()
+          // console.log(pageX, pageY)
+          // clientXY for relative-to-screen
+          //  ex. with position: fixed
+          // pageXY for relative-to-element
+          //  ex. with position: absolute
+
+          // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
+          drag && setD({ x: pageX - 100, y: pageY - 100 })
+          // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
+        }}
+      >
+        <style jsx>{`
+          .draggable-glass {
+            touch-action: none;
+          }
+        `}</style>
+      </Paper>
+
       <NavBar
         location={location}
         // TODO: refactor logic to cap opacity at 1
