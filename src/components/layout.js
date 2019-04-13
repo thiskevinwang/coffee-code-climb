@@ -262,7 +262,14 @@ export default function Layout({ location, title, children }: Props) {
             : 0
         }
       />
-      <div style={{ overflowX: "hidden" }}>
+      <div
+        style={{ overflowX: "hidden" }}
+        // add listener for when mouse moves too fast and leaves the `.draggable-glass`
+        onMouseMove={e => {
+          e.preventDefault()
+          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
+        }}
+      >
         <span style={styles.bg1} />
         <span className={"dotted-background"} style={styles.dottedBackground}>
           {dbgStyleTag}
