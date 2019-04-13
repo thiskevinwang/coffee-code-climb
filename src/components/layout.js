@@ -180,15 +180,33 @@ export default function Layout({ location, title, children }: Props) {
 
   const [d, setD] = useState({ x: 100, y: 100 })
   const [drag, toggleDrag] = useState(false)
+
+  const { dX, dY } = useSpring({
+    from: { dX: 100, dY: 100 },
+    dX: typeof window !== "undefined" ? d.x : 100,
+    dY: typeof window !== "undefined" ? d.y : 100,
+    config: { mass: 1, tension: 250, friction: 10 },
+  })
+
+  // Wrap <Paper> in `animated` to work with `useSpring`
+  const AnimatedPaper = animated(Paper)
+
   return (
     <>
-      <Paper
+      <AnimatedPaper
         className={`draggable-glass`}
-        style={{ ...styles.draggableGlass, left: d.x, top: d.y }}
-        onMouseDown={() => {
+        style={{
+          ...styles.draggableGlass,
+          left: dX,
+          top: dY,
+          borderRadius: 100,
+        }}
+        onMouseDown={e => {
+          e.preventDefault()
           toggleDrag(true)
         }}
         onTouchStart={e => {
+          e.preventDefault()
           toggleDrag(true)
         }}
         onMouseUp={() => {
@@ -213,7 +231,7 @@ export default function Layout({ location, title, children }: Props) {
         }}
         onTouchMove={e => {
           let { pageX, pageY } = e.changedTouches[0]
-          e.preventDefault()
+          // e.preventDefault()
           // e.stopPropagation()
           // console.log(pageX, pageY)
           // clientXY for relative-to-screen
@@ -231,7 +249,7 @@ export default function Layout({ location, title, children }: Props) {
             touch-action: none;
           }
         `}</style>
-      </Paper>
+      </AnimatedPaper>
 
       <NavBar
         location={location}
@@ -244,7 +262,14 @@ export default function Layout({ location, title, children }: Props) {
             : 0
         }
       />
-      <div style={{ overflowX: "hidden" }}>
+      <div
+        style={{ overflowX: "hidden" }}
+        // add listener for when mouse moves too fast and leaves the `.draggable-glass`
+        onMouseMove={e => {
+          e.preventDefault()
+          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
+        }}
+      >
         <span style={styles.bg1} />
         <span className={"dotted-background"} style={styles.dottedBackground}>
           {dbgStyleTag}
