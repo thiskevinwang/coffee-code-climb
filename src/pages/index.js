@@ -62,7 +62,7 @@ function Post({
 
   const disqusShortname = "coffeecodeclimb"
   const disqusConfig = {
-    url: origin + linkTo,
+    url: "https://coffeecodeclimb.com" + linkTo,
     identifier: id,
     title: title,
   }

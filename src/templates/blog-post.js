@@ -15,7 +15,7 @@ export default function BlogPostTemplate(props) {
 
   const disqusShortname = "coffeecodeclimb"
   const disqusConfig = {
-    url: props.location.href,
+    url: "https://coffeecodeclimb.com" + props.location.pathname,
     identifier: post.id,
     title: post.frontmatter.title,
   }
