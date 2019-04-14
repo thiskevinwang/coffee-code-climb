@@ -1,5 +1,6 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import { CommentCount } from "disqus-react"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -45,9 +46,26 @@ type Props = {
   tags: Array<string>,
 }
 
-function Post({ key, linkTo, date, title, description, excerpt, tags }: Props) {
+function Post({
+  key,
+  linkTo,
+  date,
+  title,
+  description,
+  excerpt,
+  tags,
+  origin,
+  id,
+}: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
+
+  const disqusShortname = "coffeecodeclimb"
+  const disqusConfig = {
+    url: origin + linkTo,
+    identifier: id,
+    title: title,
+  }
 
   return (
     <>
@@ -62,7 +80,14 @@ function Post({ key, linkTo, date, title, description, excerpt, tags }: Props) {
           {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}
         </Link>
       </h3>
-      <small>{date}</small>
+      <small>{date}</small>{" "}
+      <code>
+        <small>
+          <CommentCount shortname={disqusShortname} config={disqusConfig}>
+            Comments
+          </CommentCount>
+        </small>
+      </code>
       <p
         dangerouslySetInnerHTML={{
           __html: description || excerpt,
@@ -93,6 +118,8 @@ class BlogIndex extends React.Component {
               description={node.frontmatter.description}
               excerpt={node.excerpt}
               tags={node.frontmatter.tags}
+              origin={this.props.location.origin}
+              id={node.id}
             />
           )
         })}
@@ -123,6 +150,7 @@ export const pageQuery = graphql`
             description
             tags
           }
+          id
         }
       }
     }

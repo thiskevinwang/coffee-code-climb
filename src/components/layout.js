@@ -35,6 +35,7 @@ const styles = {
     width: `30%`,
     transform: `skewX(6deg)`,
     transformOrigin: `top right`,
+    zIndex: -9,
   },
   draggableGlass: {
     width: 200,

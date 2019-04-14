@@ -6,11 +6,19 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
+import { DiscussionEmbed } from "disqus-react"
 
 export default function BlogPostTemplate(props) {
   const post = props.data.markdownRemark
   const siteTitle = props.data.site.siteMetadata.title
   const { previous, next } = props.pageContext
+
+  const disqusShortname = "coffeecodeclimb"
+  const disqusConfig = {
+    url: props.location.href,
+    identifier: post.id,
+    title: post.frontmatter.title,
+  }
 
   return (
     <Layout location={props.location} title={siteTitle}>
@@ -75,6 +83,10 @@ export default function BlogPostTemplate(props) {
           )}
         </li>
       </ul>
+
+      <div className="disqus">
+        <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
+      </div>
     </Layout>
   )
 }
