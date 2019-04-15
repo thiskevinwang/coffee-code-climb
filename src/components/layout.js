@@ -299,7 +299,7 @@ export default function Layout({ location, title, children }: Props) {
             </a>{" "}
             {process.env.NODE_ENV === "development" && (
               <>
-                | <code>{new Date().toISOString()}</code>
+                | <code>{new Date(Date.now() - 1.44e7).toISOString()}</code>
               </>
             )}
             <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
