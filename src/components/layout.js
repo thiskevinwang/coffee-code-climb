@@ -7,7 +7,7 @@ import { MobileDrawer, NavBar } from "./LayoutComponents"
 import { Paper } from "@material-ui/core"
 
 import { rhythm, scale } from "@src/utils/typography"
-// import { isMobile } from "react-device-detect"
+import { isMobile } from "react-device-detect"
 
 const DARK = "#DCC2FF"
 const DARKER = "#B9B0E8"
@@ -194,63 +194,44 @@ export default function Layout({ location, title, children }: Props) {
 
   return (
     <>
-      <AnimatedPaper
-        className={`draggable-glass`}
-        style={{
-          ...styles.draggableGlass,
-          left: dX,
-          top: dY,
-          borderRadius: 100,
-        }}
-        onMouseDown={e => {
-          e.preventDefault()
-          toggleDrag(true)
-        }}
-        onTouchStart={e => {
-          e.preventDefault()
-          toggleDrag(true)
-        }}
-        onMouseUp={() => {
-          toggleDrag(false)
-        }}
-        onTouchEnd={() => {
-          toggleDrag(false)
-        }}
-        onMouseLeave={() => {
-          toggleDrag(false)
-        }}
-        onMouseMove={e => {
-          e.preventDefault()
-          // clientXY for relative-to-screen
-          //  ex. with position: fixed
-          // pageXY for relative-to-element
-          //  ex. with position: absolute
+      {!isMobile && (
+        <AnimatedPaper
+          className={`draggable-glass`}
+          style={{
+            ...styles.draggableGlass,
+            left: dX,
+            top: dY,
+            borderRadius: 100,
+          }}
+          onMouseDown={e => {
+            e.preventDefault()
+            toggleDrag(true)
+          }}
+          onMouseUp={() => {
+            toggleDrag(false)
+          }}
+          onMouseLeave={() => {
+            toggleDrag(false)
+          }}
+          onMouseMove={e => {
+            e.preventDefault()
+            // clientXY for relative-to-screen
+            //  ex. with position: fixed
+            // pageXY for relative-to-element
+            //  ex. with position: absolute
 
-          // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
-          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
-          // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
-        }}
-        onTouchMove={e => {
-          let { pageX, pageY } = e.changedTouches[0]
-          // e.preventDefault()
-          // e.stopPropagation()
-          // console.log(pageX, pageY)
-          // clientXY for relative-to-screen
-          //  ex. with position: fixed
-          // pageXY for relative-to-element
-          //  ex. with position: absolute
-
-          // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
-          drag && setD({ x: pageX - 100, y: pageY - 100 })
-          // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
-        }}
-      >
-        <style jsx>{`
-          .draggable-glass {
-            touch-action: none;
-          }
-        `}</style>
-      </AnimatedPaper>
+            // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
+            drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
+            // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
+          }}
+        >
+          <style jsx>{`
+            .draggable-glass {
+              touch-action: none;
+            }
+          `}</style>
+        </AnimatedPaper>
+      )}
 
       <NavBar
         location={location}
