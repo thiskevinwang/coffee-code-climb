@@ -214,7 +214,6 @@ export default function Layout({ location, title, children }: Props) {
             toggleDrag(false)
           }}
           onMouseMove={e => {
-            e.preventDefault()
             // clientXY for relative-to-screen
             //  ex. with position: fixed
             // pageXY for relative-to-element
@@ -248,7 +247,6 @@ export default function Layout({ location, title, children }: Props) {
         style={{ overflowX: "hidden" }}
         // add listener for when mouse moves too fast and leaves the `.draggable-glass`
         onMouseMove={e => {
-          e.preventDefault()
           drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
         }}
       >
