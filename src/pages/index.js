@@ -1,5 +1,6 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
 
 import Bio from "../components/bio"
@@ -56,6 +57,7 @@ function Post({
   tags,
   origin,
   id,
+  image,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
@@ -69,6 +71,18 @@ function Post({
 
   return (
     <>
+      {image && (
+        <Image
+          fixed={image.childImageSharp.fixed}
+          alt={"foobar"}
+          style={{
+            marginRight: rhythm(1 / 2),
+            marginBottom: 0,
+            minWidth: 50,
+          }}
+          imgStyle={{}}
+        />
+      )}
       <h3
         style={{
           marginBottom: rhythm(1 / 4),
@@ -120,6 +134,7 @@ class BlogIndex extends React.Component {
               tags={node.frontmatter.tags}
               origin={this.props.location.origin}
               id={node.id}
+              image={node.frontmatter.image}
             />
           )
         })}
@@ -149,6 +164,13 @@ export const pageQuery = graphql`
             title
             description
             tags
+            image {
+              childImageSharp {
+                fixed(width: 500, height: 200) {
+                  ...GatsbyImageSharpFixed
+                }
+              }
+            }
           }
           id
         }
