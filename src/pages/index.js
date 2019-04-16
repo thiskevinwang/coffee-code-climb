@@ -73,8 +73,8 @@ function Post({
     <>
       {image && (
         <Image
-          fixed={image.childImageSharp.fixed}
-          alt={"foobar"}
+          fluid={image.childImageSharp.fluid}
+          alt={linkTo}
           style={{
             marginRight: rhythm(1 / 2),
             marginBottom: 0,
@@ -166,8 +166,8 @@ export const pageQuery = graphql`
             tags
             image {
               childImageSharp {
-                fixed(width: 500, height: 200) {
-                  ...GatsbyImageSharpFixed
+                fluid(maxWidth: 500, maxHeight: 200) {
+                  ...GatsbyImageSharpFluid
                 }
               }
             }
