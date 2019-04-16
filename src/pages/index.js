@@ -2,6 +2,7 @@ import React from "react"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
+import { Grid } from "@material-ui/core"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -58,6 +59,7 @@ function Post({
   origin,
   id,
   image,
+  index,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
@@ -70,7 +72,13 @@ function Post({
   }
 
   return (
-    <>
+    <Grid
+      item
+      lg={index === 0 ? 12 : 3}
+      md={index === 0 ? 12 : 4}
+      sm={index === 0 ? 12 : 6}
+      xs={12}
+    >
       {image && (
         <Image
           fluid={image.childImageSharp.fluid}
@@ -107,7 +115,7 @@ function Post({
           __html: description || excerpt,
         }}
       />
-    </>
+    </Grid>
   )
 }
 
@@ -121,23 +129,26 @@ class BlogIndex extends React.Component {
       <Layout location={this.props.location} title={siteTitle}>
         <SEO title="All posts" keywords={KEYWORDS} />
         <Bio />
-        {posts.map(({ node }) => {
-          const title = node.frontmatter.title || node.fields.slug
-          return (
-            <Post
-              key={node.fields.slug}
-              linkTo={node.fields.slug}
-              date={node.frontmatter.date}
-              title={title}
-              description={node.frontmatter.description}
-              excerpt={node.excerpt}
-              tags={node.frontmatter.tags}
-              origin={this.props.location.origin}
-              id={node.id}
-              image={node.frontmatter.image}
-            />
-          )
-        })}
+        <Grid container direction="row" spacing={24}>
+          {posts.map(({ node }, index) => {
+            const title = node.frontmatter.title || node.fields.slug
+            return (
+              <Post
+                key={node.fields.slug}
+                linkTo={node.fields.slug}
+                date={node.frontmatter.date}
+                title={title}
+                description={node.frontmatter.description}
+                excerpt={node.excerpt}
+                tags={node.frontmatter.tags}
+                origin={this.props.location.origin}
+                id={node.id}
+                image={node.frontmatter.image}
+                index={index}
+              />
+            )
+          })}
+        </Grid>
       </Layout>
     )
   }
