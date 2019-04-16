@@ -21,7 +21,8 @@ const styles = {
     left: 0,
     height: `50%`,
     width: `100%`,
-    background: `linear-gradient(150deg, ${DARK} 15%, ${DARKER} 35%, ${MID} 55%, ${LIGHTER} 70%, ${LIGHT} 94%)`,
+    // Removing this line fixes a UI issue when hard-refreshing on Chrome
+    // background: `linear-gradient(150deg, ${DARK} 15%, ${DARKER} 35%, ${MID} 55%, ${LIGHTER} 70%, ${LIGHT} 94%)`,
     opacity: 0.7,
     transform: `skewY(-6deg)`,
     transformOrigin: `top left`,
@@ -294,7 +295,7 @@ export default function Layout({ location, title, children }: Props) {
               .interpolate(n => `${n}px ${n}px`),
           }}
         >
-          {dbgStyleTag}a
+          {dbgStyleTag}
         </animated.span>
 
         <div
