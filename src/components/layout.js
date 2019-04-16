@@ -90,11 +90,11 @@ const dbgStyleTag = (
   `}</style>
 )
 
-type Props = {
-  children: React$Node,
-  location: Location,
-  title: string,
-}
+/** http://usejsdoc.org/tags-param.html
+ * @param {string} props.title data.site.siteMetadata.title from graphql-pageQuery
+ * @param {Location} props.location Parent.props.location
+ * @param {React$Node} props.children mapped posts, or markdown
+ */
 
 export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
@@ -104,10 +104,18 @@ export default function Layout({ location, title, children }: Props) {
   // This gets passed to NavBar's `pageYOffset` props
   const [currentY: number, setCurrentY: () => any] = useState(0)
 
+  // Hook for scrollPercent of the document
+  // between 0...1
+  const [scrollPercent: number, setScrollPercent: () => any] = useState(0)
+
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
     const handleScroll = () => {
       setCurrentY(window.pageYOffset)
+      setScrollPercent(
+        window.pageYOffset /
+          (document.documentElement.scrollHeight - window.innerHeight)
+      )
     }
     typeof window !== "undefined" &&
       window.addEventListener("scroll", handleScroll)
@@ -160,10 +168,18 @@ export default function Layout({ location, title, children }: Props) {
   }
 
   // Spring animation
+  // passed to animated.header style prop
   const { x } = useSpring({
     from: { x: 1 },
     x: typeof window !== "undefined" ? currentY / (window.innerHeight / 4) : 0,
   })
+
+  // passed to animated.span (background) style prop
+  const { _scrollPercent } = useSpring({
+    from: { _scrollPercent: 1 },
+    _scrollPercent: scrollPercent,
+  })
+
   // const props = useSpring({
   //   from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
   //   to: {
@@ -249,10 +265,37 @@ export default function Layout({ location, title, children }: Props) {
           drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
         }}
       >
-        <span style={styles.bg1} />
-        <span className={"dotted-background"} style={styles.dottedBackground}>
-          {dbgStyleTag}
-        </span>
+        {/* Gradient Background */}
+        <animated.span
+          style={{
+            ...styles.bg1,
+            background: _scrollPercent.interpolate({
+              range: [0, 0.25, 0.5, 0.75, 1],
+              output: [
+                `linear-gradient(150deg, ${DARK} 15%, ${DARKER} 35%, ${MID} 55%, ${LIGHTER} 70%, ${LIGHT}`,
+                `linear-gradient(150deg, ${LIGHT} 15%, ${DARK} 35%, ${DARKER} 55%, ${MID} 70%, ${LIGHTER}`,
+                `linear-gradient(150deg, ${LIGHTER} 15%, ${LIGHT} 35%, ${DARK} 55%, ${DARKER} 70%, ${MID}`,
+                `linear-gradient(150deg, ${MID} 15%, ${LIGHTER} 35%, ${LIGHT} 55%, ${DARK} 70%, ${DARKER}`,
+                `linear-gradient(150deg, ${DARKER} 15%, ${MID} 35%, ${LIGHTER} 55%, ${LIGHT} 70%, ${DARK}`,
+              ],
+            }),
+          }}
+        />
+        {/* Dotted Background */}
+        <animated.span
+          className={"dotted-background"}
+          style={{
+            ...styles.dottedBackground,
+            backgroundSize: _scrollPercent
+              .interpolate({
+                range: [0, 1],
+                output: [5, 25],
+              })
+              .interpolate(n => `${n}px ${n}px`),
+          }}
+        >
+          {dbgStyleTag}a
+        </animated.span>
 
         <div
           style={{
