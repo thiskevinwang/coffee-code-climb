@@ -265,6 +265,7 @@ export default function Layout({ location, title, children }: Props) {
           drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
         }}
       >
+        {/* Gradient Background */}
         <animated.span
           style={{
             ...styles.bg1,
@@ -280,9 +281,21 @@ export default function Layout({ location, title, children }: Props) {
             }),
           }}
         />
-        <span className={"dotted-background"} style={styles.dottedBackground}>
-          {dbgStyleTag}
-        </span>
+        {/* Dotted Background */}
+        <animated.span
+          className={"dotted-background"}
+          style={{
+            ...styles.dottedBackground,
+            backgroundSize: _scrollPercent
+              .interpolate({
+                range: [0, 1],
+                output: [5, 25],
+              })
+              .interpolate(n => `${n}px ${n}px`),
+          }}
+        >
+          {dbgStyleTag}a
+        </animated.span>
 
         <div
           style={{
