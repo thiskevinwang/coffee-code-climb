@@ -3,6 +3,7 @@ title: So Much To Do, So Little Time
 date: "2019-04-08T03:55:00.031Z"
 description: "I want to learn everything... but I can't"
 tags: [code, react, gatsby, redux, contentful, computer science, learning]
+image: book.jpg
 ---
 
 I'm going to kick off this late night post with a good ol' list of things I've been wanting to learn & tackle... just to remind myself

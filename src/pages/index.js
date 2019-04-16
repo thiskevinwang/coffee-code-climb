@@ -1,6 +1,8 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
+import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
+import { Grid } from "@material-ui/core"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -56,6 +58,8 @@ function Post({
   tags,
   origin,
   id,
+  image,
+  index,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
@@ -68,19 +72,45 @@ function Post({
   }
 
   return (
-    <>
+    <Grid
+      item
+      lg={index === 0 ? 12 : 3}
+      md={index === 0 ? 12 : 4}
+      sm={index === 0 ? 12 : 6}
+      xs={12}
+    >
+      <Link style={{ boxShadow: `none` }} to={linkTo}>
+        {image && (
+          <Image
+            fluid={image.childImageSharp.fluid}
+            alt={linkTo}
+            style={{}}
+            imgStyle={{}}
+          />
+        )}
+      </Link>
       <h3
         style={{
+          marginTop: rhythm(1 / 2),
           marginBottom: rhythm(1 / 4),
         }}
       >
         <Link style={{ boxShadow: `none` }} to={linkTo}>
-          {title} {includes(kebabTags, "coffee") && "☕️"}
-          {includes(kebabTags, "code") && "💻"}
-          {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}
+          {title}
         </Link>
       </h3>
-      <small>{date}</small>{" "}
+      <small>{date}</small>
+      <br />
+      <small
+        style={{ color: "#425A70" }}
+        dangerouslySetInnerHTML={{
+          __html: description || excerpt,
+        }}
+      />
+      <br />
+      {includes(kebabTags, "coffee") && "☕️"}
+      {includes(kebabTags, "code") && "💻"}
+      {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}{" "}
       <code>
         <small>
           <CommentCount shortname={disqusShortname} config={disqusConfig}>
@@ -88,12 +118,7 @@ function Post({
           </CommentCount>
         </small>
       </code>
-      <p
-        dangerouslySetInnerHTML={{
-          __html: description || excerpt,
-        }}
-      />
-    </>
+    </Grid>
   )
 }
 
@@ -107,22 +132,26 @@ class BlogIndex extends React.Component {
       <Layout location={this.props.location} title={siteTitle}>
         <SEO title="All posts" keywords={KEYWORDS} />
         <Bio />
-        {posts.map(({ node }) => {
-          const title = node.frontmatter.title || node.fields.slug
-          return (
-            <Post
-              key={node.fields.slug}
-              linkTo={node.fields.slug}
-              date={node.frontmatter.date}
-              title={title}
-              description={node.frontmatter.description}
-              excerpt={node.excerpt}
-              tags={node.frontmatter.tags}
-              origin={this.props.location.origin}
-              id={node.id}
-            />
-          )
-        })}
+        <Grid container direction="row" spacing={24}>
+          {posts.map(({ node }, index) => {
+            const title = node.frontmatter.title || node.fields.slug
+            return (
+              <Post
+                key={node.fields.slug}
+                linkTo={node.fields.slug}
+                date={node.frontmatter.date}
+                title={title}
+                description={node.frontmatter.description}
+                excerpt={node.excerpt}
+                tags={node.frontmatter.tags}
+                origin={this.props.location.origin}
+                id={node.id}
+                image={node.frontmatter.image}
+                index={index}
+              />
+            )
+          })}
+        </Grid>
       </Layout>
     )
   }
@@ -149,6 +178,13 @@ export const pageQuery = graphql`
             title
             description
             tags
+            image {
+              childImageSharp {
+                fluid(maxWidth: 2000, maxHeight: 1000) {
+                  ...GatsbyImageSharpFluid
+                }
+              }
+            }
           }
           id
         }

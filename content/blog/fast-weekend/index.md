@@ -16,6 +16,7 @@ tags:
     code,
     auth0,
   ]
+image: ./IMG_2826.JPG
 ---
 
 ## I barely remember what happened...

@@ -3,6 +3,7 @@ title: What are you drinking?
 date: "2019-03-20T02:01:36Z"
 description: 'Verve Coffee Roasters: "The 1950"'
 tags: ["coffee", "verve", "chinatown"]
+image: verveCopy.jpg
 ---
 
 After finishing off the day at my internship [Dearest.io](https://dearest.io), I walked from the West Village over to meet my girlfriend, Connie, in Chinatown where she was getting some old film from disposable cameras developed.

@@ -302,7 +302,7 @@ export default function Layout({ location, title, children }: Props) {
           style={{
             marginLeft: `auto`,
             marginRight: `auto`,
-            maxWidth: rhythm(24),
+            maxWidth: rhythm(location.pathname === rootPath ? 48 : 24),
             padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
           }}
         >
