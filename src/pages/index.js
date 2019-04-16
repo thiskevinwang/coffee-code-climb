@@ -79,30 +79,38 @@ function Post({
       sm={index === 0 ? 12 : 6}
       xs={12}
     >
-      {image && (
-        <Image
-          fluid={image.childImageSharp.fluid}
-          alt={linkTo}
-          style={{
-            marginRight: rhythm(1 / 2),
-            marginBottom: 0,
-            minWidth: 50,
-          }}
-          imgStyle={{}}
-        />
-      )}
+      <Link style={{ boxShadow: `none` }} to={linkTo}>
+        {image && (
+          <Image
+            fluid={image.childImageSharp.fluid}
+            alt={linkTo}
+            style={{}}
+            imgStyle={{}}
+          />
+        )}
+      </Link>
       <h3
         style={{
+          marginTop: rhythm(1 / 2),
           marginBottom: rhythm(1 / 4),
         }}
       >
         <Link style={{ boxShadow: `none` }} to={linkTo}>
-          {title} {includes(kebabTags, "coffee") && "☕️"}
-          {includes(kebabTags, "code") && "💻"}
-          {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}
+          {title}
         </Link>
       </h3>
-      <small>{date}</small>{" "}
+      <small>{date}</small>
+      <br />
+      <small
+        style={{ color: "#425A70" }}
+        dangerouslySetInnerHTML={{
+          __html: description || excerpt,
+        }}
+      />
+      <br />
+      {includes(kebabTags, "coffee") && "☕️"}
+      {includes(kebabTags, "code") && "💻"}
+      {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}{" "}
       <code>
         <small>
           <CommentCount shortname={disqusShortname} config={disqusConfig}>
@@ -110,11 +118,6 @@ function Post({
           </CommentCount>
         </small>
       </code>
-      <p
-        dangerouslySetInnerHTML={{
-          __html: description || excerpt,
-        }}
-      />
     </Grid>
   )
 }
@@ -177,7 +180,7 @@ export const pageQuery = graphql`
             tags
             image {
               childImageSharp {
-                fluid(maxWidth: 500, maxHeight: 200) {
+                fluid(maxWidth: 2000, maxHeight: 1000) {
                   ...GatsbyImageSharpFluid
                 }
               }
