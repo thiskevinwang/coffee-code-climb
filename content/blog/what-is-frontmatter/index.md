@@ -14,6 +14,7 @@ tags:
     javascript,
     airbnb,
   ]
+image: null
 ---
 
 It's 9:00am, and I'm listening to [Justin Brown's NYEUSI](https://www.youtube.com/watch?v=dXkSle0-OSI), while writing this blogpost in Atom, and googling around for what exactly `frontmatter` is.

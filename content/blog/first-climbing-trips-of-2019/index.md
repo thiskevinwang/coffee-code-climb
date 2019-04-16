@@ -3,6 +3,7 @@ title: "First Climbing Trips of 2019"
 date: "2019-04-14T22:08:41.217Z"
 description: Getting back into the swing of things
 tags: [climbing, bouldering, youtube, videos, sony, a6500, the gunks]
+image: ./connie-bb.png
 ---
 
 ## Saturday, April 6
