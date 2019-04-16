@@ -2,7 +2,7 @@ import React from "react"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
-import { Grid } from "@material-ui/core"
+import { Grid, Card, Divider } from "@material-ui/core"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -60,6 +60,7 @@ function Post({
   id,
   image,
   index,
+  innerWidth,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
@@ -71,24 +72,8 @@ function Post({
     title: title,
   }
 
-  return (
-    <Grid
-      item
-      lg={index === 0 ? 12 : 3}
-      md={index === 0 ? 12 : 4}
-      sm={index === 0 ? 12 : 6}
-      xs={12}
-    >
-      <Link style={{ boxShadow: `none` }} to={linkTo}>
-        {image && (
-          <Image
-            fluid={image.childImageSharp.fluid}
-            alt={linkTo}
-            style={{}}
-            imgStyle={{}}
-          />
-        )}
-      </Link>
+  const PostDetails = (
+    <>
       <h3
         style={{
           marginTop: rhythm(1 / 2),
@@ -118,11 +103,71 @@ function Post({
           </CommentCount>
         </small>
       </code>
+    </>
+  )
+
+  const PostDetailsTop = (
+    <div
+      className={"post-details__card"}
+      style={{
+        background: innerWidth >= 600 ? "white" : `none`,
+        paddingTop: rhythm(1 / 2),
+        paddingBottom: rhythm(1),
+        paddingLeft: rhythm(1),
+        maxWidth: rhythm(18),
+        transform:
+          innerWidth >= 600 ? `translate(${rhythm(1)}, -${rhythm(2)})` : `none`,
+      }}
+    >
+      {PostDetails}
+      <style jsx>{`
+        .post-details__card {
+          transition: box-shadow 100ms ease-in-out, transform 322ms ease-in-out,
+            background 322ms ease-in-out;
+        }
+      `}</style>
+    </div>
+  )
+
+  return (
+    <Grid
+      item
+      lg={index === 0 ? 12 : 3}
+      md={index === 0 ? 12 : 4}
+      sm={index === 0 ? 12 : 6}
+      xs={12}
+    >
+      <Link style={{ boxShadow: `none` }} to={linkTo}>
+        {image && (
+          <Image
+            fluid={image.childImageSharp.fluid}
+            alt={linkTo}
+            style={{}}
+            imgStyle={{}}
+          />
+        )}
+      </Link>
+      {index === 0 ? PostDetailsTop : PostDetails}
+      {index === 0 && <Divider />}
     </Grid>
   )
 }
 
 class BlogIndex extends React.Component {
+  state = {
+    innerWidth: 0,
+  }
+  handleResize = () => {
+    this.setState({
+      innerWidth: window.innerWidth,
+    })
+  }
+  componentDidMount() {
+    this.setState({
+      innerWidth: window.innerWidth,
+    })
+    window.addEventListener("resize", this.handleResize)
+  }
   render() {
     const { data } = this.props
     const siteTitle = data.site.siteMetadata.title
@@ -148,6 +193,7 @@ class BlogIndex extends React.Component {
                 id={node.id}
                 image={node.frontmatter.image}
                 index={index}
+                innerWidth={this.state.innerWidth}
               />
             )
           })}

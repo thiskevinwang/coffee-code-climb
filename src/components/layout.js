@@ -104,7 +104,6 @@ export default function Layout({ location, title, children }: Props) {
   // Hook for updating currentY state
   // This gets passed to NavBar's `pageYOffset` props
   const [currentY: number, setCurrentY: () => any] = useState(0)
-
   // Hook for scrollPercent of the document
   // between 0...1
   const [scrollPercent: number, setScrollPercent: () => any] = useState(0)
@@ -196,13 +195,13 @@ export default function Layout({ location, title, children }: Props) {
   //   // },
   // })
 
-  const [d, setD] = useState({ x: 100, y: 100 })
+  const [d, setD] = useState({ x: -75, y: -75 })
   const [drag, toggleDrag] = useState(false)
 
   const { dX, dY } = useSpring({
-    from: { dX: 100, dY: 100 },
-    dX: typeof window !== "undefined" ? d.x : 100,
-    dY: typeof window !== "undefined" ? d.y : 100,
+    from: { dX: -100, dY: -100 },
+    dX: typeof window !== "undefined" ? d.x : -75,
+    dY: typeof window !== "undefined" ? d.y : -75,
     config: { mass: 1, tension: 250, friction: 10 },
   })
 
@@ -248,7 +247,7 @@ export default function Layout({ location, title, children }: Props) {
         `}</style>
       </AnimatedPaper>
 
-      <NavBar
+      {/* <NavBar
         location={location}
         // TODO: refactor logic to cap opacity at 1
         opacity={
@@ -258,7 +257,7 @@ export default function Layout({ location, title, children }: Props) {
               : currentY / (window.innerHeight / 2)
             : 0
         }
-      />
+      /> */}
       <div
         style={{ overflowX: "hidden" }}
         // add listener for when mouse moves too fast and leaves the `.draggable-glass`
