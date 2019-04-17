@@ -84,6 +84,7 @@ export default function BlogPostTemplate(props) {
         </li>
       </ul>
 
+      <h2>Discussion</h2>
       <div className="disqus">
         <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
       </div>
