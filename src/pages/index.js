@@ -2,7 +2,7 @@ import React from "react"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
-import { Grid, Card, Divider } from "@material-ui/core"
+import { Grid, Card, Divider, Tooltip } from "@material-ui/core"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -93,14 +93,40 @@ function Post({
         }}
       />
       <br />
-      {includes(kebabTags, "coffee") && "☕️"}
-      {includes(kebabTags, "code") && "💻"}
-      {includes(kebabTags, "climbing") && "🧗🏻‍♂️"}{" "}
+      {includes(kebabTags, "coffee") && (
+        <Tooltip title={`tagged with "coffee"`}>
+          <Link style={{ boxShadow: `none` }} to={"/tags/coffee/"}>
+            <span role="img" aria-label="tagged with coffee">
+              ☕️
+            </span>
+          </Link>
+        </Tooltip>
+      )}
+      {includes(kebabTags, "code") && (
+        <Tooltip title={`tagged with "code"`}>
+          <Link style={{ boxShadow: `none` }} to={"/tags/code/"}>
+            <span role="img" aria-label="tagged with code">
+              💻
+            </span>
+          </Link>
+        </Tooltip>
+      )}
+      {includes(kebabTags, "climbing") && (
+        <Tooltip title={`tagged with "climbing"`}>
+          <Link style={{ boxShadow: `none` }} to={"/tags/climbing/"}>
+            <span role="img" aria-label="tagged with climbing">
+              🧗🏻‍♂️
+            </span>
+          </Link>
+        </Tooltip>
+      )}{" "}
       <code>
         <small>
-          <CommentCount shortname={disqusShortname} config={disqusConfig}>
-            Comments
-          </CommentCount>
+          <Link style={{ boxShadow: `none` }} to={`${linkTo}#disqus_thread`}>
+            <CommentCount shortname={disqusShortname} config={disqusConfig}>
+              Comments
+            </CommentCount>
+          </Link>
         </small>
       </code>
     </>
@@ -111,9 +137,9 @@ function Post({
       className={"post-details__card"}
       style={{
         background: innerWidth >= 600 ? "white" : `none`,
-        paddingTop: rhythm(1 / 2),
-        paddingBottom: rhythm(1),
-        paddingLeft: rhythm(1),
+        paddingTop: innerWidth >= 600 && rhythm(1 / 2),
+        paddingBottom: innerWidth >= 600 && rhythm(1),
+        paddingLeft: innerWidth >= 600 && rhythm(1),
         maxWidth: rhythm(18),
         transform:
           innerWidth >= 600 ? `translate(${rhythm(1)}, -${rhythm(2)})` : `none`,
@@ -123,7 +149,7 @@ function Post({
       <style jsx>{`
         .post-details__card {
           transition: box-shadow 100ms ease-in-out, transform 322ms ease-in-out,
-            background 322ms ease-in-out;
+            background 322ms ease-in-out, padding-left 322ms ease-in-out;
         }
       `}</style>
     </div>
@@ -148,7 +174,7 @@ function Post({
         )}
       </Link>
       {index === 0 ? PostDetailsTop : PostDetails}
-      {index === 0 && <Divider />}
+      {index === 0 && innerWidth >= 600 && <Divider />}
     </Grid>
   )
 }
