@@ -149,43 +149,42 @@ export default function Layout({ location, title, children }: Props) {
 
   return (
     <>
-      {!isMobile && (
-        <AnimatedPaper
-          className={`draggable-glass`}
-          style={{
-            ...styles.draggableGlass,
-            left: dX,
-            top: dY,
-            borderRadius: 100,
-          }}
-          onMouseDown={e => {
-            e.preventDefault()
-            toggleDrag(true)
-          }}
-          onMouseUp={() => {
-            toggleDrag(false)
-          }}
-          onMouseLeave={() => {
-            toggleDrag(false)
-          }}
-          onMouseMove={e => {
-            // clientXY for relative-to-screen
-            //  ex. with position: fixed
-            // pageXY for relative-to-element
-            //  ex. with position: absolute
+      <AnimatedPaper
+        className={`draggable-glass`}
+        style={{
+          ...styles.draggableGlass,
+          left: dX,
+          top: dY,
+          borderRadius: 100,
+          display: isMobile ? "none" : "inherit",
+        }}
+        onMouseDown={e => {
+          e.preventDefault()
+          toggleDrag(true)
+        }}
+        onMouseUp={() => {
+          toggleDrag(false)
+        }}
+        onMouseLeave={() => {
+          toggleDrag(false)
+        }}
+        onMouseMove={e => {
+          // clientXY for relative-to-screen
+          //  ex. with position: fixed
+          // pageXY for relative-to-element
+          //  ex. with position: absolute
 
-            // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
-            drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
-            // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
-          }}
-        >
-          <style jsx>{`
-            .draggable-glass {
-              touch-action: none;
-            }
-          `}</style>
-        </AnimatedPaper>
-      )}
+          // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
+          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
+          // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
+        }}
+      >
+        <style jsx>{`
+          .draggable-glass {
+            touch-action: none;
+          }
+        `}</style>
+      </AnimatedPaper>
 
       {/* <NavBar
         location={location}
