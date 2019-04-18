@@ -74,24 +74,24 @@ function Post({
 
   const PostDetails = (
     <>
-      <h3
-        style={{
-          marginTop: rhythm(1 / 2),
-          marginBottom: rhythm(1 / 4),
-        }}
-      >
-        <Link style={{ boxShadow: `none` }} to={linkTo}>
+      <Link style={{ color: `inherit`, boxShadow: `none` }} to={linkTo}>
+        <h3
+          style={{
+            marginTop: rhythm(1 / 2),
+            marginBottom: rhythm(1 / 4),
+          }}
+        >
           {title}
-        </Link>
-      </h3>
-      <small>{date}</small>
-      <br />
-      <small
-        style={{ color: "#425A70" }}
-        dangerouslySetInnerHTML={{
-          __html: description || excerpt,
-        }}
-      />
+        </h3>
+        <small>{date}</small>
+        <br />
+        <small
+          style={{ color: "#425A70" }}
+          dangerouslySetInnerHTML={{
+            __html: description || excerpt,
+          }}
+        />
+      </Link>
       <br />
       {includes(kebabTags, "coffee") && (
         <Tooltip title={`tagged with "coffee"`}>
@@ -122,7 +122,10 @@ function Post({
       )}{" "}
       <code>
         <small>
-          <Link style={{ boxShadow: `none` }} to={`${linkTo}#disqus_thread`}>
+          <Link
+            style={{ color: `inherit`, boxShadow: `none` }}
+            to={`${linkTo}#disqus_thread`}
+          >
             <CommentCount shortname={disqusShortname} config={disqusConfig}>
               Comments
             </CommentCount>
