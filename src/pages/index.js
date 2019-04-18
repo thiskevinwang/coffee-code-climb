@@ -2,7 +2,7 @@ import React from "react"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
-import { Grid, Card, Divider, Tooltip } from "@material-ui/core"
+import { Grid, Divider, Tooltip } from "@material-ui/core"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -13,6 +13,7 @@ import { rhythm } from "@src/utils/typography"
 import includes from "lodash/includes"
 import kebabCase from "lodash/kebabCase"
 import map from "lodash/map"
+import throttle from "lodash/throttle"
 
 const KEYWORDS = [
   `blog`,
@@ -186,11 +187,13 @@ class BlogIndex extends React.Component {
   state = {
     innerWidth: 0,
   }
-  handleResize = () => {
+
+  handleResize = throttle(() => {
     this.setState({
       innerWidth: window.innerWidth,
     })
-  }
+  }, 100)
+
   componentDidMount() {
     this.setState({
       innerWidth: window.innerWidth,
@@ -255,7 +258,7 @@ export const pageQuery = graphql`
             tags
             image {
               childImageSharp {
-                fluid(maxWidth: 2000, maxHeight: 1000) {
+                fluid(maxWidth: 2000, maxHeight: 800) {
                   ...GatsbyImageSharpFluid
                 }
               }

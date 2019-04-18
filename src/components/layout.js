@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated } from "react-spring"
-import { Link } from "gatsby"
-// import MobileDrawer from "./MobileDrawer"
-// import NavBar from "./NavBar"
-import { MobileDrawer, NavBar, Footer } from "./LayoutComponents"
+import { MobileDrawer, Footer, Header } from "./LayoutComponents"
 import { Paper } from "@material-ui/core"
 
-import { rhythm, scale } from "@src/utils/typography"
+import { rhythm } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
+import throttle from "lodash/throttle"
 
 const DARK = "#DCC2FF"
 const DARKER = "#B9B0E8"
@@ -99,7 +97,6 @@ const dbgStyleTag = (
 
 export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  let header: React$Node
 
   // Hook for updating currentY state
   // This gets passed to NavBar's `pageYOffset` props
@@ -110,62 +107,19 @@ export default function Layout({ location, title, children }: Props) {
 
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       setCurrentY(window.pageYOffset)
       setScrollPercent(
         window.pageYOffset /
           (document.documentElement.scrollHeight - window.innerHeight)
       )
-    }
+    }, 100)
     typeof window !== "undefined" &&
       window.addEventListener("scroll", handleScroll)
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
   }, [])
-
-  if (location.pathname === rootPath) {
-    header = (
-      <h1
-        style={{
-          ...scale(1.5),
-          marginBottom: rhythm(1.5),
-          marginTop: 0,
-        }}
-      >
-        <Link
-          style={{
-            boxShadow: `none`,
-            textDecoration: `none`,
-            color: `inherit`,
-          }}
-          to={`/`}
-        >
-          {title}
-        </Link>
-      </h1>
-    )
-  } else {
-    header = (
-      <h3
-        style={{
-          fontFamily: `Montserrat, sans-serif`,
-          marginTop: 0,
-        }}
-      >
-        <Link
-          style={{
-            boxShadow: `none`,
-            textDecoration: `none`,
-            color: `inherit`,
-          }}
-          to={`/`}
-        >
-          {title}
-        </Link>
-      </h3>
-    )
-  }
 
   // Spring animation
   // passed to animated.header style prop
@@ -179,21 +133,6 @@ export default function Layout({ location, title, children }: Props) {
     from: { _scrollPercent: 1 },
     _scrollPercent: scrollPercent,
   })
-
-  // const props = useSpring({
-  //   from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
-  //   to: {
-  //     transform: "translate3d(0px,0,0) scale(1)",
-  //     opacity: 1,
-  //   },
-  //   delay: 200,
-  //   // onRest: e => {
-  //   //   console.log("spring has finished")
-  //   // },
-  //   // onFrame: e => {
-  //   //   console.log(e)
-  //   // },
-  // })
 
   const [d, setD] = useState({ x: -75, y: -75 })
   const [drag, toggleDrag] = useState(false)
@@ -210,42 +149,43 @@ export default function Layout({ location, title, children }: Props) {
 
   return (
     <>
-      <AnimatedPaper
-        className={`draggable-glass`}
-        style={{
-          ...styles.draggableGlass,
-          left: dX,
-          top: dY,
-          borderRadius: 100,
-          display: isMobile && "none",
-        }}
-        onMouseDown={e => {
-          e.preventDefault()
-          toggleDrag(true)
-        }}
-        onMouseUp={() => {
-          toggleDrag(false)
-        }}
-        onMouseLeave={() => {
-          toggleDrag(false)
-        }}
-        onMouseMove={e => {
-          // clientXY for relative-to-screen
-          //  ex. with position: fixed
-          // pageXY for relative-to-element
-          //  ex. with position: absolute
+      {!isMobile && (
+        <AnimatedPaper
+          className={`draggable-glass`}
+          style={{
+            ...styles.draggableGlass,
+            left: dX,
+            top: dY,
+            borderRadius: 100,
+          }}
+          onMouseDown={e => {
+            e.preventDefault()
+            toggleDrag(true)
+          }}
+          onMouseUp={() => {
+            toggleDrag(false)
+          }}
+          onMouseLeave={() => {
+            toggleDrag(false)
+          }}
+          onMouseMove={e => {
+            // clientXY for relative-to-screen
+            //  ex. with position: fixed
+            // pageXY for relative-to-element
+            //  ex. with position: absolute
 
-          // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
-          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
-          // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
-        }}
-      >
-        <style jsx>{`
-          .draggable-glass {
-            touch-action: none;
-          }
-        `}</style>
-      </AnimatedPaper>
+            // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
+            drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
+            // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
+          }}
+        >
+          <style jsx>{`
+            .draggable-glass {
+              touch-action: none;
+            }
+          `}</style>
+        </AnimatedPaper>
+      )}
 
       {/* <NavBar
         location={location}
@@ -321,7 +261,7 @@ export default function Layout({ location, title, children }: Props) {
                 .interpolate(x => x),
             }}
           >
-            {header}
+            <Header location={location} title={title} />
           </animated.header>
 
           <MobileDrawer
