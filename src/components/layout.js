@@ -3,7 +3,7 @@ import { useSpring, animated } from "react-spring"
 import { Link } from "gatsby"
 // import MobileDrawer from "./MobileDrawer"
 // import NavBar from "./NavBar"
-import { MobileDrawer, NavBar, Footer } from "./LayoutComponents"
+import { MobileDrawer, NavBar, Footer, Header } from "./LayoutComponents"
 import { Paper } from "@material-ui/core"
 
 import { rhythm, scale } from "@src/utils/typography"
@@ -99,7 +99,6 @@ const dbgStyleTag = (
 
 export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  let header: React$Node
 
   // Hook for updating currentY state
   // This gets passed to NavBar's `pageYOffset` props
@@ -124,49 +123,6 @@ export default function Layout({ location, title, children }: Props) {
     }
   }, [])
 
-  if (location.pathname === rootPath) {
-    header = (
-      <h1
-        style={{
-          ...scale(1.5),
-          marginBottom: rhythm(1.5),
-          marginTop: 0,
-        }}
-      >
-        <Link
-          style={{
-            boxShadow: `none`,
-            textDecoration: `none`,
-            color: `inherit`,
-          }}
-          to={`/`}
-        >
-          {title}
-        </Link>
-      </h1>
-    )
-  } else {
-    header = (
-      <h3
-        style={{
-          fontFamily: `Montserrat, sans-serif`,
-          marginTop: 0,
-        }}
-      >
-        <Link
-          style={{
-            boxShadow: `none`,
-            textDecoration: `none`,
-            color: `inherit`,
-          }}
-          to={`/`}
-        >
-          {title}
-        </Link>
-      </h3>
-    )
-  }
-
   // Spring animation
   // passed to animated.header style prop
   const { x } = useSpring({
@@ -179,21 +135,6 @@ export default function Layout({ location, title, children }: Props) {
     from: { _scrollPercent: 1 },
     _scrollPercent: scrollPercent,
   })
-
-  // const props = useSpring({
-  //   from: { transform: "translate3d(-30px,0px,0) scale(5)", opacity: 0 },
-  //   to: {
-  //     transform: "translate3d(0px,0,0) scale(1)",
-  //     opacity: 1,
-  //   },
-  //   delay: 200,
-  //   // onRest: e => {
-  //   //   console.log("spring has finished")
-  //   // },
-  //   // onFrame: e => {
-  //   //   console.log(e)
-  //   // },
-  // })
 
   const [d, setD] = useState({ x: -75, y: -75 })
   const [drag, toggleDrag] = useState(false)
@@ -322,7 +263,7 @@ export default function Layout({ location, title, children }: Props) {
                 .interpolate(x => x),
             }}
           >
-            {header}
+            <Header location={location} title={title} />
           </animated.header>
 
           <MobileDrawer
