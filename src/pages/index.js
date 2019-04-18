@@ -13,6 +13,7 @@ import { rhythm } from "@src/utils/typography"
 import includes from "lodash/includes"
 import kebabCase from "lodash/kebabCase"
 import map from "lodash/map"
+import throttle from "lodash/throttle"
 
 const KEYWORDS = [
   `blog`,
@@ -186,11 +187,13 @@ class BlogIndex extends React.Component {
   state = {
     innerWidth: 0,
   }
-  handleResize = () => {
+
+  handleResize = throttle(() => {
     this.setState({
       innerWidth: window.innerWidth,
     })
-  }
+  }, 100)
+
   componentDidMount() {
     this.setState({
       innerWidth: window.innerWidth,

@@ -5,6 +5,7 @@ import { Paper } from "@material-ui/core"
 
 import { rhythm } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
+import throttle from "lodash/throttle"
 
 const DARK = "#DCC2FF"
 const DARKER = "#B9B0E8"
@@ -106,13 +107,13 @@ export default function Layout({ location, title, children }: Props) {
 
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       setCurrentY(window.pageYOffset)
       setScrollPercent(
         window.pageYOffset /
           (document.documentElement.scrollHeight - window.innerHeight)
       )
-    }
+    }, 100)
     typeof window !== "undefined" &&
       window.addEventListener("scroll", handleScroll)
     return () => {
