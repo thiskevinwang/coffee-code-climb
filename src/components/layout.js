@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated } from "react-spring"
 import { Link } from "gatsby"
-// import MobileDrawer from "./MobileDrawer"
-// import NavBar from "./NavBar"
-import { MobileDrawer, NavBar } from "./LayoutComponents"
-import { Paper } from "@material-ui/core"
+import { MobileDrawer, NavBar, Footer } from "./LayoutComponents"
+import { Paper, Divider } from "@material-ui/core"
 
 import { rhythm, scale } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
@@ -334,24 +332,9 @@ export default function Layout({ location, title, children }: Props) {
               marginBottom: 60,
             }}
           />
-          <main>{children}</main>
-          <footer>
-            <a href="https://github.com/thiskevinwang/coffee-code-climb">
-              Github
-            </a>{" "}
-            {process.env.NODE_ENV === "development" && (
-              <>
-                | <code>{new Date(Date.now() - 1.44e7).toISOString()}</code>
-              </>
-            )}
-            <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
-            <script
-              async
-              src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${
-                process.env.GATSBY_AD_INSTANCE_ID
-              }`}
-            />
-          </footer>
+          <main style={{ paddingBottom: rhythm(4) }}>{children}</main>
+          <Divider />
+          <Footer />
         </div>
       </div>
     </>
