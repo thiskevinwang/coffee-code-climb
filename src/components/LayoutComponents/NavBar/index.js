@@ -3,7 +3,7 @@ import { Link } from "gatsby"
 import Paper from "@material-ui/core/Paper"
 import { isMobile } from "react-device-detect"
 import { rhythm } from "@src/utils/typography"
-import { Hello } from "../Hello"
+import { Hello } from "./Hello"
 
 export default function NavBar({ location, opacity }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
