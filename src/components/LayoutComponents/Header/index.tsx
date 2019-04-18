@@ -12,6 +12,19 @@ export default function Header({
   const rootPath: string = `${__PATH_PREFIX__}/`
   let header: JSX.Element
 
+  const titleLink: JSX.Element = (
+    <Link
+      style={{
+        boxShadow: `none`,
+        textDecoration: `none`,
+        color: `inherit`,
+      }}
+      to={`/`}
+    >
+      {title}
+    </Link>
+  )
+
   if (location.pathname === rootPath) {
     header = (
       <h1
@@ -20,16 +33,7 @@ export default function Header({
           marginBottom: rhythm(1),
         }}
       >
-        <Link
-          style={{
-            boxShadow: `none`,
-            textDecoration: `none`,
-            color: `inherit`,
-          }}
-          to={`/`}
-        >
-          {title}
-        </Link>
+        {titleLink}
       </h1>
     )
   } else {
@@ -39,16 +43,7 @@ export default function Header({
           fontFamily: `Montserrat, sans-serif`,
         }}
       >
-        <Link
-          style={{
-            boxShadow: `none`,
-            textDecoration: `none`,
-            color: `inherit`,
-          }}
-          to={`/`}
-        >
-          {title}
-        </Link>
+        {titleLink}
       </h3>
     )
   }
