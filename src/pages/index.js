@@ -2,7 +2,7 @@ import React from "react"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
-import { Grid, Card, Divider, Tooltip } from "@material-ui/core"
+import { Grid, Divider, Tooltip } from "@material-ui/core"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"

@@ -1,7 +1,7 @@
-import React, { useState } from "react"
+import React from "react"
 import { Link } from "gatsby"
 import Paper from "@material-ui/core/Paper"
-import { isSafari, isFirefox, isMobile } from "react-device-detect"
+import { isMobile } from "react-device-detect"
 import { rhythm } from "@src/utils/typography"
 import { Hello } from "../Hello"
 

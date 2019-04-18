@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated } from "react-spring"
-import { Link } from "gatsby"
-// import MobileDrawer from "./MobileDrawer"
-// import NavBar from "./NavBar"
-import { MobileDrawer, NavBar, Footer, Header } from "./LayoutComponents"
+import { MobileDrawer, Footer, Header } from "./LayoutComponents"
 import { Paper } from "@material-ui/core"
 
-import { rhythm, scale } from "@src/utils/typography"
+import { rhythm } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
 
 const DARK = "#DCC2FF"
