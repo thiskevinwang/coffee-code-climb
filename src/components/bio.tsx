@@ -8,8 +8,10 @@
 import React from "react"
 import { StaticQuery, graphql } from "gatsby"
 import Image from "gatsby-image"
-
+import { Tooltip } from "@material-ui/core"
 import { rhythm } from "@src/utils/typography"
+
+import CAPSULE from "./capsule.svg"
 
 interface Data {
   avatar: {
@@ -43,24 +45,29 @@ function Bio() {
               alt={author}
               style={{
                 marginRight: rhythm(1 / 2),
-                marginBottom: 0,
+                marginTop: "auto",
+                marginBottom: "auto",
                 minWidth: 50,
                 borderRadius: `100%`,
               }}
-              imgStyle={{
-                borderRadius: `50%`,
-              }}
+              imgStyle={{}}
             />
-            <p>
+            <p style={{ marginTop: "auto", marginBottom: "auto" }}>
               A blog by{" "}
-              <strong>
-                <a href={`https://twitter.com/${social.twitter}`}>{author}</a>
-              </strong>
-              .{" "}
-              <i>
+              <a href={`https://twitter.com/${social.twitter}`}>{author}</a>.{" "}
+              <span>
                 Jazz Guitarist → Barista → Healthcare Startup Potato → Rock
-                Climber → Programmer → ?
-              </i>
+                Climber →{" "}
+                <Tooltip
+                  title={
+                    <div style={{ width: 60, height: 60, padding: 10 }}>
+                      <img src={CAPSULE} />
+                    </div>
+                  }
+                >
+                  <u>Front End Engineer</u>
+                </Tooltip>
+              </span>
             </p>
           </div>
         )
