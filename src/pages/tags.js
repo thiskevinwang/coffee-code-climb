@@ -12,6 +12,8 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 // import SEO from "../components/seo"
 
+let currentLetter = ``
+
 const TagsPage = ({
   data: {
     allMarkdownRemark: { group },
@@ -23,21 +25,54 @@ const TagsPage = ({
 }) => {
   return (
     <Layout location={location} title={title}>
-      <div>
-        <Helmet title={title} />
-        <div>
-          <h1>Tags</h1>
-          <ul>
-            {group.map(tag => (
-              <li key={tag.fieldValue}>
-                <Link to={`/tags/${kebabCase(tag.fieldValue)}/`}>
-                  {tag.fieldValue} ({tag.totalCount})
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <Helmet title={title} />
+
+      <h2>{`Tags (${group.length})`}</h2>
+      <hr />
+
+      <ul
+        style={{
+          display: `flex`,
+          flexFlow: `row wrap`,
+          justifyContent: `start`,
+          padding: 0,
+          margin: 0,
+        }}
+      >
+        {group.map(tag => {
+          const firstLetter = tag.fieldValue.charAt(0).toLowerCase()
+          const buildTag = (
+            <li
+              item
+              style={{
+                padding: `${rhythm(0)} ${rhythm(1)}`,
+                margin: rhythm(1 / 4),
+                listStyleType: `none`,
+              }}
+              key={tag.fieldValue}
+            >
+              <Link to={`/tags/${kebabCase(tag.fieldValue)}/`}>
+                {tag.fieldValue} ({tag.totalCount})
+              </Link>
+            </li>
+          )
+
+          if (currentLetter !== firstLetter) {
+            currentLetter = firstLetter
+            return (
+              <React.Fragment key={`letterheader-${currentLetter}`}>
+                <h4 style={{ width: `100%`, flexBasis: `100%` }}>
+                  {currentLetter.toUpperCase()}
+                </h4>
+                {buildTag}
+              </React.Fragment>
+            )
+          }
+
+          return buildTag
+        })}
+      </ul>
+
       <hr
         style={{
           marginBottom: rhythm(1),
