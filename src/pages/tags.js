@@ -6,11 +6,10 @@ import kebabCase from "lodash/kebabCase"
 import { rhythm } from "@src/utils/typography"
 
 // Components
-import { Helmet } from "react-helmet"
 import { Link, graphql } from "gatsby"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
-// import SEO from "../components/seo"
+import SEO from "../components/seo"
 
 let currentLetter = ``
 
@@ -25,7 +24,7 @@ const TagsPage = ({
 }) => {
   return (
     <Layout location={location} title={title}>
-      <Helmet title={title} />
+      <SEO title={title} />
 
       <h2>{`Tags (${group.length})`}</h2>
       <hr />
