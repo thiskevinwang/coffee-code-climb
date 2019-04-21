@@ -68,17 +68,41 @@ export default function BlogPostTemplate(props) {
           padding: 0,
         }}
       >
+        {/**
+         * [previous|next].internal.type = `MarkdownRemark` || `ContentfulBlogPost`
+         * slug & title need to be accessed slightly differently
+         **/}
         <li>
           {previous && (
-            <Link to={previous.fields.slug} rel="prev">
-              ← {previous.frontmatter.title}
+            <Link
+              to={
+                previous.internal.type === `MarkdownRemark`
+                  ? previous.fields.slug
+                  : previous.slug
+              }
+              rel="prev"
+            >
+              ←{" "}
+              {previous.internal.type === `MarkdownRemark`
+                ? previous.frontmatter.title
+                : previous.title}
             </Link>
           )}
         </li>
         <li>
           {next && (
-            <Link to={next.fields.slug} rel="next">
-              {next.frontmatter.title} →
+            <Link
+              to={
+                next.internal.type === `MarkdownRemark`
+                  ? next.fields.slug
+                  : next.slug
+              }
+              rel="next"
+            >
+              {next.internal.type === `MarkdownRemark`
+                ? next.frontmatter.title
+                : next.title}{" "}
+              →
             </Link>
           )}
         </li>
