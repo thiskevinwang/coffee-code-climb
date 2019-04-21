@@ -6,6 +6,9 @@ exports.createPages = ({ graphql, actions }) => {
   const { createPage } = actions
 
   const blogPost = path.resolve("src/templates/blog-post.tsx")
+  const contentfulBlogPost = path.resolve(
+    "src/templates/contentful-blog-post.tsx"
+  )
   const tagTemplate = path.resolve("src/templates/tags.tsx")
 
   return graphql(
@@ -17,6 +20,9 @@ exports.createPages = ({ graphql, actions }) => {
         ) {
           edges {
             node {
+              internal {
+                type
+              }
               fields {
                 slug
               }
@@ -24,6 +30,21 @@ exports.createPages = ({ graphql, actions }) => {
                 title
                 tags
               }
+            }
+          }
+        }
+        allContentfulBlogPost(
+          sort: { fields: [date], order: DESC }
+          limit: 1000
+        ) {
+          edges {
+            node {
+              internal {
+                type
+              }
+              slug
+              title
+              tags
             }
           }
         }
@@ -35,21 +56,40 @@ exports.createPages = ({ graphql, actions }) => {
     }
 
     // Create blog posts pages.
-    const posts = result.data.allMarkdownRemark.edges
+    const markdownPosts = result.data.allMarkdownRemark.edges
+    const contentfulPosts = result.data.allContentfulBlogPost.edges
+    const posts = _.union(contentfulPosts, markdownPosts)
 
     posts.forEach((post, index) => {
       const previous = index === posts.length - 1 ? null : posts[index + 1].node
       const next = index === 0 ? null : posts[index - 1].node
 
-      createPage({
-        path: post.node.fields.slug,
-        component: blogPost,
-        context: {
-          slug: post.node.fields.slug,
-          previous,
-          next,
-        },
-      })
+      /**
+       * type = `MarkdownRemark` || `ContentfulBlogPost`
+       **/
+      const { type } = post.node.internal
+
+      if (type === `MarkdownRemark`) {
+        createPage({
+          path: post.node.fields.slug,
+          component: blogPost,
+          context: {
+            slug: post.node.fields.slug,
+            previous,
+            next,
+          },
+        })
+      } else if (type === `ContentfulBlogPost`) {
+        createPage({
+          path: post.node.slug,
+          component: contentfulBlogPost,
+          context: {
+            slug: post.node.slug,
+            previous,
+            next,
+          },
+        })
+      }
     })
 
     // Tag pages:
@@ -60,6 +100,14 @@ exports.createPages = ({ graphql, actions }) => {
         tags = tags.concat(edge.node.frontmatter.tags)
       }
     })
+
+    // Contentful tags:
+    _.each(contentfulPosts, edge => {
+      if (_.get(edge, "node.tags")) {
+        tags = tags.concat(edge.node.tags)
+      }
+    })
+
     // Eliminate duplicate tags
     tags = _.uniq(tags)
 
@@ -89,4 +137,12 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       value,
     })
   }
+  // if (node.internal.type === `ContentfulBlogPost`) {
+  //   const value = createFilePath({ node, getNode })
+  //   createNodeField({
+  //     name: `slug`,
+  //     node,
+  //     value,
+  //   })
+  // }
 }

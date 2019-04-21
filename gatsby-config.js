@@ -30,6 +30,14 @@ module.exports = {
       },
     },
     {
+      resolve: `gatsby-source-contentful`,
+      options: {
+        spaceId: `5e3yg0s79tcq`,
+        // Learn about environment variables: https://gatsby.dev/env-vars
+        accessToken: process.env.GATSBY_CONTENTFUL_ACCESS_TOKEN,
+      },
+    },
+    {
       resolve: `gatsby-plugin-alias-imports`,
       options: {
         alias: { "@src": "src" },

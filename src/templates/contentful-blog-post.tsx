@@ -1,6 +1,9 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
+import { BLOCKS } from "@contentful/rich-text-types"
+import Image from "gatsby-image"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -8,25 +11,40 @@ import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
 import { DiscussionEmbed } from "disqus-react"
 
-export default function BlogPostTemplate(props) {
-  const post = props.data.markdownRemark
+export default function ContentfulBlogPostTemplate(props) {
+  const post = props.data.contentfulBlogPost
   const siteTitle = props.data.site.siteMetadata.title
   const { previous, next } = props.pageContext
+
+  /**
+   * Arguments to pass to: documentToReactComponents(document, options)
+   * https://github.com/contentful/rich-text/tree/master/packages/rich-text-react-renderer
+   **/
+  const document: JSON = post.body.json
+  const options = {
+    renderNode: {
+      [BLOCKS.EMBEDDED_ASSET]: node => {
+        // console.log(node)
+        let { file, title, description } = node.data.target.fields
+        // console.log(file["en-US"].url)
+        return <img src={file["en-US"].url} alt={description["en-US"]} />
+      },
+    },
+  }
+  // console.log(documentToReactComponents(document, options))
 
   const disqusShortname = "coffeecodeclimb"
   const disqusConfig = {
     url: "https://coffeecodeclimb.com" + props.location.pathname,
     identifier: post.id,
-    title: post.frontmatter.title,
+    title: post.title,
   }
 
   return (
     <Layout location={props.location} title={siteTitle}>
-      <SEO
-        title={post.frontmatter.title}
-        description={post.frontmatter.description || post.excerpt}
-      />
-      <h1>{post.frontmatter.title}</h1>
+      <SEO title={post.title} description={post.description} />
+      <h1>{post.title}</h1>
+
       <p
         style={{
           ...scale(-1 / 5),
@@ -35,14 +53,21 @@ export default function BlogPostTemplate(props) {
           marginTop: rhythm(-1),
         }}
       >
-        {post.frontmatter.date}
+        {post.date}
       </p>
 
-      <div dangerouslySetInnerHTML={{ __html: post.html }} />
+      {/**
+       * NOTE: replace this div with documentToReactComponents()
+       * It converts Contenful's "rich text" (post.body.json)
+       * to react components.
+       *
+       * <div dangerouslySetInnerHTML={{ __html: post.html }} />
+       **/}
+      {documentToReactComponents(document, options)}
 
       <small>
         Tags:{" "}
-        {post.frontmatter.tags.map((tag, index) => (
+        {post.tags.map((tag, index) => (
           <Link
             to={`/tags/${kebabCase(tag)}/`}
             style={{ color: "#A6B1BB", margin: 3 }}
@@ -117,23 +142,33 @@ export default function BlogPostTemplate(props) {
 }
 
 export const pageQuery = graphql`
-  query BlogPostBySlug($slug: String!) {
+  query ContentfulBlogPostBySlug($slug: String!) {
     site {
       siteMetadata {
         title
         author
       }
     }
-    markdownRemark(fields: { slug: { eq: $slug } }) {
+    # markdownRemark(fields: { slug: { eq: $slug } }) {
+    #   id
+    #   excerpt(pruneLength: 160)
+    #   html
+    #   frontmatter {
+    #     title
+    #     date(formatString: "MMMM DD, YYYY")
+    #     description
+    #     tags
+    #   }
+    # }
+    contentfulBlogPost(slug: { eq: $slug }) {
       id
-      excerpt(pruneLength: 160)
-      html
-      frontmatter {
-        title
-        date(formatString: "MMMM DD, YYYY")
-        description
-        tags
+      body {
+        json
       }
+      title
+      date(formatString: "MMMM DD, YYYY")
+      description
+      tags
     }
   }
 `

@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 // Utilities
 import kebabCase from "lodash/kebabCase"
 import { rhythm } from "@src/utils/typography"
+import { combineTagGroups } from "@src/utils/combineTagGroups"
 
 // Components
 import { Link, graphql } from "gatsby"
@@ -15,13 +16,16 @@ let currentLetter = ``
 
 const TagsPage = ({
   data: {
-    allMarkdownRemark: { group },
+    allMarkdownRemark: { group: group1 },
+    allContentfulBlogPost: { group: group2 },
     site: {
       siteMetadata: { title },
     },
   },
   location,
 }) => {
+  let group = combineTagGroups(group1, group2)
+
   return (
     <Layout location={location} title={title}>
       <SEO title={title} />
@@ -111,6 +115,12 @@ export const pageQuery = graphql`
     }
     allMarkdownRemark(limit: 2000) {
       group(field: frontmatter___tags) {
+        fieldValue
+        totalCount
+      }
+    }
+    allContentfulBlogPost(limit: 2000) {
+      group(field: tags) {
         fieldValue
         totalCount
       }
