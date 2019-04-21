@@ -10,6 +10,7 @@ import SEO from "../components/seo"
 import { rhythm } from "@src/utils/typography"
 
 // Tools
+import union from "lodash/union"
 import includes from "lodash/includes"
 import kebabCase from "lodash/kebabCase"
 import map from "lodash/map"
@@ -39,14 +40,19 @@ const KEYWORDS = [
   `nextjs`,
 ]
 
-type Props = {
-  key: string,
-  linkTo: string,
-  date: string,
-  title: string,
-  description: string,
-  excerpt: string,
-  tags: Array<string>,
+interface Props {
+  key: string
+  linkTo: string
+  date: string
+  title: string
+  description: string
+  excerpt: string
+  tags: Array<string>
+  id: string
+  image: { fluid: { any } }
+  index: number
+  innerWidth: number
+  nodeType: string
 }
 
 function Post({
@@ -57,11 +63,12 @@ function Post({
   description,
   excerpt,
   tags,
-  origin,
+  // origin,
   id,
   image,
   index,
   innerWidth,
+  nodeType,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
@@ -144,6 +151,7 @@ function Post({
         paddingTop: innerWidth >= 600 && rhythm(1 / 2),
         paddingBottom: innerWidth >= 600 && rhythm(1),
         paddingLeft: innerWidth >= 600 && rhythm(1),
+        paddingRight: innerWidth >= 600 && rhythm(1),
         maxWidth: rhythm(18),
         transform:
           innerWidth >= 600 ? `translate(${rhythm(1)}, -${rhythm(2)})` : `none`,
@@ -170,7 +178,11 @@ function Post({
       <Link style={{ boxShadow: `none` }} to={linkTo}>
         {image && (
           <Image
-            fluid={image.childImageSharp.fluid}
+            fluid={
+              nodeType === `MarkdownRemark`
+                ? image.childImageSharp.fluid
+                : image.fluid
+            }
             alt={linkTo}
             style={{}}
             imgStyle={{}}
@@ -203,16 +215,23 @@ class BlogIndex extends React.Component {
   render() {
     const { data } = this.props
     const siteTitle = data.site.siteMetadata.title
-    const posts = data.allMarkdownRemark.edges
+    const markdownPosts = data.allMarkdownRemark.edges
+    const contentfulPosts = data.allContentfulBlogPost.edges
+
+    const posts = union(contentfulPosts, markdownPosts)
 
     return (
       <Layout location={this.props.location} title={siteTitle}>
         <SEO title="All posts" keywords={KEYWORDS} />
         <Bio />
+
         <Grid container direction="row" spacing={24}>
           {posts.map(({ node }, index) => {
-            const title = node.frontmatter.title || node.fields.slug
-            return (
+            const title =
+              node.internal.type === `MarkdownRemark` &&
+              (node.frontmatter.title || node.fields.slug)
+
+            return node.internal.type === `MarkdownRemark` ? (
               <Post
                 key={node.fields.slug}
                 linkTo={node.fields.slug}
@@ -226,6 +245,26 @@ class BlogIndex extends React.Component {
                 image={node.frontmatter.image}
                 index={index}
                 innerWidth={this.state.innerWidth}
+                nodeType={node.internal.type}
+              />
+            ) : (
+              {/**
+                * else if (node.internal.type === `ContentfulBlogPost`)
+                **/}
+              <Post
+                key={node.slug}
+                linkTo={node.slug}
+                date={node.date}
+                title={node.title}
+                description={node.description}
+                // excerpt={node.excerpt}
+                tags={node.tags}
+                // origin={this.props.location.origin}
+                id={node.id}
+                image={node.image}
+                index={index}
+                innerWidth={this.state.innerWidth}
+                nodeType={node.internal.type}
               />
             )
           })}
@@ -247,6 +286,9 @@ export const pageQuery = graphql`
     allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
       edges {
         node {
+          internal {
+            type
+          }
           excerpt
           fields {
             slug
@@ -265,6 +307,25 @@ export const pageQuery = graphql`
             }
           }
           id
+        }
+      }
+    }
+    allContentfulBlogPost(sort: { fields: [date], order: DESC }) {
+      edges {
+        node {
+          internal {
+            type
+          }
+          image {
+            fluid(maxWidth: 2000, maxHeight: 800) {
+              ...GatsbyContentfulFluid_withWebp
+            }
+          }
+          title
+          date(formatString: "MMMM DD, YYYY")
+          description
+          tags
+          slug
         }
       }
     }
