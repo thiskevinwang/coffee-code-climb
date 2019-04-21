@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import union from "lodash/union"
 
 // Components
 import { Link, graphql } from "gatsby"
@@ -12,7 +13,18 @@ import { rhythm } from "@src/utils/typography"
 
 const Tags = ({ pageContext, data, location }) => {
   const { tag } = pageContext
-  const { edges, totalCount } = data.allMarkdownRemark
+  const {
+    edges: markdownRemarkEdges,
+    totalCount: markdownRemarkTotalCount,
+  } = data.allMarkdownRemark
+  const {
+    edges: contentfulEdges,
+    totalCount: contentfulTotalCount,
+  } = data.allContentfulBlogPost
+
+  let totalCount: number = markdownRemarkTotalCount + contentfulTotalCount
+  let edges = union(contentfulEdges, markdownRemarkEdges)
+
   const tagHeader = `${totalCount} post${
     totalCount === 1 ? "" : "s"
   } tagged with "${tag}"`
@@ -28,8 +40,10 @@ const Tags = ({ pageContext, data, location }) => {
         <h1>{tagHeader}</h1>
         <ul>
           {edges.map(({ node }) => {
-            const { slug } = node.fields
-            const { title } = node.frontmatter
+            const { slug } =
+              node.internal.type === `MarkdownRemark` ? node.fields : node
+            const { title } =
+              node.internal.type === `MarkdownRemark` ? node.frontmatter : node
             return (
               <li key={slug}>
                 <Link to={slug}>{title}</Link>
@@ -99,6 +113,22 @@ export const pageQuery = graphql`
           frontmatter {
             title
           }
+        }
+      }
+    }
+    allContentfulBlogPost(
+      limit: 2000
+      sort: { fields: [date], order: DESC }
+      filter: { tags: { in: [$tag] } }
+    ) {
+      totalCount
+      edges {
+        node {
+          internal {
+            type
+          }
+          slug
+          title
         }
       }
     }
