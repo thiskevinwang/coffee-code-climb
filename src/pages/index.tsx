@@ -248,9 +248,9 @@ class BlogIndex extends React.Component {
                 nodeType={node.internal.type}
               />
             ) : (
-              {/**
-                * else if (node.internal.type === `ContentfulBlogPost`)
-                **/}
+              /**
+               * else if (node.internal.type === `ContentfulBlogPost`)
+               **/
               <Post
                 key={node.slug}
                 linkTo={node.slug}
