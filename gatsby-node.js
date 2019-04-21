@@ -129,10 +129,7 @@ exports.createPages = ({ graphql, actions }) => {
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions
 
-  if (
-    node.internal.type === `MarkdownRemark` ||
-    node.internal.type === `ContentfulBlogPost`
-  ) {
+  if (node.internal.type === `MarkdownRemark`) {
     const value = createFilePath({ node, getNode })
     createNodeField({
       name: `slug`,
@@ -140,4 +137,12 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       value,
     })
   }
+  // if (node.internal.type === `ContentfulBlogPost`) {
+  //   const value = createFilePath({ node, getNode })
+  //   createNodeField({
+  //     name: `slug`,
+  //     node,
+  //     value,
+  //   })
+  // }
 }
