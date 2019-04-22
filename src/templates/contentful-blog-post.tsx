@@ -1,47 +1,30 @@
-import React from "react"
+import * as React from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
-import { BLOCKS } from "@contentful/rich-text-types"
-import Image from "gatsby-image"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
-import { DiscussionEmbed } from "disqus-react"
+import {
+  Discussion,
+  DocumentToReactComponents,
+} from "@src/components/TemplateComponents"
 
-export default function ContentfulBlogPostTemplate(props) {
-  const post = props.data.contentfulBlogPost
-  const siteTitle = props.data.site.siteMetadata.title
-  const { previous, next } = props.pageContext
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
+import { BLOCKS } from "@contentful/rich-text-types"
 
-  /**
-   * Arguments to pass to: documentToReactComponents(document, options)
-   * https://github.com/contentful/rich-text/tree/master/packages/rich-text-react-renderer
-   **/
-  const document: JSON = post.body.json
-  const options = {
-    renderNode: {
-      [BLOCKS.EMBEDDED_ASSET]: node => {
-        // console.log(node)
-        let { file, title, description } = node.data.target.fields
-        // console.log(file["en-US"].url)
-        return <img src={file["en-US"].url} alt={description["en-US"]} />
-      },
-    },
-  }
-  // console.log(documentToReactComponents(document, options))
-
-  const disqusShortname = "coffeecodeclimb"
-  const disqusConfig = {
-    url: "https://coffeecodeclimb.com" + props.location.pathname,
-    identifier: post.id,
-    title: post.title,
-  }
-
+export default function ContentfulBlogPostTemplate({
+  data,
+  pageContext,
+  location,
+}) {
+  const post = data.contentfulBlogPost
+  const { title: siteTitle } = data.site.siteMetadata
+  const { previous, next } = pageContext
+  console.log(post.body.json)
   return (
-    <Layout location={props.location} title={siteTitle}>
+    <Layout location={location} title={siteTitle}>
       <SEO title={post.title} description={post.description} />
       <h1>{post.title}</h1>
 
@@ -57,13 +40,9 @@ export default function ContentfulBlogPostTemplate(props) {
       </p>
 
       {/**
-       * NOTE: replace this div with documentToReactComponents()
-       * It converts Contenful's "rich text" (post.body.json)
-       * to react components.
-       *
        * <div dangerouslySetInnerHTML={{ __html: post.html }} />
        **/}
-      {documentToReactComponents(document, options)}
+      <DocumentToReactComponents document={post.body.json} />
 
       <small>
         Tags:{" "}
@@ -133,10 +112,11 @@ export default function ContentfulBlogPostTemplate(props) {
         </li>
       </ul>
 
-      <h2>Discussion</h2>
-      <div className="disqus">
-        <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
-      </div>
+      <Discussion
+        locationPathname={location.pathname}
+        identifier={post.id}
+        title={post.title}
+      />
     </Layout>
   )
 }
