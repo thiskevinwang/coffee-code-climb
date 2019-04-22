@@ -1,20 +1,24 @@
-import React from "react"
+import * as React from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
-import { BLOCKS } from "@contentful/rich-text-types"
-import Image from "gatsby-image"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
-import { DiscussionEmbed } from "disqus-react"
+import { Discussion } from "@src/components/TemplateComponents"
 
-export default function ContentfulBlogPostTemplate(props) {
-  const post = props.data.contentfulBlogPost
-  const siteTitle = props.data.site.siteMetadata.title
-  const { previous, next } = props.pageContext
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
+import { BLOCKS } from "@contentful/rich-text-types"
+
+export default function ContentfulBlogPostTemplate({
+  data,
+  pageContext,
+  location,
+}) {
+  const post = data.contentfulBlogPost
+  const { title: siteTitle } = data.site.siteMetadata
+  const { previous, next } = pageContext
 
   /**
    * Arguments to pass to: documentToReactComponents(document, options)
@@ -33,15 +37,8 @@ export default function ContentfulBlogPostTemplate(props) {
   }
   // console.log(documentToReactComponents(document, options))
 
-  const disqusShortname = "coffeecodeclimb"
-  const disqusConfig = {
-    url: "https://coffeecodeclimb.com" + props.location.pathname,
-    identifier: post.id,
-    title: post.title,
-  }
-
   return (
-    <Layout location={props.location} title={siteTitle}>
+    <Layout location={location} title={siteTitle}>
       <SEO title={post.title} description={post.description} />
       <h1>{post.title}</h1>
 
@@ -133,10 +130,11 @@ export default function ContentfulBlogPostTemplate(props) {
         </li>
       </ul>
 
-      <h2>Discussion</h2>
-      <div className="disqus">
-        <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
-      </div>
+      <Discussion
+        locationPathname={location.pathname}
+        identifier={post.id}
+        title={post.title}
+      />
     </Layout>
   )
 }

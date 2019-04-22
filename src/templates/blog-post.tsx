@@ -1,4 +1,4 @@
-import React from "react"
+import * as React from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
 
@@ -6,22 +6,15 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
-import { DiscussionEmbed } from "disqus-react"
+import { Discussion } from "@src/components/TemplateComponents"
 
-export default function BlogPostTemplate(props) {
-  const post = props.data.markdownRemark
-  const siteTitle = props.data.site.siteMetadata.title
-  const { previous, next } = props.pageContext
-
-  const disqusShortname = "coffeecodeclimb"
-  const disqusConfig = {
-    url: "https://coffeecodeclimb.com" + props.location.pathname,
-    identifier: post.id,
-    title: post.frontmatter.title,
-  }
+export default function BlogPostTemplate({ data, pageContext, location }) {
+  const post = data.markdownRemark
+  const { title: siteTitle } = data.site.siteMetadata
+  const { previous, next } = pageContext
 
   return (
-    <Layout location={props.location} title={siteTitle}>
+    <Layout location={location} title={siteTitle}>
       <SEO
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
@@ -108,10 +101,11 @@ export default function BlogPostTemplate(props) {
         </li>
       </ul>
 
-      <h2>Discussion</h2>
-      <div className="disqus">
-        <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
-      </div>
+      <Discussion
+        locationPathname={location.pathname}
+        identifier={post.id}
+        title={post.frontmatter.title}
+      />
     </Layout>
   )
 }
