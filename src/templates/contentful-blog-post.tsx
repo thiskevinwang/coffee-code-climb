@@ -6,7 +6,10 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
-import { Discussion } from "@src/components/TemplateComponents"
+import {
+  Discussion,
+  DocumentToReactComponents,
+} from "@src/components/TemplateComponents"
 
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { BLOCKS } from "@contentful/rich-text-types"
@@ -19,24 +22,7 @@ export default function ContentfulBlogPostTemplate({
   const post = data.contentfulBlogPost
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
-
-  /**
-   * Arguments to pass to: documentToReactComponents(document, options)
-   * https://github.com/contentful/rich-text/tree/master/packages/rich-text-react-renderer
-   **/
-  const document: JSON = post.body.json
-  const options = {
-    renderNode: {
-      [BLOCKS.EMBEDDED_ASSET]: node => {
-        // console.log(node)
-        let { file, title, description } = node.data.target.fields
-        // console.log(file["en-US"].url)
-        return <img src={file["en-US"].url} alt={description["en-US"]} />
-      },
-    },
-  }
-  // console.log(documentToReactComponents(document, options))
-
+  console.log(post.body.json)
   return (
     <Layout location={location} title={siteTitle}>
       <SEO title={post.title} description={post.description} />
@@ -54,13 +40,9 @@ export default function ContentfulBlogPostTemplate({
       </p>
 
       {/**
-       * NOTE: replace this div with documentToReactComponents()
-       * It converts Contenful's "rich text" (post.body.json)
-       * to react components.
-       *
        * <div dangerouslySetInnerHTML={{ __html: post.html }} />
        **/}
-      {documentToReactComponents(document, options)}
+      <DocumentToReactComponents document={post.body.json} />
 
       <small>
         Tags:{" "}
