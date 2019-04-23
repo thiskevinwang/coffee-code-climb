@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
-import { animated } from "react-spring"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -17,7 +16,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
 
-  const [gradient, setGradient] = useState(`none`)
+  const [gradient, setGradient] = useState()
 
   return (
     <Layout

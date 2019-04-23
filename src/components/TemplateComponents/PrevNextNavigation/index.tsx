@@ -45,7 +45,7 @@ const LinksStyleTag: JSX.Element = (
  **/
 interface MarkdownRemarkNode {
   internal: {
-    type: `MarkdownRemark`
+    type: string // `MarkdownRemark`
   }
   fields?: {
     slug: string
@@ -62,7 +62,7 @@ interface MarkdownRemarkNode {
  **/
 interface ContentfulBlogPostNode {
   internal: {
-    type: `ContentfulBlogPost`
+    type: string // `ContentfulBlogPost`
   }
   slug?: string
   title?: string

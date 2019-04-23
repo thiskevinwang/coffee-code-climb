@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
-import { animated } from "react-spring"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -13,9 +12,6 @@ import {
   PrevNextNavigation,
 } from "@src/components/TemplateComponents"
 
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
-import { BLOCKS } from "@contentful/rich-text-types"
-
 export default function ContentfulBlogPostTemplate({
   data,
   pageContext,
@@ -25,7 +21,7 @@ export default function ContentfulBlogPostTemplate({
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
 
-  const [gradient, setGradient] = useState(`none`)
+  const [gradient, setGradient] = useState()
 
   return (
     <Layout
