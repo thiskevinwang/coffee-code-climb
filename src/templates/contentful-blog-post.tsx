@@ -1,6 +1,7 @@
-import * as React from "react"
+import React, { useState } from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
+import { animated } from "react-spring"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -10,6 +11,7 @@ import {
   Discussion,
   DocumentToReactComponents,
 } from "@src/components/TemplateComponents"
+import { LinksStyleTag } from "./blog-post"
 
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { BLOCKS } from "@contentful/rich-text-types"
@@ -22,9 +24,18 @@ export default function ContentfulBlogPostTemplate({
   const post = data.contentfulBlogPost
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
-  console.log(post.body.json)
+
+  const [gradient, setGradient] = useState(`none`)
+  const AnimatedLink = animated(Link)
+
   return (
-    <Layout location={location} title={siteTitle}>
+    <Layout
+      location={location}
+      title={siteTitle}
+      handleGradientChange={value => {
+        setGradient(value)
+      }}
+    >
       <SEO title={post.title} description={post.description} />
       <h1>{post.title}</h1>
 
@@ -79,6 +90,7 @@ export default function ContentfulBlogPostTemplate({
         <li>
           {previous && (
             <Link
+              className={"Link Link__prev"}
               to={
                 previous.internal.type === `MarkdownRemark`
                   ? previous.fields.slug
@@ -95,7 +107,9 @@ export default function ContentfulBlogPostTemplate({
         </li>
         <li>
           {next && (
-            <Link
+            <AnimatedLink
+              style={{ background: gradient }}
+              className={"Link Link__next"}
               to={
                 next.internal.type === `MarkdownRemark`
                   ? next.fields.slug
@@ -107,9 +121,10 @@ export default function ContentfulBlogPostTemplate({
                 ? next.frontmatter.title
                 : next.title}{" "}
               →
-            </Link>
+            </AnimatedLink>
           )}
         </li>
+        {LinksStyleTag}
       </ul>
 
       <Discussion

@@ -1,6 +1,7 @@
-import * as React from "react"
+import React, { useState } from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
+import { animated } from "react-spring"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -8,13 +9,48 @@ import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
 import { Discussion } from "@src/components/TemplateComponents"
 
+export const LinksStyleTag = (
+  <style>{`
+  .Link {
+    border-radius: 3px;
+    box-shadow: none;
+    padding: ${rhythm(0.4)};
+    transition:
+      border 100ms ease-in-out,
+      background 100ms ease-in-out;
+  }
+  .Link__next {
+    color: white;
+  }
+  .Link__next:hover {
+    opacity: 0.7;
+  }
+  .Link__prev {
+    border: 1px solid transparent;
+    color: black;
+  }
+  .Link__prev:hover {
+    border: 1px solid black;
+  }
+`}</style>
+)
+
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
 
+  const [gradient, setGradient] = useState(`none`)
+  const AnimatedLink = animated(Link)
+
   return (
-    <Layout location={location} title={siteTitle}>
+    <Layout
+      location={location}
+      title={siteTitle}
+      handleGradientChange={value => {
+        setGradient(value)
+      }}
+    >
       <SEO
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
@@ -68,6 +104,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         <li>
           {previous && (
             <Link
+              className={"Link Link__prev"}
               to={
                 previous.internal.type === `MarkdownRemark`
                   ? previous.fields.slug
@@ -84,7 +121,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         </li>
         <li>
           {next && (
-            <Link
+            <AnimatedLink
+              style={{ background: gradient }}
+              className={"Link Link__next"}
               to={
                 next.internal.type === `MarkdownRemark`
                   ? next.fields.slug
@@ -96,9 +135,10 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
                 ? next.frontmatter.title
                 : next.title}{" "}
               →
-            </Link>
+            </AnimatedLink>
           )}
         </li>
+        {LinksStyleTag}
       </ul>
 
       <Discussion
