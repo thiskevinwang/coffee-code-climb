@@ -1,54 +1,23 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated } from "react-spring"
-import { MobileDrawer, Footer, Header } from "./LayoutComponents"
+import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
 import { Paper } from "@material-ui/core"
 
 import { rhythm } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
 import throttle from "lodash/throttle"
 
-const DARK = "#DCC2FF"
-const DARKER = "#B9B0E8"
-const MID = "#CFD5FF"
-const LIGHTER = "#B0C6E8"
-const LIGHT = "#C2E9FF"
-const styles = {
-  bg1: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    height: `50%`,
-    width: `100%`,
-    // Removing this line fixes a UI issue when hard-refreshing on Chrome
-    // background: `linear-gradient(150deg, ${DARK} 15%, ${DARKER} 35%, ${MID} 55%, ${LIGHTER} 70%, ${LIGHT} 94%)`,
-    opacity: 0.7,
-    transform: `skewY(-6deg)`,
-    transformOrigin: `top left`,
-    zIndex: -10,
-  },
-  dottedBackground: {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    height: `100%`,
-    width: `30%`,
-    transform: `skewX(6deg)`,
-    transformOrigin: `top right`,
-    zIndex: -9,
-  },
-  draggableGlass: {
-    width: 200,
-    height: 200,
-    // glass-like
-    background: `linear-gradient(150deg, rgba(255,255,255,0.9) 15%, rgba(255,255,255,0.2) 35%, rgba(255,255,255,0.5) 55%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0.8) 94%)`,
-    zIndex: 9999,
-    position: "absolute",
-    borderTop: `3px solid ${LIGHT}`,
-    borderLeft: `3px solid ${LIGHTER}`,
-    borderRight: `3px solid ${DARKER}`,
-    borderBottom: `3px solid ${DARK}`,
-  },
-}
+/**
+ * NOTE: on useSpring() interpolations
+ * Make sure arrays passed to `range` & `output` are equal in length
+ **/
+const GRADIENTS = [
+  `linear-gradient(-10deg, #21D4FD 0%, #B721FF 100%)`,
+  `linear-gradient-5deg, #08AEEA 0%, #2AF598 100%)`,
+  `linear-gradient(0deg, #8EC5FC 0%, #E0C3FC 100%)`,
+  `linear-gradient(19deg, #FAACA8 0%, #DDD6F3 100%)`,
+  `linear-gradient(20deg, #FEE140 0%, #FA709A 100%)`,
+]
 
 const dbgStyleTag = (
   <style jsx>{`
@@ -93,17 +62,23 @@ const dbgStyleTag = (
  * @param {string} props.title data.site.siteMetadata.title from graphql-pageQuery
  * @param {Location} props.location Parent.props.location
  * @param {React$Node} props.children mapped posts, or markdown
+ * @param {object} props.handleGradientChange TODO...
  */
 
-export default function Layout({ location, title, children }: Props) {
+export default function Layout({
+  location,
+  title,
+  children,
+  handleGradientChange,
+}: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
 
   // Hook for updating currentY state
   // This gets passed to NavBar's `pageYOffset` props
-  const [currentY: number, setCurrentY: () => any] = useState(0)
+  const [currentY, setCurrentY] = useState(0)
   // Hook for scrollPercent of the document
   // between 0...1
-  const [scrollPercent: number, setScrollPercent: () => any] = useState(0)
+  const [scrollPercent, setScrollPercent] = useState(0)
 
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
@@ -113,6 +88,18 @@ export default function Layout({ location, title, children }: Props) {
         window.pageYOffset /
           (document.documentElement.scrollHeight - window.innerHeight)
       )
+
+      /**
+       * Sends an AnimatedInterpolation as the arg passed to the callback
+       * assigned to props.handleGradientChange
+       **/
+      handleGradientChange != undefined &&
+        handleGradientChange(
+          _scrollPercent.interpolate({
+            range: [0, 0.25, 0.5, 0.75, 1],
+            output: [...GRADIENTS],
+          })
+        )
     }, 100)
     typeof window !== "undefined" &&
       window.addEventListener("scroll", handleScroll)
@@ -130,7 +117,7 @@ export default function Layout({ location, title, children }: Props) {
 
   // passed to animated.span (background) style prop
   const { _scrollPercent } = useSpring({
-    from: { _scrollPercent: 1 },
+    from: { _scrollPercent: 0 },
     _scrollPercent: scrollPercent,
   })
 
@@ -210,13 +197,7 @@ export default function Layout({ location, title, children }: Props) {
             ...styles.bg1,
             background: _scrollPercent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
-              output: [
-                `linear-gradient(150deg, ${DARK} 15%, ${DARKER} 35%, ${MID} 55%, ${LIGHTER} 70%, ${LIGHT}`,
-                `linear-gradient(150deg, ${LIGHT} 15%, ${DARK} 35%, ${DARKER} 55%, ${MID} 70%, ${LIGHTER}`,
-                `linear-gradient(150deg, ${LIGHTER} 15%, ${LIGHT} 35%, ${DARK} 55%, ${DARKER} 70%, ${MID}`,
-                `linear-gradient(150deg, ${MID} 15%, ${LIGHTER} 35%, ${LIGHT} 55%, ${DARK} 70%, ${DARKER}`,
-                `linear-gradient(150deg, ${DARKER} 15%, ${MID} 35%, ${LIGHTER} 55%, ${LIGHT} 70%, ${DARK}`,
-              ],
+              output: [...GRADIENTS],
             }),
           }}
         />
