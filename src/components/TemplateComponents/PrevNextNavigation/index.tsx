@@ -96,6 +96,24 @@ export default function PrevNextNavigation({
    */
   const AnimatedLink = animated(Link)
 
+  const getSlugFromNode = (node): string => {
+    switch (node.internal.type) {
+      case `MarkdownRemark`:
+        return node.fields.slug
+      case `ContentfulBlogPost`:
+        return node.slug
+    }
+  }
+
+  const getTitleFromNode = (node): string => {
+    switch (node.internal.type) {
+      case `MarkdownRemark`:
+        return node.frontmatter.title
+      case `ContentfulBlogPost`:
+        return node.title
+    }
+  }
+
   return (
     <ul
       style={{
@@ -110,17 +128,10 @@ export default function PrevNextNavigation({
         {previous && (
           <Link
             className={"Link Link__prev"}
-            to={
-              previous.internal.type === `MarkdownRemark`
-                ? previous.fields.slug
-                : previous.slug
-            }
+            to={getSlugFromNode(previous)}
             rel="prev"
           >
-            ←{" "}
-            {previous.internal.type === `MarkdownRemark`
-              ? previous.frontmatter.title
-              : previous.title}
+            ← {getTitleFromNode(previous)}
           </Link>
         )}
       </li>
@@ -129,17 +140,10 @@ export default function PrevNextNavigation({
           <AnimatedLink
             style={{ background: nextGradient }}
             className={"Link Link__next"}
-            to={
-              next.internal.type === `MarkdownRemark`
-                ? next.fields.slug
-                : next.slug
-            }
+            to={getSlugFromNode(next)}
             rel="next"
           >
-            {next.internal.type === `MarkdownRemark`
-              ? next.frontmatter.title
-              : next.title}{" "}
-            →
+            {getTitleFromNode(next)} →
           </AnimatedLink>
         )}
       </li>
