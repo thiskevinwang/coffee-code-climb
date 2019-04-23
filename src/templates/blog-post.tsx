@@ -7,33 +7,10 @@ import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
-import { Discussion } from "@src/components/TemplateComponents"
-
-export const LinksStyleTag = (
-  <style>{`
-  .Link {
-    border-radius: 3px;
-    box-shadow: none;
-    padding: ${rhythm(0.4)};
-    transition:
-      border 100ms ease-in-out,
-      background 100ms ease-in-out;
-  }
-  .Link__next {
-    color: white;
-  }
-  .Link__next:hover {
-    opacity: 0.7;
-  }
-  .Link__prev {
-    border: 1px solid transparent;
-    color: black;
-  }
-  .Link__prev:hover {
-    border: 1px solid black;
-  }
-`}</style>
-)
+import {
+  Discussion,
+  PrevNextNavigation,
+} from "@src/components/TemplateComponents"
 
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
@@ -41,7 +18,6 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const { previous, next } = pageContext
 
   const [gradient, setGradient] = useState(`none`)
-  const AnimatedLink = animated(Link)
 
   return (
     <Layout
@@ -88,58 +64,11 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       />
       <Bio />
 
-      <ul
-        style={{
-          display: `flex`,
-          flexWrap: `wrap`,
-          justifyContent: `space-between`,
-          listStyle: `none`,
-          padding: 0,
-        }}
-      >
-        {/**
-         * [previous|next].internal.type = `MarkdownRemark` || `ContentfulBlogPost`
-         * slug & title need to be accessed slightly differently
-         **/}
-        <li>
-          {previous && (
-            <Link
-              className={"Link Link__prev"}
-              to={
-                previous.internal.type === `MarkdownRemark`
-                  ? previous.fields.slug
-                  : previous.slug
-              }
-              rel="prev"
-            >
-              ←{" "}
-              {previous.internal.type === `MarkdownRemark`
-                ? previous.frontmatter.title
-                : previous.title}
-            </Link>
-          )}
-        </li>
-        <li>
-          {next && (
-            <AnimatedLink
-              style={{ background: gradient }}
-              className={"Link Link__next"}
-              to={
-                next.internal.type === `MarkdownRemark`
-                  ? next.fields.slug
-                  : next.slug
-              }
-              rel="next"
-            >
-              {next.internal.type === `MarkdownRemark`
-                ? next.frontmatter.title
-                : next.title}{" "}
-              →
-            </AnimatedLink>
-          )}
-        </li>
-        {LinksStyleTag}
-      </ul>
+      <PrevNextNavigation
+        previous={previous}
+        next={next}
+        nextGradient={gradient}
+      />
 
       <Discussion
         locationPathname={location.pathname}

@@ -10,8 +10,8 @@ import { rhythm, scale } from "@src/utils/typography"
 import {
   Discussion,
   DocumentToReactComponents,
+  PrevNextNavigation,
 } from "@src/components/TemplateComponents"
-import { LinksStyleTag } from "./blog-post"
 
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { BLOCKS } from "@contentful/rich-text-types"
@@ -26,7 +26,6 @@ export default function ContentfulBlogPostTemplate({
   const { previous, next } = pageContext
 
   const [gradient, setGradient] = useState(`none`)
-  const AnimatedLink = animated(Link)
 
   return (
     <Layout
@@ -74,58 +73,11 @@ export default function ContentfulBlogPostTemplate({
       />
       <Bio />
 
-      <ul
-        style={{
-          display: `flex`,
-          flexWrap: `wrap`,
-          justifyContent: `space-between`,
-          listStyle: `none`,
-          padding: 0,
-        }}
-      >
-        {/**
-         * [previous|next].internal.type = `MarkdownRemark` || `ContentfulBlogPost`
-         * slug & title need to be accessed slightly differently
-         **/}
-        <li>
-          {previous && (
-            <Link
-              className={"Link Link__prev"}
-              to={
-                previous.internal.type === `MarkdownRemark`
-                  ? previous.fields.slug
-                  : previous.slug
-              }
-              rel="prev"
-            >
-              ←{" "}
-              {previous.internal.type === `MarkdownRemark`
-                ? previous.frontmatter.title
-                : previous.title}
-            </Link>
-          )}
-        </li>
-        <li>
-          {next && (
-            <AnimatedLink
-              style={{ background: gradient }}
-              className={"Link Link__next"}
-              to={
-                next.internal.type === `MarkdownRemark`
-                  ? next.fields.slug
-                  : next.slug
-              }
-              rel="next"
-            >
-              {next.internal.type === `MarkdownRemark`
-                ? next.frontmatter.title
-                : next.title}{" "}
-              →
-            </AnimatedLink>
-          )}
-        </li>
-        {LinksStyleTag}
-      </ul>
+      <PrevNextNavigation
+        previous={previous}
+        next={next}
+        nextGradient={gradient}
+      />
 
       <Discussion
         locationPathname={location.pathname}
