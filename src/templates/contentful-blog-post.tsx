@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { useState } from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
 
@@ -9,10 +9,8 @@ import { rhythm, scale } from "@src/utils/typography"
 import {
   Discussion,
   DocumentToReactComponents,
+  PrevNextNavigation,
 } from "@src/components/TemplateComponents"
-
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
-import { BLOCKS } from "@contentful/rich-text-types"
 
 export default function ContentfulBlogPostTemplate({
   data,
@@ -22,9 +20,17 @@ export default function ContentfulBlogPostTemplate({
   const post = data.contentfulBlogPost
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
-  console.log(post.body.json)
+
+  const [gradient, setGradient] = useState()
+
   return (
-    <Layout location={location} title={siteTitle}>
+    <Layout
+      location={location}
+      title={siteTitle}
+      handleGradientChange={value => {
+        setGradient(value)
+      }}
+    >
       <SEO title={post.title} description={post.description} />
       <h1>{post.title}</h1>
 
@@ -63,54 +69,11 @@ export default function ContentfulBlogPostTemplate({
       />
       <Bio />
 
-      <ul
-        style={{
-          display: `flex`,
-          flexWrap: `wrap`,
-          justifyContent: `space-between`,
-          listStyle: `none`,
-          padding: 0,
-        }}
-      >
-        {/**
-         * [previous|next].internal.type = `MarkdownRemark` || `ContentfulBlogPost`
-         * slug & title need to be accessed slightly differently
-         **/}
-        <li>
-          {previous && (
-            <Link
-              to={
-                previous.internal.type === `MarkdownRemark`
-                  ? previous.fields.slug
-                  : previous.slug
-              }
-              rel="prev"
-            >
-              ←{" "}
-              {previous.internal.type === `MarkdownRemark`
-                ? previous.frontmatter.title
-                : previous.title}
-            </Link>
-          )}
-        </li>
-        <li>
-          {next && (
-            <Link
-              to={
-                next.internal.type === `MarkdownRemark`
-                  ? next.fields.slug
-                  : next.slug
-              }
-              rel="next"
-            >
-              {next.internal.type === `MarkdownRemark`
-                ? next.frontmatter.title
-                : next.title}{" "}
-              →
-            </Link>
-          )}
-        </li>
-      </ul>
+      <PrevNextNavigation
+        previous={previous}
+        next={next}
+        nextGradient={gradient}
+      />
 
       <Discussion
         locationPathname={location.pathname}
