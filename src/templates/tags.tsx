@@ -1,6 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import union from "lodash/union"
+import sortBy from "lodash/sortBy"
 
 // Components
 import { Link, graphql } from "gatsby"
@@ -23,7 +24,22 @@ const Tags = ({ pageContext, data, location }) => {
   } = data.allContentfulBlogPost
 
   let totalCount: number = markdownRemarkTotalCount + contentfulTotalCount
-  let edges = union(contentfulEdges, markdownRemarkEdges)
+
+  /**
+   * Combine Markdown & Contentful posts. Sort by newest Date.
+   */
+  let edges = sortBy(
+    union(contentfulEdges, markdownRemarkEdges),
+    ({ node }) => {
+      let date = new Date(
+        node.internal.type === `MarkdownRemark`
+          ? node.frontmatter.date
+          : node.date
+      )
+
+      return -date
+    }
+  )
 
   const tagHeader = `${totalCount} post${
     totalCount === 1 ? "" : "s"
@@ -115,6 +131,7 @@ export const pageQuery = graphql`
           }
           frontmatter {
             title
+            date
           }
         }
       }
@@ -132,6 +149,7 @@ export const pageQuery = graphql`
           }
           slug
           title
+          date
         }
       }
     }
