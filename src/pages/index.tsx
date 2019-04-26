@@ -11,6 +11,7 @@ import { rhythm } from "@src/utils/typography"
 
 // Tools
 import union from "lodash/union"
+import sortBy from "lodash/sortBy"
 import includes from "lodash/includes"
 import kebabCase from "lodash/kebabCase"
 import map from "lodash/map"
@@ -215,10 +216,21 @@ class BlogIndex extends React.Component {
   render() {
     const { data } = this.props
     const siteTitle = data.site.siteMetadata.title
+
     const markdownPosts = data.allMarkdownRemark.edges
     const contentfulPosts = data.allContentfulBlogPost.edges
 
-    const posts = union(contentfulPosts, markdownPosts)
+    /**
+     * Combine Markdown & Contentful posts. Sort by newest Date.
+     */
+    const posts = sortBy(union(contentfulPosts, markdownPosts), ({ node }) => {
+      let date = new Date(
+        node.internal.type === `MarkdownRemark`
+          ? node.frontmatter.date
+          : node.date
+      )
+      return -date
+    })
 
     return (
       <Layout location={this.props.location} title={siteTitle}>

@@ -29,6 +29,7 @@ exports.createPages = ({ graphql, actions }) => {
               frontmatter {
                 title
                 tags
+                date
               }
             }
           }
@@ -45,6 +46,7 @@ exports.createPages = ({ graphql, actions }) => {
               slug
               title
               tags
+              date
             }
           }
         }
@@ -58,7 +60,22 @@ exports.createPages = ({ graphql, actions }) => {
     // Create blog posts pages.
     const markdownPosts = result.data.allMarkdownRemark.edges
     const contentfulPosts = result.data.allContentfulBlogPost.edges
-    const posts = _.union(contentfulPosts, markdownPosts)
+
+    /**
+     * Combine Markdown & Contentful posts. Sort by newest Date.
+     */
+    const posts = _.sortBy(
+      _.union(contentfulPosts, markdownPosts),
+      ({ node }) => {
+        let date = new Date(
+          node.internal.type === `MarkdownRemark`
+            ? node.frontmatter.date
+            : node.date
+        )
+
+        return -date
+      }
+    )
 
     posts.forEach((post, index) => {
       const previous = index === posts.length - 1 ? null : posts[index + 1].node
