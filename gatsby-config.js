@@ -99,6 +99,7 @@ module.exports = {
       resolve: `gatsby-plugin-google-adsense`,
       options: {
         publisherId: `${process.env.GATSBY_GOOGLE_AD_CLIENT}`,
+        excludePaths: `/`,
       },
     },
     `gatsby-plugin-feed`,
