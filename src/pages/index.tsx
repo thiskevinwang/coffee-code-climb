@@ -57,7 +57,6 @@ interface Props {
 }
 
 function Post({
-  key,
   linkTo,
   date,
   title,
@@ -159,7 +158,7 @@ function Post({
       }}
     >
       {PostDetails}
-      <style jsx>{`
+      <style>{`
         .post-details__card {
           transition: box-shadow 100ms ease-in-out, transform 322ms ease-in-out,
             background 322ms ease-in-out, padding-left 322ms ease-in-out;
