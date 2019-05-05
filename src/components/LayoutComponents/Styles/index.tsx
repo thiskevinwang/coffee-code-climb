@@ -29,5 +29,6 @@ export const styles = {
     background: `linear-gradient(150deg, rgba(255,255,255,0.9) 15%, rgba(255,255,255,0.2) 35%, rgba(255,255,255,0.5) 55%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0.8) 94%)`,
     zIndex: 9999,
     position: "absolute",
+    touchAction: "none",
   },
 }

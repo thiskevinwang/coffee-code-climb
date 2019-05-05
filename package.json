@@ -12,6 +12,7 @@
     "@contentful/rich-text-types": "^13.1.0",
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
+    "@types/lodash": "^4.14.123",
     "disqus-react": "^1.0.5",
     "gatsby": "^2.3.25",
     "gatsby-image": "^2.0.39",
