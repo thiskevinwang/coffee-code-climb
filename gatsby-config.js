@@ -4,7 +4,7 @@ require("dotenv").config({
 
 module.exports = {
   siteMetadata: {
-    title: `Coffee ☕️ Code 💻 Climb 🧗🏻‍♂️`,
+    title: `Coffee Code Climb`,
     author: `Kevin Wang`,
     description: `A blog about all things coffee, coding, and rock climbing.`,
     siteUrl: `https://coffeecodeclimb.com`,
