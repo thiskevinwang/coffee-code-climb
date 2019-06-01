@@ -236,7 +236,7 @@ class BlogIndex extends React.Component {
         <SEO title="All posts" keywords={KEYWORDS} />
         <Bio />
 
-        <Grid container direction="row" spacing={24}>
+        <Grid container direction="row" spacing={3}>
           {posts.map(({ node }, index) => {
             const title =
               node.internal.type === `MarkdownRemark` &&
