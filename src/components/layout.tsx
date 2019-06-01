@@ -247,7 +247,7 @@ export default function Layout({
           </animated.header>
 
           <MobileDrawer
-            style={{
+            buttonStyle={{
               zIndex: 99,
               position: "fixed",
               right: 0,
