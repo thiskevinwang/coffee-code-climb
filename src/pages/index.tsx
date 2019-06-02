@@ -1,7 +1,7 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
-import { CommentCount } from "disqus-react"
+// import { CommentCount } from "disqus-react"
 import { Grid, Divider, Tooltip } from "@material-ui/core"
 
 import Bio from "../components/bio"
@@ -128,7 +128,7 @@ function Post({
           </Link>
         </Tooltip>
       )}{" "}
-      <code>
+      {/* <code>
         <small>
           <Link
             style={{ color: `inherit`, boxShadow: `none` }}
@@ -139,7 +139,7 @@ function Post({
             </CommentCount>
           </Link>
         </small>
-      </code>
+      </code> */}
     </>
   )
 
