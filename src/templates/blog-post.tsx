@@ -69,11 +69,11 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         nextGradient={gradient}
       />
 
-      <Discussion
+      {/* <Discussion
         locationPathname={location.pathname}
         identifier={post.id}
         title={post.frontmatter.title}
-      />
+      /> */}
     </Layout>
   )
 }

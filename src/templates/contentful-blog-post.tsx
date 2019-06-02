@@ -7,7 +7,7 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "@src/utils/typography"
 import {
-  Discussion,
+  // Discussion,
   DocumentToReactComponents,
   PrevNextNavigation,
 } from "@src/components/TemplateComponents"
@@ -75,11 +75,11 @@ export default function ContentfulBlogPostTemplate({
         nextGradient={gradient}
       />
 
-      <Discussion
+      {/* <Discussion
         locationPathname={location.pathname}
         identifier={post.id}
         title={post.title}
-      />
+      /> */}
     </Layout>
   )
 }
