@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated, useTrail } from "react-spring"
 import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
-import { Paper } from "@material-ui/core"
 
 import { rhythm } from "@src/utils/typography"
-import { isMobile } from "react-device-detect"
 import throttle from "lodash/throttle"
 
 import * as SVG from "@src/svg"
@@ -142,6 +140,7 @@ export default function Layout({ location, title, children }: Props) {
    */
   const [trail, setTrail] = useTrail(5, () => ({
     xy: [0, 0],
+    // (property) config?: SpringConfig | ((key: string) => SpringConfig)
     config: i => configs[i],
   }))
   /**

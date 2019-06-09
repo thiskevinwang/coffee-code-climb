@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export const PRISMA = (
   <svg viewBox="0 0 40 40" width="18" height="22">
@@ -8,4 +8,4 @@ export const PRISMA = (
       clip-rule="evenodd"
     />
   </svg>
-);
+)

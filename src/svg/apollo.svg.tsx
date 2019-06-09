@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export const APOLLO = (
   <svg width="22" height="22" viewBox="0 0 34 32" fill="none">
@@ -7,4 +7,4 @@ export const APOLLO = (
       fill="#231A99"
     />
   </svg>
-);
+)

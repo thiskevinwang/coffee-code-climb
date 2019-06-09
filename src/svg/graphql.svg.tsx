@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export const GRAPHQL = (
   <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
@@ -40,4 +40,4 @@ export const GRAPHQL = (
       fill="#D645A7"
     />
   </svg>
-);
+)

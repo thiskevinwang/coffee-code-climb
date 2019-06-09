@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export const NODE = (
   <svg width="22" height="22" viewBox="490 56 50 105">
@@ -10,4 +10,4 @@ export const NODE = (
       />
     </g>
   </svg>
-);
+)

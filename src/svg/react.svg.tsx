@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 export const REACT = (
   <svg width="22" height="22" viewBox="0 0 36 32" fill="none">
@@ -11,4 +11,4 @@ export const REACT = (
       fill="#61dafb"
     />
   </svg>
-);
+)
