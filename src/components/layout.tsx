@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useSpring, animated, useTrail } from "react-spring"
+import { useSpring, animated, useTrail, config } from "react-spring"
 import styled, { css } from "styled-components"
 import throttle from "lodash/throttle"
 
@@ -121,7 +121,8 @@ export default function Layout({ location, title, children }: Props) {
   // Wrap <Paper> in `animated` to work with `useSpring`
   // const AnimatedPaper = animated(Paper)
 
-  // SVG animation trail
+  const [slowMo, setSlowMo] = useState(false)
+  // SVG animation trail configs
   const zero = { mass: 2, tension: 500, friction: 30 }
   const one = { mass: 3, tension: 400, friction: 32 }
   const two = { mass: 4, tension: 300, friction: 34 }
@@ -157,6 +158,7 @@ export default function Layout({ location, title, children }: Props) {
     padding: ${props => props.index && props.index * 5 + "px"};
     pointer-events: none;
     position: absolute;
+    z-index: 999;
   `
   const AnimatedSVG = animated(StyledSVG)
 
@@ -165,7 +167,14 @@ export default function Layout({ location, title, children }: Props) {
     `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
   return (
-    <div onMouseMove={e => setTrail({ xy: [e.pageX, e.pageY] })}>
+    <div
+      onMouseMove={e =>
+        setTrail({ xy: [e.pageX, e.pageY], config: slowMo && config.molasses })
+      }
+      onKeyPress={e => {
+        e.key === "s" && setSlowMo(state => !state)
+      }}
+    >
       {trail.map((props, index) => (
         <AnimatedSVG
           key={index}
