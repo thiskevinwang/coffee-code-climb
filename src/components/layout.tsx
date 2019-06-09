@@ -64,15 +64,9 @@ const dbgStyleTag = (
  * @param {string} props.title data.site.siteMetadata.title from graphql-pageQuery
  * @param {Location} props.location Parent.props.location
  * @param {React$Node} props.children mapped posts, or markdown
- * @param {object} props.handleGradientChange TODO...
  */
 
-export default function Layout({
-  location,
-  title,
-  children,
-  handleGradientChange,
-}: Props) {
+export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
 
   // Hook for updating currentY state
@@ -90,18 +84,6 @@ export default function Layout({
         window.pageYOffset /
           (document.documentElement.scrollHeight - window.innerHeight)
       )
-
-      /**
-       * Sends an AnimatedInterpolation as the arg passed to the callback
-       * assigned to props.handleGradientChange
-       **/
-      handleGradientChange != undefined &&
-        handleGradientChange(
-          _scrollPercent.interpolate({
-            range: [0, 0.25, 0.5, 0.75, 1],
-            output: [...GRADIENTS],
-          })
-        )
     }, 100)
     typeof window !== "undefined" &&
       window.addEventListener("scroll", handleScroll)

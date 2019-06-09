@@ -1,42 +1,11 @@
 import * as React from "react"
-import { animated } from "react-spring"
-import { Link } from "gatsby"
-import { rhythm } from "@src/utils/typography"
+import { Link as _ } from "gatsby"
+import { rhythm, scale } from "@src/utils/typography"
+import styled, { css } from "styled-components"
 
 const MUIBoxShadow = `rgba(0, 0, 0, 0.2) 0px 1px 8px 0px, rgba(0, 0, 0, 0.14) 0px 3px 4px 0px, rgba(0, 0, 0, 0.12) 0px 3px 3px -2px`
 
 const MUIBoxShadowHover = `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)`
-
-/**
- * CSS styling for the `next` & `prev` Links. Accounts for :hover,
- * which cannot be handled by inline JSX styling.
- * @const LinksStyleTag
- */
-const LinksStyleTag: JSX.Element = (
-  <style>{`
-  .Link {
-    border-radius: 3px;
-    box-shadow: ${MUIBoxShadow};
-    color: inherit;
-    padding: ${rhythm(0.4)};
-    transition:
-      all 100ms ease-in-out;
-  }
-  .Link:hover {
-    box-shadow: ${MUIBoxShadowHover};
-  }
-  .Link__next {
-    color: white;
-  }
-  .Link__next:hover {
-  }
-  .Link__prev {
-    background: white;
-  }
-  .Link__prev:hover {
-  }
-`}</style>
-)
 
 /**
  * Describes the shape of the data passed to the PrevNextNavigation component's
@@ -75,33 +44,54 @@ interface ContentfulBlogPostNode {
 interface Props {
   previous?: MarkdownRemarkNode | ContentfulBlogPostNode
   next?: MarkdownRemarkNode | ContentfulBlogPostNode
-  nextGradient?: React.Key
 }
+
+/**
+ * Styled Link component
+ * @const Link
+ * @param {} props.next for styling the label
+ **/
+const Link = styled(_)`
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: ${MUIBoxShadow};
+  color: grey;
+  padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
+  transition: all 200ms ease-in-out;
+
+  label {
+    display: flex;
+    ${props =>
+      props.next &&
+      css`
+        justify-content: flex-end;
+      `}
+    width: 100%;
+    ${scale(-0.5)}
+  }
+
+  :hover {
+    border: 1px solid black;
+    box-shadow: ${MUIBoxShadowHover};
+    color: black;
+    transform: translate(0px, -5px) scale(1.05);
+  }
+`
 
 /**
  * React function component for navigating between blog posts.
  * Shared between `blog-post.jsx` & `contentful-blog-post.jsx`
  * @function PrevNextNavigation
  */
-export default function PrevNextNavigation({
-  previous,
-  next,
-  nextGradient,
-}: Props) {
-  /**
-   * This is a react-spring wrapper for Gatsby's link component.
-   * It enables useSpring() values to be passed to the CSS properties in its
-   * style props.
-   * @const AnimatedLink
-   */
-  const AnimatedLink = animated(Link)
-
+export default function PrevNextNavigation({ previous, next }: Props) {
   const getSlugFromNode = (node): string => {
     switch (node.internal.type) {
       case `MarkdownRemark`:
         return node.fields.slug
       case `ContentfulBlogPost`:
         return node.slug
+      default:
+        return ""
     }
   }
 
@@ -111,6 +101,8 @@ export default function PrevNextNavigation({
         return node.frontmatter.title
       case `ContentfulBlogPost`:
         return node.title
+      default:
+        return ""
     }
   }
 
@@ -121,33 +113,20 @@ export default function PrevNextNavigation({
         flexWrap: `wrap`,
         justifyContent: `space-between`,
         listStyle: `none`,
-        padding: 0,
       }}
     >
-      <li>
-        {previous && (
-          <Link
-            className={"Link Link__prev"}
-            to={getSlugFromNode(previous)}
-            rel="prev"
-          >
-            ← {getTitleFromNode(previous)}
-          </Link>
-        )}
-      </li>
-      <li>
-        {next && (
-          <AnimatedLink
-            style={{ background: nextGradient }}
-            className={"Link Link__next"}
-            to={getSlugFromNode(next)}
-            rel="next"
-          >
-            {getTitleFromNode(next)} →
-          </AnimatedLink>
-        )}
-      </li>
-      {LinksStyleTag}
+      {previous && (
+        <Link to={getSlugFromNode(previous)} rel="prev" label="foo" prev>
+          <label>older</label>← {getTitleFromNode(previous)}
+        </Link>
+      )}
+
+      {next && (
+        <Link to={getSlugFromNode(next)} rel="next" next>
+          <label>newer</label>
+          {getTitleFromNode(next)} →
+        </Link>
+      )}
     </ul>
   )
 }

@@ -16,16 +16,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
 
-  const [gradient, setGradient] = useState()
-
   return (
-    <Layout
-      location={location}
-      title={siteTitle}
-      handleGradientChange={value => {
-        setGradient(value)
-      }}
-    >
+    <Layout location={location} title={siteTitle}>
       <SEO
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
@@ -63,11 +55,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       />
       <Bio />
 
-      <PrevNextNavigation
-        previous={previous}
-        next={next}
-        nextGradient={gradient}
-      />
+      <PrevNextNavigation previous={previous} next={next} />
 
       {/* <Discussion
         locationPathname={location.pathname}
