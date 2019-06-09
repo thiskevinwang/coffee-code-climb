@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react"
-import { useSpring, animated } from "react-spring"
+import { useSpring, animated, useTrail } from "react-spring"
 import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
 import { Paper } from "@material-ui/core"
 
 import { rhythm } from "@src/utils/typography"
 import { isMobile } from "react-device-detect"
 import throttle from "lodash/throttle"
+
+import * as SVG from "@src/svg"
 
 require("prismjs/plugins/line-numbers/prism-line-numbers.css")
 
@@ -105,22 +107,68 @@ export default function Layout({ location, title, children }: Props) {
     _scrollPercent: scrollPercent,
   })
 
-  const [d, setD] = useState({ x: -75, y: -75 })
-  const [drag, toggleDrag] = useState(false)
+  // const [d, setD] = useState({ x: -75, y: -75 })
+  // const [drag, toggleDrag] = useState(false)
 
-  const { dX, dY } = useSpring({
-    from: { dX: -100, dY: -100 },
-    dX: typeof window !== "undefined" ? d.x : -75,
-    dY: typeof window !== "undefined" ? d.y : -75,
-    config: { mass: 1, tension: 250, friction: 10 },
-  })
+  // const { dX, dY } = useSpring({
+  //   from: { dX: -100, dY: -100 },
+  //   dX: typeof window !== "undefined" ? d.x : -75,
+  //   dY: typeof window !== "undefined" ? d.y : -75,
+  //   config: { mass: 1, tension: 250, friction: 10 },
+  // })
 
   // Wrap <Paper> in `animated` to work with `useSpring`
-  const AnimatedPaper = animated(Paper)
+  // const AnimatedPaper = animated(Paper)
+
+  // SVG animation trail
+  const zero = { mass: 2, tension: 500, friction: 30 }
+  const one = { mass: 3, tension: 400, friction: 32 }
+  const two = { mass: 4, tension: 300, friction: 34 }
+  const three = { mass: 5, tension: 200, friction: 36 }
+  const four = { mass: 6, tension: 100, friction: 38 }
+  const configs = [zero, one, two, three, four]
+
+  const translate2d = (x, y) =>
+    `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
+
+  /**
+   * useTrail() 👉 https://www.react-spring.io/docs/hooks/use-trail
+   * @param {number} count The number of animated "things"
+   * @param {func} getProps
+   *
+   * @return {array} [trail, set, stop?]
+   *
+   * @usage trail.map(props => <animated.div style={props} />)
+   */
+  const [trail, setTrail] = useTrail(5, () => ({
+    xy: [0, 0],
+    config: i => configs[i],
+  }))
+  /**
+   * An array of SVGs to be rendered by `trail`
+   */
+  const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
 
   return (
-    <>
-      <AnimatedPaper
+    <div onMouseMove={e => setTrail({ xy: [e.pageX, e.pageY] })}>
+      {trail.map((props, index) => (
+        <animated.div
+          key={index}
+          style={{
+            display: `flex`,
+            position: "absolute",
+            border: "1px dotted white",
+            borderRadius: `100%`,
+            padding: 10,
+            background: `rgba(255,255,255,0.5)`,
+            transform: props.xy.interpolate(translate2d),
+          }}
+        >
+          {SVGS[index]}
+        </animated.div>
+      ))}
+
+      {/* <AnimatedPaper
         className={`draggable-glass`}
         style={{
           ...styles.draggableGlass,
@@ -155,7 +203,7 @@ export default function Layout({ location, title, children }: Props) {
             touch-action: none;
           }
         `}</style>
-      </AnimatedPaper>
+      </AnimatedPaper> */}
 
       {/* <NavBar
         location={location}
@@ -168,12 +216,13 @@ export default function Layout({ location, title, children }: Props) {
             : 0
         }
       /> */}
+
       <div
         style={{ overflowX: "hidden" }}
         // add listener for when mouse moves too fast and leaves the `.draggable-glass`
-        onMouseMove={e => {
-          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
-        }}
+        // onMouseMove={e => {
+        //   drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
+        // }}
       >
         {/* Gradient Background */}
         <animated.span
@@ -274,6 +323,6 @@ export default function Layout({ location, title, children }: Props) {
           <Footer />
         </div>
       </div>
-    </>
+    </div>
   )
 }
