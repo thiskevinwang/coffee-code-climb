@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated, useTrail } from "react-spring"
-import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
-
-import { rhythm } from "@src/utils/typography"
+import styled, { css } from "styled-components"
 import throttle from "lodash/throttle"
 
+import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
+import { rhythm } from "@src/utils/typography"
 import * as SVG from "@src/svg"
 
 require("prismjs/plugins/line-numbers/prism-line-numbers.css")
@@ -69,6 +69,9 @@ const dbgStyleTag = (
 export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
 
+  // TODO: these two setState hooks cause unecessary re-renders. 😖
+  // FIXME: figure out a fix. 🛠
+
   // Hook for updating currentY state
   // This gets passed to NavBar's `pageYOffset` props
   const [currentY, setCurrentY] = useState(0)
@@ -126,9 +129,6 @@ export default function Layout({ location, title, children }: Props) {
   const four = { mass: 6, tension: 100, friction: 38 }
   const configs = [zero, one, two, three, four]
 
-  const translate2d = (x, y) =>
-    `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
-
   /**
    * useTrail() 👉 https://www.react-spring.io/docs/hooks/use-trail
    * @param {number} count The number of animated "things"
@@ -144,27 +144,38 @@ export default function Layout({ location, title, children }: Props) {
     config: i => configs[i],
   }))
   /**
-   * An array of SVGs to be rendered by `trail`
+   * An array of SVGs to be rendered by `trail.map((e,i) => {})`
    */
   const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
+  const StyledSVG = styled.div`
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px dotted white;
+    border-radius: 100%;
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+      0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    display: flex;
+    padding: ${props => props.index && props.index * 5 + "px"};
+    pointer-events: none;
+    position: absolute;
+  `
+  const AnimatedSVG = animated(StyledSVG)
+
+  // you can add _.random() in here for some weird behavior. (no rerenders!)
+  const translate2d = (x, y) =>
+    `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
   return (
     <div onMouseMove={e => setTrail({ xy: [e.pageX, e.pageY] })}>
       {trail.map((props, index) => (
-        <animated.div
+        <AnimatedSVG
           key={index}
+          index={index + 1}
           style={{
-            display: `flex`,
-            position: "absolute",
-            border: "1px dotted white",
-            borderRadius: `100%`,
-            padding: 10,
-            background: `rgba(255,255,255,0.5)`,
             transform: props.xy.interpolate(translate2d),
           }}
         >
           {SVGS[index]}
-        </animated.div>
+        </AnimatedSVG>
       ))}
 
       {/* <AnimatedPaper
