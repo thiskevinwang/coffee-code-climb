@@ -21,16 +21,8 @@ export default function ContentfulBlogPostTemplate({
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next } = pageContext
 
-  const [gradient, setGradient] = useState()
-
   return (
-    <Layout
-      location={location}
-      title={siteTitle}
-      handleGradientChange={value => {
-        setGradient(value)
-      }}
-    >
+    <Layout location={location} title={siteTitle}>
       <SEO title={post.title} description={post.description} />
       <h1>{post.title}</h1>
 
@@ -69,11 +61,7 @@ export default function ContentfulBlogPostTemplate({
       />
       <Bio />
 
-      <PrevNextNavigation
-        previous={previous}
-        next={next}
-        nextGradient={gradient}
-      />
+      <PrevNextNavigation previous={previous} next={next} />
 
       {/* <Discussion
         locationPathname={location.pathname}

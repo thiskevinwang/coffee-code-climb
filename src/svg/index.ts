@@ -1,0 +1,5 @@
+export * from "./apollo.svg.tsx"
+export * from "./graphql.svg.tsx"
+export * from "./node.svg.tsx"
+export * from "./prisma.svg.tsx"
+export * from "./react.svg.tsx"

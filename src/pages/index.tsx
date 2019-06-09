@@ -73,12 +73,12 @@ function Post({
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
 
-  const disqusShortname = "coffeecodeclimb"
-  const disqusConfig = {
-    url: "https://coffeecodeclimb.com" + linkTo,
-    identifier: id,
-    title: title,
-  }
+  // const disqusShortname = "coffeecodeclimb"
+  // const disqusConfig = {
+  //   url: "https://coffeecodeclimb.com" + linkTo,
+  //   identifier: id,
+  //   title: title,
+  // }
 
   const PostDetails = (
     <>
