@@ -128,6 +128,12 @@ const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 ```
 
+the slowMo state hook...
+
+```typescript
+const [slowMo, setSlowMo] = useState(false)
+```
+
 Implementation. Currently, the `onKeyPress` behavior only works correctly when the correct element has focus.  
 Example: press `tab` so that the title ("Coffee Code Climb")has focus, then `s`.
 
