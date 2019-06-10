@@ -88,10 +88,19 @@ export default function Layout({ location, title, children }: Props) {
           (document.documentElement.scrollHeight - window.innerHeight),
       })
     }
+
+    const handleKeyPressS = e => {
+      e.key === "s" && setSlowMo(state => !state)
+    }
+
     typeof window !== "undefined" &&
-      window.addEventListener("scroll", handleScroll)
+      (() => {
+        window.addEventListener("scroll", handleScroll)
+        window.addEventListener("keypress", handleKeyPressS)
+      })()
     return () => {
       window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("keypress", handleKeyPressS)
     }
   }, [])
 
@@ -149,9 +158,6 @@ export default function Layout({ location, title, children }: Props) {
       onMouseMove={e =>
         setTrail({ xy: [e.pageX, e.pageY], config: slowMo && config.molasses })
       }
-      onKeyPress={e => {
-        e.key === "s" && setSlowMo(state => !state)
-      }}
     >
       {trail.map((props, index) => (
         <AnimatedSVG
