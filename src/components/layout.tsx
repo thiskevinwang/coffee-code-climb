@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated, useTrail, config } from "react-spring"
 import styled, { css } from "styled-components"
-import throttle from "lodash/throttle"
 
 import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
 import { rhythm } from "@src/utils/typography"
@@ -69,59 +68,45 @@ const dbgStyleTag = (
 export default function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
 
-  // TODO: these two setState hooks cause unecessary re-renders. 😖
-  // FIXME: figure out a fix. 🛠
-
-  // Hook for updating currentY state
-  // This gets passed to NavBar's `pageYOffset` props
-  const [currentY, setCurrentY] = useState(0)
-  // Hook for scrollPercent of the document
-  // between 0...1
-  const [scrollPercent, setScrollPercent] = useState(0)
+  /**
+   * scrollY & setScrollyY
+   * @usage scrollY.percent.interpolate({range: [any], output: [any]})
+   *
+   * @usage setScrollyY({percent: [any] })
+   */
+  const [scrollY, setScrollY] = useSpring(() => ({
+    percent: 0,
+    config: config.wobbly,
+  }))
 
   // Attach scroll event listener to window when <Layout /> mounts
   useEffect(() => {
-    const handleScroll = throttle(() => {
-      setCurrentY(window.pageYOffset)
-      setScrollPercent(
-        window.pageYOffset /
-          (document.documentElement.scrollHeight - window.innerHeight)
-      )
-    }, 100)
+    const handleScroll = () => {
+      setScrollY({
+        percent:
+          window.pageYOffset /
+          (document.documentElement.scrollHeight - window.innerHeight),
+      })
+    }
+
+    const handleKeyPressS = e => {
+      e.key === "s" && setSlowMo(state => !state)
+    }
+
     typeof window !== "undefined" &&
-      window.addEventListener("scroll", handleScroll)
+      (() => {
+        window.addEventListener("scroll", handleScroll)
+        window.addEventListener("keypress", handleKeyPressS)
+      })()
     return () => {
       window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("keypress", handleKeyPressS)
     }
   }, [])
 
-  // Spring animation
-  // passed to animated.header style prop
-  const { x } = useSpring({
-    from: { x: 1 },
-    x: typeof window !== "undefined" ? currentY / (window.innerHeight / 4) : 0,
-  })
-
-  // passed to animated.span (background) style prop
-  const { _scrollPercent } = useSpring({
-    from: { _scrollPercent: 0 },
-    _scrollPercent: scrollPercent,
-  })
-
-  // const [d, setD] = useState({ x: -75, y: -75 })
-  // const [drag, toggleDrag] = useState(false)
-
-  // const { dX, dY } = useSpring({
-  //   from: { dX: -100, dY: -100 },
-  //   dX: typeof window !== "undefined" ? d.x : -75,
-  //   dY: typeof window !== "undefined" ? d.y : -75,
-  //   config: { mass: 1, tension: 250, friction: 10 },
-  // })
-
-  // Wrap <Paper> in `animated` to work with `useSpring`
-  // const AnimatedPaper = animated(Paper)
-
+  // Slow Motion state hook
   const [slowMo, setSlowMo] = useState(false)
+
   // SVG animation trail configs
   const zero = { mass: 2, tension: 500, friction: 30 }
   const one = { mass: 3, tension: 400, friction: 32 }
@@ -162,18 +147,17 @@ export default function Layout({ location, title, children }: Props) {
   `
   const AnimatedSVG = animated(StyledSVG)
 
+  // interpolation handler
   // you can add _.random() in here for some weird behavior. (no rerenders!)
   const translate2d = (x, y) =>
     `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
+  console.log(scrollY)
   return (
     <div
       onMouseMove={e =>
         setTrail({ xy: [e.pageX, e.pageY], config: slowMo && config.molasses })
       }
-      onKeyPress={e => {
-        e.key === "s" && setSlowMo(state => !state)
-      }}
     >
       {trail.map((props, index) => (
         <AnimatedSVG
@@ -187,67 +171,12 @@ export default function Layout({ location, title, children }: Props) {
         </AnimatedSVG>
       ))}
 
-      {/* <AnimatedPaper
-        className={`draggable-glass`}
-        style={{
-          ...styles.draggableGlass,
-          left: dX,
-          top: dY,
-          borderRadius: 100,
-          display: isMobile ? "none" : "inherit",
-        }}
-        onMouseDown={e => {
-          e.preventDefault()
-          toggleDrag(true)
-        }}
-        onMouseUp={() => {
-          toggleDrag(false)
-        }}
-        onMouseLeave={() => {
-          toggleDrag(false)
-        }}
-        onMouseMove={e => {
-          // clientXY for relative-to-screen
-          //  ex. with position: fixed
-          // pageXY for relative-to-element
-          //  ex. with position: absolute
-
-          // drag && console.log(`x: ${e.pageX}, y: ${e.pageY}`)
-          drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
-          // drag && setD({ x: e.clientX - 100, y: e.clientY - 100 })
-        }}
-      >
-        <style>{`
-          .draggable-glass {
-            touch-action: none;
-          }
-        `}</style>
-      </AnimatedPaper> */}
-
-      {/* <NavBar
-        location={location}
-        // TODO: refactor logic to cap opacity at 1
-        opacity={
-          typeof window !== "undefined"
-            ? currentY / (window.innerHeight / 2) > 1
-              ? 1
-              : currentY / (window.innerHeight / 2)
-            : 0
-        }
-      /> */}
-
-      <div
-        style={{ overflowX: "hidden" }}
-        // add listener for when mouse moves too fast and leaves the `.draggable-glass`
-        // onMouseMove={e => {
-        //   drag && setD({ x: e.pageX - 100, y: e.pageY - 100 })
-        // }}
-      >
+      <div style={{ overflowX: "hidden" }}>
         {/* Gradient Background */}
         <animated.span
           style={{
             ...styles.bg1,
-            background: _scrollPercent.interpolate({
+            background: scrollY.percent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
               output: [...GRADIENTS],
             }),
@@ -258,7 +187,7 @@ export default function Layout({ location, title, children }: Props) {
           className={"dotted-background"}
           style={{
             ...styles.dottedBackground,
-            backgroundSize: _scrollPercent
+            backgroundSize: scrollY.percent
               .interpolate({
                 range: [0, 1],
                 output: [5, 25],
@@ -279,13 +208,13 @@ export default function Layout({ location, title, children }: Props) {
         >
           <animated.header
             style={{
-              transform: x
+              transform: scrollY.percent
                 .interpolate({
                   range: [0, 1, 2],
                   output: [1, 3, 3],
                 })
                 .interpolate(x => `scale(${x})`),
-              opacity: x
+              opacity: scrollY.percent
                 .interpolate({
                   range: [0, 1, 2],
                   output: [1, 0, 0],
