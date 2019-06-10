@@ -1,7 +1,7 @@
 ---
 title: Press 's' to slow-mo
 date: "2019-06-09T09:04:24.756Z"
-description: "TL;DR: Press `tab` to highlight the title, then press `s` to slow-mo..."
+description: "Recapping Redux, and figuring out slow motion trail animation"
 tags:
   [
     code,
@@ -20,7 +20,7 @@ tags:
 image: chenglou.png
 ---
 
-#### TL;DR: Press `tab` to highlight the title, then press `s` to slow-mo...
+#### TL;DR: Just press `s` to slow-mo...
 
 <figure style="text-align: center">
   <img src="./chenglou.png"/ alt="cheng lou">
@@ -134,8 +134,7 @@ the slowMo state hook...
 const [slowMo, setSlowMo] = useState(false)
 ```
 
-Implementation. Currently, the `onKeyPress` behavior only works correctly when the correct element has focus.  
-Example: press `tab` so that the title ("Coffee Code Climb")has focus, then `s`.
+Implementation
 
 ```typescript
 return (
