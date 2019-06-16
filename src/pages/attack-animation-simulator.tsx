@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, ReactElement } from "react"
 import { graphql } from "gatsby"
 import styled, { css } from "styled-components"
-import { animated, useTransition, useSpring, config } from "react-spring"
+import {
+  animated,
+  useTransition,
+  useSpring,
+  config,
+  AnimatedValue,
+} from "react-spring"
+
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import random from "lodash/random"
+import debounce from "lodash/debounce"
 import uuid from "uuid"
 
 import Layout from "../components/layout"
@@ -14,6 +22,16 @@ import {
   MUIBoxShadowHover,
 } from "@src/components/TemplateComponents/PrevNextNavigation"
 import { rhythm, scale } from "@src/utils/typography"
+
+const AnimatedPre = animated.pre
+const AnimatedBar = animated.div
+const AnimatedDescription = styled.div`
+  border: 1px solid grey;
+  border-radius: 5px;
+  display: block;
+  padding: ${rhythm(0.5)};
+  margin: ${rhythm(0.5)};
+`
 
 // TODO: Extract this cool button
 const NotUglyButton = styled.div`
@@ -40,7 +58,13 @@ const NotUglyButton = styled.div`
   }
 `
 
-// Randomly guessed some color-math
+/**
+ * # AttackCounter
+ * A `styled-component` that that updates style based on props
+ *
+ * @param {...*} props
+ * @param {string|number} props.value some attack.damage value
+ */
 const AttackCounter = styled.div`
   position: fixed;
   top: 50%;
@@ -57,7 +81,94 @@ const AttackCounter = styled.div`
       );
     `}
 `
+/**
+ * # AnimatedAttackCounter
+ * An `animated`, `styled-component`
+ */
 const AnimatedAttackCounter = animated(AttackCounter)
+
+/**
+ * # <Damage />
+ * A container for using animated values to animate
+ * total damage as a number and a visual bar.
+ * @param {...*} props
+ * @param {AnimatedValue} props.totalDamage
+ *
+ * @returns {ReactElement} ReactElement
+ */
+function Damage({
+  totalDamage,
+}: {
+  totalDamage: AnimatedValue<{ number: number }>
+}): ReactElement {
+  return (
+    <>
+      <AnimatedDescription>Damage</AnimatedDescription>
+      <AnimatedPre className="damage-dealt">
+        {totalDamage.number.interpolate(x => x.toFixed(0))}
+      </AnimatedPre>
+      <AnimatedBar
+        style={{
+          display: "inline-block",
+          minHeight: `30px`,
+          minWidth: totalDamage.number,
+          backgroundImage: totalDamage.number.interpolate({
+            range: [0, 500, 1000],
+            output: [
+              `linear-gradient(130deg, #003a00, #009900)`,
+              `linear-gradient(130deg, #00008a, #0000ff)`,
+              `linear-gradient(130deg, #7a0000, #ff0000)`,
+            ],
+          }),
+        }}
+      />
+    </>
+  )
+}
+
+/**
+ * # <Stamina />
+ * A container for using animated values to animate
+ * total stamina as a number and a visual bar.
+ * @param {...*} props
+ * @param {AnimatedValue} props.totalStamina
+ *
+ * @returns {ReactElement} ReactElement
+ */
+function Stamina({
+  totalStamina,
+}: {
+  totalStamina: AnimatedValue<{ number: number }>
+}): ReactElement {
+  return (
+    <>
+      <AnimatedDescription>Stamina</AnimatedDescription>
+      <AnimatedPre
+        className="damage-dealt"
+        /**
+         * interpolate on the anivated value to return a string
+         */
+      >
+        {totalStamina.number.interpolate(x => x.toFixed(0))}
+      </AnimatedPre>
+      <AnimatedBar
+        style={{
+          display: "inline-block",
+          minHeight: `30px`,
+          minWidth: totalStamina.number,
+          backgroundImage: totalStamina.number.interpolate({
+            range: [0, 500, 1000],
+            output: [
+              `linear-gradient(130deg, #7a0000, #ff0000)`,
+              `linear-gradient(130deg, #7a7a00, #ffff00)`,
+              `linear-gradient(130deg, #003a00, #009900)`,
+            ],
+          }),
+        }}
+      />
+    </>
+  )
+}
 
 function AttackAnimationSimulator(props) {
   const { data } = props
@@ -65,13 +176,62 @@ function AttackAnimationSimulator(props) {
 
   // list of attacks
   const [items, setItems] = useState([])
-  // local state for total damage
-  const [d, setD] = useState(0)
-  // animated value for total damage
+
+  // https://www.react-spring.io/docs/hooks/use-spring
+  /**
+   * # Either:
+   * ## overwrite values to change the animation
+   * - If you re-render the component with changed props, the animation will update.
+   * @see #1
+   *
+   * # Or:
+   * ## pass a function that returns values, and update using "set"
+   * - You will get an updater function back.
+   * - It will not cause the component to render like an overwrite would (still the animation executes of course).
+   * - Handling updates like this is useful for fast-occurring updates, but you should generally prefer it.
+   * - Optionally there's also a stop function as a third argument.
+   * @see #2
+   */
+
+  // #1
+  // const totalDamage = useSpring({
+  //   number: d,
+  // })
+
+  // #2
   const [totalDamage, setTotalDamage] = useSpring(() => ({
     number: 0,
   }))
 
+  // stateful value, with unused updater
+  const [maxStamina, __setMaxStamina] = useState(1000)
+
+  // Animated value for <Stamina />
+  const [totalStamina, setTotalStamina, stop] = useSpring(() => ({
+    number: maxStamina,
+    // config: config.gentle,
+  }))
+
+  // const totalStamina = useSpring({
+  //   // from: { number: 0 },
+  //   /**
+  //    * script
+  //    */
+  //   // to: async next => {
+  //   //   // cancelMap.set(item, cancel)
+  //   //   await next({ number: d - r })
+  //   //   await next({ number: 0 })
+  //   // },
+  //   /**
+  //    * chain
+  //    */
+  //   // to: [{ number: r }],
+  // })
+
+  /**
+   * # `attack`
+   * ### aka 'handleAttack'
+   */
   const attack = () => {
     const dmg = random(5, 50)
 
@@ -79,20 +239,31 @@ function AttackAnimationSimulator(props) {
     setItems(items => [...items, { id: uuid(), text: dmg }])
     // CSSTransition.onEntered() will remove the attack when finisehd animating
 
-    // Local state to keeptrack of total damage
-    setD(d + dmg)
+    setTotalDamage({ number: totalDamage.number.getValue() + dmg })
+    setTotalStamina({ number: totalStamina.number.getValue() - dmg })
 
-    // Animated total damage "spring"
-    setTotalDamage({ number: d + dmg })
+    debouncedResetStamina()
   }
+
+  /**
+   * # `reset`
+   * ### aka 'handleReset'
+   */
   const reset = () => {
     setItems([])
-    setD(0)
     setTotalDamage({ number: 0 })
+    setTotalStamina({ number: maxStamina })
   }
 
-  const AnimatedtotalDamage = animated.pre
-  const AnimatedDamageBar = animated.div
+  /**
+   *  # `debouncedResetStamina`
+   * - this gets called on every attack
+   * - wait time is 2000 ms
+   */
+  const debouncedResetStamina = debounce(() => {
+    console.log("debouncedResetStamina fired")
+    setTotalStamina({ number: maxStamina })
+  }, 2000)
 
   const transitions = useTransition(items, item => item.id, {
     from: ({ text }) => {
@@ -109,7 +280,7 @@ function AttackAnimationSimulator(props) {
       transform: `translate3d(0%,-30%,0)`,
     },
     // onDestroyed: e => {
-    //   console.log("onDestroyed - e", e)
+    //   debouncedResetStamina()
     // },
     config: ({ text }) => {
       return text <= 20
@@ -118,10 +289,28 @@ function AttackAnimationSimulator(props) {
         ? config.gentle
         : config.stiff
     },
+
+    /**
+     * same thing as CSSTransition.onEntered
+     */
+    // onRest: item => {
+    //   setItems(items => items.filter(e => e.id !== item.id))
+    // },
+    // wtf, config has item and state...
+    // config: (item, state) => {
+    //   console.log(item)
+    //   console.log(state)
+    //   return state === "leave"
+    //     ? {
+    //         duration: 1000 + item.text * 10,
+    //       }
+    //     : config
+    // },
   })
 
-  // attaching the handleKeyPress with [d] solves a weird issue with
-  // the state being reset to 0 every time.
+  /**
+   * Attach event listeners
+   */
   useEffect(() => {
     const handleKeyPress = e => {
       e.key === "a" ? attack() : e.key === "r" ? reset() : null
@@ -133,7 +322,7 @@ function AttackAnimationSimulator(props) {
     return () => {
       window.removeEventListener("keypress", handleKeyPress)
     }
-  }, [d])
+  }, [])
 
   return (
     <Layout location={props.location} title={siteTitle}>
@@ -147,30 +336,16 @@ function AttackAnimationSimulator(props) {
           <label>(Press R)</label>Reset
         </NotUglyButton>
 
-        <AnimatedtotalDamage
-          className="damage-dealt"
-          // dangerouslySetInnerHTML={{ __html: totalDamage.number }}
-        >
-          {totalDamage.number}
-        </AnimatedtotalDamage>
-        <AnimatedDamageBar
-          style={{
-            display: "inline-block",
-            minHeight: `30px`,
-            minWidth: totalDamage.number,
-            background: totalDamage.number.interpolate({
-              range: [0, 500, 1000],
-              output: ["#009a00", "#f9ff00", "#ff0000"],
-            }),
-          }}
-        />
+        <Damage totalDamage={totalDamage} />
 
-        {/* <AnimatedtotalDamage className="damage-dealt">{d}</AnimatedtotalDamage> */}
+        <Stamina totalStamina={totalStamina} />
+
+        {/* <AnimatedPre className="damage-dealt">{d}</AnimatedPre> */}
 
         {/* <pre>{JSON.stringify(totalDamage, null, 2)}</pre> */}
 
         <TransitionGroup className="attacks">
-          {transitions.map(({ item, props, key }) => (
+          {transitions.map(({ item, props, key }, i) => (
             <CSSTransition
               key={key}
               timeout={600 + item.text * 10}
@@ -179,20 +354,14 @@ function AttackAnimationSimulator(props) {
                 setItems(items => items.filter(e => e.id !== item.id))
               }
             >
-              <React.Fragment>
-                <AnimatedAttackCounter
-                  value={item.text}
-                  style={{
-                    ...props,
-                    // color: props.interpolate({
-                    //   range: [0, 1],
-                    //   output: ["red", "#ffaabb"],
-                    // }),
-                  }}
-                >
-                  {item.text}
-                </AnimatedAttackCounter>
-              </React.Fragment>
+              <AnimatedAttackCounter
+                value={item.text}
+                style={{
+                  ...props,
+                }}
+              >
+                {item.text}
+              </AnimatedAttackCounter>
             </CSSTransition>
           ))}
         </TransitionGroup>
