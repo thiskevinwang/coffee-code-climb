@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { graphql } from "gatsby"
 import styled, { css } from "styled-components"
 import { animated, useTransition, useSpring, config } from "react-spring"
@@ -9,6 +9,38 @@ import uuid from "uuid"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
+import {
+  MUIBoxShadow,
+  MUIBoxShadowHover,
+} from "@src/components/TemplateComponents/PrevNextNavigation"
+import { rhythm, scale } from "@src/utils/typography"
+
+// TODO: Extract this cool button
+const NotUglyButton = styled.div`
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: ${MUIBoxShadow};
+  color: grey;
+  display: inline-block;
+  padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
+  margin: ${rhythm(0.5)};
+  transition: all 200ms ease-in-out;
+
+  label {
+    display: flex;
+    width: 100%;
+    ${scale(-0.5)}
+  }
+
+  :hover {
+    border: 1px solid black;
+    box-shadow: ${MUIBoxShadowHover};
+    color: black;
+    transform: translate(0px, -5px) scale(1.05);
+  }
+`
+
+// Randomly guessed some color-math
 const AttackCounter = styled.div`
   position: fixed;
   top: 50%;
@@ -18,6 +50,11 @@ const AttackCounter = styled.div`
     props.value &&
     css`
       font-size: ${36 + props.value}px;
+      color: rgb(
+        ${5 * props.value},
+        ${250 / (props.value / 10)},
+        ${250 / props.value}
+      );
     `}
 `
 const AnimatedAttackCounter = animated(AttackCounter)
@@ -75,7 +112,6 @@ function AttackAnimationSimulator(props) {
     //   console.log("onDestroyed - e", e)
     // },
     config: ({ text }) => {
-      console.log("text", text)
       return text <= 20
         ? config.slow
         : text <= 40
@@ -84,13 +120,32 @@ function AttackAnimationSimulator(props) {
     },
   })
 
+  // attaching the handleKeyPress with [d] solves a weird issue with
+  // the state being reset to 0 every time.
+  useEffect(() => {
+    const handleKeyPress = e => {
+      e.key === "a" ? attack() : e.key === "r" ? reset() : null
+    }
+
+    typeof window !== "undefined" &&
+      window.addEventListener("keypress", handleKeyPress)
+
+    return () => {
+      window.removeEventListener("keypress", handleKeyPress)
+    }
+  }, [d])
+
   return (
     <Layout location={props.location} title={siteTitle}>
       <SEO title="Attack Animation Simulator" />
       <h1>Attack Animation Simulator</h1>
       <div className="container" style={{ height: `100vh` }}>
-        <button onClick={attack}>Attack</button>
-        <button onClick={reset}>Reset</button>
+        <NotUglyButton onClick={attack}>
+          <label>(Press A)</label>Attack
+        </NotUglyButton>
+        <NotUglyButton onClick={reset}>
+          <label>(Press R)</label>Reset
+        </NotUglyButton>
 
         <AnimatedtotalDamage
           className="damage-dealt"
@@ -157,8 +212,3 @@ export const pageQuery = graphql`
     }
   }
 `
-
-// color: props.text.interpolate({
-//   range: [0, 35, 50],
-//   output: ["#18af1b", "#ffc300", "#ff3f3f"],
-// }),
