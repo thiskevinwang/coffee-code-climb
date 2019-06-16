@@ -152,7 +152,6 @@ export default function Layout({ location, title, children }: Props) {
   const translate2d = (x, y) =>
     `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
-  console.log(scrollY)
   return (
     <div
       onMouseMove={e =>
