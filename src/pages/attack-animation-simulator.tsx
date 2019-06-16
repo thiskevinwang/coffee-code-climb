@@ -46,9 +46,12 @@ function AttackAnimationSimulator(props) {
     setD(d + dmg)
 
     // Animated total damage "spring"
-    setTotalDamage(e => {
-      return { number: d + dmg }
-    })
+    setTotalDamage({ number: d + dmg })
+  }
+  const reset = () => {
+    setItems([])
+    setD(0)
+    setTotalDamage({ number: 0 })
   }
 
   const AnimatedtotalDamage = animated.pre
@@ -87,6 +90,7 @@ function AttackAnimationSimulator(props) {
       <h1>Attack Animation Simulator</h1>
       <div className="container" style={{ height: `100vh` }}>
         <button onClick={attack}>Attack</button>
+        <button onClick={reset}>Reset</button>
 
         <AnimatedtotalDamage
           className="damage-dealt"
