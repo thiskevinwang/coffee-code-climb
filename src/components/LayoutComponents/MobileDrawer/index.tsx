@@ -9,9 +9,7 @@ import Fab from "@material-ui/core/Fab"
 import List from "@material-ui/core/List"
 // import Divider from "@material-ui/core/Divider"
 import ListItem from "@material-ui/core/ListItem"
-import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
-import Bookmarks from "@material-ui/icons/Bookmarks"
 
 const useStyles = {
   list: {
@@ -39,16 +37,21 @@ export default function MobileDrawer({ buttonStyle }) {
     <div className={classes.list}>
       <List>
         {["All Tags"].map((text, index) => (
-          <Link to="/tags" key={text}>
+          <Link to="/tags" key={text} activeStyle={{ color: "red" }}>
             <ListItem button>
-              <ListItemIcon>
-                <Bookmarks />
-              </ListItemIcon>
-
               <ListItemText primary={text} />
             </ListItem>
           </Link>
         ))}
+
+        <Link
+          to="/attack-animation-simulator"
+          activeStyle={{ color: "red", border: `1px solid black` }}
+        >
+          <ListItem button>
+            <ListItemText primary={"Attack Animation Simulator ⚔️"} />
+          </ListItem>
+        </Link>
       </List>
       {/* <Divider />
       <List>

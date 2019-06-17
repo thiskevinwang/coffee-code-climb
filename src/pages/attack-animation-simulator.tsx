@@ -1,4 +1,5 @@
-import React, { useState, useEffect, ReactElement } from "react"
+// attack-animation-simulator.tsx
+import React, { useState, useEffect, ReactElement, useCallback } from "react"
 import { graphql } from "gatsby"
 import styled, { css } from "styled-components"
 import {
@@ -12,10 +13,11 @@ import {
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import random from "lodash/random"
 import debounce from "lodash/debounce"
+import throttle from "lodash/throttle"
 import uuid from "uuid"
 
-import Layout from "../components/layout"
-import SEO from "../components/seo"
+import Layout from "@src/components/layout"
+import SEO from "@src/components/seo"
 
 import {
   MUIBoxShadow,
@@ -81,6 +83,7 @@ const AttackCounter = styled.div`
       );
     `}
 `
+
 /**
  * # AnimatedAttackCounter
  * An `animated`, `styled-component`
@@ -170,6 +173,10 @@ function Stamina({
   )
 }
 
+/**
+ * # AttackAnimationSimulator
+ * Cool thing
+ */
 function AttackAnimationSimulator(props) {
   const { data } = props
   const siteTitle = data.site.siteMetadata.title
@@ -204,7 +211,7 @@ function AttackAnimationSimulator(props) {
   }))
 
   // stateful value, with unused updater
-  const [maxStamina, __setMaxStamina] = useState(1000)
+  const [maxStamina, setMaxStamina] = useState(1000)
 
   // Animated value for <Stamina />
   const [totalStamina, setTotalStamina, stop] = useSpring(() => ({
@@ -231,8 +238,17 @@ function AttackAnimationSimulator(props) {
   /**
    * # `attack`
    * ### aka 'handleAttack'
+   * Note: attaching this to the window, **once**, in `useEffect`, will cause
+   * the same instance of `attack` to be called every time for that event listener.
+   *
+   * However, for the case of a button's `onClick` event, if the
+   * component rerenders, onClick will be calling a new instance
+   * of `attack`.
+   *
+   * This can be fixed with `useCallback`, which returns a memoized
+   * version of the function.
    */
-  const attack = () => {
+  const attack = useCallback(() => {
     const dmg = random(5, 50)
 
     // Add attack to array of attacks
@@ -243,38 +259,56 @@ function AttackAnimationSimulator(props) {
     setTotalStamina({ number: totalStamina.number.getValue() - dmg })
 
     debouncedResetStamina()
-  }
+  }, [])
 
   /**
    * # `reset`
    * ### aka 'handleReset'
    */
   const reset = () => {
-    setItems([])
+    debouncedResetStamina.cancel()
+    setItems([]) // This causes a rerender
     setTotalDamage({ number: 0 })
     setTotalStamina({ number: maxStamina })
   }
 
   /**
    *  # `debouncedResetStamina`
-   * - this gets called on every attack
+   * For this to be `.cancel`-able, it must be memoized with
+   * `useCallback` so that a new instance doesn't get created
+   * when the component rerenders.
+   * - this gets called inside `attack()`
    * - wait time is 2000 ms
+   * - this gets canceled inside `reset()`
    */
-  const debouncedResetStamina = debounce(() => {
-    console.log("debouncedResetStamina fired")
-    setTotalStamina({ number: maxStamina })
-  }, 2000)
+  const debouncedResetStamina = useCallback(
+    debounce(() => {
+      console.log("debouncedResetStamina fired")
+      setTotalStamina({ number: maxStamina })
+    }, 2000),
+    []
+  )
 
+  /**
+   * # Transitions
+   * Applies transitions to the `items` array.
+   * ```
+   * type Item: {
+   *   text: number|string
+   *   id: string // uuid()
+   * }>
+   * ```
+   * `config:` can be a callback, with the specific `{item}` and `state`
+   * as 1st and 2nd args, respectively.
+   */
   const transitions = useTransition(items, item => item.id, {
-    from: ({ text }) => {
+    from: ({ text }: { text: string }) => {
       return { opacity: 0, transform: `translate3d(0%,0%,0)` }
     },
-    enter: ({ text }) => {
-      return {
-        opacity: 1,
-        transform: `translate3d(${random(-50, 50)}%,-${100 + text}%,0)`,
-      }
-    },
+    enter: ({ text }) => ({
+      opacity: 1,
+      transform: `translate3d(${random(-50, 50)}%,-${100 + text}%,0)`,
+    }),
     leave: {
       opacity: 0,
       transform: `translate3d(0%,-30%,0)`,
@@ -282,29 +316,20 @@ function AttackAnimationSimulator(props) {
     // onDestroyed: e => {
     //   debouncedResetStamina()
     // },
-    config: ({ text }) => {
+    config: ({ text }, state) => {
       return text <= 20
         ? config.slow
         : text <= 40
         ? config.gentle
+        : state === "leave"
+        ? { ...config.molasses, duration: 2000 }
         : config.stiff
     },
-
     /**
      * same thing as CSSTransition.onEntered
      */
     // onRest: item => {
     //   setItems(items => items.filter(e => e.id !== item.id))
-    // },
-    // wtf, config has item and state...
-    // config: (item, state) => {
-    //   console.log(item)
-    //   console.log(state)
-    //   return state === "leave"
-    //     ? {
-    //         duration: 1000 + item.text * 10,
-    //       }
-    //     : config
     // },
   })
 
@@ -312,9 +337,9 @@ function AttackAnimationSimulator(props) {
    * Attach event listeners
    */
   useEffect(() => {
-    const handleKeyPress = e => {
+    const handleKeyPress = throttle(e => {
       e.key === "a" ? attack() : e.key === "r" ? reset() : null
-    }
+    }, 100)
 
     typeof window !== "undefined" &&
       window.addEventListener("keypress", handleKeyPress)
