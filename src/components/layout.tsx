@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react"
 import { useSpring, animated, useTrail, config } from "react-spring"
 import styled, { css } from "styled-components"
+import { compose } from "redux"
 
-import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
+import {
+  MobileDrawer,
+  Footer,
+  Header,
+  styles,
+  withSVGTrail,
+} from "./LayoutComponents"
 import { rhythm } from "@src/utils/typography"
-import * as SVG from "@src/svg"
 
 require("prismjs/plugins/line-numbers/prism-line-numbers.css")
 
@@ -65,7 +71,7 @@ const dbgStyleTag = (
  * @param {React$Node} props.children mapped posts, or markdown
  */
 
-export default function Layout({ location, title, children }: Props) {
+function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
 
   /**
@@ -89,87 +95,16 @@ export default function Layout({ location, title, children }: Props) {
       })
     }
 
-    const handleKeyPressS = e => {
-      e.key === "s" && setSlowMo(state => !state)
-    }
-
     typeof window !== "undefined" &&
-      (() => {
-        window.addEventListener("scroll", handleScroll)
-        window.addEventListener("keypress", handleKeyPressS)
-      })()
+      window.addEventListener("scroll", handleScroll)
+
     return () => {
       window.removeEventListener("scroll", handleScroll)
-      window.removeEventListener("keypress", handleKeyPressS)
     }
   }, [])
 
-  // Slow Motion state hook
-  const [slowMo, setSlowMo] = useState(false)
-
-  // SVG animation trail configs
-  const zero = { mass: 2, tension: 500, friction: 30 }
-  const one = { mass: 3, tension: 400, friction: 32 }
-  const two = { mass: 4, tension: 300, friction: 34 }
-  const three = { mass: 5, tension: 200, friction: 36 }
-  const four = { mass: 6, tension: 100, friction: 38 }
-  const configs = [zero, one, two, three, four]
-
-  /**
-   * useTrail() 👉 https://www.react-spring.io/docs/hooks/use-trail
-   * @param {number} count The number of animated "things"
-   * @param {func} getProps
-   *
-   * @return {array} [trail, set, stop?]
-   *
-   * @usage trail.map(props => <animated.div style={props} />)
-   */
-  const [trail, setTrail] = useTrail(5, () => ({
-    xy: [0, 0],
-    // (property) config?: SpringConfig | ((key: string) => SpringConfig)
-    config: i => configs[i],
-  }))
-  /**
-   * An array of SVGs to be rendered by `trail.map((e,i) => {})`
-   */
-  const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
-  const StyledSVG = styled.div`
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px dotted white;
-    border-radius: 100%;
-    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-      0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
-    display: flex;
-    padding: ${props => props.index && props.index * 5 + "px"};
-    pointer-events: none;
-    position: absolute;
-    z-index: 999;
-  `
-  const AnimatedSVG = animated(StyledSVG)
-
-  // interpolation handler
-  // you can add _.random() in here for some weird behavior. (no rerenders!)
-  const translate2d = (x, y) =>
-    `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
-
   return (
-    <div
-      onMouseMove={e =>
-        setTrail({ xy: [e.pageX, e.pageY], config: slowMo && config.molasses })
-      }
-    >
-      {trail.map((props, index) => (
-        <AnimatedSVG
-          key={index}
-          index={index + 1}
-          style={{
-            transform: props.xy.interpolate(translate2d),
-          }}
-        >
-          {SVGS[index]}
-        </AnimatedSVG>
-      ))}
-
+    <div>
       <div style={{ overflowX: "hidden" }}>
         {/* Gradient Background */}
         <animated.span
@@ -273,3 +208,5 @@ export default function Layout({ location, title, children }: Props) {
     </div>
   )
 }
+
+export default compose(withSVGTrail)(Layout)
