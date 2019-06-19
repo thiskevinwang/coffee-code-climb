@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react"
+import { connect } from "react-redux"
+import { compose } from "redux"
 import { animated, useTrail, config } from "react-spring"
 import styled from "styled-components"
 
+import { setIsDarkMode } from "@src/../gatsby-browser"
 import * as SVG from "@src/svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
@@ -15,8 +18,10 @@ const four = { mass: 6, tension: 100, friction: 38 }
 const configs = [zero, one, two, three, four]
 
 const StyledSVG = styled.div`
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px dotted white;
+  background: ${props =>
+    props.isDarkMode ? `rgba(10, 10, 10, 0.3)` : `rgba(255, 255, 255, 0.5)`};
+  border: ${props =>
+    props.isDarkMode ? `1px dotted black` : `1px dotted white`};
   border-radius: 100%;
   box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
     0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
@@ -25,6 +30,7 @@ const StyledSVG = styled.div`
   pointer-events: none;
   position: absolute;
   z-index: 999;
+  transition: background 500ms ease, border 500ms ease;
 `
 const AnimatedSVG = animated(StyledSVG)
 
@@ -33,7 +39,7 @@ const AnimatedSVG = animated(StyledSVG)
 const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
-const Wrapper = ({ children }) => {
+const Wrapper = ({ children, isDarkMode, dispatchSetIsDarkMode }) => {
   const [slowMo, setSlowMo] = useState(false)
 
   // https://www.react-spring.io/docs/hooks/use-trail
@@ -50,14 +56,21 @@ const Wrapper = ({ children }) => {
     const handleKeyPressS = e => {
       e.key === "s" && setSlowMo(state => !state)
     }
+    const handleKeyPressD = e => {
+      e.key === "d" && dispatchSetIsDarkMode(!isDarkMode)
+    }
 
     typeof window !== "undefined" &&
-      window.addEventListener("keypress", handleKeyPressS)
+      (() => {
+        window.addEventListener("keypress", handleKeyPressS)
+        window.addEventListener("keypress", handleKeyPressD)
+      })()
 
     return () => {
       window.removeEventListener("keypress", handleKeyPressS)
+      window.removeEventListener("keypress", handleKeyPressD)
     }
-  }, [])
+  }, [isDarkMode])
 
   return (
     <div
@@ -71,6 +84,7 @@ const Wrapper = ({ children }) => {
     >
       {trail.map((props, index) => (
         <AnimatedSVG
+          isDarkMode={isDarkMode}
           key={index}
           index={index + 1}
           style={{
@@ -85,10 +99,30 @@ const Wrapper = ({ children }) => {
   )
 }
 
-export default function withSVGTrail(BaseComponent) {
-  return props => (
-    <Wrapper>
-      <BaseComponent {...props} />
+const mapStateToProps = (state, ownProps?) => {
+  const { isDarkMode } = state
+  return { isDarkMode }
+}
+
+const mapDispatchToProps = dispatch => ({
+  dispatchSetIsDarkMode: state => dispatch(setIsDarkMode(state)),
+})
+
+function withSVGTrail(BaseComponent) {
+  return ({ isDarkMode, dispatchSetIsDarkMode, ...rest }) => (
+    <Wrapper
+      isDarkMode={isDarkMode}
+      dispatchSetIsDarkMode={dispatchSetIsDarkMode}
+    >
+      <BaseComponent {...rest} />
     </Wrapper>
   )
 }
+
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  ),
+  withSVGTrail
+)
