@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useSelector } from "react-redux"
 import { useSpring, animated, useTrail, config } from "react-spring"
 import styled, { css } from "styled-components"
 import { compose } from "redux"
@@ -26,44 +27,43 @@ const GRADIENTS = [
   `linear-gradient(20deg, #FEE140 0%, #FA709A 100%)`,
 ]
 
-const dbgStyleTag = (
-  <style>{`
-    .dotted-background {
-      padding: 2.25em 1.6875em;
-      background-image: -webkit-repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      background-image: -moz-repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      background-image: -ms-repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      background-image: repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      -webkit-background-size: 5px 5px;
-      -moz-background-size: 5px 5px;
-      background-size: 5px 5px;
-    }
-  `}</style>
-)
+const DottedBackground = styled.div`
+  background-image: -webkit-repeating-radial-gradient(
+    center center,
+    ${props =>
+      props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`},
+    ${props =>
+        props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`}
+      1px,
+    transparent 1px,
+    transparent 100%
+  );
+  background-image: -moz-repeating-radial-gradient(
+    center center,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.5) 1px,
+    transparent 1px,
+    transparent 100%
+  );
+  background-image: -ms-repeating-radial-gradient(
+    center center,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.5) 1px,
+    transparent 1px,
+    transparent 100%
+  );
+  background-image: repeating-radial-gradient(
+    center center,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.5) 1px,
+    transparent 1px,
+    transparent 100%
+  );
+  -webkit-background-size: 15px 15px;
+  -moz-background-size: 15px 15px;
+  background-size: 15px 15px;
+`
+const AnimatedDottedBackground = animated(DottedBackground)
 
 /** http://usejsdoc.org/tags-param.html
  * @param {string} props.title data.site.siteMetadata.title from graphql-pageQuery
@@ -73,6 +73,7 @@ const dbgStyleTag = (
 
 function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
+  const isDarkMode = useSelector(state => state.isDarkMode)
 
   /**
    * scrollY & setScrollyY
@@ -104,10 +105,17 @@ function Layout({ location, title, children }: Props) {
   }, [])
 
   return (
-    <div>
-      <div style={{ overflowX: "hidden" }}>
+    <>
+      {/* Background stuffs */}
+      <>
+        <div
+          style={{
+            ...styles[isDarkMode ? "bgDark" : "bgLight"],
+            ...styles.mixed,
+          }}
+        />
         {/* Gradient Background */}
-        <animated.span
+        <animated.div
           style={{
             ...styles.bg1,
             background: scrollY.percent.interpolate({
@@ -117,21 +125,20 @@ function Layout({ location, title, children }: Props) {
           }}
         />
         {/* Dotted Background */}
-        <animated.span
-          className={"dotted-background"}
+        <AnimatedDottedBackground
+          isDarkMode={isDarkMode}
           style={{
             ...styles.dottedBackground,
             backgroundSize: scrollY.percent
               .interpolate({
                 range: [0, 1],
-                output: [5, 25],
+                output: [25, 50],
               })
               .interpolate(n => `${n}px ${n}px`),
           }}
-        >
-          {dbgStyleTag}
-        </animated.span>
-
+        />
+      </>
+      <div style={{ overflowX: "hidden" }}>
         <div
           style={{
             marginLeft: `auto`,
@@ -205,7 +212,7 @@ function Layout({ location, title, children }: Props) {
           <Footer />
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

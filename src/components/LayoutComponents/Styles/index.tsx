@@ -1,16 +1,30 @@
 export const styles = {
+  bgLight: {
+    background: "white",
+    zIndex: -5,
+  },
+  bgDark: {
+    background: `rgba(35,35,50)`,
+    zIndex: -5,
+  },
+  mixed: {
+    transition: `background 150ms ease-in-out `,
+    position: "fixed",
+    top: 0,
+    left: 0,
+    minHeight: `100vh`,
+    minWidth: `100vw`,
+  },
   bg1: {
     position: "fixed",
     top: 0,
     left: 0,
     height: `50%`,
     width: `100%`,
-    // Removing this line fixes a UI issue when hard-refreshing on Chrome
-    // background: `linear-gradient(150deg, ${DARK} 15%, ${DARKER} 35%, ${MID} 55%, ${LIGHTER} 70%, ${LIGHT} 94%)`,
     opacity: 0.7,
     transform: `skewY(-6deg)`,
     transformOrigin: `top left`,
-    zIndex: -10,
+    zIndex: -2,
   },
   dottedBackground: {
     position: "fixed",
@@ -20,7 +34,7 @@ export const styles = {
     width: `30%`,
     transform: `skewX(6deg)`,
     transformOrigin: `top right`,
-    zIndex: -9,
+    zIndex: -1,
   },
   draggableGlass: {
     width: 200,
