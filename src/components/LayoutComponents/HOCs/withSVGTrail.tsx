@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react"
-import { connect } from "react-redux"
-import { compose } from "redux"
+import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config } from "react-spring"
 import styled from "styled-components"
 
@@ -39,8 +38,17 @@ const AnimatedSVG = animated(StyledSVG)
 const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
-const Wrapper = ({ children, isDarkMode, dispatchSetIsDarkMode }) => {
+const Wrapper = ({ children }) => {
   const [slowMo, setSlowMo] = useState(false)
+
+  // Redux hooks
+  const isDarkMode = useSelector(state => state.isDarkMode)
+  const dispatch = useDispatch()
+
+  const dispatchSetIsDarkMode = useCallback(
+    state => dispatch(setIsDarkMode(state)),
+    []
+  )
 
   // https://www.react-spring.io/docs/hooks/use-trail
   const [trail, setTrail, stop] = useTrail(SVGS.length, () => ({
@@ -99,30 +107,12 @@ const Wrapper = ({ children, isDarkMode, dispatchSetIsDarkMode }) => {
   )
 }
 
-const mapStateToProps = (state, ownProps?) => {
-  const { isDarkMode } = state
-  return { isDarkMode }
-}
-
-const mapDispatchToProps = dispatch => ({
-  dispatchSetIsDarkMode: state => dispatch(setIsDarkMode(state)),
-})
-
 function withSVGTrail(BaseComponent) {
-  return ({ isDarkMode, dispatchSetIsDarkMode, ...rest }) => (
-    <Wrapper
-      isDarkMode={isDarkMode}
-      dispatchSetIsDarkMode={dispatchSetIsDarkMode}
-    >
-      <BaseComponent {...rest} />
+  return props => (
+    <Wrapper>
+      <BaseComponent {...props} />
     </Wrapper>
   )
 }
 
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  ),
-  withSVGTrail
-)
+export default withSVGTrail
