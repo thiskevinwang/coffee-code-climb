@@ -12,12 +12,14 @@ import { createStore } from "redux"
  */
 const initialState = {
   isDarkMode: false,
+  showTrail: true,
 }
 
 /**
  * actionTypes
  */
 const TOGGLE_DARKMODE = "TOGGLE_DARKMODE"
+const TOGGLE_TRAIL = "TOGGLE_TRAIL"
 
 /**
  * action
@@ -28,6 +30,12 @@ export const setIsDarkMode = isDarkMode => {
     isDarkMode,
   }
 }
+export const setShowTrail = showTrail => {
+  return {
+    type: TOGGLE_TRAIL,
+    showTrail,
+  }
+}
 
 /**
  * reducer
@@ -36,6 +44,8 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case TOGGLE_DARKMODE:
       return { ...state, isDarkMode: action.isDarkMode }
+    case TOGGLE_TRAIL:
+      return { ...state, showTrail: action.showTrail }
     default:
       return state
   }

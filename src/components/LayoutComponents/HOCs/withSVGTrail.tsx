@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config } from "react-spring"
 import styled from "styled-components"
 
-import { setIsDarkMode } from "@src/../gatsby-browser"
+import { setIsDarkMode, setShowTrail } from "@src/../gatsby-browser"
 import * as SVG from "@src/svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
@@ -43,16 +43,22 @@ const Wrapper = ({ children }) => {
 
   // Redux hooks
   const isDarkMode = useSelector(state => state.isDarkMode)
+  const showTrail = useSelector(state => state.showTrail)
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
     state => dispatch(setIsDarkMode(state)),
     []
   )
+  const dispatchSetShowTrail = useCallback(
+    state => dispatch(setShowTrail(state)),
+    []
+  )
 
   // https://www.react-spring.io/docs/hooks/use-trail
   const [trail, setTrail, stop] = useTrail(SVGS.length, () => ({
     xy: [0, 0],
+    opacity: showTrail ? 1 : 0.1,
     config: i => {
       return configs[i]
     },
@@ -67,24 +73,30 @@ const Wrapper = ({ children }) => {
     const handleKeyPressD = e => {
       e.key === "d" && dispatchSetIsDarkMode(!isDarkMode)
     }
+    const handleKeyPressT = e => {
+      e.key === "t" && dispatchSetShowTrail(!showTrail)
+    }
 
     typeof window !== "undefined" &&
       (() => {
         window.addEventListener("keypress", handleKeyPressS)
         window.addEventListener("keypress", handleKeyPressD)
+        window.addEventListener("keypress", handleKeyPressT)
       })()
 
     return () => {
       window.removeEventListener("keypress", handleKeyPressS)
       window.removeEventListener("keypress", handleKeyPressD)
+      window.removeEventListener("keypress", handleKeyPressT)
     }
-  }, [isDarkMode])
+  }, [isDarkMode, showTrail])
 
   return (
     <div
       className="withSVGTrail--HOC"
       onMouseMove={e =>
         memoizedSetTrail({
+          opacity: showTrail ? 1 : 0.1,
           xy: [e.pageX, e.pageY],
           config: slowMo && config.molasses,
         })
@@ -97,6 +109,7 @@ const Wrapper = ({ children }) => {
           index={index + 1}
           style={{
             transform: props.xy.interpolate(translate2d),
+            opacity: props.opacity.interpolate(x => x),
           }}
         >
           {SVGS[index]}
