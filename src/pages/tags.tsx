@@ -1,5 +1,7 @@
 import React from "react"
+import { useSelector } from "react-redux"
 import PropTypes from "prop-types"
+import styled from "styled-components"
 
 // Utilities
 import kebabCase from "lodash/kebabCase"
@@ -11,6 +13,39 @@ import { Link, graphql } from "gatsby"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+
+const black = `rgba(20,20,20,0.8)`
+
+const StyledLi = styled.li`
+  display: flex;
+  align-items: center;
+  background: ${props => (props.isDarkMode ? black : "white")};
+  border: ${props =>
+    props.isDarkMode ? `1px solid white` : `1px solid ${black}`};
+  border-radius: 3px;
+  a {
+    color: ${props => (props.isDarkMode ? "white" : black)};
+    box-shadow: none;
+  }
+  padding: ${rhythm(0.3)} ${rhythm(1)};
+  margin: ${rhythm(1 / 4)};
+  list-style-type: none;
+  transition: all 322ms ease-in-out;
+
+  :hover {
+    transform: scale(1.1);
+  }
+`
+const StyledUl = styled.ul`
+  display: flex;
+  flex-flow: row wrap;
+  @media screen and (max-width: 1000px) {
+    columns: 4;
+  }
+  @media screen and (max-width: 800px) {
+    columns: 3;
+  }
+`
 
 let currentLetter = ``
 
@@ -25,6 +60,7 @@ const TagsPage = ({
   location,
 }) => {
   let group = combineTagGroups(group1, group2)
+  const isDarkMode = useSelector(state => state.isDarkMode)
 
   return (
     <Layout location={location} title={title}>
@@ -33,31 +69,21 @@ const TagsPage = ({
       <h2>{`Tags (${group.length})`}</h2>
       <hr />
 
-      <ul
-        style={{
-          display: `flex`,
-          flexFlow: `row wrap`,
-          justifyContent: `start`,
-          padding: 0,
-          margin: 0,
-        }}
-      >
+      <StyledUl>
         {group.map(tag => {
-          const firstLetter = tag.fieldValue.charAt(0).toLowerCase()
+          const { fieldValue, totalCount } = tag
+          const firstLetter = fieldValue.charAt(0).toLowerCase()
           const buildTag = (
-            <li
+            <StyledLi
               item
-              style={{
-                padding: `${rhythm(0)} ${rhythm(1)}`,
-                margin: rhythm(1 / 4),
-                listStyleType: `none`,
-              }}
-              key={tag.fieldValue}
+              key={fieldValue}
+              isDarkMode={isDarkMode}
+              style={{ fontSize: `${100 + 10 * totalCount}%` }}
             >
               <Link to={`/tags/${kebabCase(tag.fieldValue)}/`}>
-                {tag.fieldValue} ({tag.totalCount})
+                {fieldValue} ({totalCount})
               </Link>
-            </li>
+            </StyledLi>
           )
 
           if (currentLetter !== firstLetter) {
@@ -74,7 +100,7 @@ const TagsPage = ({
 
           return buildTag
         })}
-      </ul>
+      </StyledUl>
 
       <hr
         style={{
