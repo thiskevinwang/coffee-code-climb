@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config } from "react-spring"
 import styled from "styled-components"
 
-import { setIsDarkMode, setShowTrail } from "@src/../gatsby-browser"
-import * as SVG from "@src/svg"
+import { setIsDarkMode, setShowTrail, setSlowMo } from "src/../gatsby-browser"
+import * as SVG from "src/svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
 // SVG animation trail configs
@@ -39,11 +39,10 @@ const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
 const Wrapper = ({ children }) => {
-  const [slowMo, setSlowMo] = useState(false)
-
   // Redux hooks
   const isDarkMode = useSelector(state => state.isDarkMode)
   const showTrail = useSelector(state => state.showTrail)
+  const slowMo = useSelector(state => state.slowMo)
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
@@ -54,11 +53,15 @@ const Wrapper = ({ children }) => {
     state => dispatch(setShowTrail(state)),
     []
   )
+  const dispatchSetSetSlowMo = useCallback(
+    state => dispatch(setSlowMo(state)),
+    []
+  )
 
   // https://www.react-spring.io/docs/hooks/use-trail
   const [trail, setTrail, stop] = useTrail(SVGS.length, () => ({
     xy: [0, 0],
-    opacity: showTrail ? 1 : 0.1,
+    opacity: showTrail ? 1 : 0,
     config: i => {
       return configs[i]
     },
@@ -67,36 +70,35 @@ const Wrapper = ({ children }) => {
   const memoizedSetTrail = useCallback(setTrail, [])
 
   useEffect(() => {
-    const handleKeyPressS = e => {
-      e.key === "s" && setSlowMo(state => !state)
-    }
-    const handleKeyPressD = e => {
-      e.key === "d" && dispatchSetIsDarkMode(!isDarkMode)
-    }
-    const handleKeyPressT = e => {
-      e.key === "t" && dispatchSetShowTrail(!showTrail)
+    const handleKeyPress = e => {
+      switch (e.key) {
+        case "s":
+          return dispatchSetSetSlowMo(!slowMo)
+        case "d":
+          return dispatchSetIsDarkMode(!isDarkMode)
+        case "t":
+          return dispatchSetShowTrail(!showTrail)
+        default:
+          return
+      }
     }
 
     typeof window !== "undefined" &&
       (() => {
-        window.addEventListener("keypress", handleKeyPressS)
-        window.addEventListener("keypress", handleKeyPressD)
-        window.addEventListener("keypress", handleKeyPressT)
+        window.addEventListener("keypress", handleKeyPress)
       })()
 
     return () => {
-      window.removeEventListener("keypress", handleKeyPressS)
-      window.removeEventListener("keypress", handleKeyPressD)
-      window.removeEventListener("keypress", handleKeyPressT)
+      window.removeEventListener("keypress", handleKeyPress)
     }
-  }, [isDarkMode, showTrail])
+  }, [isDarkMode, showTrail, slowMo])
 
   return (
     <div
       className="withSVGTrail--HOC"
       onMouseMove={e =>
         memoizedSetTrail({
-          opacity: showTrail ? 1 : 0.1,
+          opacity: showTrail ? 1 : 0,
           xy: [e.pageX, e.pageY],
           config: slowMo && config.molasses,
         })

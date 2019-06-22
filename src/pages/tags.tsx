@@ -5,8 +5,8 @@ import styled from "styled-components"
 
 // Utilities
 import kebabCase from "lodash/kebabCase"
-import { rhythm } from "@src/utils/typography"
-import { combineTagGroups } from "@src/utils/combineTagGroups"
+import { rhythm } from "src/utils/typography"
+import { combineTagGroups } from "src/utils/combineTagGroups"
 
 // Components
 import { Link, graphql } from "gatsby"

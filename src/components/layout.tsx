@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated, useTrail, config } from "react-spring"
 import styled, { css } from "styled-components"
@@ -11,9 +11,9 @@ import {
   styles,
   withSVGTrail,
 } from "./LayoutComponents"
-import { rhythm } from "@src/utils/typography"
+import { rhythm } from "src/utils/typography"
 
-require("prismjs/plugins/line-numbers/prism-line-numbers.css")
+import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
 /**
  * NOTE: on useSpring() interpolations

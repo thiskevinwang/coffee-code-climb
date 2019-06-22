@@ -9,7 +9,7 @@ import React from "react"
 import { StaticQuery, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { Tooltip } from "@material-ui/core"
-import { rhythm } from "@src/utils/typography"
+import { rhythm } from "src/utils/typography"
 
 import CAPSULE from "./capsule.svg"
 

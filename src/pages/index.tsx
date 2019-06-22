@@ -7,7 +7,7 @@ import { Grid, Divider, Tooltip } from "@material-ui/core"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
-import { rhythm } from "@src/utils/typography"
+import { rhythm } from "src/utils/typography"
 
 // Tools
 import union from "lodash/union"

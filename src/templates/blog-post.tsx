@@ -5,11 +5,8 @@ import kebabCase from "lodash/kebabCase"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
-import { rhythm, scale } from "@src/utils/typography"
-import {
-  Discussion,
-  PrevNextNavigation,
-} from "@src/components/TemplateComponents"
+import { rhythm, scale } from "src/utils/typography"
+import { Discussion, PrevNextNavigation } from "components/TemplateComponents"
 
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
