@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config } from "react-spring"
 import styled from "styled-components"
 
-import { setIsDarkMode, setShowTrail, setSlowMo } from "src/../gatsby-browser"
+import { setIsDarkMode, setShowTrail, setSlowMo } from "src/state"
 import * as SVG from "src/svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
