@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
+import { useSelector } from "react-redux"
 import { useSpring, animated, useTrail, config } from "react-spring"
 import styled, { css } from "styled-components"
+import { compose } from "redux"
 
-import { MobileDrawer, Footer, Header, styles } from "./LayoutComponents"
-import { rhythm } from "@src/utils/typography"
-import * as SVG from "@src/svg"
+import {
+  MobileDrawer,
+  Footer,
+  Header,
+  styles,
+  withSVGTrail,
+} from "./LayoutComponents"
+import { rhythm } from "src/utils/typography"
 
-require("prismjs/plugins/line-numbers/prism-line-numbers.css")
+import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
 /**
  * NOTE: on useSpring() interpolations
@@ -20,44 +27,43 @@ const GRADIENTS = [
   `linear-gradient(20deg, #FEE140 0%, #FA709A 100%)`,
 ]
 
-const dbgStyleTag = (
-  <style>{`
-    .dotted-background {
-      padding: 2.25em 1.6875em;
-      background-image: -webkit-repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      background-image: -moz-repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      background-image: -ms-repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      background-image: repeating-radial-gradient(
-        center center,
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0.2) 1px,
-        transparent 1px,
-        transparent 100%
-      );
-      -webkit-background-size: 5px 5px;
-      -moz-background-size: 5px 5px;
-      background-size: 5px 5px;
-    }
-  `}</style>
-)
+const DottedBackground = styled.div`
+  background-image: -webkit-repeating-radial-gradient(
+    center center,
+    ${props =>
+      props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`},
+    ${props =>
+        props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`}
+      1px,
+    transparent 1px,
+    transparent 100%
+  );
+  background-image: -moz-repeating-radial-gradient(
+    center center,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.5) 1px,
+    transparent 1px,
+    transparent 100%
+  );
+  background-image: -ms-repeating-radial-gradient(
+    center center,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.5) 1px,
+    transparent 1px,
+    transparent 100%
+  );
+  background-image: repeating-radial-gradient(
+    center center,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.5) 1px,
+    transparent 1px,
+    transparent 100%
+  );
+  -webkit-background-size: 15px 15px;
+  -moz-background-size: 15px 15px;
+  background-size: 15px 15px;
+`
+const AnimatedDottedBackground = animated(DottedBackground)
 
 /** http://usejsdoc.org/tags-param.html
  * @param {string} props.title data.site.siteMetadata.title from graphql-pageQuery
@@ -65,8 +71,9 @@ const dbgStyleTag = (
  * @param {React$Node} props.children mapped posts, or markdown
  */
 
-export default function Layout({ location, title, children }: Props) {
+function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
+  const isDarkMode = useSelector(state => state.isDarkMode)
 
   /**
    * scrollY & setScrollyY
@@ -89,90 +96,26 @@ export default function Layout({ location, title, children }: Props) {
       })
     }
 
-    const handleKeyPressS = e => {
-      e.key === "s" && setSlowMo(state => !state)
-    }
-
     typeof window !== "undefined" &&
-      (() => {
-        window.addEventListener("scroll", handleScroll)
-        window.addEventListener("keypress", handleKeyPressS)
-      })()
+      window.addEventListener("scroll", handleScroll)
+
     return () => {
       window.removeEventListener("scroll", handleScroll)
-      window.removeEventListener("keypress", handleKeyPressS)
     }
   }, [])
 
-  // Slow Motion state hook
-  const [slowMo, setSlowMo] = useState(false)
-
-  // SVG animation trail configs
-  const zero = { mass: 2, tension: 500, friction: 30 }
-  const one = { mass: 3, tension: 400, friction: 32 }
-  const two = { mass: 4, tension: 300, friction: 34 }
-  const three = { mass: 5, tension: 200, friction: 36 }
-  const four = { mass: 6, tension: 100, friction: 38 }
-  const configs = [zero, one, two, three, four]
-
-  /**
-   * useTrail() 👉 https://www.react-spring.io/docs/hooks/use-trail
-   * @param {number} count The number of animated "things"
-   * @param {func} getProps
-   *
-   * @return {array} [trail, set, stop?]
-   *
-   * @usage trail.map(props => <animated.div style={props} />)
-   */
-  const [trail, setTrail] = useTrail(5, () => ({
-    xy: [0, 0],
-    // (property) config?: SpringConfig | ((key: string) => SpringConfig)
-    config: i => configs[i],
-  }))
-  /**
-   * An array of SVGs to be rendered by `trail.map((e,i) => {})`
-   */
-  const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
-  const StyledSVG = styled.div`
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px dotted white;
-    border-radius: 100%;
-    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-      0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
-    display: flex;
-    padding: ${props => props.index && props.index * 5 + "px"};
-    pointer-events: none;
-    position: absolute;
-    z-index: 999;
-  `
-  const AnimatedSVG = animated(StyledSVG)
-
-  // interpolation handler
-  // you can add _.random() in here for some weird behavior. (no rerenders!)
-  const translate2d = (x, y) =>
-    `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
-
   return (
-    <div
-      onMouseMove={e =>
-        setTrail({ xy: [e.pageX, e.pageY], config: slowMo && config.molasses })
-      }
-    >
-      {trail.map((props, index) => (
-        <AnimatedSVG
-          key={index}
-          index={index + 1}
+    <>
+      {/* Background stuffs */}
+      <>
+        <div
           style={{
-            transform: props.xy.interpolate(translate2d),
+            ...styles[isDarkMode ? "bgDark" : "bgLight"],
+            ...styles.mixed,
           }}
-        >
-          {SVGS[index]}
-        </AnimatedSVG>
-      ))}
-
-      <div style={{ overflowX: "hidden" }}>
+        />
         {/* Gradient Background */}
-        <animated.span
+        <animated.div
           style={{
             ...styles.bg1,
             background: scrollY.percent.interpolate({
@@ -182,21 +125,20 @@ export default function Layout({ location, title, children }: Props) {
           }}
         />
         {/* Dotted Background */}
-        <animated.span
-          className={"dotted-background"}
+        <AnimatedDottedBackground
+          isDarkMode={isDarkMode}
           style={{
             ...styles.dottedBackground,
             backgroundSize: scrollY.percent
               .interpolate({
                 range: [0, 1],
-                output: [5, 25],
+                output: [25, 50],
               })
               .interpolate(n => `${n}px ${n}px`),
           }}
-        >
-          {dbgStyleTag}
-        </animated.span>
-
+        />
+      </>
+      <div style={{ overflowX: "hidden" }}>
         <div
           style={{
             marginLeft: `auto`,
@@ -270,6 +212,8 @@ export default function Layout({ location, title, children }: Props) {
           <Footer />
         </div>
       </div>
-    </div>
+    </>
   )
 }
+
+export default compose(withSVGTrail)(Layout)

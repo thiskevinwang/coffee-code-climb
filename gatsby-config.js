@@ -40,7 +40,11 @@ module.exports = {
     {
       resolve: `gatsby-plugin-alias-imports`,
       options: {
-        alias: { "@src": "src" },
+        alias: {
+          src: "src",
+          consts: "src/consts",
+          components: "src/components",
+        },
         extensions: [],
       },
     },

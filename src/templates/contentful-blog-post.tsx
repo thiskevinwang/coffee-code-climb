@@ -5,12 +5,12 @@ import kebabCase from "lodash/kebabCase"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
-import { rhythm, scale } from "@src/utils/typography"
+import { rhythm, scale } from "src/utils/typography"
 import {
   // Discussion,
   DocumentToReactComponents,
   PrevNextNavigation,
-} from "@src/components/TemplateComponents"
+} from "components/TemplateComponents"
 
 export default function ContentfulBlogPostTemplate({
   data,

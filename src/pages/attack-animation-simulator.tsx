@@ -1,5 +1,6 @@
 // attack-animation-simulator.tsx
 import React, { useState, useEffect, ReactElement, useCallback } from "react"
+import { useSelector } from "react-redux"
 import { graphql } from "gatsby"
 import styled, { css } from "styled-components"
 import {
@@ -16,14 +17,11 @@ import debounce from "lodash/debounce"
 import throttle from "lodash/throttle"
 import uuid from "uuid"
 
-import Layout from "@src/components/layout"
-import SEO from "@src/components/seo"
+import Layout from "components/layout"
+import SEO from "components/seo"
 
-import {
-  MUIBoxShadow,
-  MUIBoxShadowHover,
-} from "@src/components/TemplateComponents/PrevNextNavigation"
-import { rhythm, scale } from "@src/utils/typography"
+import { rhythm, scale } from "src/utils/typography"
+import { Button } from "components/Button"
 
 const AnimatedPre = animated.pre
 const AnimatedBar = animated.div
@@ -33,31 +31,6 @@ const AnimatedDescription = styled.div`
   display: block;
   padding: ${rhythm(0.5)};
   margin: ${rhythm(0.5)};
-`
-
-// TODO: Extract this cool button
-const NotUglyButton = styled.div`
-  border: 1px solid grey;
-  border-radius: 5px;
-  box-shadow: ${MUIBoxShadow};
-  color: grey;
-  display: inline-block;
-  padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
-  margin: ${rhythm(0.5)};
-  transition: all 200ms ease-in-out;
-
-  label {
-    display: flex;
-    width: 100%;
-    ${scale(-0.5)}
-  }
-
-  :hover {
-    border: 1px solid black;
-    box-shadow: ${MUIBoxShadowHover};
-    color: black;
-    transform: translate(0px, -5px) scale(1.05);
-  }
 `
 
 /**
@@ -180,6 +153,8 @@ function Stamina({
 function AttackAnimationSimulator(props) {
   const { data } = props
   const siteTitle = data.site.siteMetadata.title
+
+  const isDarkMode = useSelector(state => state.isDarkMode)
 
   // list of attacks
   const [items, setItems] = useState([])
@@ -354,12 +329,12 @@ function AttackAnimationSimulator(props) {
       <SEO title="Attack Animation Simulator" />
       <h1>Attack Animation Simulator</h1>
       <div className="container" style={{ height: `100vh` }}>
-        <NotUglyButton onClick={attack}>
+        <Button isDarkMode={isDarkMode} onClick={attack}>
           <label>(Press A)</label>Attack
-        </NotUglyButton>
-        <NotUglyButton onClick={reset}>
+        </Button>
+        <Button isDarkMode={isDarkMode} onClick={reset}>
           <label>(Press R)</label>Reset
-        </NotUglyButton>
+        </Button>
 
         <Damage totalDamage={totalDamage} />
 

@@ -1,5 +1,5 @@
 import React from "react"
-import { rhythm, scale } from "@src/utils/typography"
+import { rhythm, scale } from "src/utils/typography"
 
 const GIT: string = "https://github.com/thiskevinwang/coffee-code-climb"
 const WEB: string = "https://thekevinwang.com"

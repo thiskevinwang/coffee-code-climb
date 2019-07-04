@@ -1,6 +1,6 @@
 import React, { useRef } from "react"
 import { Link } from "gatsby"
-import { rhythm, scale } from "@src/utils/typography"
+import { rhythm, scale } from "src/utils/typography"
 import { useTransition, useChain, animated } from "react-spring"
 
 export default function Header({
