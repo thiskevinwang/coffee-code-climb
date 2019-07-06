@@ -216,4 +216,4 @@ function Layout({ location, title, children }: Props) {
   )
 }
 
-export default compose(withSVGTrail)(Layout)
+export default withSVGTrail(Layout)
