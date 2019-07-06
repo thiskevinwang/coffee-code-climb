@@ -85,7 +85,7 @@ It would be implemented exaclty the same. Nice.
 
 ## Alas, my first library is born
 
-This task inspired me (lol, I inspired myself) to create a library so that others could reuse this. Thus, my first react library came into being, one evening. I have yet to dig deeper into this, as well as the whole npm publishing, but this is what I have after one quick evening.
+While going through this task, I constantly thought about how someone else could potentially use my `withState` recreation, as if it was an NPM library. So I googled around, and eventually created my first react library. I have yet to dig deeper, but this is what I have after one quick evening.
 
 https://github.com/thiskevinwang/with-hooks
 
@@ -93,8 +93,74 @@ https://github.com/thiskevinwang/with-hooks
 
 ## Related
 
-###Are injected props an anti-pattern?
+### Are injected props an anti-pattern?
 
 I'm not qualified to say _**yes**_ or ~~no~~, but I agree with what [Paul Henschel](https://twitter.com/0xca0a) has to [say](https://twitter.com/0xca0a/status/1147099945368993793).
 
-This type of composition does force the presentational components to expect specific props, make them essentially **not reusable** and it is also cumbersome to track down where ~~the fuck~~ the props are coming from in some messy cases.
+I feel that when you do something like `compose`-ing HOCs over a base dumb component...
+
+#### I don't like this
+
+```typescript
+import React from "react
+import { withState, withHandlers, compose } from "recompact"
+
+// example from https://neoziro.github.io/recompact/#withhandlershandlerfactories
+const enhance = compose(
+  withState("value", "updateValue", ""),
+  withHandlers({
+    onChange: props => event => {
+      props.updateValue(event.target.value)
+    },
+    onSubmit: props => event => {
+      event.preventDefault()
+      submitForm(props.value)
+    },
+  })
+)
+
+const Form = enhance(({ value, onChange, onSubmit }) => (
+  <form onSubmit={onSubmit}>
+    <label>
+      Value
+      <input type="text" value={value} onChange={onChange} />
+    </label>
+  </form>
+))
+```
+
+...you force the presentational components to expect specific props, make them essentially **not reusable**. If the presentation/container components are located in two separate files, then it becomes especially cumbsersome to track down where your mysterious props are coming from.
+
+In this case, "good naming" of props becomes extremely crucial, and vice versa.
+
+And if your intellisense is borked by webpack, it just becomes a snowball effect of pain.
+
+#### I like this instead
+
+```typescript
+import React, { useState } from "react"
+
+const Form = () => {
+  const [value, setValue] = useState("")
+
+  const onChange = e => {
+    setValue(e.target.value)
+  }
+
+  const onSubmit = e => {
+    e.preventDefault()
+    submitForm(value)
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
+      <label>
+        Value
+        <input type="text" value={value} onChange={onChange} />
+      </label>
+    </form>
+  )
+}
+```
+
+One file. The `useState` hook solves the unecessary dumb/smart separation, and everything you need is in your one component. Clean. And it essentially looks like a class component.
