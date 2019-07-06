@@ -6,7 +6,7 @@ tags: [code, react, recompose, recompact, hooks, compose, learning, oss]
 image: snippet.png
 ---
 
-![](./snippet.png)
+![snippet](./snippet.png)
 
 ## Recompact at work
 
