@@ -2,6 +2,7 @@ import { default as React, useRef, useEffect, useState, memo } from "react"
 import styled, { css } from "styled-components"
 import { useSpring, a, animated } from "react-spring"
 import * as Colors from "src/consts/Colors"
+import ResizeObserver from "resize-observer-polyfill"
 
 const MinusSquareO = props => (
   <svg {...props} viewBox="64 -65 897 897">
