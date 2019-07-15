@@ -1,7 +1,7 @@
-import React, { useRef, useMemo, memo } from "react"
+import React, { useState, useRef, useMemo, memo } from "react"
 import { Link } from "gatsby"
 import { rhythm, scale } from "src/utils/typography"
-import { useTransition, useChain, animated } from "react-spring"
+import { useSpring, useTransition, useChain, a } from "react-spring"
 import uuid from "uuid/v4"
 
 function Header({ location, title }: { location: Location; title: string }) {
@@ -15,8 +15,11 @@ function Header({ location, title }: { location: Location; title: string }) {
    * <Link/> component causes the entire component, or App(?)
    * to rerender... which ends up generating a bunch of duplicates.
    */
-  let data: Array<{ character: string; id: string }> = useMemo(
-    () => Array.from(title).map(e => ({ character: e, id: uuid() })),
+  let data: { character: string; id: string; index: number }[] = useMemo(
+    () =>
+      Array.from(location.pathname === rootPath ? title : "Home").map(
+        (e, i) => ({ character: e, id: uuid(), index: i })
+      ),
     []
   )
 
@@ -34,28 +37,28 @@ function Header({ location, title }: { location: Location; title: string }) {
     ref: transRef,
     unique: true,
     trail: 500 / data.length,
-    config: { mass: 2, tension: 150, friction: 8, velocity: 10 },
-    from: { transform: `translateY(-400px)` },
-    enter: { transform: `translateY(0px)` },
+    config: { mass: 4, tension: 150, friction: 12, velocity: 3 },
+    from: ({ index }) => {
+      const n: number = index - data.length / 2
+      return {
+        transform: `translate(${100 * n}px, -400px) scale(3) rotate(${n *
+          90}deg)`,
+      }
+    },
+    enter: { transform: `translate(0px, 0px) scale(1) rotate(0)` },
     // leave: { opacity: 1, transform: `translateY(-40px)` },
   })
 
   /** First run the spring, then run the transition, delayed 0.5s */
-  useChain([springRef, transRef], [0, 0.5])
-
-  /**
-   * A react-spring wrapper for a div element.
-   * Wraps each individual character from siteMetadata.title, aka props.title
-   */
-  const AnimatedDiv = animated.div
+  useChain([transRef, springRef], [0, 1.5])
 
   /**
    * Use the animated props from the transition
    */
   const animatedTitle = transitions.map(({ item, key, props }) => (
-    <AnimatedDiv key={key} style={{ ...props, lineHeight: 0.73 }}>
+    <a.div key={key} style={{ ...props, lineHeight: 0.73 }}>
       {item.character}
-    </AnimatedDiv>
+    </a.div>
   ))
 
   /** A container for the animatedTitle */
