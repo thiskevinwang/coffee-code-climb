@@ -1,26 +1,27 @@
-import React, { useRef } from "react"
+import React, { useState, useRef, useMemo, memo } from "react"
 import { Link } from "gatsby"
 import { rhythm, scale } from "src/utils/typography"
-import { useTransition, useChain, animated } from "react-spring"
+import { useSpring, useTransition, useChain, a } from "react-spring"
+import uuid from "uuid/v4"
 
-export default function Header({
-  location,
-  title,
-}: {
-  location: Location
-  title: string
-}) {
+function Header({ location, title }: { location: Location; title: string }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
   let header: JSX.Element
 
   /**
    * This is the array that gets passed to useTransition
+   *
+   * If you DO NOT wrap it in React.useMemo(), then clicking on the
+   * <Link/> component causes the entire component, or App(?)
+   * to rerender... which ends up generating a bunch of duplicates.
    */
-  let data: Array<string> = Array.from(title)
-  /** Manually add emojis to the Title*/
-  data.splice(17, 0, "🧗🏻‍♂️")
-  data.splice(11, 0, "💻")
-  data.splice(6, 0, "☕️")
+  let data: { character: string; id: string; index: number }[] = useMemo(
+    () =>
+      Array.from(location.pathname === rootPath ? title : "Home").map(
+        (e, i) => ({ character: e, id: uuid(), index: i })
+      ),
+    []
+  )
 
   /** Build a spring and catch its ref. Here, no spring is used */
   const springRef = useRef()
@@ -31,77 +32,34 @@ export default function Header({
    * Transition animation. Comment out the ref to remove it from
    * the useChain call.
    */
-  const transitions = useTransition(data, item => item, {
+
+  const transitions = useTransition(data, item => item.id, {
     ref: transRef,
     unique: true,
     trail: 500 / data.length,
-    config: { mass: 2, tension: 150, friction: 8, velocity: 10 },
-    from: { transform: `translateY(-400px)` },
-    enter: { transform: `translateY(0px)` },
+    config: { mass: 4, tension: 150, friction: 12, velocity: 3 },
+    from: ({ index }) => {
+      const n: number = index - data.length / 2
+      return {
+        transform: `translate(${100 * n}px, -400px) scale(3) rotate(${n *
+          90}deg)`,
+      }
+    },
+    enter: { transform: `translate(0px, 0px) scale(1) rotate(0)` },
     // leave: { opacity: 1, transform: `translateY(-40px)` },
   })
 
   /** First run the spring, then run the transition, delayed 0.5s */
-  useChain([springRef, transRef], [0, 0.5])
-
-  /**
-   * A react-spring wrapper for a div element.
-   * Wraps each individual character from siteMetadata.title, aka props.title
-   */
-  const AnimatedDiv = animated.div
+  useChain([transRef, springRef], [0, 1.5])
 
   /**
    * Use the animated props from the transition
    */
-  const animatedTitle = transitions.map(({ item, key, props }, index) =>
-    item !== " " ? (
-      <AnimatedDiv
-        className={`character ${
-          item === "C" ? "character--start" + index : ""
-        }`}
-        key={`${key}-${index}`}
-        style={{ ...props, lineHeight: 0.73 }}
-      >
-        {item}
-        {/** Stagger `C`s, and text spacing based on breakpoint */}
-        <style>{`
-          .character {
-            transition: margin-right 322ms ease-in-out, margin-left 322ms ease-in-out;
-          }
-          @media only screen and (min-width: 375px) {
-            .character {
-              margin-right: 5px;
-            }
-          }
-          @media only screen and (min-width: 600px) {
-            .character {
-              margin-right: 20px;
-            }
-            .character--start8 {
-              margin-left: 60px;
-            }
-            .character--start14 {
-              margin-left: 120px;
-            }
-          }
-          @media only screen and (min-width: 960px) {
-            .character {
-              margin-right: 30px;
-            }
-            .character--start8 {
-              margin-left: 120px;
-            }
-            .character--start14 {
-              margin-left: 240px;
-            }
-          }
-        `}</style>
-      </AnimatedDiv>
-    ) : (
-      /** A spacer when the array element is {" "} */
-      <AnimatedDiv key={`space-${index}`} style={{ ...props, width: `100%` }} />
-    )
-  )
+  const animatedTitle = transitions.map(({ item, key, props }) => (
+    <a.div key={key} style={{ ...props, lineHeight: 0.73 }}>
+      {item.character}
+    </a.div>
+  ))
 
   /** A container for the animatedTitle */
   const titleLink: JSX.Element = (
@@ -143,3 +101,9 @@ export default function Header({
   }
   return header
 }
+
+// Since the props don't change, wrapping Header in `React.memo()`
+// prevents it from rerendering when you update redux state
+// Ex. `isDarkMode`
+
+export default memo(Header)
