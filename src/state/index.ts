@@ -36,7 +36,7 @@ const TOGGLE_SLOWMO = "TOGGLE_SLOWMO"
  */
 const initialState = {
   isDarkMode: false,
-  showTrail: true,
+  showTrail: false,
   slowMo: false,
 }
 /**

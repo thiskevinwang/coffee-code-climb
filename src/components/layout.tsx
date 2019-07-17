@@ -5,7 +5,7 @@ import styled, { css } from "styled-components"
 import { compose } from "redux"
 
 import {
-  MobileDrawer,
+  ButtonAndDrawer,
   Footer,
   Header,
   styles,
@@ -166,16 +166,7 @@ function Layout({ location, title, children }: Props) {
             <Header location={location} title={title} />
           </animated.header>
 
-          <MobileDrawer
-            buttonStyle={{
-              zIndex: 99,
-              position: "fixed",
-              right: 0,
-              bottom: 0,
-              marginRight: 30,
-              marginBottom: 60,
-            }}
-          />
+          <ButtonAndDrawer />
           <main>
             {children}
 
