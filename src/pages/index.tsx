@@ -1,7 +1,7 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
-// import { CommentCount } from "disqus-react"
+import { CommentCount } from "disqus-react"
 import { Grid, Divider, Tooltip } from "@material-ui/core"
 
 import Bio from "../components/bio"
@@ -73,12 +73,12 @@ function Post({
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = map(tags, tag => kebabCase(tag))
 
-  // const disqusShortname = "coffeecodeclimb"
-  // const disqusConfig = {
-  //   url: "https://coffeecodeclimb.com" + linkTo,
-  //   identifier: id,
-  //   title: title,
-  // }
+  const disqusShortname = "coffeecodeclimb"
+  const disqusConfig = {
+    url: "https://coffeecodeclimb.com" + linkTo,
+    identifier: id,
+    title: title,
+  }
 
   const PostDetails = (
     <>
@@ -128,7 +128,7 @@ function Post({
           </Link>
         </Tooltip>
       )}{" "}
-      {/* <code>
+      <code>
         <small>
           <Link
             style={{ color: `inherit`, boxShadow: `none` }}
@@ -139,7 +139,7 @@ function Post({
             </CommentCount>
           </Link>
         </small>
-      </code> */}
+      </code>
     </>
   )
 
