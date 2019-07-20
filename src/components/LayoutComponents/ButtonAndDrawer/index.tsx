@@ -74,12 +74,6 @@ export default function ButtonAndDrawer() {
             <ListItemText primary={"File Tree"} />
           </ListItem>
         </Link>
-
-        <Link to="/notepad" activeStyle={activeStyle}>
-          <ListItem button>
-            <ListItemText primary={"Notepad"} />
-          </ListItem>
-        </Link>
       </List>
     </div>
   )
