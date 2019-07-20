@@ -5,7 +5,7 @@
  * See: https://www.gatsbyjs.org/docs/static-query/
  */
 
-import React from "react"
+import React, { memo } from "react"
 import { StaticQuery, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { Tooltip } from "@material-ui/core"
@@ -96,4 +96,7 @@ const bioQuery = graphql`
   }
 `
 
-export default Bio
+// memo() here prevents a rerender when some other
+// component's window resize handler updates state
+// and causes a hgue rerender
+export default memo(Bio)
