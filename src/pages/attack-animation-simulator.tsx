@@ -355,10 +355,12 @@ function AttackAnimationSimulator(props) {
       <h1>Attack Animation Simulator</h1>
       <div className="container" style={{ height: `100vh` }}>
         <Button isDarkMode={isDarkMode} onClick={attack}>
-          <label>(Press A)</label>Attack
+          <label>(Press A)</label>
+          <span>Attack</span>
         </Button>
         <Button isDarkMode={isDarkMode} onClick={reset}>
-          <label>(Press R)</label>Reset
+          <label>(Press R)</label>
+          <span>Reset</span>
         </Button>
 
         <Damage totalDamage={totalDamage} isDarkMode={isDarkMode} />

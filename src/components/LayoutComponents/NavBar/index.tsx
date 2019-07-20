@@ -63,7 +63,7 @@ const NavBar = () => {
         }}
       >
         <label>(Press D)</label>
-        {`Dark Mode: ${isDarkMode ? "on" : "off"}`}
+        <span>{`Dark Mode: ${isDarkMode ? "on" : "off"}`}</span>
       </Button>
       <Button
         sm
@@ -74,7 +74,7 @@ const NavBar = () => {
         }}
       >
         <label>(Press S)</label>
-        {`Slow-Mo: ${slowMo ? "on" : "off"}`}
+        <span>{`Slow-Mo: ${slowMo ? "on" : "off"}`}</span>
       </Button>
       <Button
         sm
@@ -85,7 +85,7 @@ const NavBar = () => {
         }}
       >
         <label>(Press T)</label>
-        {`SVG Trail: ${showTrail ? "on" : "off"}`}
+        <span>{`SVG Trail: ${showTrail ? "on" : "off"}`}</span>
       </Button>
     </Bar>
   )

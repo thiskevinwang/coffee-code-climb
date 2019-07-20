@@ -11,7 +11,7 @@ Wordpress2016.overrideThemeStyles = () => {
     "a.gatsby-resp-image-link": {
       boxShadow: `none`,
     },
-    "h1, h2, h3, h4, h5, h6, p, label": {
+    "h1, h2, h3, h4, h5, h6, p, label, span": {
       color: isDarkMode ? Colors.silverLight : Colors.blackDark,
     },
     small: {

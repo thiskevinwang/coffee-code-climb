@@ -22,7 +22,10 @@ interface Props {
  * @usage
  *
  * ```jsx
- * <Button isDarkMode={isDarkMode} lg>Press me</Button>
+ * <Button isDarkMode={isDarkMode} lg>
+ *   <label>Press me</label>
+ *   <span>we need span here for global style update</span>
+ * </Button>
  * ```
  */
 export const Button = styled.div`
