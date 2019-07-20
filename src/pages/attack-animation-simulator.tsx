@@ -282,7 +282,6 @@ function AttackAnimationSimulator(props) {
    */
   const debouncedResetStamina = useCallback(
     debounce(() => {
-      console.log("debouncedResetStamina fired")
       setTotalStamina({ number: maxStamina })
     }, 2000),
     []
@@ -302,7 +301,6 @@ function AttackAnimationSimulator(props) {
    */
   const transitions = useTransition(items, item => item.id, {
     from: ({ text }) => {
-      console.log("text", text)
       return { opacity: 0, transform: `translate3d(0%,0%,0)` }
     },
     enter: ({ text }) => ({
