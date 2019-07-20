@@ -10,6 +10,7 @@ interface Props {
   lg: boolean
   md: boolean
   sm: boolean
+  textSm: boolean
 }
 
 /**
@@ -21,7 +22,10 @@ interface Props {
  * @usage
  *
  * ```jsx
- * <Button isDarkMode={isDarkMode} lg>Press me</Button>
+ * <Button isDarkMode={isDarkMode} lg>
+ *   <label>Press me</label>
+ *   <span>we need span here for global style update</span>
+ * </Button>
  * ```
  */
 export const Button = styled.div`
@@ -29,7 +33,8 @@ export const Button = styled.div`
   border: 1px solid ${Colors.black};
   border-radius: 5px;
   box-shadow: ${MUIBoxShadow};
-  color: ${Colors.black};
+  font-size: ${props => props.textSm && `10px`};
+  line-height: 1.2;
   display: inline-block;
   text-align: center;
   padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
@@ -44,7 +49,6 @@ export const Button = styled.div`
     css`
       background: ${Colors.blackLight};
       border: 1px solid ${Colors.silverLight};
-      color: ${Colors.silverLight};
     `}
 
   label {

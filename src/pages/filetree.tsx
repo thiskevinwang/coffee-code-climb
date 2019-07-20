@@ -45,7 +45,6 @@ const FileTree = props => {
   }
   const addToData = e => {
     e.preventDefault()
-    console.log("e", e)
     let foo = { moment: moment(), name: value }
     setMockData(prev => prev.concat(foo))
     setValue("")

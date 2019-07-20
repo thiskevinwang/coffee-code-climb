@@ -1,72 +1,94 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { Link } from "gatsby"
-import Paper from "@material-ui/core/Paper"
-import { isMobile } from "react-device-detect"
-import { rhythm } from "src/utils/typography"
-import { Hello } from "./Hello"
+import styled, { css } from "styled-components"
+import { useSelector, useDispatch } from "react-redux"
 
-export default function NavBar({ location, opacity }) {
+import { setIsDarkMode, setShowTrail, setSlowMo } from "src/state"
+import { rhythm } from "src/utils/typography"
+import { Button } from "components/Button"
+import * as Colors from "consts/Colors"
+import { navbarZ, MUIBoxShadow } from "consts"
+
+/**
+ * Bar
+ * A styled component that is our navbar.
+ * @prop {boolean} isDarkMode - redux state
+ */
+const Bar = styled.div`
+  background: ${props =>
+    props.isDarkMode ? Colors.blackDarker : Colors.silverLight};
+  box-shadow: ${MUIBoxShadow};
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around
+  height: 70px;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  z-index: ${navbarZ};
+`
+
+/**
+ * NavBar
+ * Subscribed to a few redux state changes.
+ * Also dispatches actions to update the store.
+ */
+const NavBar = () => {
   const rootPath: string = `${__PATH_PREFIX__}/`
+  const { isDarkMode, slowMo, showTrail } = useSelector(state => state)
+  const dispatch = useDispatch()
+
+  const dispatchSetIsDarkMode = useCallback(
+    state => dispatch(setIsDarkMode(state)),
+    []
+  )
+  const dispatchSetSetSlowMo = useCallback(
+    state => dispatch(setSlowMo(state)),
+    []
+  )
+  const dispatchSetShowTrail = useCallback(
+    state => dispatch(setShowTrail(state)),
+    []
+  )
 
   return (
-    <Paper
-      className={"navbar"}
-      style={{
-        alignItems: "center",
-        background: "white",
-        display: "flex",
-        flex: "1",
-        height: 70,
-        justifyContent: "space-between",
-        left: 0,
-        marginBottom: `${rhythm(1)}`,
-        marginLeft: isMobile ? `${rhythm(1)}` : `auto`,
-        marginRight: isMobile ? `${rhythm(1)}` : `auto`,
-        maxWidth: rhythm(24),
-        opacity: opacity,
-        padding: `0 ${rhythm(3 / 4)}`,
-        // position: `${(() => {
-        //   switch (true) {
-        //     case isMobile:
-        //       return `sticky`
-        //     case isSafari:
-        //       return `-webkit-sticky`
-        //     case isFirefox:
-        //       return `-moz-sticky`
-        //     default:
-        //       return `sticky`
-        //   }
-        // })()}`,
-        top: `${rhythm(1)}`,
-        zIndex: 9999,
-      }}
-    >
-      <style jsx>{`
-        .navbar {
-          position: -webkit-sticky;
-          position: sticky;
-        }
-      `}</style>
-
-      <small>
-        <Hello page={location.pathname} date={new Date()} />
-      </small>
-
-      <small>
-        {location.pathname !== rootPath && (
-          <>
-            <Link
-              to="/"
-              style={{
-                boxShadow: "none",
-                lineHeight: "37px",
-              }}
-            >
-              Home
-            </Link>
-          </>
-        )}
-      </small>
-    </Paper>
+    <Bar isDarkMode={isDarkMode}>
+      <Button
+        sm
+        textSm
+        isDarkMode={isDarkMode}
+        onClick={e => {
+          dispatchSetIsDarkMode(!isDarkMode)
+        }}
+      >
+        <label>(Press D)</label>
+        <span>{`Dark Mode: ${isDarkMode ? "on" : "off"}`}</span>
+      </Button>
+      <Button
+        sm
+        textSm
+        isDarkMode={isDarkMode}
+        onClick={e => {
+          dispatchSetSetSlowMo(!slowMo)
+        }}
+      >
+        <label>(Press S)</label>
+        <span>{`Slow-Mo: ${slowMo ? "on" : "off"}`}</span>
+      </Button>
+      <Button
+        sm
+        textSm
+        isDarkMode={isDarkMode}
+        onClick={e => {
+          dispatchSetShowTrail(!showTrail)
+        }}
+      >
+        <label>(Press T)</label>
+        <span>{`SVG Trail: ${showTrail ? "on" : "off"}`}</span>
+      </Button>
+    </Bar>
   )
 }
+
+export default NavBar

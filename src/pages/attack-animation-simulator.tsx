@@ -1,9 +1,16 @@
 // attack-animation-simulator.tsx
-import React, { useState, useEffect, ReactElement, useCallback } from "react"
+import React, {
+  memo,
+  useState,
+  useEffect,
+  ReactElement,
+  useCallback,
+} from "react"
 import { useSelector } from "react-redux"
 import { graphql } from "gatsby"
 import styled, { css } from "styled-components"
 import {
+  a,
   animated,
   useTransition,
   useSpring,
@@ -19,19 +26,27 @@ import uuid from "uuid"
 
 import Layout from "components/layout"
 import SEO from "components/seo"
-
 import { rhythm, scale } from "src/utils/typography"
 import { Button } from "components/Button"
+import * as Colors from "consts/Colors"
 
-const AnimatedPre = animated.pre
-const AnimatedBar = animated.div
-const AnimatedDescription = styled.div`
+const AnimatedPre = a(styled.pre`
+  transition: color 200ms ease-in-out;
+  color: ${props =>
+    props.isDarkMode ? Colors.silverLight : Colors.blackLight};
+`)
+const AnimatedBar = memo(
+  animated(styled.div`
+    max-width: 100%;
+  `)
+)
+const StyledDescription = memo(styled.div`
   border: 1px solid grey;
   border-radius: 5px;
   display: block;
   padding: ${rhythm(0.5)};
   margin: ${rhythm(0.5)};
-`
+`)
 
 /**
  * # AttackCounter
@@ -56,12 +71,12 @@ const AttackCounter = styled.div`
       );
     `}
 `
-
 /**
  * # AnimatedAttackCounter
  * An `animated`, `styled-component`
  */
-const AnimatedAttackCounter = animated(AttackCounter)
+
+const AnimatedAttackCounter = memo(animated(AttackCounter))
 
 /**
  * # <Damage />
@@ -72,35 +87,42 @@ const AnimatedAttackCounter = animated(AttackCounter)
  *
  * @returns {ReactElement} ReactElement
  */
-function Damage({
-  totalDamage,
-}: {
-  totalDamage: AnimatedValue<{ number: number }>
-}): ReactElement {
-  return (
-    <>
-      <AnimatedDescription>Damage</AnimatedDescription>
-      <AnimatedPre className="damage-dealt">
-        {totalDamage.number.interpolate(x => x.toFixed(0))}
-      </AnimatedPre>
-      <AnimatedBar
-        style={{
-          display: "inline-block",
-          minHeight: `30px`,
-          minWidth: totalDamage.number,
-          backgroundImage: totalDamage.number.interpolate({
-            range: [0, 500, 1000],
-            output: [
-              `linear-gradient(130deg, #003a00, #009900)`,
-              `linear-gradient(130deg, #00008a, #0000ff)`,
-              `linear-gradient(130deg, #7a0000, #ff0000)`,
-            ],
-          }),
-        }}
-      />
-    </>
-  )
-}
+const Damage = memo(
+  ({
+    totalDamage,
+    isDarkMode,
+  }: {
+    totalDamage: AnimatedValue<{ number: number }>
+    isDarkMode: boolean
+  }): ReactElement => {
+    return (
+      <>
+        <StyledDescription>
+          <>Damage</>
+          <AnimatedPre isDarkMode={isDarkMode}>
+            {totalDamage.number.interpolate(x => x.toFixed(0))}
+          </AnimatedPre>
+          <AnimatedBar
+            style={{
+              display: "inline-block",
+              minHeight: `30px`,
+              minWidth: totalDamage.number,
+              maxWidth: `100%`,
+              backgroundImage: totalDamage.number.interpolate({
+                range: [0, 500, 1000],
+                output: [
+                  `linear-gradient(130deg, #003a00, #009900)`,
+                  `linear-gradient(130deg, #00008a, #0000ff)`,
+                  `linear-gradient(130deg, #7a0000, #ff0000)`,
+                ],
+              }),
+            }}
+          />
+        </StyledDescription>
+      </>
+    )
+  }
+)
 
 /**
  * # <Stamina />
@@ -111,40 +133,42 @@ function Damage({
  *
  * @returns {ReactElement} ReactElement
  */
-function Stamina({
-  totalStamina,
-}: {
-  totalStamina: AnimatedValue<{ number: number }>
-}): ReactElement {
-  return (
-    <>
-      <AnimatedDescription>Stamina</AnimatedDescription>
-      <AnimatedPre
-        className="damage-dealt"
-        /**
-         * interpolate on the anivated value to return a string
-         */
-      >
-        {totalStamina.number.interpolate(x => x.toFixed(0))}
-      </AnimatedPre>
-      <AnimatedBar
-        style={{
-          display: "inline-block",
-          minHeight: `30px`,
-          minWidth: totalStamina.number,
-          backgroundImage: totalStamina.number.interpolate({
-            range: [0, 500, 1000],
-            output: [
-              `linear-gradient(130deg, #7a0000, #ff0000)`,
-              `linear-gradient(130deg, #7a7a00, #ffff00)`,
-              `linear-gradient(130deg, #003a00, #009900)`,
-            ],
-          }),
-        }}
-      />
-    </>
-  )
-}
+const Stamina = memo(
+  ({
+    totalStamina,
+    isDarkMode,
+  }: {
+    totalStamina: AnimatedValue<{ number: number }>
+    isDarkMode
+  }): ReactElement => {
+    return (
+      <>
+        <StyledDescription>
+          <>Stamina</>
+          <AnimatedPre isDarkMode={isDarkMode}>
+            {/* interpolate on the anivated value to return a string */}
+            {totalStamina.number.interpolate(x => x.toFixed(0))}
+          </AnimatedPre>
+          <AnimatedBar
+            style={{
+              display: "inline-block",
+              minHeight: `30px`,
+              minWidth: totalStamina.number,
+              backgroundImage: totalStamina.number.interpolate({
+                range: [0, 500, 1000],
+                output: [
+                  `linear-gradient(130deg, #7a0000, #ff0000)`,
+                  `linear-gradient(130deg, #7a7a00, #ffff00)`,
+                  `linear-gradient(130deg, #003a00, #009900)`,
+                ],
+              }),
+            }}
+          />
+        </StyledDescription>
+      </>
+    )
+  }
+)
 
 /**
  * # AttackAnimationSimulator
@@ -241,10 +265,10 @@ function AttackAnimationSimulator(props) {
    * ### aka 'handleReset'
    */
   const reset = () => {
-    debouncedResetStamina.cancel()
+    debouncedResetStamina.flush()
     setItems([]) // This causes a rerender
     setTotalDamage({ number: 0 })
-    setTotalStamina({ number: maxStamina })
+    // setTotalStamina({ number: maxStamina })
   }
 
   /**
@@ -258,7 +282,6 @@ function AttackAnimationSimulator(props) {
    */
   const debouncedResetStamina = useCallback(
     debounce(() => {
-      console.log("debouncedResetStamina fired")
       setTotalStamina({ number: maxStamina })
     }, 2000),
     []
@@ -277,7 +300,7 @@ function AttackAnimationSimulator(props) {
    * as 1st and 2nd args, respectively.
    */
   const transitions = useTransition(items, item => item.id, {
-    from: ({ text }: { text: string }) => {
+    from: ({ text }) => {
       return { opacity: 0, transform: `translate3d(0%,0%,0)` }
     },
     enter: ({ text }) => ({
@@ -330,15 +353,17 @@ function AttackAnimationSimulator(props) {
       <h1>Attack Animation Simulator</h1>
       <div className="container" style={{ height: `100vh` }}>
         <Button isDarkMode={isDarkMode} onClick={attack}>
-          <label>(Press A)</label>Attack
+          <label>(Press A)</label>
+          <span>Attack</span>
         </Button>
         <Button isDarkMode={isDarkMode} onClick={reset}>
-          <label>(Press R)</label>Reset
+          <label>(Press R)</label>
+          <span>Reset</span>
         </Button>
 
-        <Damage totalDamage={totalDamage} />
+        <Damage totalDamage={totalDamage} isDarkMode={isDarkMode} />
 
-        <Stamina totalStamina={totalStamina} />
+        <Stamina totalStamina={totalStamina} isDarkMode={isDarkMode} />
 
         {/* <AnimatedPre className="damage-dealt">{d}</AnimatedPre> */}
 
