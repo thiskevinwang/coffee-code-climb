@@ -7,7 +7,7 @@ import { setIsDarkMode, setShowTrail, setSlowMo } from "src/state"
 import { rhythm } from "src/utils/typography"
 import { Button } from "components/Button"
 import * as Colors from "consts/Colors"
-import { navbarZ } from "consts"
+import { navbarZ, MUIBoxShadow } from "consts"
 
 /**
  * Bar
@@ -16,7 +16,8 @@ import { navbarZ } from "consts"
  */
 const Bar = styled.div`
   background: ${props =>
-    props.isDarkMode ? Colors.blackDarker : Colors.blackLighter};
+    props.isDarkMode ? Colors.blackDarker : Colors.silverLight};
+  box-shadow: ${MUIBoxShadow};
   color: white;
   display: flex;
   flex-direction: row;
