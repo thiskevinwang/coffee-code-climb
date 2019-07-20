@@ -10,6 +10,7 @@ interface Props {
   lg: boolean
   md: boolean
   sm: boolean
+  textSm: boolean
 }
 
 /**
@@ -29,6 +30,8 @@ export const Button = styled.div`
   border: 1px solid ${Colors.black};
   border-radius: 5px;
   box-shadow: ${MUIBoxShadow};
+  font-size: ${props => props.textSm && `10px`};
+  line-height: 1.2;
   color: ${Colors.black};
   display: inline-block;
   text-align: center;
