@@ -33,6 +33,8 @@ However, in the context of our app, they mark a pretty significant turning point
 
 ## Todos?
 
+### react-redux@7.x
+
 Next, I want to team buy-in to update our [react-redux](https://react-redux.js.org/) version from 5.x to [7.x](https://github.com/reduxjs/react-redux/releases), which introduces their own hooks: `useSelector` and `useDisptach`. This would eliminate our need for injecting a billion props from a higher order component...
 
 ```javascript
@@ -74,3 +76,7 @@ const HookedOnRedux = () => {
 ```
 
 This could get messy, but I read somewhere that a larger component would be expected with hooks... (Argh, can't find it.) Only one way to find out.
+
+### Write some custom hooks for the team
+
+The built in hooks have covered every usecase i've encountered so far, but I do want to write some custom hooks that could benefit our team.
