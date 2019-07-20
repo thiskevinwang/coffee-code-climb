@@ -7,7 +7,7 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "src/utils/typography"
 import {
-  // Discussion,
+  Discussion,
   DocumentToReactComponents,
   PrevNextNavigation,
 } from "components/TemplateComponents"
@@ -63,11 +63,11 @@ export default function ContentfulBlogPostTemplate({
 
       <PrevNextNavigation previous={previous} next={next} />
 
-      {/* <Discussion
+      <Discussion
         locationPathname={location.pathname}
         identifier={post.id}
         title={post.title}
-      /> */}
+      />
     </Layout>
   )
 }
