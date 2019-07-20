@@ -14,7 +14,7 @@ One of my coworkers was given a ticket to enable Launch Darkly on our consumer w
 
 ### `withLDConsumer` had an undocumented prop
 
-My coworker got pretty stressed because it seemed like it was impossible to interface with the Launch Darkly client. Eventually, I was asked for help for the ticket at hand, and so I had to check the documentation as well. When looking up documentation for `withLDConsumer`, there was only mention of one injected `flags` props, and so I could understand his confusing and stress as to how we were supposed to interface with the client. I went on to read about the two hooks, that supposedly can be used in place of the HOC.
+My coworker got pretty stressed because it seemed like it was impossible to interface with the Launch Darkly client. Eventually, I was asked for help for the ticket at hand, and so I had to check the documentation as well. When looking up documentation for `withLDConsumer`, there was only mention of one injected `flags` props, and so I could understand his confusion and stress as to how we were supposed to interface with the client. I went on to read about the two hooks, that supposedly can be used in place of the HOC.
 
 ```javascript
 import { withLDConsumer } from 'launchdarkly-react-client-sdk'
