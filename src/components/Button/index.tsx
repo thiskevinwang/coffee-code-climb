@@ -32,7 +32,6 @@ export const Button = styled.div`
   box-shadow: ${MUIBoxShadow};
   font-size: ${props => props.textSm && `10px`};
   line-height: 1.2;
-  color: ${Colors.black};
   display: inline-block;
   text-align: center;
   padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
@@ -47,7 +46,6 @@ export const Button = styled.div`
     css`
       background: ${Colors.blackLight};
       border: 1px solid ${Colors.silverLight};
-      color: ${Colors.silverLight};
     `}
 
   label {

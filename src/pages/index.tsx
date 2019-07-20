@@ -5,11 +5,13 @@ import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
 import { Grid, Divider, Tooltip } from "@material-ui/core"
+import { useSelector } from "react-redux"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm } from "src/utils/typography"
+import * as Colors from "consts/Colors"
 
 const KEYWORDS = [
   `blog`,
@@ -48,6 +50,7 @@ interface Props {
   index: number
   innerWidth: number
   nodeType: string
+  isDarkMode: boolean
 }
 
 function Post({
@@ -63,6 +66,7 @@ function Post({
   index,
   innerWidth,
   nodeType,
+  isDarkMode,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = _.map(tags, tag => _.kebabCase(tag))
@@ -88,7 +92,6 @@ function Post({
         <small>{date}</small>
         <br />
         <small
-          style={{ color: "#425A70" }}
           dangerouslySetInnerHTML={{
             __html: description || excerpt,
           }}
@@ -141,7 +144,13 @@ function Post({
     <div
       className={"post-details__card"}
       style={{
-        background: innerWidth >= 600 ? "white" : `none`,
+        background:
+          innerWidth >= 600
+            ? isDarkMode
+              ? Colors.blackDark
+              : Colors.silverLighter
+            : `none`,
+        borderRadius: 5,
         paddingTop: innerWidth >= 600 && rhythm(1 / 2),
         paddingBottom: innerWidth >= 600 && rhythm(1),
         paddingLeft: innerWidth >= 600 && rhythm(1),
@@ -199,6 +208,7 @@ const BlogIndex = ({ data, location }) => {
   const contentfulPosts = data.allContentfulBlogPost.edges
 
   const [state, setState] = useState({ innerWidth: 0 })
+  const isDarkMode = useSelector(state => state.isDarkMode)
 
   const handleResize = _.throttle(() => {
     setState({
@@ -255,6 +265,7 @@ const BlogIndex = ({ data, location }) => {
               index={index}
               innerWidth={state.innerWidth}
               nodeType={node.internal.type}
+              isDarkMode={isDarkMode}
             />
           ) : (
             /**
@@ -274,6 +285,7 @@ const BlogIndex = ({ data, location }) => {
               index={index}
               innerWidth={state.innerWidth}
               nodeType={node.internal.type}
+              isDarkMode={isDarkMode}
             />
           )
         })}
