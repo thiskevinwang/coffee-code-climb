@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config } from "react-spring"
 import styled from "styled-components"
 
+import { svgZ } from "consts"
 import { setIsDarkMode, setShowTrail, setSlowMo } from "src/state"
 import * as SVG from "src/svg"
 
@@ -112,6 +113,7 @@ const Wrapper = ({ children }) => {
           style={{
             transform: props.xy.interpolate(translate2d),
             opacity: props.opacity.interpolate(x => x),
+            zIndex: svgZ,
           }}
         >
           {SVGS[index]}

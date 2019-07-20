@@ -10,6 +10,7 @@ import {
   Header,
   styles,
   withSVGTrail,
+  NavBar,
 } from "./LayoutComponents"
 import { rhythm } from "src/utils/typography"
 
@@ -106,6 +107,7 @@ function Layout({ location, title, children }: Props) {
 
   return (
     <>
+      <NavBar />
       {/* Background stuffs */}
       <>
         <div
