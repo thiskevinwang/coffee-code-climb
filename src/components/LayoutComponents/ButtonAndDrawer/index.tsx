@@ -8,8 +8,24 @@ import Fab from "@material-ui/core/Fab"
 import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
+import { makeStyles } from "@material-ui/core/styles"
 
 import * as Colors from "consts/Colors"
+
+// Overwrite MUI styles
+// https://material-ui.com/api/drawer#css
+const useStyles = makeStyles({
+  paperAnchorBottom: {
+    background: `none`,
+    boxShadow: `none`,
+  },
+  margin: {
+    margin: `30px`,
+  },
+  root: {
+    width: `100vw`,
+  },
+})
 
 const activeStyle = {
   color: "rebeccapurple",
@@ -41,6 +57,7 @@ const FabContainer = styled.div`
 `
 
 export default function ButtonAndDrawer() {
+  const classes = useStyles()
   const [state, setState] = useState({
     bottom: false,
   })
@@ -54,9 +71,19 @@ export default function ButtonAndDrawer() {
         setState({ ...state, [side]: !state[side] })
   }
 
+  /**
+   * In order to get some styling like margin: `60px`, the
+   * classes[propertyName] needs to be added here to
+   * props.className
+   */
   const sideList = (
-    <div>
-      <List style={{ background: isDarkMode ? Colors.black : Colors.silver }}>
+    <div className={classes.margin}>
+      <List
+        style={{
+          background: isDarkMode ? Colors.black : Colors.silver,
+          borderRadius: 10,
+        }}
+      >
         <Link to="/tags" activeStyle={activeStyle}>
           <ListItem button>
             <ListItemText primary={"All Tags"} />
@@ -94,6 +121,7 @@ export default function ButtonAndDrawer() {
         </Fab>
       </FabContainer>
       <Drawer
+        classes={{ paperAnchorBottom: classes.paperAnchorBottom }}
         anchor="bottom"
         open={state.bottom}
         onClose={toggleDrawer("bottom", false)}
