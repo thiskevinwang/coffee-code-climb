@@ -17,31 +17,24 @@ Wordpress2016.overrideThemeStyles = () => {
       boxShadow: `none`,
     },
     h1: {
-      fontFamily: "Cereal",
       fontWeight: 900,
     },
     h2: {
-      fontFamily: "Cereal",
       fontWeight: 800,
     },
     h3: {
-      fontFamily: "Cereal",
       fontWeight: 700,
     },
     h4: {
-      fontFamily: "Cereal",
       fontWeight: 500,
     },
     h5: {
-      fontFamily: "Cereal",
       fontWeight: 400,
     },
     h6: {
-      fontFamily: "Cereal",
       fontWeight: 300,
     },
     p: {
-      fontFamily: "Cereal",
       fontWeight: 300,
     },
     "h1, h2, h3, h4, h5, h6, p, label, span": {
