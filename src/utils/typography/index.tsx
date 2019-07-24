@@ -4,12 +4,45 @@ import Wordpress2016 from "typography-theme-wordpress-2016"
 import * as Colors from "consts/Colors"
 import { store } from "src/state"
 
+import "src/css/typography.css"
+
+Wordpress2016.headerFontFamily = ["Cereal"]
+Wordpress2016.bodyFontFamily = ["Cereal"]
+
 Wordpress2016.overrideThemeStyles = () => {
   // This is the current state when `injectStyles()` is fired
   const { isDarkMode }: { isDarkMode: boolean } = store.getState()
   return {
     "a.gatsby-resp-image-link": {
       boxShadow: `none`,
+    },
+    h1: {
+      fontFamily: "Cereal",
+      fontWeight: 900,
+    },
+    h2: {
+      fontFamily: "Cereal",
+      fontWeight: 800,
+    },
+    h3: {
+      fontFamily: "Cereal",
+      fontWeight: 700,
+    },
+    h4: {
+      fontFamily: "Cereal",
+      fontWeight: 500,
+    },
+    h5: {
+      fontFamily: "Cereal",
+      fontWeight: 400,
+    },
+    h6: {
+      fontFamily: "Cereal",
+      fontWeight: 300,
+    },
+    p: {
+      fontFamily: "Cereal",
+      fontWeight: 300,
     },
     "h1, h2, h3, h4, h5, h6, p, label, span": {
       color: isDarkMode ? Colors.silverLight : Colors.blackDark,
