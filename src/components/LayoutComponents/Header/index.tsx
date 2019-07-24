@@ -56,7 +56,14 @@ function Header({ location, title }: { location: Location; title: string }) {
    * Use the animated props from the transition
    */
   const animatedTitle = transitions.map(({ item, key, props }) => (
-    <a.div key={key} style={{ ...props, lineHeight: 0.73 }}>
+    <a.div
+      key={key}
+      style={{
+        ...props,
+        lineHeight: 0.73,
+        fontFamily: "Cereal",
+      }}
+    >
       {item.character}
     </a.div>
   ))
@@ -89,15 +96,7 @@ function Header({ location, title }: { location: Location; title: string }) {
       </h1>
     )
   } else {
-    header = (
-      <h3
-        style={{
-          fontFamily: `Montserrat, sans-serif`,
-        }}
-      >
-        {titleLink}
-      </h3>
-    )
+    header = <h3>{titleLink}</h3>
   }
   return header
 }

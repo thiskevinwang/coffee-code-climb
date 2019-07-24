@@ -2,9 +2,10 @@ import React, { useState, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config } from "react-spring"
 import styled from "styled-components"
+import _ from "lodash"
 
 import { svgZ } from "consts"
-import { setIsDarkMode, setShowTrail, setSlowMo } from "src/state"
+import { setIsDarkMode, setShowTrail, setSlowMo, setVibrate } from "src/state"
 import * as SVG from "src/svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
@@ -39,23 +40,35 @@ const AnimatedSVG = animated(StyledSVG)
 const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
+const translate2dVibrate = (x, y) =>
+  `translate3d(${_.random(x - 5, x + 5)}px,${_.random(
+    y - 5,
+    y + 5
+  )}px,0) translate3d(-50%,-50%,0)`
+
 const Wrapper = ({ children }) => {
   // Redux hooks
   const isDarkMode = useSelector(state => state.isDarkMode)
   const showTrail = useSelector(state => state.showTrail)
   const slowMo = useSelector(state => state.slowMo)
+  const vibrate = useSelector(state => state.vibrate)
+
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
-    state => dispatch(setIsDarkMode(state)),
+    (state: boolean): void => dispatch(setIsDarkMode(state)),
     []
   )
   const dispatchSetShowTrail = useCallback(
-    state => dispatch(setShowTrail(state)),
+    (state: boolean): void => dispatch(setShowTrail(state)),
     []
   )
   const dispatchSetSetSlowMo = useCallback(
-    state => dispatch(setSlowMo(state)),
+    (state: boolean): void => dispatch(setSlowMo(state)),
+    []
+  )
+  const dispatchSetVibrate = useCallback(
+    (state: boolean): void => dispatch(setVibrate(state)),
     []
   )
 
@@ -79,6 +92,8 @@ const Wrapper = ({ children }) => {
           return dispatchSetIsDarkMode(!isDarkMode)
         case "t":
           return dispatchSetShowTrail(!showTrail)
+        case "v":
+          return dispatchSetVibrate(!vibrate)
         default:
           return
       }
@@ -92,7 +107,7 @@ const Wrapper = ({ children }) => {
     return () => {
       window.removeEventListener("keypress", handleKeyPress)
     }
-  }, [isDarkMode, showTrail, slowMo])
+  }, [isDarkMode, showTrail, slowMo, vibrate])
 
   return (
     <div
@@ -111,7 +126,9 @@ const Wrapper = ({ children }) => {
           key={index}
           index={index + 1}
           style={{
-            transform: props.xy.interpolate(translate2d),
+            transform: props.xy.interpolate(
+              vibrate ? translate2dVibrate : translate2d
+            ),
             opacity: props.opacity.interpolate(x => x),
             zIndex: svgZ,
           }}

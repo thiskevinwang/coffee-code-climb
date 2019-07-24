@@ -20,12 +20,20 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.css"
  * NOTE: on useSpring() interpolations
  * Make sure arrays passed to `range` & `output` are equal in length
  **/
-const GRADIENTS = [
+const LIGHT_GRADIENTS = [
+  `linear-gradient(0deg, #ffecde 0%, #ffd1ff 100%)`,
+  `linear-gradient(0deg, #ffefff 0%, #fecfef 100%)`,
+  `linear-gradient(90deg, #ffccdd 0%, #fcb69f 100%)`,
+  `linear-gradient(0deg, #ff9a9e 0%, #fcb3ef 100%)`,
+  `linear-gradient(120deg, #ef8a8a 0%, #fda085 100%)`,
+  `linear-gradient(180deg, #a18cd1 0%, #fbc2eb 100%)`,
+]
+const DARK_GRADIENTS = [
   `linear-gradient(-10deg, #21D4FD 0%, #B721FF 100%)`,
-  `linear-gradient-5deg, #08AEEA 0%, #2AF598 100%)`,
+  `linear-gradient(-5deg, #08AEEA 0%, #2AF598 100%)`,
   `linear-gradient(0deg, #8EC5FC 0%, #E0C3FC 100%)`,
-  `linear-gradient(19deg, #FAACA8 0%, #DDD6F3 100%)`,
-  `linear-gradient(20deg, #FEE140 0%, #FA709A 100%)`,
+  `linear-gradient(0deg, #9890e3 0%, #b1f4cf 100%)`,
+  `linear-gradient(0deg, #5ee7df 0%, #b490ca 100%)`,
 ]
 
 const DottedBackground = styled.div`
@@ -122,7 +130,9 @@ function Layout({ location, title, children }: Props) {
             ...styles.bg1,
             background: scrollY.percent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
-              output: [...GRADIENTS],
+              output: isDarkMode
+                ? Array.from(DARK_GRADIENTS)
+                : Array.from(LIGHT_GRADIENTS),
             }),
           }}
         />
