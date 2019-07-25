@@ -1,7 +1,6 @@
 // custom typefaces
 import "typeface-montserrat"
 import "typeface-merriweather"
-import "prismjs/themes/prism.css"
 
 import * as React from "react"
 import { Provider } from "react-redux"
