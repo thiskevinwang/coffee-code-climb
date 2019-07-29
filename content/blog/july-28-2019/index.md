@@ -3,14 +3,16 @@ title: React components, cooked 4 ways
 date: "2019-07-28T15:16:41.084Z"
 description: ""
 tags: [code, react, hooks, components]
-image: _FIXME_.png
+image: fourways.png
 ---
 
-## React components, cooked 4 ways.
+![fourways](./fourways.png)
 
-### 1. Class (React.Component)
+Here are a few ways to cook a potato... I mean, write a React component.
 
-Lately, I haven't had the need to write any class components, and I've nearly forgotten all the extra boiler-plate as well as lifecycle methods... 🤷🏻‍♂️
+## 1. Class (React.Component)
+
+I think class components are the first thing people learn when they learn React, at least that was what I learned. But lately, I haven't had the need to write any class components, and I've nearly forgotten all the extra boiler-plate as well as lifecycle methods... 🤷🏻‍♂️
 
 ```javascript
 import * as React from "react"
@@ -58,7 +60,7 @@ const rootElement = document.getElementById("root")
 render(<App />, rootElement)
 ```
 
-### 2. Function, with Hooks
+## 2. Function, with Hooks
 
 These are my jam, and also where the future of React appears to be going. Hooks make components so clean and a pleasure to read.
 
@@ -91,9 +93,9 @@ const rootElement = document.getElementById("root")
 render(<App />, rootElement)
 ```
 
-### 3. Render Props
+## 3. Render Props
 
-I'm kind of indifferent about these, and I didn't understand how to write them until a week ago.
+I'm kind of indifferent about this and the next, and I didn't understand how to write them until a week ago.
 
 ```javascript
 import React, { useState, useEffect } from "react"
@@ -124,7 +126,7 @@ const rootElement = document.getElementById("root")
 render(<App render={a => a} />, rootElement)
 ```
 
-#### 3a. Function as Children Prop
+### 3a. Function as Children Prop
 
 Between render props, and declaring a function as the `children` prop, I think the later looks a lot nicer.
 
@@ -162,7 +164,15 @@ render(
 )
 ```
 
-### 4. Higher Order Component (aka "Enhanced")
+#### Children Function Examples
+
+- [downshift](https://github.com/downshift-js/downshift#children-function)
+
+## 4. Higher Order Component (aka "Enhanced")
+
+These are everywhere. Sometimes they're cool and sometimes they're a bit much. The main use case I've worked with is using HOCs to inject props into a _dummy_ component. These props have typically been redux state values, action dispatchers, local state handlers, etc.
+
+Hooks can **mostly** handle these use cases from within the body of a function component itself, but sometimes it's not a 1-to-1 conversion.
 
 ```javascript
 import React, { useState, useEffect } from "react"
@@ -212,3 +222,13 @@ function withBrains(BaseComponent) {
 const rootElement = document.getElementById("root")
 render(<App />, rootElement)
 ```
+
+#### HOC Examples
+
+- [recompose](https://github.com/acdlite/recompose)
+- [@material-ui {withStyles}](https://material-ui.com/styles/basics/#higher-order-component-api)
+- [react-redux {connect}](https://react-redux.js.org/api/connect)
+
+## Suggestions?
+
+Are there some cool examples I should checkout?
