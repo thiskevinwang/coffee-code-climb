@@ -14,6 +14,7 @@ import {
 } from "./LayoutComponents"
 import { rhythm } from "src/utils/typography"
 import * as Colors from "consts/Colors"
+import { titleZ } from "consts"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
@@ -130,9 +131,7 @@ function Layout({ location, title, children }: Props) {
             ...styles.bg1,
             background: scrollY.percent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
-              output: isDarkMode
-                ? Array.from(DARK_GRADIENTS)
-                : Array.from(LIGHT_GRADIENTS),
+              output: isDarkMode ? DARK_GRADIENTS : LIGHT_GRADIENTS,
             }),
             transform: scrollY.percent.interpolate({
               range: [0, 1],
@@ -167,7 +166,7 @@ function Layout({ location, title, children }: Props) {
           style={{
             marginLeft: `auto`,
             marginRight: `auto`,
-            maxWidth: rhythm(location.pathname === rootPath ? 48 : 48),
+            maxWidth: rhythm(location.pathname === rootPath ? 48 : 24),
             padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
           }}
         >
@@ -176,13 +175,13 @@ function Layout({ location, title, children }: Props) {
               transform: scrollY.percent
                 .interpolate({
                   range: [0, 1, 2],
-                  output: [1, 3, 3],
+                  output: [1, 100, 3],
                 })
-                .interpolate(x => `scale(${x})`),
+                .interpolate(x => `translateY(${2 * x}vh)`),
               opacity: scrollY.percent
                 .interpolate({
-                  range: [0, 1, 2],
-                  output: [1, 0, 0],
+                  range: [0, 0.25, 1, 2],
+                  output: [1, 0, 0, 0],
                 })
                 .interpolate(x => x),
             }}
@@ -200,7 +199,9 @@ function Layout({ location, title, children }: Props) {
              */}
             <style>{`
               .gatsby-highlight {
-                background-color: ${Colors.blackLighter};
+                background-color: ${
+                  isDarkMode ? Colors.blackLighter : Colors.greyDark
+                };
                 border-radius: 0.3em;
                 margin: 0.5em 0;
                 padding: 1em;
@@ -208,7 +209,9 @@ function Layout({ location, title, children }: Props) {
               }
 
               .gatsby-highlight pre[class*="language-"].line-numbers {
-                background-color: ${Colors.blackLighter};
+                background-color: ${
+                  isDarkMode ? Colors.blackLighter : Colors.greyDark
+                };
                 font-family: "Dank Mono", "Fira Code", "Operator Mono", Consolas, Monaco,
                 "Andale Mono", "Ubuntu Mono", monospace;
                 padding: 0;
