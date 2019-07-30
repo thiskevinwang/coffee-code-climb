@@ -97,6 +97,8 @@ render(<App />, rootElement)
 
 I'm kind of indifferent about this and the next, and I didn't understand how to write them until a week ago.
 
+The following is probably not the correct way to use render props, but I stumbled upon when I was trying to see what was possible.
+
 ```javascript
 import React, { useState, useEffect } from "react"
 import { render } from "react-dom"
@@ -128,7 +130,9 @@ render(<App render={a => a} />, rootElement)
 
 ### 3a. Function as Children Prop
 
-Between render props, and declaring a function as the `children` prop, I think the later looks a lot nicer.
+Here is a variation, passing a function as the children prop. From the component, the childen prop gets called with some arguments. Those arguments can then be accessed when you go to write the element tree, and they can be used anywhere along the tree.
+
+Between render props, and a function as the `children` prop, I think the later is a lot nicer.
 
 ```javascript
 import React, { useState, useEffect } from "react"
@@ -170,7 +174,9 @@ render(
 
 ## 4. Higher Order Component (aka "Enhanced")
 
-These are everywhere. Sometimes they're cool and sometimes they're a bit much. The main use case I've worked with is using HOCs to inject props into a _dummy_ component. These props have typically been redux state values, action dispatchers, local state handlers, etc.
+These are everywhere. Sometimes they're cool and sometimes they're a bit much. They're cool because you can "stack" or `compose`-together many HOCs on top of a base component. But sometimes they inject a ton of props and it can be very confusing where some props are coming from.
+
+The main use case I've worked with is using HOCs to inject props into a _dummy_ component. These props have typically been redux state values, action dispatchers, context consumers, etc.
 
 Hooks can **mostly** handle these use cases from within the body of a function component itself, but sometimes it's not a 1-to-1 conversion.
 
@@ -205,13 +211,14 @@ function withBrains(BaseComponent) {
 
   return parentProps => (
     <Wrapper>
-      {({ count, increment, greetings }) => {
+      {({ count, increment, greetings }) /*...or wrapperProps*/ => {
         return (
           <BaseComponent
             {...parentProps}
             count={count}
             increment={increment}
             greetings={greetings}
+            /*...and {...wrapperProps}*/
           />
         )
       }}
@@ -223,6 +230,8 @@ const rootElement = document.getElementById("root")
 render(<App />, rootElement)
 ```
 
+The above is a bit of a stretch. It's a HOC that wraps a base component with a function-as-children-prop component.
+
 #### HOC Examples
 
 - [recompose](https://github.com/acdlite/recompose)
@@ -231,4 +240,4 @@ render(<App />, rootElement)
 
 ## Suggestions?
 
-Are there some cool examples I should checkout?
+Are there some interesting examples I should checkout?
