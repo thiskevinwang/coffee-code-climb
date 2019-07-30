@@ -1,8 +1,20 @@
 ---
-title: React components, cooked 4 ways
+title: React components, done 4 ways
 date: "2019-07-28T15:16:41.084Z"
-description: ""
-tags: [code, react, hooks, components]
+description: "I was bored, so I cooked up something..."
+tags:
+  [
+    code,
+    react,
+    hooks,
+    components,
+    higher order components,
+    render props,
+    formik,
+    downshift,
+    redux,
+    recompose,
+  ]
 image: fourways.png
 ---
 
