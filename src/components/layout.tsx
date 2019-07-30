@@ -13,6 +13,7 @@ import {
   NavBar,
 } from "./LayoutComponents"
 import { rhythm } from "src/utils/typography"
+import * as Colors from "consts/Colors"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
@@ -22,7 +23,6 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.css"
  **/
 const LIGHT_GRADIENTS = [
   `linear-gradient(0deg, #ffecde 0%, #ffd1ff 100%)`,
-  `linear-gradient(0deg, #ffefff 0%, #fecfef 100%)`,
   `linear-gradient(90deg, #ffccdd 0%, #fcb69f 100%)`,
   `linear-gradient(0deg, #ff9a9e 0%, #fcb3ef 100%)`,
   `linear-gradient(120deg, #ef8a8a 0%, #fda085 100%)`,
@@ -92,7 +92,7 @@ function Layout({ location, title, children }: Props) {
    */
   const [scrollY, setScrollY] = useSpring(() => ({
     percent: 0,
-    config: config.wobbly,
+    config: { ...config.molasses, clamp: true },
   }))
 
   // Attach scroll event listener to window when <Layout /> mounts
@@ -133,6 +133,18 @@ function Layout({ location, title, children }: Props) {
               output: isDarkMode
                 ? Array.from(DARK_GRADIENTS)
                 : Array.from(LIGHT_GRADIENTS),
+            }),
+            transform: scrollY.percent.interpolate({
+              range: [0, 1],
+              output: [`skewY(-6deg)`, `skewY(6deg)`],
+            }),
+            transformOrigin: scrollY.percent.interpolate({
+              range: [0, 1],
+              output: [`0% 0%`, `100% 0%`],
+            }),
+            height: scrollY.percent.interpolate({
+              range: [0, 0.5, 1],
+              output: [`50%`, `45%`, `50%`],
             }),
           }}
         />
@@ -188,7 +200,7 @@ function Layout({ location, title, children }: Props) {
              */}
             <style>{`
               .gatsby-highlight {
-                background-color: #f5f2f0;
+                background-color: ${Colors.blackLighter};
                 border-radius: 0.3em;
                 margin: 0.5em 0;
                 padding: 1em;
@@ -196,15 +208,16 @@ function Layout({ location, title, children }: Props) {
               }
 
               .gatsby-highlight pre[class*="language-"].line-numbers {
-                font-family: "Operator Mono", "Dank Mono", Consolas, Monaco,
-                  "Andale Mono", "Ubuntu Mono", monospace;
+                background-color: ${Colors.blackLighter};
+                font-family: "Dank Mono", "Fira Code", "Operator Mono", Consolas, Monaco,
+                "Andale Mono", "Ubuntu Mono", monospace;
                 padding: 0;
                 padding-left: 2.8em;
                 overflow: initial;
               }
 
               .gatsby-highlight pre[class*="language-"] > code {
-                font-family: "Operator Mono", "Dank Mono", Consolas, Monaco,
+                font-family: "Dank Mono", "Fira Code", "Operator Mono", Consolas, Monaco,
                   "Andale Mono", "Ubuntu Mono", monospace;
               }
               .gatsby-highlight pre[class*="language-"] > code .comment {
