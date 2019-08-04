@@ -79,14 +79,13 @@ function Post({
   }
 
   const PostDetails = (
-    <>
+    <div
+      style={{
+        margin: rhythm(2 / 3),
+      }}
+    >
       <Link style={{ color: `inherit`, boxShadow: `none` }} to={linkTo}>
-        <h3
-          style={{
-            marginTop: rhythm(1 / 2),
-            marginBottom: rhythm(1 / 4),
-          }}
-        >
+        <h3 style={{ marginTop: rhythm(1 / 2), marginBottom: rhythm(1 / 2) }}>
           {title}
         </h3>
         <small>{date}</small>
@@ -137,36 +136,6 @@ function Post({
           </Link>
         </small>
       </code>
-    </>
-  )
-
-  const PostDetailsTop = (
-    <div
-      className={"post-details__card"}
-      style={{
-        background:
-          innerWidth >= 600
-            ? isDarkMode
-              ? Colors.blackDark
-              : Colors.silverLighter
-            : `none`,
-        borderRadius: 5,
-        paddingTop: innerWidth >= 600 && rhythm(1 / 2),
-        paddingBottom: innerWidth >= 600 && rhythm(1),
-        paddingLeft: innerWidth >= 600 && rhythm(1),
-        paddingRight: innerWidth >= 600 && rhythm(1),
-        maxWidth: rhythm(18),
-        transform:
-          innerWidth >= 600 ? `translate(${rhythm(1)}, -${rhythm(2)})` : `none`,
-      }}
-    >
-      {PostDetails}
-      <style>{`
-        .post-details__card {
-          transition: box-shadow 100ms ease-in-out, transform 322ms ease-in-out,
-            background 322ms ease-in-out, padding-left 322ms ease-in-out;
-        }
-      `}</style>
     </div>
   )
 
@@ -178,22 +147,36 @@ function Post({
       sm={index === 0 ? 12 : 6}
       xs={12}
     >
-      <Link style={{ boxShadow: `none` }} to={linkTo}>
-        {image && (
-          <Image
-            fluid={
-              nodeType === `MarkdownRemark`
-                ? image.childImageSharp.fluid
-                : image.fluid
-            }
-            alt={linkTo}
-            style={{}}
-            imgStyle={{}}
-          />
-        )}
-      </Link>
-      {index === 0 ? PostDetailsTop : PostDetails}
-      {index === 0 && innerWidth >= 600 && <Divider />}
+      <div
+        style={{
+          background: isDarkMode ? Colors.blackDark : Colors.silverLighter,
+          borderRadius: 5,
+          boxShadow: `0px 10px 40px -10px ${Colors.blackDark}`,
+          // This clips the square top corners of the child image
+          overflow: "hidden",
+          // paddingTop: innerWidth >= 600 && rhythm(1 / 2),
+          // paddingBottom: innerWidth >= 600 && rhythm(1),
+          // paddingLeft: innerWidth >= 600 && rhythm(1),
+          // paddingRight: innerWidth >= 600 && rhythm(1),
+          // maxWidth: rhythm(18),
+        }}
+      >
+        <Link style={{ boxShadow: `none` }} to={linkTo}>
+          {image && (
+            <Image
+              fluid={
+                nodeType === `MarkdownRemark`
+                  ? image.childImageSharp.fluid
+                  : image.fluid
+              }
+              alt={linkTo}
+              style={{}}
+              imgStyle={{}}
+            />
+          )}
+        </Link>
+        {PostDetails}
+      </div>
     </Grid>
   )
 }
@@ -209,20 +192,6 @@ const BlogIndex = ({ data, location }) => {
 
   const [state, setState] = useState({ innerWidth: 0 })
   const isDarkMode = useSelector(state => state.isDarkMode)
-
-  const handleResize = _.throttle(() => {
-    setState({
-      innerWidth: window.innerWidth,
-    })
-  }, 100)
-
-  // Attach resize handler on mount
-  useEffect(() => {
-    setState({
-      innerWidth: window.innerWidth,
-    })
-    window.addEventListener("resize", handleResize)
-  }, [])
 
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
@@ -244,7 +213,7 @@ const BlogIndex = ({ data, location }) => {
       <SEO title="All posts" keywords={KEYWORDS} />
       <Bio />
 
-      <Grid container direction="row" spacing={3}>
+      <Grid container direction="row" spacing={4}>
         {posts.map(({ node }, index) => {
           const title =
             node.internal.type === `MarkdownRemark` &&
