@@ -13,6 +13,9 @@ Wordpress2016.overrideThemeStyles = () => {
   // This is the current state when `injectStyles()` is fired
   const { isDarkMode }: { isDarkMode: boolean } = store.getState()
   return {
+    ".Card": {
+      background: isDarkMode ? Colors.blackLight : Colors.silverLight,
+    },
     "a.gatsby-resp-image-link": {
       boxShadow: `none`,
     },
