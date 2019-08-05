@@ -232,8 +232,8 @@ const BlogIndex = ({ data, location }) => {
    * # MOUSEDOWN_STYLE
    */
   const MOUSEDOWN_STYLE = {
-    boxShadow: `0px 17px 65px -17px ${Colors.blackDarker}`,
-    transform: `scale(1.05)`,
+    boxShadow: `0px 7px 20px -8px ${Colors.blackDarker}`,
+    transform: `scale(0.97)`,
   }
 
   const [springs, set] = useSprings(posts.length, index => {
