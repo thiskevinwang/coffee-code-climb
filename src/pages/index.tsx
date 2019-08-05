@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import _ from "lodash"
 import moment from "moment"
 import { Link, graphql } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
-import { Grid, Divider, Tooltip } from "@material-ui/core"
-import { useSelector } from "react-redux"
+import { Grid, Tooltip } from "@material-ui/core"
+import { animated, useSprings, AnimatedValue, config } from "react-spring"
+import styled from "styled-components"
 
 import Bio from "../components/bio"
 import Layout from "../components/layout"
@@ -36,7 +37,6 @@ const KEYWORDS = [
   `node`,
   `nextjs`,
 ]
-
 interface Props {
   key: string
   linkTo: string
@@ -48,9 +48,12 @@ interface Props {
   id: string
   image: { fluid: { any } }
   index: number
-  innerWidth: number
   nodeType: string
-  isDarkMode: boolean
+  animatedStyles: AnimatedValue<any>
+  _handleMouseEnter: () => void
+  _handleMouseLeave: () => void
+  _handleMouseDown: () => void
+  _handleMouseUp: () => void
 }
 
 function Post({
@@ -64,9 +67,12 @@ function Post({
   id,
   image,
   index,
-  innerWidth,
   nodeType,
-  isDarkMode,
+  animatedStyles,
+  _handleMouseEnter,
+  _handleMouseLeave,
+  _handleMouseDown,
+  _handleMouseUp,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = _.map(tags, tag => _.kebabCase(tag))
@@ -77,6 +83,13 @@ function Post({
     identifier: id,
     title: title,
   }
+
+  const Card = animated(styled.div`
+    border-radius: 5px;
+    /* box-shadow: 0px 10px 40px -10px ${Colors.blackDark}; */
+    /* This clips the square top corners of the child image */
+    overflow: hidden;
+  `)
 
   const PostDetails = (
     <div
@@ -147,19 +160,13 @@ function Post({
       sm={index === 0 ? 12 : 6}
       xs={12}
     >
-      <div
-        style={{
-          background: isDarkMode ? Colors.blackDark : Colors.silverLighter,
-          borderRadius: 5,
-          boxShadow: `0px 10px 40px -10px ${Colors.blackDark}`,
-          // This clips the square top corners of the child image
-          overflow: "hidden",
-          // paddingTop: innerWidth >= 600 && rhythm(1 / 2),
-          // paddingBottom: innerWidth >= 600 && rhythm(1),
-          // paddingLeft: innerWidth >= 600 && rhythm(1),
-          // paddingRight: innerWidth >= 600 && rhythm(1),
-          // maxWidth: rhythm(18),
-        }}
+      <Card
+        className={"Card"}
+        style={animatedStyles}
+        onMouseEnter={_handleMouseEnter}
+        onMouseLeave={_handleMouseLeave}
+        onMouseDown={_handleMouseDown}
+        onMouseUp={_handleMouseUp}
       >
         <Link style={{ boxShadow: `none` }} to={linkTo}>
           {image && (
@@ -176,7 +183,7 @@ function Post({
           )}
         </Link>
         {PostDetails}
-      </div>
+      </Card>
     </Grid>
   )
 }
@@ -189,9 +196,6 @@ const BlogIndex = ({ data, location }) => {
   const siteTitle = data.site.siteMetadata.title
   const markdownPosts = data.allMarkdownRemark.edges
   const contentfulPosts = data.allContentfulBlogPost.edges
-
-  const [state, setState] = useState({ innerWidth: 0 })
-  const isDarkMode = useSelector(state => state.isDarkMode)
 
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
@@ -208,13 +212,61 @@ const BlogIndex = ({ data, location }) => {
     }
   )
 
+  /**
+   * # FROM_STYLE
+   * - starting animated-style
+   */
+  const FROM_STYLE = {
+    boxShadow: `0px 10px 40px -10px ${Colors.blackDark}`,
+    transform: `scale(1)`,
+  }
+  /**
+   * # MOUSEOVER_STYLE
+   * - target animated-style
+   */
+  const MOUSEOVER_STYLE = {
+    boxShadow: `0px 12px 50px -13px ${Colors.blackDarker}`,
+    transform: `scale(1.02)`,
+  }
+  /**
+   * # MOUSEDOWN_STYLE
+   */
+  const MOUSEDOWN_STYLE = {
+    boxShadow: `0px 17px 65px -17px ${Colors.blackDarker}`,
+    transform: `scale(1.05)`,
+  }
+
+  const [springs, set] = useSprings(posts.length, index => {
+    console.log("springs:index", index)
+
+    return {
+      from: { ...FROM_STYLE },
+      to: { ...FROM_STYLE },
+      config: config.wobbly,
+    }
+  })
+
+  /**
+   * updateStyles
+   * - logging `idx` logs all the indices
+   * - if the hovered index ===
+   */
+  const updateStyles = (index, stylesObject) => e => {
+    set(idx => {
+      return idx === index && { ...stylesObject }
+    })
+  }
+
   return (
     <Layout location={location} title={siteTitle}>
       <SEO title="All posts" keywords={KEYWORDS} />
       <Bio />
 
       <Grid container direction="row" spacing={4}>
-        {posts.map(({ node }, index) => {
+        {springs.map((props, index, propsArray) => {
+          console.log("propsArray[index]", propsArray[index])
+          console.log("props", props)
+          const { node } = posts[index]
           const title =
             node.internal.type === `MarkdownRemark` &&
             (node.frontmatter.title || node.fields.slug)
@@ -232,9 +284,12 @@ const BlogIndex = ({ data, location }) => {
               id={node.id}
               image={node.frontmatter.image}
               index={index}
-              innerWidth={state.innerWidth}
               nodeType={node.internal.type}
-              isDarkMode={isDarkMode}
+              animatedStyles={{ ...props }}
+              _handleMouseEnter={updateStyles(index, MOUSEOVER_STYLE)}
+              _handleMouseLeave={updateStyles(index, FROM_STYLE)}
+              _handleMouseDown={updateStyles(index, MOUSEDOWN_STYLE)}
+              _handleMouseUp={updateStyles(index, MOUSEOVER_STYLE)}
             />
           ) : (
             /**
@@ -252,9 +307,12 @@ const BlogIndex = ({ data, location }) => {
               id={node.id}
               image={node.image}
               index={index}
-              innerWidth={state.innerWidth}
               nodeType={node.internal.type}
-              isDarkMode={isDarkMode}
+              animatedStyles={{ ...props }}
+              _handleMouseEnter={updateStyles(index, MOUSEOVER_STYLE)}
+              _handleMouseLeave={updateStyles(index, FROM_STYLE)}
+              _handleMouseDown={updateStyles(index, MOUSEDOWN_STYLE)}
+              _handleMouseUp={updateStyles(index, MOUSEOVER_STYLE)}
             />
           )
         })}
