@@ -54,6 +54,8 @@ interface Props {
   _handleMouseLeave: () => void
   _handleMouseDown: () => void
   _handleMouseUp: () => void
+  _handleTouchStart: () => void
+  _handleTouchEnd: () => void
 }
 
 function Post({
@@ -73,6 +75,8 @@ function Post({
   _handleMouseLeave,
   _handleMouseDown,
   _handleMouseUp,
+  _handleTouchStart,
+  _handleTouchEnd,
 }: Props) {
   //_.map + _.kebabCase each tag in frontmatter.tags
   let kebabTags = _.map(tags, tag => _.kebabCase(tag))
@@ -167,6 +171,8 @@ function Post({
         onMouseLeave={_handleMouseLeave}
         onMouseDown={_handleMouseDown}
         onMouseUp={_handleMouseUp}
+        onTouchStart={_handleTouchStart}
+        onTouchEnd={_handleTouchEnd}
       >
         <Link style={{ boxShadow: `none` }} to={linkTo}>
           {image && (
@@ -217,7 +223,7 @@ const BlogIndex = ({ data, location }) => {
    * - starting animated-style
    */
   const FROM_STYLE = {
-    boxShadow: `0px 10px 40px -10px ${Colors.blackDark}`,
+    boxShadow: `0px 15px 30px -15px ${Colors.blackDark}`,
     transform: `scale(1)`,
   }
   /**
@@ -225,20 +231,18 @@ const BlogIndex = ({ data, location }) => {
    * - target animated-style
    */
   const MOUSEOVER_STYLE = {
-    boxShadow: `0px 12px 50px -13px ${Colors.blackDarker}`,
-    transform: `scale(1.02)`,
+    boxShadow: `0px 17px 40px -13px ${Colors.blackDarker}`,
+    transform: `scale(1.01)`,
   }
   /**
    * # MOUSEDOWN_STYLE
    */
   const MOUSEDOWN_STYLE = {
-    boxShadow: `0px 7px 20px -8px ${Colors.blackDarker}`,
-    transform: `scale(0.97)`,
+    boxShadow: `0px 15px 20px -17px ${Colors.blackDarker}`,
+    transform: `scale(0.98)`,
   }
 
   const [springs, set] = useSprings(posts.length, index => {
-    console.log("springs:index", index)
-
     return {
       from: { ...FROM_STYLE },
       to: { ...FROM_STYLE },
@@ -264,8 +268,6 @@ const BlogIndex = ({ data, location }) => {
 
       <Grid container direction="row" spacing={4}>
         {springs.map((props, index, propsArray) => {
-          console.log("propsArray[index]", propsArray[index])
-          console.log("props", props)
           const { node } = posts[index]
           const title =
             node.internal.type === `MarkdownRemark` &&
@@ -290,6 +292,8 @@ const BlogIndex = ({ data, location }) => {
               _handleMouseLeave={updateStyles(index, FROM_STYLE)}
               _handleMouseDown={updateStyles(index, MOUSEDOWN_STYLE)}
               _handleMouseUp={updateStyles(index, MOUSEOVER_STYLE)}
+              _handleTouchStart={updateStyles(index, MOUSEDOWN_STYLE)}
+              _handleTouchEnd={updateStyles(index, MOUSEOVER_STYLE)}
             />
           ) : (
             /**
@@ -313,6 +317,8 @@ const BlogIndex = ({ data, location }) => {
               _handleMouseLeave={updateStyles(index, FROM_STYLE)}
               _handleMouseDown={updateStyles(index, MOUSEDOWN_STYLE)}
               _handleMouseUp={updateStyles(index, MOUSEOVER_STYLE)}
+              _handleTouchStart={updateStyles(index, MOUSEDOWN_STYLE)}
+              _handleTouchEnd={updateStyles(index, MOUSEOVER_STYLE)}
             />
           )
         })}
