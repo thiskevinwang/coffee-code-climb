@@ -11,7 +11,7 @@ import Image from "gatsby-image"
 import { Tooltip } from "@material-ui/core"
 import { rhythm } from "src/utils/typography"
 
-import CAPSULE from "./capsule.svg"
+import CapsuleSvg from "./capsule.svg.tsx"
 
 interface Data {
   avatar: {
@@ -61,7 +61,7 @@ function Bio() {
                 <Tooltip
                   title={
                     <div style={{ width: 60, height: 60, padding: 10 }}>
-                      <img src={CAPSULE} />
+                      <CapsuleSvg />
                     </div>
                   }
                 >
