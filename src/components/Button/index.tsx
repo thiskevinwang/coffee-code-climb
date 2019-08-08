@@ -1,10 +1,33 @@
 import React from "react"
 import styled, { css } from "styled-components"
-import { rhythm, scale } from "src/utils/typography"
+import { animated, useSpring } from "react-spring"
 
-import { MUIBoxShadow, MUIBoxShadowHover } from "consts"
+import { rhythm, scale } from "src/utils/typography"
 import * as Colors from "consts/Colors"
 
+/**
+ * # FROM_STYLE
+ * - starting animated-style
+ */
+const FROM_STYLE = {
+  boxShadow: `0px 15px 30px -15px ${Colors.blackDark}`,
+  transform: `scale(1)`,
+}
+/**
+ * # MOUSEOVER_STYLE
+ * - target animated-style
+ */
+const MOUSEOVER_STYLE = {
+  boxShadow: `0px 17px 40px -13px ${Colors.blackDarker}`,
+  transform: `scale(1.01)`,
+}
+/**
+ * # MOUSEDOWN_STYLE
+ */
+const MOUSEDOWN_STYLE = {
+  boxShadow: `0px 15px 20px -17px ${Colors.blackDarker}`,
+  transform: `scale(0.98)`,
+}
 interface Props {
   isDarkMode: boolean
   lg: boolean
@@ -28,11 +51,9 @@ interface Props {
  * </Button>
  * ```
  */
-export const Button = styled.div`
+const Renderer = styled(animated.div)`
   background: ${Colors.silverLight};
-  /* border: 1px solid ${Colors.black}; */
   border-radius: 5px;
-  box-shadow: ${MUIBoxShadow};
   font-size: ${props => props.textSm && `10px`};
   line-height: 1.2;
   display: inline-block;
@@ -42,13 +63,10 @@ export const Button = styled.div`
   width: ${(props: Props) =>
     props.lg ? `600` : props.md ? `400` : props.sm ? `200` : `100`}px;
 
-  transition: all 200ms ease-in-out;
-
   ${(props: Props) =>
     props.isDarkMode &&
     css`
       background: ${Colors.blackLight};
-      /* border: 1px solid ${Colors.silverLight}; */
     `}
 
   label {
@@ -57,13 +75,26 @@ export const Button = styled.div`
     justify-content: center;
     ${scale(-0.5)}
   }
-
-  :hover {
-    box-shadow: ${MUIBoxShadowHover};
-    transform: translate(0px, -2px) scale(1.02);
-  }
-  :active {
-    transform: translate(0px, -2px) scale(0.98);
-    transition: transform 100ms ease-in-out;
-  }
 `
+export const Button = props => {
+  const [springProps, setSpringProps] = useSpring(() => ({
+    from: { ...FROM_STYLE },
+  }))
+
+  const updateStyles = stylesObject => e => {
+    setSpringProps({ ...stylesObject })
+  }
+
+  return (
+    <Renderer
+      {...props}
+      style={{ ...springProps }}
+      onMouseEnter={updateStyles(MOUSEOVER_STYLE)}
+      onMouseLeave={updateStyles(FROM_STYLE)}
+      onMouseDown={updateStyles(MOUSEDOWN_STYLE)}
+      onMouseUp={updateStyles(MOUSEOVER_STYLE)}
+      onTouchStart={updateStyles(MOUSEDOWN_STYLE)}
+      onTouchEnd={updateStyles(FROM_STYLE)}
+    />
+  )
+}
