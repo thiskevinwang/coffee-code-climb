@@ -30,7 +30,7 @@ interface Props {
  */
 export const Button = styled.div`
   background: ${Colors.silverLight};
-  border: 1px solid ${Colors.black};
+  /* border: 1px solid ${Colors.black}; */
   border-radius: 5px;
   box-shadow: ${MUIBoxShadow};
   font-size: ${props => props.textSm && `10px`};
@@ -48,7 +48,7 @@ export const Button = styled.div`
     props.isDarkMode &&
     css`
       background: ${Colors.blackLight};
-      border: 1px solid ${Colors.silverLight};
+      /* border: 1px solid ${Colors.silverLight}; */
     `}
 
   label {
@@ -60,10 +60,10 @@ export const Button = styled.div`
 
   :hover {
     box-shadow: ${MUIBoxShadowHover};
-    transform: translate(0px, -5px) scale(1.05);
+    transform: translate(0px, -2px) scale(1.02);
   }
   :active {
-    transform: translate(0px, -5px) scale(1.15);
+    transform: translate(0px, -2px) scale(0.98);
     transition: transform 100ms ease-in-out;
   }
 `
