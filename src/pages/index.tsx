@@ -1,5 +1,4 @@
 import React from "react"
-import { useSelector } from "react-redux"
 import _ from "lodash"
 import moment from "moment"
 import { graphql } from "gatsby"
@@ -44,9 +43,6 @@ const BlogIndex = ({ data, location }) => {
   const siteTitle = data.site.siteMetadata.title
   const markdownPosts = data.allMarkdownRemark.edges
   const contentfulPosts = data.allContentfulBlogPost.edges
-
-  // use this to test child rerenders
-  const isDarkMode = useSelector(state => state.isDarkMode)
 
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
