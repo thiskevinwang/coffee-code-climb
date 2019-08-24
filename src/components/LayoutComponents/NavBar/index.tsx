@@ -21,7 +21,7 @@ const Bar = styled.div`
   color: white;
   display: flex;
   flex-direction: row;
-  justify-content: space-around
+  justify-content: space-around;
   height: 70px;
   position: -webkit-sticky;
   position: sticky;

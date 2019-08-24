@@ -15,6 +15,15 @@ module.exports = {
   plugins: [
     `gatsby-plugin-typescript`,
     "gatsby-plugin-tslint",
+    /**
+     * https://www.gatsbyjs.org/packages/gatsby-plugin-styled-components/
+     */
+    {
+      resolve: `gatsby-plugin-styled-components`,
+      options: {
+        // plugins: ["babel-plugin-styled-components"],
+      },
+    },
     {
       resolve: `gatsby-plugin-amazon-onetag`,
       options: {
