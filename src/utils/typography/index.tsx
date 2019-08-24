@@ -40,7 +40,7 @@ Wordpress2016.overrideThemeStyles = () => {
     p: {
       fontWeight: 300,
     },
-    "h1, h2, h3, h4, h5, h6, p, label, span": {
+    "h1, h2, h3, h4, h5, h6, p, label, span, li": {
       color: isDarkMode ? Colors.silverLight : Colors.blackDark,
     },
     small: {
