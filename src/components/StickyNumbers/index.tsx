@@ -65,14 +65,7 @@ const ARRAY_FROM_DIVISIONS = Array.from(Array(DIVISIONS))
 
 /** !!! MAIN COMPONENT !!! */
 const StickyNumbers = () => {
-  /**
-   * stateful height
-   * window / document appear to be initially undefined
-   * This gets set in useEffect
-   */
-  const [scrollHeight, setHeight] = useState(
-    document.documentElement.scrollHeight
-  )
+  const [scrollHeight, setHeight] = useState(null)
   const [isScrolling, setIsScrolling] = useState(false)
 
   /**
