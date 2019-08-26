@@ -37,12 +37,12 @@ type Arr = {
 // z-index & opacity
 // https://stackoverflow.com/a/2849104/9823455
 
-const Track = styled(animated.div)`
+const Container = styled(animated.div)`
   position: absolute;
   right: 0%;
   padding-right: ${rhythm(0.5)};
 `
-const Container = styled(animated.div)`
+const Sentinel = styled(animated.div)`
   padding-top: 15px;
   padding-bottom: 20px;
   z-index: 10;
@@ -138,10 +138,10 @@ const StickyNumbers = () => {
   }, [])
 
   return (
-    <Track>
+    <Container>
       {arr.map(({ ref, props }, i: number) => {
         return (
-          <Container
+          <Sentinel
             key={i}
             ref={ref}
             style={{
@@ -149,10 +149,10 @@ const StickyNumbers = () => {
             }}
           >
             <StickyNumber style={props}>{`${i * 10}%`}</StickyNumber>
-          </Container>
+          </Sentinel>
         )
       })}
-    </Track>
+    </Container>
   )
 }
 
