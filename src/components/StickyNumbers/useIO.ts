@@ -19,15 +19,23 @@ export default function useIO(): [boolean, MutableRefObject<undefined>] {
     threshold: 0.99,
   }
 
-  let observer = new IntersectionObserver(([entry], observer) => {
-    entry.isIntersecting ? setIsIntersecting(true) : setIsIntersecting(false)
-  }, defaultOptions)
+  // TODO:
+  // - what does passing a callback to useState do?
+  // - is this an optimization?
+  let [io] = useState(
+    () =>
+      new IntersectionObserver(([entry], observer) => {
+        entry.isIntersecting
+          ? setIsIntersecting(true)
+          : setIsIntersecting(false)
+      }, defaultOptions)
+  )
 
   useEffect(() => {
-    observer.observe(ref.current)
+    io.observe(ref.current)
 
     return () => {
-      observer.disconnect()
+      io.disconnect()
     }
   }, [])
 
