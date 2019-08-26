@@ -34,7 +34,6 @@ export default function useIO(): [boolean, MutableRefObject<undefined>] {
           : setIsIntersecting(false)
       }, defaultOptions)
   )
-  console.log(io)
 
   useEffect(() => {
     io.observe(ref.current)
