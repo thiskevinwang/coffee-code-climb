@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated, useTrail, config } from "react-spring"
 import styled, { css } from "styled-components"
@@ -12,6 +12,7 @@ import {
   withSVGTrail,
   NavBar,
 } from "./LayoutComponents"
+import { StickyNumbers } from "../components/StickyNumbers"
 import { rhythm } from "src/utils/typography"
 import * as Colors from "consts/Colors"
 import { titleZ } from "consts"
@@ -161,6 +162,9 @@ function Layout({ location, title, children }: Props) {
           }}
         />
       </>
+
+      {/* Numbers */}
+      <StickyNumbers />
       <div style={{ overflowX: "hidden" }}>
         <div
           style={{
