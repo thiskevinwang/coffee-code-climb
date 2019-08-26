@@ -19,9 +19,13 @@ export default function useIO(): [boolean, MutableRefObject<undefined>] {
     threshold: 0.99,
   }
 
-  // TODO:
-  // - what does passing a callback to useState do?
-  // - is this an optimization?
+  /**
+   * Creating an IO is an expensive calculation so by passing a
+   * callback to `useState`, this is only calculated on the
+   * initial render. 👌
+   *
+   * https://reactjs.org/docs/hooks-reference.html#lazy-initial-state
+   */
   let [io] = useState(
     () =>
       new IntersectionObserver(([entry], observer) => {
@@ -30,6 +34,7 @@ export default function useIO(): [boolean, MutableRefObject<undefined>] {
           : setIsIntersecting(false)
       }, defaultOptions)
   )
+  console.log(io)
 
   useEffect(() => {
     io.observe(ref.current)
