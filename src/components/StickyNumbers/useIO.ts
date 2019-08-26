@@ -9,7 +9,10 @@ type Options = {
 // TODO:
 // - add documentation
 // - expose `options` argument
-export default function useIO(): [boolean, MutableRefObject<undefined>] {
+export default function useIO(): [
+  boolean,
+  { ref: MutableRefObject<undefined> }
+] {
   const ref = useRef()
   const [isIntersecting, setIsIntersecting] = useState(false)
 
@@ -43,5 +46,5 @@ export default function useIO(): [boolean, MutableRefObject<undefined>] {
     }
   }, [])
 
-  return [isIntersecting, ref]
+  return [isIntersecting, { ref }]
 }

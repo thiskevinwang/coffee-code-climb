@@ -30,7 +30,7 @@ const INTERSECTING_STYLE = {
 }
 
 type Arr = {
-  ref: MutableRefObject<any>
+  bind: { ref: MutableRefObject<any> }
   props: AnimatedValue<any>
 }
 
@@ -84,11 +84,11 @@ const StickyNumbers = () => {
   /**
    * # arr
    * An array of objects with the following properties... + others
-   * @property {MutableRefObject} ref refs to be attached to targets to be observed by IntersectionObeservers (useIO)
+   * @property {{ref: MutableRefObject}} bind refs to be attached to targets to be observed by IntersectionObeservers (useIO)
    * @property {AnimatedValue} props
    */
   const arr: Arr[] = ARRAY_FROM_DIVISIONS.map(e => {
-    const [isIntersecting, ref] = useIO()
+    const [isIntersecting, bind] = useIO()
 
     // Here are some other ideas.
     // const [showDebug, setShowDebug] = useState(false)
@@ -109,7 +109,7 @@ const StickyNumbers = () => {
       config: config.default,
     })
 
-    return { isIntersecting, ref, props }
+    return { isIntersecting, bind, props }
   })
 
   /** debounced scroll-end handler */
@@ -139,11 +139,11 @@ const StickyNumbers = () => {
 
   return (
     <Container>
-      {arr.map(({ ref, props }, i: number) => {
+      {arr.map(({ bind, props }, i: number) => {
         return (
           <Sentinel
             key={i}
-            ref={ref}
+            {...bind}
             style={{
               height: sectionHeight,
             }}
