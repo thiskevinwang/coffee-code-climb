@@ -21,17 +21,11 @@ import useIO from "./useIO"
 import { rhythm, scale } from "src/utils/typography"
 
 const STICKY_STYLE = {
-  // background: `red`,
-  // width: 200,
   transform: `scale(1.5)`,
-  // boxShadow: `0px 15px 30px 10px grey`,
   opacity: 0.9,
 }
 const INTERSECTING_STYLE = {
-  // background: "green",
-  // width: 200,
   transform: `scale(1)`,
-  // boxShadow: `0px 10px 30px 1px grey `,
   opacity: 0,
 }
 
@@ -51,18 +45,13 @@ const Track = styled(animated.div)`
 const Container = styled(animated.div)`
   padding-top: 15px;
   padding-bottom: 20px;
-  /* position: sticky;
-  position: -webkit-sticky;
-  top: 70px; */
   z-index: 10;
 `
 const StickyNumber = styled(animated.p)`
-  /* background: red; */
   border-radius: 10px;
   font-size: 20px;
   font-weight: 100;
   text-align: center;
-  /* padding: 35px; */
   position: sticky;
   position: -webkit-sticky;
   top: 80px;
@@ -105,6 +94,7 @@ const StickyNumbers = () => {
     // const [showDebug, setShowDebug] = useState(false)
     // const toggleDebug = useCallback(() => setShowDebug(s => !s), [])
 
+    // TODO: make this object property overwriting neater
     const props = useSpring({
       to: isIntersecting
         ? {
@@ -122,16 +112,6 @@ const StickyNumbers = () => {
     return { isIntersecting, ref, props }
   })
 
-  // const foo: number = useMemo(
-  //   () =>
-  //     ((e: number): number => {
-  //       console.log("computing...")
-  //       return e
-  //     })(1),
-  //   []
-  // )
-  // console.log("foo", foo)
-
   /** debounced scroll-end handler */
   const reset = useCallback(
     _.debounce(() => {
@@ -139,11 +119,8 @@ const StickyNumbers = () => {
     }, 200),
     []
   )
-  /**
-   * MOUNT EFFECT
-   * + attach scroll eventListener
-   * + clean up
-   */
+
+  // TODO update scrollHeight when going "back"
   useEffect(() => {
     setHeight(document.documentElement.scrollHeight)
 
