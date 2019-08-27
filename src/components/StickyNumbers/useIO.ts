@@ -45,7 +45,7 @@ export default function useIO(): [
     if (io) io.observe(ref.current)
 
     return () => {
-      io.disconnect()
+      if (io) io.disconnect()
     }
   }, [io])
 
