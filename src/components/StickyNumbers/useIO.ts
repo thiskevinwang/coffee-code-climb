@@ -18,7 +18,7 @@ export default function useIO(): [
 
   const defaultOptions: Options = {
     root: null,
-    rootMargin: `-70px 0px 100%`,
+    rootMargin: `-100px 0px 100%`,
     threshold: 0.99,
   }
 
@@ -29,22 +29,25 @@ export default function useIO(): [
    *
    * https://reactjs.org/docs/hooks-reference.html#lazy-initial-state
    */
-  let [io] = useState(
-    () =>
-      new IntersectionObserver(([entry], observer) => {
-        entry.isIntersecting
-          ? setIsIntersecting(true)
-          : setIsIntersecting(false)
-      }, defaultOptions)
-  )
+  let [io, setIo] = useState(null)
 
   useEffect(() => {
-    io.observe(ref.current)
+    setIo(
+      () =>
+        new IntersectionObserver(([entry], observer) => {
+          entry.isIntersecting
+            ? setIsIntersecting(true)
+            : setIsIntersecting(false)
+        }, defaultOptions)
+    )
+  }, [])
+  useEffect(() => {
+    if (io) io.observe(ref.current)
 
     return () => {
       io.disconnect()
     }
-  }, [])
+  }, [io])
 
   return [isIntersecting, { ref }]
 }

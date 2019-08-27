@@ -43,8 +43,8 @@ const Container = styled(animated.div)`
   padding-right: ${rhythm(0.5)};
 `
 const Sentinel = styled(animated.div)`
-  padding-top: 15px;
-  padding-bottom: 20px;
+  padding-top: 5px;
+  padding-bottom: 0px;
   z-index: 10;
 `
 const StickyNumber = styled(animated.p)`
