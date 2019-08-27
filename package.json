@@ -41,6 +41,7 @@
     "gatsby-source-google-analytics-reporting-api": "^1.0.2",
     "gatsby-transformer-remark": "^2.3.12",
     "gatsby-transformer-sharp": "^2.1.21",
+    "intersection-observer": "^0.7.0",
     "lodash": "4.17.15",
     "moment": "^2.24.0",
     "prismjs": "^1.16.0",
@@ -62,6 +63,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@hot-loader/react-dom": "^16.9.0",
     "gatsby-plugin-tslint": "0.0.2",
     "prettier": "^1.17.1",
     "resize-observer-polyfill": "^1.5.1",
