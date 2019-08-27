@@ -21,12 +21,14 @@ import useIO from "./useIO"
 import { rhythm, scale } from "src/utils/typography"
 
 const STICKY_STYLE = {
-  transform: `scale(1.5)`,
+  transform: `scale(1.5) translate(50%, 0%)`,
   opacity: 0.9,
+  background: `rgba(100,100,100,0.3)`,
 }
 const INTERSECTING_STYLE = {
-  transform: `scale(1)`,
+  transform: `scale(1) translate(100%, 0%)`,
   opacity: 0,
+  background: `rgba(100,100,100,0.0)`,
 }
 
 type Arr = {
@@ -52,9 +54,11 @@ const StickyNumber = styled(animated.p)`
   font-size: 20px;
   font-weight: 100;
   text-align: center;
+  padding-right: 5px;
+  padding-left: 5px;
   position: sticky;
   position: -webkit-sticky;
-  top: 80px;
+  top: 85px;
   z-index: 10;
 `
 
@@ -93,13 +97,18 @@ const StickyNumbers = () => {
         ? {
             ...INTERSECTING_STYLE,
             opacity: isScrolling ? 0.8 : INTERSECTING_STYLE.opacity,
+            transform: isScrolling
+              ? `scale(1) translate(0%, 0%)`
+              : INTERSECTING_STYLE.transform,
           }
         : {
             ...STICKY_STYLE,
             opacity: isScrolling ? 1 : STICKY_STYLE.opacity,
-            transform: isScrolling ? `scale(1.7)` : STICKY_STYLE.transform,
+            transform: isScrolling
+              ? `scale(1.7) translate(0%, 0%)`
+              : STICKY_STYLE.transform,
           },
-      config: config.default,
+      config: config.wobbly,
     })
 
     return { isIntersecting, bind, props }
