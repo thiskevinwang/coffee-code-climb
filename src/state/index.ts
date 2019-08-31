@@ -4,25 +4,25 @@ import { createStore } from "redux"
 /**
  * action
  */
-export const setIsDarkMode = isDarkMode => {
+export const setIsDarkMode = (isDarkMode: boolean) => {
   return {
     type: TOGGLE_DARKMODE,
     isDarkMode,
   }
 }
-export const setShowTrail = showTrail => {
+export const setShowTrail = (showTrail: boolean) => {
   return {
     type: TOGGLE_TRAIL,
     showTrail,
   }
 }
-export const setSlowMo = slowMo => {
+export const setSlowMo = (slowMo: boolean) => {
   return {
     type: TOGGLE_SLOWMO,
     slowMo,
   }
 }
-export const setVibrate = vibrate => {
+export const setVibrate = (vibrate: boolean) => {
   return {
     type: TOGGLE_VIBRATE,
     vibrate,
@@ -40,19 +40,17 @@ const TOGGLE_VIBRATE = "TOGGLE_VIBRATE"
 /**
  * initialState
  */
-const initialState = Object.assign(
-  {},
-  {
-    isDarkMode: false,
-    showTrail: false,
-    slowMo: false,
-    vibrate: false,
-  }
-)
+const initialState = {
+  isDarkMode: false,
+  showTrail: false,
+  slowMo: false,
+  vibrate: false,
+}
+
 /**
  * reducer
  */
-const reducer = (state = initialState, action: Object) => {
+const reducer = (state = initialState, action: any) => {
   switch (action.type) {
     case TOGGLE_DARKMODE:
       return { ...state, isDarkMode: action.isDarkMode }
