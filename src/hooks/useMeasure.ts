@@ -3,6 +3,15 @@ import ResizeObserver from "resize-observer-polyfill"
 
 /**
  * useMeasure
+ *
+ * @usage
+ * ```js
+ * const [bind, { height: viewHeight }] = useMeasure()
+ * //...
+ * <animated.div style={{ transform }} {...bind} children={children}>
+ *   {children}
+ * </animated.div>
+ * ```
  */
 export function useMeasure() {
   const ref = useRef()
