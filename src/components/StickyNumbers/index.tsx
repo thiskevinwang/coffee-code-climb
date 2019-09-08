@@ -44,6 +44,7 @@ const Container = styled(animated.div)`
   position: absolute;
   right: 0%;
   padding-right: ${rhythm(0.5)};
+  /* border: 1px dotted red; */
 `
 const Sentinel = styled(animated.div)`
   padding-top: 5px;
@@ -72,6 +73,7 @@ const ARRAY_FROM_DIVISIONS = Array.from(Array(DIVISIONS))
 const StickyNumbers = () => {
   const [scrollHeight, setHeight] = useState(null)
   const [isScrolling, setIsScrolling] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
   const [ro] = useState(
     () =>
       new ResizeObserver(([entry]: [ResizeObserverEntry]) => {
@@ -103,17 +105,20 @@ const StickyNumbers = () => {
       to: isIntersecting
         ? {
             ...INTERSECTING_STYLE,
-            opacity: isScrolling ? 0.8 : INTERSECTING_STYLE.opacity,
-            transform: isScrolling
-              ? `scale(1) translate(0%, 0%)`
-              : INTERSECTING_STYLE.transform,
+            opacity:
+              isHovering || isScrolling ? 0.8 : INTERSECTING_STYLE.opacity,
+            transform:
+              isHovering || isScrolling
+                ? `scale(1) translate(0%, 0%)`
+                : INTERSECTING_STYLE.transform,
           }
         : {
             ...STICKY_STYLE,
-            opacity: isScrolling ? 1 : STICKY_STYLE.opacity,
-            transform: isScrolling
-              ? `scale(1.7) translate(0%, 0%)`
-              : STICKY_STYLE.transform,
+            opacity: isHovering || isScrolling ? 1 : STICKY_STYLE.opacity,
+            transform:
+              isHovering || isScrolling
+                ? `scale(1.7) translate(0%, 0%)`
+                : STICKY_STYLE.transform,
           },
       config: config.wobbly,
     })
@@ -134,6 +139,7 @@ const StickyNumbers = () => {
 
     const handleScroll = () => {
       if (!isScrolling) setIsScrolling(true)
+
       reset()
     }
 
@@ -147,7 +153,14 @@ const StickyNumbers = () => {
   }, [])
 
   return (
-    <Container>
+    <Container
+      onMouseEnter={() => {
+        setIsHovering(true)
+      }}
+      onMouseLeave={() => {
+        setIsHovering(false)
+      }}
+    >
       {arr.map(({ bind, props }, i: number) => {
         return (
           <Sentinel
