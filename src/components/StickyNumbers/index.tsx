@@ -17,7 +17,7 @@ import {
 import styled, { css } from "styled-components"
 import _ from "lodash"
 
-import useIO from "./useIO"
+import useIO from "../../hooks/useIO"
 import { rhythm, scale } from "src/utils/typography"
 
 const STICKY_STYLE = {

@@ -1,8 +1,16 @@
-import { default as React, useRef, useEffect, useState, memo } from "react"
+import {
+  default as React,
+  useRef,
+  useEffect,
+  useState,
+  memo,
+  MutableRefObject,
+} from "react"
 import styled, { css } from "styled-components"
 import { useSpring, a, animated } from "react-spring"
 import * as Colors from "src/consts/Colors"
-import ResizeObserver from "resize-observer-polyfill"
+
+import { useMeasure } from "../../../hooks/useMeasure"
 
 const MinusSquareO = props => (
   <svg {...props} viewBox="64 -65 897 897">
@@ -46,27 +54,6 @@ export function usePrevious(value: boolean) {
   const ref: MutableRefObject<any> = useRef()
   useEffect(() => void (ref.current = value), [value])
   return ref.current
-}
-
-/**
- * useMeasure
- */
-export function useMeasure() {
-  const ref = useRef()
-
-  const [bounds, set] = useState({ left: 0, top: 0, width: 0, height: 0 })
-
-  const [ro] = useState(
-    () => new ResizeObserver(([entry]) => set(entry.contentRect))
-  )
-
-  // ro.observe on mount, and clean up
-  useEffect(() => {
-    if (ref.current) ro.observe(ref.current)
-    return () => ro.disconnect()
-  }, [])
-
-  return [{ ref }, bounds]
 }
 
 /**
