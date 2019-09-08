@@ -7,6 +7,7 @@ import React, {
   MutableRefObject,
 } from "react"
 import "intersection-observer"
+import ResizeObserver from "resize-observer-polyfill"
 import {
   useSprings,
   useSpring,
@@ -23,12 +24,12 @@ import { rhythm, scale } from "src/utils/typography"
 const STICKY_STYLE = {
   transform: `scale(1.5) translate(50%, 0%)`,
   opacity: 0.9,
-  background: `rgba(100,100,100,0.3)`,
+  background: `rgba(100,255,100,0.3)`,
 }
 const INTERSECTING_STYLE = {
   transform: `scale(1) translate(100%, 0%)`,
   opacity: 0,
-  background: `rgba(100,100,100,0.0)`,
+  background: `rgba(255,100,100,0.3)`,
 }
 
 type Arr = {
@@ -71,6 +72,12 @@ const ARRAY_FROM_DIVISIONS = Array.from(Array(DIVISIONS))
 const StickyNumbers = () => {
   const [scrollHeight, setHeight] = useState(null)
   const [isScrolling, setIsScrolling] = useState(false)
+  const [ro] = useState(
+    () =>
+      new ResizeObserver(([entry]: [ResizeObserverEntry]) => {
+        setHeight(entry.contentRect.height)
+      })
+  )
 
   /**
    * The height of each 'section'
@@ -118,13 +125,12 @@ const StickyNumbers = () => {
   const reset = useCallback(
     _.debounce(() => {
       setIsScrolling(false)
-    }, 200),
+    }, 700),
     []
   )
 
-  // TODO update scrollHeight when going "back"
   useEffect(() => {
-    setHeight(document.documentElement.scrollHeight)
+    ro.observe(document.documentElement)
 
     const handleScroll = () => {
       if (!isScrolling) setIsScrolling(true)
@@ -136,6 +142,7 @@ const StickyNumbers = () => {
 
     return () => {
       window.removeEventListener("scroll", handleScroll)
+      ro.disconnect()
     }
   }, [])
 
