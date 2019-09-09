@@ -1,5 +1,8 @@
 import { useRef, useEffect, useState, MutableRefObject } from "react"
 
+// TODO: use this / figure out `window` issue during SSR
+// import IntersectionObserver from 'intersection-observer-polyfill';
+
 type Options = {
   root: Element | null
   rootMargin: string

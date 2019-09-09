@@ -7,6 +7,7 @@ import React, {
   MutableRefObject,
 } from "react"
 import "intersection-observer"
+import ResizeObserver from "resize-observer-polyfill"
 import {
   useSprings,
   useSpring,
@@ -17,23 +18,29 @@ import {
 import styled, { css } from "styled-components"
 import _ from "lodash"
 
-import useIO from "./useIO"
+import useIO from "../../hooks/useIO"
 import { rhythm, scale } from "src/utils/typography"
 
 const STICKY_STYLE = {
   transform: `scale(1.5) translate(50%, 0%)`,
   opacity: 0.9,
-  background: `rgba(100,100,100,0.3)`,
+  background: `rgba(100,255,100,0.3)`,
 }
 const INTERSECTING_STYLE = {
   transform: `scale(1) translate(100%, 0%)`,
   opacity: 0,
-  background: `rgba(100,100,100,0.0)`,
+  background: `rgba(255,100,100,0.3)`,
+}
+const MOUSE_OVER_STYLE = {
+  transform: `scale(1.9) translate(0%, 0%)`,
+  opacity: 0.9,
+  background: `rgba(100,100,255,0.3)`,
 }
 
 type Arr = {
   bind: { ref: MutableRefObject<any> }
   props: AnimatedValue<any>
+  setIsMouseOver: () => void
 }
 
 // z-index & opacity
@@ -43,6 +50,7 @@ const Container = styled(animated.div)`
   position: absolute;
   right: 0%;
   padding-right: ${rhythm(0.5)};
+  /* border: 1px dotted red; */
 `
 const Sentinel = styled(animated.div)`
   padding-top: 5px;
@@ -64,19 +72,29 @@ const StickyNumber = styled(animated.p)`
 
 /** divide the page up into these many divisions */
 const DIVISIONS = 10
-/** a  */
+/** an empty array  */
 const ARRAY_FROM_DIVISIONS = Array.from(Array(DIVISIONS))
 
 /** !!! MAIN COMPONENT !!! */
 const StickyNumbers = () => {
-  const [scrollHeight, setHeight] = useState(null)
+  const [scrollHeight, setScrollHeight] = useState(null)
   const [isScrolling, setIsScrolling] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
+  const [ro] = useState(
+    () =>
+      new ResizeObserver(([entry]: [ResizeObserverEntry]) => {
+        console.log(entry.target + " is resizing")
+        setScrollHeight(entry.contentRect.height)
+      })
+  )
 
   /**
-   * The height of each 'section'
-   * These is needed for the parent of a `sticky` element
+   * The shared height of each Sentinel
+   * This is needed for the parent of a `sticky` element
    */
-  const sectionHeight = Math.floor(scrollHeight / DIVISIONS)
+  const sentinelProps = useSpring({
+    height: Math.floor(scrollHeight / DIVISIONS),
+  })
 
   /**
    * # arr
@@ -86,48 +104,60 @@ const StickyNumbers = () => {
    */
   const arr: Arr[] = ARRAY_FROM_DIVISIONS.map(e => {
     const [isIntersecting, bind] = useIO()
+    const [isMouseOver, setIsMouseOver] = useState(false)
 
-    // Here are some other ideas.
-    // const [showDebug, setShowDebug] = useState(false)
-    // const toggleDebug = useCallback(() => setShowDebug(s => !s), [])
-
-    // TODO: make this object property overwriting neater
+    /**
+     * # individual spring props
+     * for each array element
+     *
+     * ## 3 different styles
+     * @MOUSE_OVER_STYLE when hovering
+     * @INTERSECTING_STYLE when intersecting with the IO
+     * @STICKY_STYLE when no longer intersecting (AKA sticky at top)
+     *
+     * @TODO make this object property overwriting neater
+     */
     const props = useSpring({
-      to: isIntersecting
+      to: isMouseOver
+        ? { ...MOUSE_OVER_STYLE }
+        : isIntersecting
         ? {
             ...INTERSECTING_STYLE,
-            opacity: isScrolling ? 0.8 : INTERSECTING_STYLE.opacity,
-            transform: isScrolling
-              ? `scale(1) translate(0%, 0%)`
-              : INTERSECTING_STYLE.transform,
+            opacity:
+              isHovering || isScrolling ? 0.8 : INTERSECTING_STYLE.opacity,
+            transform:
+              isHovering || isScrolling
+                ? `scale(1) translate(0%, 0%)`
+                : INTERSECTING_STYLE.transform,
           }
         : {
             ...STICKY_STYLE,
-            opacity: isScrolling ? 1 : STICKY_STYLE.opacity,
-            transform: isScrolling
-              ? `scale(1.7) translate(0%, 0%)`
-              : STICKY_STYLE.transform,
+            opacity: isHovering || isScrolling ? 1 : STICKY_STYLE.opacity,
+            transform:
+              isHovering || isScrolling
+                ? `scale(1.7) translate(0%, 0%)`
+                : STICKY_STYLE.transform,
           },
       config: config.wobbly,
     })
 
-    return { isIntersecting, bind, props }
+    return { isIntersecting, bind, props, setIsMouseOver }
   })
 
   /** debounced scroll-end handler */
   const reset = useCallback(
     _.debounce(() => {
       setIsScrolling(false)
-    }, 200),
+    }, 700),
     []
   )
 
-  // TODO update scrollHeight when going "back"
   useEffect(() => {
-    setHeight(document.documentElement.scrollHeight)
+    ro.observe(document.documentElement)
 
     const handleScroll = () => {
       if (!isScrolling) setIsScrolling(true)
+
       reset()
     }
 
@@ -136,21 +166,31 @@ const StickyNumbers = () => {
 
     return () => {
       window.removeEventListener("scroll", handleScroll)
+      ro.disconnect()
     }
   }, [])
 
   return (
-    <Container>
-      {arr.map(({ bind, props }, i: number) => {
+    <Container
+      onMouseEnter={() => {
+        setIsHovering(true)
+      }}
+      onMouseLeave={() => {
+        setIsHovering(false)
+      }}
+    >
+      {arr.map(({ bind, props, setIsMouseOver }, i: number) => {
         return (
-          <Sentinel
-            key={i}
-            {...bind}
-            style={{
-              height: sectionHeight,
-            }}
-          >
-            <StickyNumber style={props}>{`${i * 10}%`}</StickyNumber>
+          <Sentinel key={i} {...bind} style={sentinelProps}>
+            <StickyNumber
+              onMouseEnter={() => {
+                setIsMouseOver(true)
+              }}
+              onMouseLeave={() => {
+                setIsMouseOver(false)
+              }}
+              style={props}
+            >{`${(i * 100) / DIVISIONS}%`}</StickyNumber>
           </Sentinel>
         )
       })}

@@ -4,3 +4,29 @@ export const MUIBoxShadowHover = `0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px
 // z-index
 export const navbarZ = 9000
 export const svgZ = 9001
+
+export const KEYWORDS = [
+  `blog`,
+  `gatsby`,
+  `gatsbyjs`,
+  `react`,
+  `reactjs`,
+  `new york`,
+  `rock climbing`,
+  `javascript`,
+  `react`,
+  `coffee`,
+  `coding`,
+  `climb`,
+  `coffeecodeclimb`,
+  `coffee code climb`,
+  `climbing`,
+  `kevin wang`,
+  `graphql`,
+  `apollo`,
+  `node`,
+  `nextjs`,
+  `redux`,
+  `hooks`,
+  `typescript`,
+]

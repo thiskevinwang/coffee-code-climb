@@ -11,7 +11,7 @@ import {
   styles,
   withSVGTrail,
   NavBar,
-} from "./LayoutComponents"
+} from "../components"
 import { StickyNumbers } from "../components/StickyNumbers"
 import { rhythm } from "src/utils/typography"
 import * as Colors from "consts/Colors"

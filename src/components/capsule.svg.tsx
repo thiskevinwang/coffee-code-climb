@@ -54,7 +54,7 @@ const CapsuleSvg = () => {
       />
       {trail.map(({ opacity }, i) => {
         const Path = PATHS[i]
-        return <Path fillOpacity={opacity} />
+        return <Path fillOpacity={opacity} key={i} />
       })}
     </animated.svg>
   )
