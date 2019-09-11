@@ -15,12 +15,14 @@ import {
   AnimatedValue,
   config,
 } from "react-spring"
+import { useScroll, useDrag } from "react-use-gesture"
 import styled, { css } from "styled-components"
 import _ from "lodash"
 
 import useIO from "../../hooks/useIO"
 import { rhythm, scale } from "src/utils/typography"
 
+// TODO: FIX THE OVERFLOW FOR MOBILE
 const STICKY_STYLE = {
   transform: `scale(1.5) translate(50%, 0%)`,
   opacity: 0.9,
@@ -77,24 +79,31 @@ const ARRAY_FROM_DIVISIONS = Array.from(Array(DIVISIONS))
 
 /** !!! MAIN COMPONENT !!! */
 const StickyNumbers = () => {
-  const [scrollHeight, setScrollHeight] = useState(null)
   const [isScrolling, setIsScrolling] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
-  const [ro] = useState(
-    () =>
-      new ResizeObserver(([entry]: [ResizeObserverEntry]) => {
-        console.log(entry.target + " is resizing")
-        setScrollHeight(entry.contentRect.height)
-      })
-  )
 
   /**
    * The shared height of each Sentinel
    * This is needed for the parent of a `sticky` element
    */
-  const sentinelProps = useSpring({
-    height: Math.floor(scrollHeight / DIVISIONS),
-  })
+  const [sentinelProps, setSentinelProps] = useSpring(() => ({
+    height: 0,
+  }))
+  const [ro] = useState(
+    () =>
+      new ResizeObserver(([entry]: [ResizeObserverEntry]) => {
+        console.log(entry.target + " is resizing")
+        setSentinelProps({
+          height: Math.floor(entry.contentRect.height / DIVISIONS),
+        })
+      })
+  )
+  useEffect(() => {
+    ro.observe(document.documentElement)
+    return () => {
+      ro.disconnect()
+    }
+  }, [ro])
 
   /**
    * # arr
@@ -105,6 +114,22 @@ const StickyNumbers = () => {
   const arr: Arr[] = ARRAY_FROM_DIVISIONS.map(e => {
     const [isIntersecting, bind] = useIO()
     const [isMouseOver, setIsMouseOver] = useState(false)
+
+    /** spring props for `useDrag` */
+    const [{ xy }, setXY] = useSpring(() => ({
+      xy: [0, 0],
+      config: config.wobbly,
+    }))
+
+    /**
+     * @usage <animated.div {...bindDragProps()} />
+     */
+    const bindDragProps = useDrag(({ down, delta, event }) => {
+      event.preventDefault()
+      setXY({ xy: down ? delta : [0, 0] })
+      setIsHovering(down)
+      setIsMouseOver(down)
+    })
 
     /**
      * # individual spring props
@@ -141,7 +166,7 @@ const StickyNumbers = () => {
       config: config.wobbly,
     })
 
-    return { isIntersecting, bind, props, setIsMouseOver }
+    return { isIntersecting, bind, props, setIsMouseOver, bindDragProps, xy }
   })
 
   /** debounced scroll-end handler */
@@ -149,29 +174,30 @@ const StickyNumbers = () => {
     _.debounce(() => {
       setIsScrolling(false)
     }, 700),
-    []
+    [setIsScrolling]
   )
-
-  useEffect(() => {
-    ro.observe(document.documentElement)
-
-    const handleScroll = () => {
-      if (!isScrolling) setIsScrolling(true)
-
-      reset()
-    }
-
-    typeof window !== "undefined" &&
-      window.addEventListener("scroll", handleScroll)
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-      ro.disconnect()
-    }
-  }, [])
+  /**
+   * bindScrollGesture
+   *
+   * A scroll-gesture handler for the `window`
+   */
+  const bindScrollGesture = useScroll(
+    state => {
+      if (state.scrolling) setIsScrolling(state.scrolling)
+      if (!state.scrolling) reset()
+    },
+    { domTarget: window }
+  )
+  useEffect(bindScrollGesture, [bindScrollGesture])
 
   return (
     <Container
+      // style={{
+      //   background: containerProps.velocity.interpolate({
+      //     range: [0, 2, 3],
+      //     output: [`green`, `yellow`, `red`],
+      //   }),
+      // }}
       onMouseEnter={() => {
         setIsHovering(true)
       }}
@@ -179,21 +205,33 @@ const StickyNumbers = () => {
         setIsHovering(false)
       }}
     >
-      {arr.map(({ bind, props, setIsMouseOver }, i: number) => {
-        return (
-          <Sentinel key={i} {...bind} style={sentinelProps}>
-            <StickyNumber
-              onMouseEnter={() => {
-                setIsMouseOver(true)
+      {arr.map(
+        ({ bind, props, setIsMouseOver, bindDragProps, xy }, i: number) => {
+          return (
+            <Sentinel
+              key={i}
+              {...bind}
+              {...bindDragProps()}
+              style={{
+                ...sentinelProps,
+                transform: xy.interpolate(
+                  (x, y) => `translate3D(${x}px, ${y}px, 0)`
+                ),
               }}
-              onMouseLeave={() => {
-                setIsMouseOver(false)
-              }}
-              style={props}
-            >{`${(i * 100) / DIVISIONS}%`}</StickyNumber>
-          </Sentinel>
-        )
-      })}
+            >
+              <StickyNumber
+                onMouseEnter={() => {
+                  setIsMouseOver(true)
+                }}
+                onMouseLeave={() => {
+                  setIsMouseOver(false)
+                }}
+                style={props}
+              >{`${(i * 100) / DIVISIONS}%`}</StickyNumber>
+            </Sentinel>
+          )
+        }
+      )}
     </Container>
   )
 }
