@@ -53,11 +53,10 @@ function Bio() {
               imgStyle={{}}
             />
             <p style={{ marginTop: "auto", marginBottom: "auto" }}>
-              A blog by{" "}
+              👋 I'm{" "}
               <a href={`https://twitter.com/${social.twitter}`}>{author}</a>.{" "}
               <span>
-                Jazz Guitarist → Barista → Healthcare Startup Potato → Rock
-                Climber →{" "}
+                <s>Jazz Guitarist</s> → <s>Barista</s> → <s>Receptionist</s> →{" "}
                 <Tooltip
                   title={
                     <div style={{ width: 60, height: 60, padding: 10 }}>
@@ -68,6 +67,8 @@ function Bio() {
                   <u>Front End Engineer</u>
                 </Tooltip>
               </span>
+              <br />
+              This is my ever growing sandbox of sorts⛱.
             </p>
           </div>
         )
