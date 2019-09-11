@@ -128,7 +128,7 @@ const StickyNumbers = () => {
       event.preventDefault()
       setXY({ xy: down ? delta : [0, 0] })
       setIsHovering(down || isHovering)
-      setIsMouseOver(down || isMouseOver)
+      setIsMouseOver(down)
     })
 
     /**
