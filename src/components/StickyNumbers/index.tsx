@@ -184,7 +184,7 @@ const StickyNumbers = () => {
       if (state.scrolling) setIsScrolling(state.scrolling)
       if (!state.scrolling) reset()
     },
-    { domTarget: window }
+    { domTarget: window || null }
   )
   useEffect(bindScrollGesture, [bindScrollGesture])
 
