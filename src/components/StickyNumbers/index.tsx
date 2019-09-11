@@ -24,19 +24,19 @@ import { rhythm, scale } from "src/utils/typography"
 
 // TODO: FIX THE OVERFLOW FOR MOBILE
 const STICKY_STYLE = {
-  transform: `scale(1.5) translate(50%, 0%)`,
+  transform: `scale(1.3)`,
   opacity: 0.9,
-  background: `rgba(100,255,100,0.3)`,
+  background: `rgba(100,255,100)`,
 }
 const INTERSECTING_STYLE = {
-  transform: `scale(1) translate(100%, 0%)`,
+  transform: `scale(1)`,
   opacity: 0,
-  background: `rgba(255,100,100,0.3)`,
+  background: `rgba(255,100,100)`,
 }
 const MOUSE_OVER_STYLE = {
-  transform: `scale(1.9) translate(0%, 0%)`,
+  transform: `scale(1.5)`,
   opacity: 0.9,
-  background: `rgba(100,100,255,0.3)`,
+  background: `rgba(100,100,255)`,
 }
 
 type Arr = {
@@ -60,7 +60,7 @@ const Sentinel = styled(animated.div)`
   z-index: 10;
 `
 const StickyNumber = styled(animated.p)`
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 20px;
   font-weight: 100;
   text-align: center;
@@ -127,8 +127,8 @@ const StickyNumbers = () => {
     const bindDragProps = useDrag(({ down, delta, event }) => {
       event.preventDefault()
       setXY({ xy: down ? delta : [0, 0] })
-      setIsHovering(down)
-      setIsMouseOver(down)
+      setIsHovering(down || isHovering)
+      setIsMouseOver(down || isMouseOver)
     })
 
     /**
@@ -152,16 +152,14 @@ const StickyNumbers = () => {
               isHovering || isScrolling ? 0.8 : INTERSECTING_STYLE.opacity,
             transform:
               isHovering || isScrolling
-                ? `scale(1) translate(0%, 0%)`
+                ? `scale(1)`
                 : INTERSECTING_STYLE.transform,
           }
         : {
             ...STICKY_STYLE,
             opacity: isHovering || isScrolling ? 1 : STICKY_STYLE.opacity,
             transform:
-              isHovering || isScrolling
-                ? `scale(1.7) translate(0%, 0%)`
-                : STICKY_STYLE.transform,
+              isHovering || isScrolling ? `scale(1.4)` : STICKY_STYLE.transform,
           },
       config: config.wobbly,
     })
