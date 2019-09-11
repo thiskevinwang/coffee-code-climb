@@ -61,6 +61,7 @@ const Sentinel = styled(animated.div)`
 `
 const StickyNumber = styled(animated.p)`
   border-radius: 5px;
+  cursor: move;
   font-size: 20px;
   font-weight: 100;
   text-align: center;
@@ -184,7 +185,7 @@ const StickyNumbers = () => {
       if (state.scrolling) setIsScrolling(state.scrolling)
       if (!state.scrolling) reset()
     },
-    { domTarget: window || null }
+    { domTarget: !!window ? window : null }
   )
   useEffect(bindScrollGesture, [bindScrollGesture])
 
