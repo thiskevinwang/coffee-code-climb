@@ -126,8 +126,8 @@ const StickyNumbers = () => {
     const bindDragProps = useDrag(({ down, delta, event }) => {
       event.preventDefault()
       setXY({ xy: down ? delta : [0, 0] })
-      setIsHovering(down)
-      setIsMouseOver(down)
+      setIsHovering(s => down || s)
+      setIsMouseOver(s => down || s)
     })
 
     const bindHoverProps = useHover(({ hovering }) => {
