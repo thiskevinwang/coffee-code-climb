@@ -1,21 +1,17 @@
-import React, {
-  useEffect,
-  useCallback,
-  useRef,
-  useState,
-  useMemo,
-  MutableRefObject,
-} from "react"
+import * as React from "react"
 import "intersection-observer"
 import ResizeObserver from "resize-observer-polyfill"
 import {
-  useSprings,
   useSpring,
   animated,
-  AnimatedValue,
   config,
+  /** types */
+  AnimatedValue,
+  OpaqueInterpolation,
 } from "react-spring"
-import { useScroll, useDrag } from "react-use-gesture"
+import { useScroll, useDrag, useHover } from "react-use-gesture"
+import { ReactEventHandlers } from "react-use-gesture/dist/types"
+
 import styled, { css } from "styled-components"
 import _ from "lodash"
 
@@ -40,9 +36,11 @@ const MOUSE_OVER_STYLE = {
 }
 
 type Arr = {
-  bind: { ref: MutableRefObject<any> }
+  bind: { ref: React.MutableRefObject<any> }
   props: AnimatedValue<any>
-  setIsMouseOver: () => void
+  bindHoverProps: (...args: any[]) => ReactEventHandlers
+  bindDragProps: (...args: any[]) => ReactEventHandlers
+  xy: OpaqueInterpolation<number[]>
 }
 
 // z-index & opacity
@@ -80,8 +78,8 @@ const ARRAY_FROM_DIVISIONS = Array.from(Array(DIVISIONS))
 
 /** !!! MAIN COMPONENT !!! */
 const StickyNumbers = () => {
-  const [isScrolling, setIsScrolling] = useState(false)
-  const [isHovering, setIsHovering] = useState(false)
+  const [isScrolling, setIsScrolling] = React.useState(false)
+  const [isHovering, setIsHovering] = React.useState(false)
 
   /**
    * The shared height of each Sentinel
@@ -90,7 +88,7 @@ const StickyNumbers = () => {
   const [sentinelProps, setSentinelProps] = useSpring(() => ({
     height: 0,
   }))
-  const [ro] = useState(
+  const [ro] = React.useState(
     () =>
       new ResizeObserver(([entry]: [ResizeObserverEntry]) => {
         console.log(entry.target + " is resizing")
@@ -99,7 +97,7 @@ const StickyNumbers = () => {
         })
       })
   )
-  useEffect(() => {
+  React.useEffect(() => {
     ro.observe(document.documentElement)
     return () => {
       ro.disconnect()
@@ -114,7 +112,7 @@ const StickyNumbers = () => {
    */
   const arr: Arr[] = ARRAY_FROM_DIVISIONS.map(e => {
     const [isIntersecting, bind] = useIO()
-    const [isMouseOver, setIsMouseOver] = useState(false)
+    const [isMouseOver, setIsMouseOver] = React.useState(false)
 
     /** spring props for `useDrag` */
     const [{ xy }, setXY] = useSpring(() => ({
@@ -128,8 +126,12 @@ const StickyNumbers = () => {
     const bindDragProps = useDrag(({ down, delta, event }) => {
       event.preventDefault()
       setXY({ xy: down ? delta : [0, 0] })
-      setIsHovering(down || isHovering)
+      setIsHovering(down)
       setIsMouseOver(down)
+    })
+
+    const bindHoverProps = useHover(({ hovering }) => {
+      setIsMouseOver(hovering)
     })
 
     /**
@@ -165,15 +167,22 @@ const StickyNumbers = () => {
       config: config.wobbly,
     })
 
-    return { isIntersecting, bind, props, setIsMouseOver, bindDragProps, xy }
+    return {
+      isIntersecting,
+      bind,
+      props,
+      bindHoverProps,
+      bindDragProps,
+      xy,
+    }
   })
 
   /** debounced scroll-end handler */
-  const reset = useCallback(
+  const reset = React.useCallback(
     _.debounce(() => {
       setIsScrolling(false)
     }, 700),
-    [setIsScrolling]
+    []
   )
   /**
    * bindScrollGesture
@@ -187,25 +196,20 @@ const StickyNumbers = () => {
     },
     { domTarget: typeof window !== "undefined" && window }
   )
-  useEffect(bindScrollGesture, [bindScrollGesture])
+  React.useEffect(bindScrollGesture, [bindScrollGesture])
 
+  const containerRef = React.useRef(null)
+  const bindContainerProps = useHover(
+    state => {
+      console.log(state)
+      setIsHovering(state.hovering)
+    },
+    { domTarget: containerRef }
+  )
   return (
-    <Container
-      // style={{
-      //   background: containerProps.velocity.interpolate({
-      //     range: [0, 2, 3],
-      //     output: [`green`, `yellow`, `red`],
-      //   }),
-      // }}
-      onMouseEnter={() => {
-        setIsHovering(true)
-      }}
-      onMouseLeave={() => {
-        setIsHovering(false)
-      }}
-    >
+    <Container ref={containerRef} {...bindContainerProps()}>
       {arr.map(
-        ({ bind, props, setIsMouseOver, bindDragProps, xy }, i: number) => {
+        ({ bind, props, bindHoverProps, bindDragProps, xy }, i: number) => {
           return (
             <Sentinel
               key={i}
@@ -218,15 +222,8 @@ const StickyNumbers = () => {
                 ),
               }}
             >
-              <StickyNumber
-                onMouseEnter={() => {
-                  setIsMouseOver(true)
-                }}
-                onMouseLeave={() => {
-                  setIsMouseOver(false)
-                }}
-                style={props}
-              >{`${(i * 100) / DIVISIONS}%`}</StickyNumber>
+              <StickyNumber {...bindHoverProps()} style={props}>{`${(i * 100) /
+                DIVISIONS}%`}</StickyNumber>
             </Sentinel>
           )
         }
