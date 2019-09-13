@@ -1,10 +1,18 @@
-import React, { memo } from "react"
+import * as React from "react"
+import { useEffect, memo } from "react"
 import _ from "lodash"
 import { Link } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
 import { Grid, Tooltip } from "@material-ui/core"
-import { animated, useSpring, AnimatedValue, config } from "react-spring"
+import {
+  animated,
+  useSpring,
+  AnimatedValue,
+  config,
+  interpolate,
+} from "react-spring"
+import { useGesture } from "react-use-gesture"
 import styled from "styled-components"
 
 import * as Colors from "consts/Colors"
@@ -16,7 +24,6 @@ import { rhythm } from "src/utils/typography"
  */
 const FROM_STYLE = {
   boxShadow: `0px 15px 30px -15px ${Colors.blackDark}`,
-  transform: `scale(1)`,
 }
 /**
  * # MOUSEOVER_STYLE
@@ -24,14 +31,12 @@ const FROM_STYLE = {
  */
 const MOUSEOVER_STYLE = {
   boxShadow: `0px 17px 40px -13px ${Colors.blackDarker}`,
-  transform: `scale(1.01)`,
 }
 /**
  * # MOUSEDOWN_STYLE
  */
 const MOUSEDOWN_STYLE = {
   boxShadow: `0px 15px 20px -17px ${Colors.blackDarker}`,
-  transform: `scale(0.98)`,
 }
 
 const Card = styled(animated.div)`
@@ -82,13 +87,47 @@ const Post = memo(
       title: title,
     }
 
-    const [springProps, set] = useSpring(() => {
+    const [{ xy, scale, ...springProps }, set] = useSpring(() => {
       return {
-        from: { ...FROM_STYLE },
-        to: { ...FROM_STYLE },
+        from: { ...FROM_STYLE, xy: [0, 0], scale: 1 },
+        // to: { ...FROM_STYLE },
         config: config.wobbly,
       }
     })
+    const bind = useGesture(
+      {
+        onDrag: ({ event, delta: [dX, dY], memo = xy.getValue() }) => {
+          event.preventDefault()
+          const [mX, mY] = memo
+          set({ xy: [mX + dX, mY + dY] })
+          return memo
+        },
+        onHover: ({ hovering }) => {
+          set({
+            ...(hovering ? MOUSEOVER_STYLE : FROM_STYLE),
+            scale: hovering ? 1.02 : 1,
+          })
+        },
+        onMove: ({ down, hovering, delta, memo = xy.getValue() }) => {
+          set({
+            ...(down && hovering
+              ? MOUSEDOWN_STYLE
+              : hovering
+              ? MOUSEOVER_STYLE
+              : FROM_STYLE),
+            scale: down ? 0.98 : hovering ? 1.02 : 1,
+            /** Turn this on for trolling */
+            // xy: addVectors(memo, delta),
+          })
+        },
+      },
+      {
+        event: {
+          passive: false,
+          // capture: true // this disables `onHover`
+        },
+      }
+    )
 
     /**
      * updateStyles
@@ -98,6 +137,21 @@ const Post = memo(
     const updateStyles = stylesObject => e => {
       set({ ...stylesObject })
     }
+
+    /**
+     * reset position
+     */
+    useEffect(() => {
+      const resetPos = () => set({ xy: [0, 0] })
+      const handleKeyPressR = e => {
+        e.key === "r" && resetPos()
+      }
+      typeof window !== undefined &&
+        window.addEventListener("keypress", handleKeyPressR)
+      return () => {
+        window.removeEventListener("keypress", handleKeyPressR)
+      }
+    }, [])
 
     return (
       <Grid
@@ -109,13 +163,15 @@ const Post = memo(
       >
         <Card
           className={"Card"}
-          style={springProps}
-          onMouseEnter={updateStyles(MOUSEOVER_STYLE)}
-          onMouseLeave={updateStyles(FROM_STYLE)}
-          onMouseDown={updateStyles(MOUSEDOWN_STYLE)}
-          onMouseUp={updateStyles(MOUSEOVER_STYLE)}
-          onTouchStart={updateStyles(MOUSEDOWN_STYLE)}
-          onTouchEnd={updateStyles(FROM_STYLE)}
+          style={{
+            ...springProps,
+            transform: interpolate(
+              [xy, scale],
+              ([x, y], scale) =>
+                `scale(${scale}) translate3D(${x}px, ${y}px, 0)`
+            ),
+          }}
+          {...bind()}
         >
           <Link style={{ boxShadow: `none` }} to={linkTo}>
             {showBlogImage && image && (
