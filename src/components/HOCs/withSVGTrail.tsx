@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { animated, useTrail, config } from "react-spring"
+import { animated, useTrail, config, interpolate } from "react-spring"
+import { useMove } from "react-use-gesture"
+import { ReactEventHandlers } from "react-use-gesture/dist/types"
+
 import styled from "styled-components"
 import _ from "lodash"
 
@@ -10,37 +13,31 @@ import * as SVG from "src/svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
 // SVG animation trail configs
-const zero = { mass: 2, tension: 500, friction: 30 }
-const one = { mass: 3, tension: 400, friction: 32 }
-const two = { mass: 4, tension: 300, friction: 34 }
-const three = { mass: 5, tension: 200, friction: 36 }
-const four = { mass: 6, tension: 100, friction: 38 }
+const configs = [
+  { mass: 2, tension: 500, friction: 30 },
+  { mass: 3, tension: 400, friction: 32 },
+  { mass: 4, tension: 300, friction: 34 },
+  { mass: 5, tension: 200, friction: 36 },
+  { mass: 6, tension: 100, friction: 38 },
+]
 
-const configs = [zero, one, two, three, four]
-
-const StyledSVG = styled.div`
-  background: ${props =>
-    props.isDarkMode ? `rgba(10, 10, 10, 0.3)` : `rgba(255, 255, 255, 0.5)`};
-  border: ${props =>
-    props.isDarkMode ? `1px dotted black` : `1px dotted white`};
+const AnimatedSVG = styled(animated.div)`
   border-radius: 100%;
   box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
     0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
   display: flex;
-  padding: ${props => props.index && props.index * 5 + "px"};
   pointer-events: none;
   position: absolute;
   z-index: 999;
   transition: background 500ms ease, border 500ms ease;
 `
-const AnimatedSVG = animated(StyledSVG)
 
 // interpolation handler
 // you can add _.random() in here for some weird behavior. (no rerenders!)
 const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
-const translate2dVibrate = (x, y) =>
+const translate2dVibrate = (x, y, size = 1) =>
   `translate3d(${_.random(x - 5, x + 5)}px,${_.random(
     y - 5,
     y + 5
@@ -73,15 +70,46 @@ const Wrapper = ({ children }) => {
   )
 
   // https://www.react-spring.io/docs/hooks/use-trail
-  const [trail, setTrail, stop] = useTrail(SVGS.length, () => ({
+  const [trail, setTrail] = useTrail(SVGS.length, () => ({
     xy: [0, 0],
     opacity: showTrail ? 1 : 0,
+    background: isDarkMode
+      ? `rgba(10, 10, 10, 0.3)`
+      : `rgba(255, 255, 255, 0.5)`,
+    border: isDarkMode ? `1px dotted black` : `1px dotted white`,
+    padding: isDarkMode ? 0 : 1,
     config: i => {
       return configs[i]
     },
   }))
 
-  const memoizedSetTrail = useCallback(setTrail, [])
+  useEffect(() => {
+    setTrail({
+      background: isDarkMode
+        ? `rgba(10, 10, 10, 0.3)`
+        : `rgba(255, 255, 255, 0.5)`,
+      border: isDarkMode ? `1px dotted black` : `1px dotted white`,
+      padding: isDarkMode ? 0 : 1,
+    })
+  }, [isDarkMode])
+
+  const bindMoveGesture = useMove(
+    ({ event }) => {
+      setTrail({
+        xy: [event.pageX, event.pageY],
+        opacity: showTrail ? 1 : 0,
+        background: isDarkMode
+          ? `rgba(10, 10, 10, 0.3)`
+          : `rgba(255, 255, 255, 0.5)`,
+        border: isDarkMode ? `1px dotted black` : `1px dotted white`,
+        config: i => {
+          return slowMo ? config.molasses : configs[i]
+        },
+      })
+    },
+    { domTarget: typeof window !== "undefined" && window }
+  )
+  useEffect(bindMoveGesture, [bindMoveGesture])
 
   useEffect(() => {
     const handleKeyPress = e => {
@@ -110,27 +138,29 @@ const Wrapper = ({ children }) => {
   }, [isDarkMode, showTrail, slowMo, vibrate])
 
   return (
-    <div
-      className="withSVGTrail--HOC"
-      onMouseMove={e =>
-        memoizedSetTrail({
-          opacity: showTrail ? 1 : 0,
-          xy: [e.pageX, e.pageY],
-          config: slowMo && config.molasses,
-        })
-      }
-    >
+    <div className="withSVGTrail--HOC">
       {trail.map((props, index) => (
         <AnimatedSVG
-          isDarkMode={isDarkMode}
           key={index}
-          index={index + 1}
           style={{
-            transform: props.xy.interpolate(
+            ...props,
+            /** interpolate util method 1 */
+            // transform: interpolate([props.xy] props.padding, ([x, y], p) =>
+            //   vibrate ? translate2dVibrate(x, y) : translate2d(x, y)
+            // ),
+            /** interpolate util method 2 */
+            transform: interpolate(
+              props.xy,
               vibrate ? translate2dVibrate : translate2d
             ),
-            opacity: props.opacity.interpolate(x => x),
-            zIndex: svgZ,
+            opacity: props.opacity.interpolate((x: number) => x),
+            padding: props.padding
+              .interpolate({
+                range: [0, 0.25, 0.5, 0.75, 1],
+                output: [5, 0, 9, 0, 5],
+              })
+              .interpolate((p: number) => `${(index + 1) * p}px`),
+            zIndex: svgZ - index,
           }}
         >
           {SVGS[index]}
