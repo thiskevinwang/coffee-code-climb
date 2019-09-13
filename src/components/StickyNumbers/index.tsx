@@ -9,7 +9,7 @@ import {
   AnimatedValue,
   OpaqueInterpolation,
 } from "react-spring"
-import { useScroll, useDrag, useHover } from "react-use-gesture"
+import { useScroll, useDrag, useHover, useGesture } from "react-use-gesture"
 import { ReactEventHandlers } from "react-use-gesture/dist/types"
 
 import styled, { css } from "styled-components"
@@ -113,6 +113,7 @@ const StickyNumbers = () => {
   const arr: Arr[] = ARRAY_FROM_DIVISIONS.map(e => {
     const [isIntersecting, bind] = useIO()
     const [isMouseOver, setIsMouseOver] = React.useState(false)
+    const [isDragging, setIsDragging] = React.useState(false)
 
     /** spring props for `useDrag` */
     const [{ xy }, setXY] = useSpring(() => ({
@@ -123,11 +124,23 @@ const StickyNumbers = () => {
     /**
      * @usage <animated.div {...bindDragProps()} />
      */
-    const bindDragProps = useDrag(({ down, delta, event }) => {
-      event.preventDefault()
-      setXY({ xy: down ? delta : [0, 0] })
-      setIsHovering(s => down || s)
-      setIsMouseOver(s => down || s)
+    const bindDragProps = useGesture({
+      onDrag: ({
+        down,
+        delta: [dX, dY],
+        event,
+        memo = xy.getValue(),
+        // I didn't know you could do this!
+        // memo: [mX, my] = xy.getValue(),
+      }) => {
+        event.preventDefault()
+
+        const [mX, mY] = memo
+
+        setXY({ xy: [dX + mX, dY + mY] })
+        setIsDragging(down)
+        return memo
+      },
     })
 
     const bindHoverProps = useHover(({ hovering }) => {
@@ -146,24 +159,32 @@ const StickyNumbers = () => {
      * @TODO make this object property overwriting neater
      */
     const props = useSpring({
-      to: isMouseOver
-        ? { ...MOUSE_OVER_STYLE }
-        : isIntersecting
-        ? {
-            ...INTERSECTING_STYLE,
-            opacity:
-              isHovering || isScrolling ? 0.8 : INTERSECTING_STYLE.opacity,
-            transform:
-              isHovering || isScrolling
-                ? `scale(1)`
-                : INTERSECTING_STYLE.transform,
-          }
-        : {
-            ...STICKY_STYLE,
-            opacity: isHovering || isScrolling ? 1 : STICKY_STYLE.opacity,
-            transform:
-              isHovering || isScrolling ? `scale(1.4)` : STICKY_STYLE.transform,
-          },
+      to:
+        isMouseOver || isDragging
+          ? { ...MOUSE_OVER_STYLE }
+          : isIntersecting
+          ? {
+              ...INTERSECTING_STYLE,
+              opacity:
+                isHovering || isScrolling || isDragging
+                  ? 0.8
+                  : INTERSECTING_STYLE.opacity,
+              transform:
+                isHovering || isScrolling || isDragging
+                  ? `scale(1)`
+                  : INTERSECTING_STYLE.transform,
+            }
+          : {
+              ...STICKY_STYLE,
+              opacity:
+                isHovering || isScrolling || isDragging
+                  ? 1
+                  : STICKY_STYLE.opacity,
+              transform:
+                isHovering || isScrolling || isDragging
+                  ? `scale(1.4)`
+                  : STICKY_STYLE.transform,
+            },
       config: config.wobbly,
     })
 
