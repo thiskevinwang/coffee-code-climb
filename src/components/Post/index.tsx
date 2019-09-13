@@ -87,9 +87,9 @@ const Post = memo(
       title: title,
     }
 
-    const [{ xy, scale, ...springProps }, set] = useSpring(() => {
+    const [{ xy, scale, deg, ...springProps }, set] = useSpring(() => {
       return {
-        from: { ...FROM_STYLE, xy: [0, 0], scale: 1 },
+        from: { ...FROM_STYLE, xy: [0, 0], scale: 1, deg: 0 },
         // to: { ...FROM_STYLE },
         config: config.wobbly,
       }
@@ -128,28 +128,36 @@ const Post = memo(
         },
       }
     )
-
-    /**
-     * updateStyles
-     * - logging `idx` logs all the indices
-     * - if the hovered index ===
-     */
-    const updateStyles = stylesObject => e => {
-      set({ ...stylesObject })
-    }
-
     /**
      * reset position
      */
     useEffect(() => {
-      const resetPos = () => set({ xy: [0, 0] })
-      const handleKeyPressR = e => {
+      const resetPos = () => set({ xy: [0, 0], deg: 0 })
+
+      /**
+       * This function is dedicated to
+       * [@kengz](https://github.com/kengz)
+       * - When I was a receptionist, he introduced me to rock climbing.
+       * - We later became roommates.
+       * - We ate tasty foods errday.
+       *   - So many banhmis. RIP BBM
+       * - Then he moved away, and I did a cri.
+       */
+      const fuckMyShitUpFam = () =>
+        set({
+          xy: [_.random(-500, 500), _.random(-1000, 1000)],
+          deg: _.random(-360, 360),
+          config: { friction: 26 },
+        })
+
+      const handleKeyPress = e => {
         e.key === "r" && resetPos()
+        e.key === "f" && fuckMyShitUpFam()
       }
       typeof window !== undefined &&
-        window.addEventListener("keypress", handleKeyPressR)
+        window.addEventListener("keypress", handleKeyPress)
       return () => {
-        window.removeEventListener("keypress", handleKeyPressR)
+        window.removeEventListener("keypress", handleKeyPress)
       }
     }, [])
 
@@ -166,9 +174,9 @@ const Post = memo(
           style={{
             ...springProps,
             transform: interpolate(
-              [xy, scale],
-              ([x, y], scale) =>
-                `scale(${scale}) translate3D(${x}px, ${y}px, 0)`
+              [xy, scale, deg],
+              ([x, y], scale, deg) =>
+                `scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg)`
             ),
           }}
           {...bind()}
