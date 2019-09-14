@@ -25,11 +25,19 @@ type Vector2 = [number, number]
  * @param {Vector2} mouseCoordinates
  * @param {Vector2} centerCoordinates
  * @return {Vector2}
+ *
+ * @TODO find better way to handle skinny-wide objects
  */
-const calc = ([mouseX, mouseY]: Vector2, [centerX, centerY]: Vector2) => {
-  const xy = [-(mouseY - centerY) / 20, (mouseX - centerX) / 20]
-  console.log("xy: ", [mouseX, mouseY], "center:", [centerX, centerY])
-  console.log("calc:", "->", xy)
+const calc = (
+  [mouseX, mouseY]: Vector2,
+  [centerX, centerY]: Vector2,
+  width: number,
+  height: number
+) => {
+  const xy = [
+    -((mouseY - centerY) / (width / 2)) * 20,
+    ((mouseX - centerX) / (height / 2)) * 10,
+  ]
   return xy
 }
 /**
@@ -115,7 +123,7 @@ const Post = memo(
 
     /** All spring props, aka AnimatedValues */
     const [
-      { xy, scale, deg, rotateXY, center, ...springProps },
+      { xy, scale, deg, rotateXY, center, width, height, ...springProps },
       set,
     ] = useSpring(() => {
       return {
@@ -134,11 +142,13 @@ const Post = memo(
           rotateXY: [0, 0],
           transformOrigin: `50% 50% 0px`,
           /**
-           * center
+           * center / width / height
            * - this ges overwritten on mount
            * - do not update/reset it
            */
           center: [69, 69],
+          width: 0,
+          height: 0,
         },
         // to: { ...FROM_STYLE },
         config: config.wobbly,
@@ -163,7 +173,8 @@ const Post = memo(
         bounds.x + bounds.width / 2,
         bounds.y + bounds.height / 2,
       ]
-      set({ center })
+      const { width, height } = bounds
+      set({ center, width, height })
     })
 
     const bind = useGesture(
@@ -208,7 +219,9 @@ const Post = memo(
                    * So use the memoized values instead.
                    */
                   last ? memo : [event.pageX, event.pageY],
-                  center.getValue()
+                  center.getValue(),
+                  width.getValue(),
+                  height.getValue()
                 )
               : [0, 0],
           })
