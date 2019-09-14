@@ -1,5 +1,6 @@
+import * as ReactDOM from "react-dom"
 import * as React from "react"
-import { useEffect, memo } from "react"
+import { useState, useEffect, memo, useRef } from "react"
 import _ from "lodash"
 import { Link } from "gatsby"
 import Image from "gatsby-image"
@@ -18,9 +19,23 @@ import styled from "styled-components"
 import * as Colors from "consts/Colors"
 import { rhythm } from "src/utils/typography"
 
+type Vector2 = [number, number]
+/**
+ * Some util to calc mouse position relative to the center of an element
+ * @param {Vector2} mouseCoordinates
+ * @param {Vector2} centerCoordinates
+ * @return {Vector2}
+ */
+const calc = ([mouseX, mouseY]: Vector2, [centerX, centerY]: Vector2) => {
+  const xy = [-(mouseY - centerY) / 20, (mouseX - centerX) / 20]
+  console.log("xy: ", [mouseX, mouseY], "center:", [centerX, centerY])
+  console.log("calc:", "->", xy)
+  return xy
+}
 /**
  * # FROM_STYLE
  * - starting animated-style
+ * - currently just used for boxShadow
  */
 const FROM_STYLE = {
   boxShadow: `0px 15px 30px -15px ${Colors.blackDark}`,
@@ -28,12 +43,14 @@ const FROM_STYLE = {
 /**
  * # MOUSEOVER_STYLE
  * - target animated-style
+ * - currently just used for boxShadow
  */
 const MOUSEOVER_STYLE = {
   boxShadow: `0px 17px 40px -13px ${Colors.blackDarker}`,
 }
 /**
  * # MOUSEDOWN_STYLE
+ * - currently just used for boxShadow
  */
 const MOUSEDOWN_STYLE = {
   boxShadow: `0px 15px 20px -17px ${Colors.blackDarker}`,
@@ -45,7 +62,16 @@ const Card = styled(animated.div)`
   /* This clips the square top corners of the child image */
   overflow: hidden;
 `
-
+type BoundingClientRect = {
+  bottom: number
+  height: number
+  left: number
+  right: number
+  top: number
+  width: number
+  x: number
+  y: number
+}
 interface Props {
   key: string
   linkTo: string
@@ -87,28 +113,80 @@ const Post = memo(
       title: title,
     }
 
-    const [{ xy, scale, deg, ...springProps }, set] = useSpring(() => {
+    /** All spring props, aka AnimatedValues */
+    const [
+      { xy, scale, deg, skew, rotateXY, center, ...springProps },
+      set,
+    ] = useSpring(() => {
       return {
-        from: { ...FROM_STYLE, xy: [0, 0], scale: 1, deg: 0 },
+        from: {
+          ...FROM_STYLE,
+          xy: [0, 0],
+          scale: 1,
+          deg: 0,
+          skew: [0, 0],
+          rotateXY: [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          /**
+           * center
+           * - this ges overwritten on mount
+           * - do not update/reset it
+           */
+          center: [69, 69],
+        },
         // to: { ...FROM_STYLE },
         config: config.wobbly,
       }
     })
+
+    /**
+     * ref
+     * to access `getBoundingClientRect()`
+     */
+    const ref = useRef(null)
+    useEffect(() => {
+      /**
+       * Find own bounds & update spring props
+       * @FIXME this doesn't update when 'transformXY' is applied
+       */
+
+      const bounds: BoundingClientRect = ReactDOM.findDOMNode(
+        ref.current
+      ).getBoundingClientRect()
+      const center: Vector2 = [
+        bounds.x + bounds.width / 2,
+        bounds.y + bounds.height / 2,
+      ]
+      set({ center })
+    })
+
     const bind = useGesture(
       {
+        /** drag */
         onDrag: ({ event, delta: [dX, dY], memo = xy.getValue() }) => {
           event.preventDefault()
+
           const [mX, mY] = memo
-          set({ xy: [mX + dX, mY + dY] })
+          /**
+           * movement
+           * > _memo + delta (called movement in v6)_
+           * >
+           * > ~ [@dbismut](https://github.com/react-spring/react-use-gesture/issues/45#issuecomment-531008361)
+           */
+          const movement: Vector2 = [mX + dX, mY + dY]
+          set({
+            xy: movement,
+          })
           return memo
         },
-        onHover: ({ hovering }) => {
+        /** hover */
+        onHover: ({ hovering, ...hover }) => {
           set({
             ...(hovering ? MOUSEOVER_STYLE : FROM_STYLE),
-            scale: hovering ? 1.02 : 1,
           })
         },
-        onMove: ({ down, hovering, delta, memo = xy.getValue() }) => {
+        /** move */
+        onMove: ({ down, hovering, event, memo, last }) => {
           set({
             ...(down && hovering
               ? MOUSEDOWN_STYLE
@@ -116,15 +194,28 @@ const Post = memo(
               ? MOUSEOVER_STYLE
               : FROM_STYLE),
             scale: down ? 0.98 : hovering ? 1.02 : 1,
-            /** Turn this on for trolling */
-            // xy: addVectors(memo, delta),
+            rotateXY: hovering
+              ? calc(
+                  /**
+                   * when `last` is true, a synthetic event gets reused.
+                   * I'm not sure what those pageX/pageY are.
+                   *
+                   * So use the memoized values instead.
+                   */
+                  last ? memo : [event.pageX, event.pageY],
+                  center.getValue()
+                )
+              : [0, 0],
           })
+          /** return these to update `memo` */
+          return [event.pageX, event.pageY]
         },
       },
       {
         event: {
           passive: false,
-          // capture: true // this disables `onHover`
+          /** this disables `onHover` */
+          // capture: true
         },
       }
     )
@@ -132,7 +223,7 @@ const Post = memo(
      * reset position
      */
     useEffect(() => {
-      const resetPos = () => set({ xy: [0, 0], deg: 0 })
+      const resetPos = () => set({ xy: [0, 0], deg: 0, scale: 1 })
 
       /**
        * This function is dedicated to
@@ -154,8 +245,11 @@ const Post = memo(
         e.key === "r" && resetPos()
         e.key === "f" && fuckMyShitUpFam()
       }
+
+      /** add event listener */
       typeof window !== undefined &&
         window.addEventListener("keypress", handleKeyPress)
+      /** clean up event listener*/
       return () => {
         window.removeEventListener("keypress", handleKeyPress)
       }
@@ -170,13 +264,14 @@ const Post = memo(
         xs={12}
       >
         <Card
+          ref={ref}
           className={"Card"}
           style={{
             ...springProps,
             transform: interpolate(
-              [xy, scale, deg],
-              ([x, y], scale, deg) =>
-                `scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg)`
+              [xy, scale, deg, rotateXY],
+              ([x, y], scale, deg, [rX, rY]) =>
+                `perspective(500px) scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg) rotateX(${rX}deg) rotateY(${rY}deg)`
             ),
           }}
           {...bind()}
