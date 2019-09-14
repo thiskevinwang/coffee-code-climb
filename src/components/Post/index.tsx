@@ -115,7 +115,7 @@ const Post = memo(
 
     /** All spring props, aka AnimatedValues */
     const [
-      { xy, scale, deg, skew, rotateXY, center, ...springProps },
+      { xy, scale, deg, rotateXY, center, ...springProps },
       set,
     ] = useSpring(() => {
       return {
@@ -124,7 +124,13 @@ const Post = memo(
           xy: [0, 0],
           scale: 1,
           deg: 0,
-          skew: [0, 0],
+          /**
+           * rotateXY
+           * combines the values for:
+           * - rotateX
+           * - rotateY
+           * @see https://codesandbox.io/embed/rj998k4vmm
+           */
           rotateXY: [0, 0],
           transformOrigin: `50% 50% 0px`,
           /**
