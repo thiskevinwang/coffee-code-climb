@@ -174,10 +174,9 @@ const Post = memo(
 
           const [mX, mY] = memo
           /**
-           * movement
-           * > _memo + delta (called movement in v6)_
-           * >
-           * > ~ [@dbismut](https://github.com/react-spring/react-use-gesture/issues/45#issuecomment-531008361)
+           * movement (will be introduced in V6)
+           * - memo + delta
+           * @see https://github.com/react-spring/react-use-gesture/issues/45#issuecomment-531008361
            */
           const movement: Vector2 = [mX + dX, mY + dY]
           set({
@@ -220,8 +219,8 @@ const Post = memo(
       {
         event: {
           passive: false,
-          /** this disables `onHover` */
-          // capture: true
+          /** TRUE disables `onHover` */
+          capture: false,
         },
       }
     )
