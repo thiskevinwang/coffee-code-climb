@@ -274,7 +274,8 @@ const Post = memo(
        */
       const fuckMyShitUpFam = () =>
         set({
-          xy: [_.random(-500, 500), _.random(-1000, 1000)],
+          // randomize up/left/right, but not down
+          xy: [_.random(-500, 500), _.random(-100, -1000)],
           deg: _.random(-360, 360),
           rotateXY: [_.random(-500, 500), _.random(-1000, 1000)],
         })
