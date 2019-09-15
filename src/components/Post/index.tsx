@@ -122,21 +122,13 @@ const Post = memo(
       title: title,
     }
 
+    /** slowMo instance variable */
+    const slowMoRef: React.MutableRefObject<any> = useRef(false)
+
     /** All spring props, aka AnimatedValues */
     const [
       { xy, scale, deg, rotateXY, center, width, height, ...springProps },
       set,
-    ]: [
-      {
-        xy: Vector2
-        scale: number
-        deg: number
-        rotateXY: Vector2
-        center: Vector2
-        width: number
-        height: number
-      },
-      ReactSpring.SetUpdateFn<any>
     ] = useSpring(() => {
       return {
         from: {
@@ -289,12 +281,23 @@ const Post = memo(
 
       /** keypress event listener  */
       const handleKeyPress = (e: React.KeyboardEvent) => {
-        /** offset these based on `{props.index: number}` */
-        e.key === "r" && setTimeout(resetPos, index * 50)
-        e.key === "f" && setTimeout(fuckMyShitUpFam, index * 50)
-        e.key === "1" && set({ config: config.default })
-        e.key === "2" &&
-          set({ config: { ...config.molasses, mass: 10, friction: 400 } })
+        switch (e.key) {
+          /** ONLY SET CONFIG HERE!, otherwise it is config.default */
+          case "s":
+            slowMoRef.current = !slowMoRef.current
+            set({
+              config: slowMoRef.current
+                ? { ...config.molasses, mass: 10, friction: 400 }
+                : config.default,
+            })
+            return
+          case "r":
+            return setTimeout(resetPos, index * 50)
+          case "f":
+            return setTimeout(fuckMyShitUpFam, index * 50)
+          default:
+            return
+        }
       }
 
       /** add event listener */
