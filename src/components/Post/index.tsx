@@ -1,11 +1,12 @@
 import * as ReactDOM from "react-dom"
 import * as React from "react"
-import { useState, useEffect, memo, useRef } from "react"
+import { useEffect, memo, useRef } from "react"
 import _ from "lodash"
 import { Link } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
 import { Grid, Tooltip } from "@material-ui/core"
+import * as ReactSpring from "react-spring"
 import {
   animated,
   useSpring,
@@ -89,7 +90,7 @@ interface Props {
   excerpt: string
   tags: Array<string>
   id: string
-  image: { fluid: { any } }
+  image: { fluid: { any } } | { childImageSharp: { fluid: { any } } }
   index: number
   nodeType: string
   animatedStyles: AnimatedValue<any>
@@ -125,6 +126,17 @@ const Post = memo(
     const [
       { xy, scale, deg, rotateXY, center, width, height, ...springProps },
       set,
+    ]: [
+      {
+        xy: Vector2
+        scale: number
+        deg: number
+        rotateXY: Vector2
+        center: Vector2
+        width: number
+        height: number
+      },
+      ReactSpring.SetUpdateFn<any>
     ] = useSpring(() => {
       return {
         from: {
@@ -150,8 +162,6 @@ const Post = memo(
           width: 0,
           height: 0,
         },
-        // to: { ...FROM_STYLE },
-        config: config.wobbly,
       }
     })
 
@@ -159,13 +169,16 @@ const Post = memo(
      * ref
      * to access `getBoundingClientRect()`
      */
-    const ref = useRef(null)
+    const ref: React.MutableRefObject<any> = useRef(null)
+    /**
+     * update center / width / height
+     * on every render
+     */
     useEffect(() => {
       /**
        * Find own bounds & update spring props
        * @FIXME this doesn't update when 'transformXY' is applied
        */
-
       const bounds: BoundingClientRect = ReactDOM.findDOMNode(
         ref.current
       ).getBoundingClientRect()
@@ -177,13 +190,22 @@ const Post = memo(
       set({ center, width, height })
     })
 
+    /**
+     * bind all gesture handlers
+     *  @usage
+     * ```ts
+     * <Component
+     *   {...bind()}
+     * />
+     * ```
+     */
     const bind = useGesture(
       {
         /** drag */
         onDrag: ({ event, delta: [dX, dY], memo = xy.getValue() }) => {
           event.preventDefault()
 
-          const [mX, mY] = memo
+          const [mX, mY]: Vector2 = memo
           /**
            * movement (will be introduced in V6)
            * - memo + delta
@@ -237,11 +259,17 @@ const Post = memo(
         },
       }
     )
-    /**
-     * reset position
-     */
+
+    /** Attach keypress event listeners to the `window`*/
     useEffect(() => {
-      const resetPos = () => set({ xy: [0, 0], deg: 0, scale: 1 })
+      /** resets the Cards' position / orientation */
+      const resetPos = () =>
+        set({
+          xy: [0, 0],
+          deg: 0,
+          scale: 1,
+          rotateXY: [0, 0],
+        })
 
       /**
        * This function is dedicated to
@@ -256,12 +284,17 @@ const Post = memo(
         set({
           xy: [_.random(-500, 500), _.random(-1000, 1000)],
           deg: _.random(-360, 360),
-          config: { friction: 26 },
+          rotateXY: [_.random(-500, 500), _.random(-1000, 1000)],
         })
 
-      const handleKeyPress = e => {
-        e.key === "r" && resetPos()
-        e.key === "f" && fuckMyShitUpFam()
+      /** keypress event listener  */
+      const handleKeyPress = (e: React.KeyboardEvent) => {
+        /** offset these based on `{props.index: number}` */
+        e.key === "r" && setTimeout(resetPos, index * 50)
+        e.key === "f" && setTimeout(fuckMyShitUpFam, index * 50)
+        e.key === "1" && set({ config: config.default })
+        e.key === "2" &&
+          set({ config: { ...config.molasses, mass: 10, friction: 400 } })
       }
 
       /** add event listener */
