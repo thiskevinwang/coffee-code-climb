@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react"
+import React, { useRef, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config, interpolate } from "react-spring"
 import { useMove } from "react-use-gesture"
-import { ReactEventHandlers } from "react-use-gesture/dist/types"
 
 import styled from "styled-components"
 import _ from "lodash"
 
 import { svgZ } from "consts"
-import { setIsDarkMode, setShowTrail, setSlowMo, setVibrate } from "src/state"
+import { setIsDarkMode } from "src/state"
 import * as SVG from "src/svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
@@ -44,43 +43,35 @@ const translate2dVibrate = (x, y, size = 1) =>
   )}px,0) translate3d(-50%,-50%,0)`
 
 const Wrapper = ({ children }) => {
+  /** instance variables */
+  const slowMoRef = useRef(false)
+  const showTrailRef = useRef(false)
+  const vibrateRef = useRef(false)
+
   // Redux hooks
   const isDarkMode = useSelector(state => state.isDarkMode)
-  const showTrail = useSelector(state => state.showTrail)
-  const slowMo = useSelector(state => state.slowMo)
-  const vibrate = useSelector(state => state.vibrate)
-
   const dispatch = useDispatch()
-
   const dispatchSetIsDarkMode = useCallback(
     (state: boolean): void => dispatch(setIsDarkMode(state)),
-    []
-  )
-  const dispatchSetShowTrail = useCallback(
-    (state: boolean): void => dispatch(setShowTrail(state)),
-    []
-  )
-  const dispatchSetSetSlowMo = useCallback(
-    (state: boolean): void => dispatch(setSlowMo(state)),
-    []
-  )
-  const dispatchSetVibrate = useCallback(
-    (state: boolean): void => dispatch(setVibrate(state)),
     []
   )
 
   // https://www.react-spring.io/docs/hooks/use-trail
   const [trail, setTrail] = useTrail(SVGS.length, () => ({
     xy: [0, 0],
-    opacity: showTrail ? 1 : 0,
+    opacity: showTrailRef.current ? 1 : 0,
     background: isDarkMode
       ? `rgba(10, 10, 10, 0.3)`
       : `rgba(255, 255, 255, 0.5)`,
     border: isDarkMode ? `1px dotted black` : `1px dotted white`,
     padding: isDarkMode ? 0 : 1,
-    config: i => {
-      return configs[i]
-    },
+    /**
+     * Config ref-based logic needs to be specified here in the initial spring declaration.
+     * - Why?
+     *   - If the component rerenders (ex. subscriptions to redux store), this hook
+     * is re-evaluated, and falls back to `config.default` if not specified.
+     */
+    config: i => (slowMoRef.current ? config.molasses : configs[i]),
   }))
 
   useEffect(() => {
@@ -97,14 +88,11 @@ const Wrapper = ({ children }) => {
     ({ event }) => {
       setTrail({
         xy: [event.pageX, event.pageY],
-        opacity: showTrail ? 1 : 0,
+        opacity: showTrailRef.current ? 1 : 0,
         background: isDarkMode
           ? `rgba(10, 10, 10, 0.3)`
           : `rgba(255, 255, 255, 0.5)`,
         border: isDarkMode ? `1px dotted black` : `1px dotted white`,
-        config: i => {
-          return slowMo ? config.molasses : configs[i]
-        },
       })
     },
     { domTarget: typeof window !== "undefined" && window }
@@ -112,31 +100,44 @@ const Wrapper = ({ children }) => {
   useEffect(bindMoveGesture, [bindMoveGesture])
 
   useEffect(() => {
-    const handleKeyPress = e => {
+    const handleKeyPress = (e: React.KeyboardEvent) => {
       switch (e.key) {
-        case "s":
-          return dispatchSetSetSlowMo(!slowMo)
         case "d":
+          /** this will trigger a component rerender */
           return dispatchSetIsDarkMode(!isDarkMode)
+        case "s":
+          slowMoRef.current = !slowMoRef.current
+          /**
+           * Config needs to be updated here - for if an animation is still
+           * in-progress/lingering, but the `useMove` gesture has finished.
+           */
+          setTrail({
+            config: i => (slowMoRef.current ? config.molasses : configs[i]),
+          })
+          return
         case "t":
-          return dispatchSetShowTrail(!showTrail)
+          return (showTrailRef.current = !showTrailRef.current)
         case "v":
-          return dispatchSetVibrate(!vibrate)
+          return (vibrateRef.current = !vibrateRef.current)
         default:
           return
       }
     }
 
     typeof window !== "undefined" &&
-      (() => {
-        window.addEventListener("keypress", handleKeyPress)
-      })()
+      window.addEventListener("keypress", handleKeyPress)
 
     return () => {
       window.removeEventListener("keypress", handleKeyPress)
     }
-  }, [isDarkMode, showTrail, slowMo, vibrate])
+  }, [isDarkMode])
 
+  /**
+   * changes in ref.current values don't get reflected in `return`
+   * until the component rerenders
+   * @see vibrateRef
+   * @see dispatchSetIsDarkMode
+   */
   return (
     <div className="withSVGTrail--HOC">
       {trail.map((props, index) => (
@@ -151,9 +152,9 @@ const Wrapper = ({ children }) => {
             /** interpolate util method 2 */
             transform: interpolate(
               props.xy,
-              vibrate ? translate2dVibrate : translate2d
+              vibrateRef.current ? translate2dVibrate : translate2d
             ),
-            opacity: props.opacity.interpolate((x: number) => x),
+            // opacity: props.opacity.interpolate((x: number) => x),
             padding: props.padding
               .interpolate({
                 range: [0, 0.25, 0.5, 0.75, 1],

@@ -1,10 +1,12 @@
+import * as ReactDOM from "react-dom"
 import * as React from "react"
-import { useEffect, memo } from "react"
+import { useEffect, memo, useRef } from "react"
 import _ from "lodash"
 import { Link } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
 import { Grid, Tooltip } from "@material-ui/core"
+import * as ReactSpring from "react-spring"
 import {
   animated,
   useSpring,
@@ -18,9 +20,31 @@ import styled from "styled-components"
 import * as Colors from "consts/Colors"
 import { rhythm } from "src/utils/typography"
 
+type Vector2 = [number, number]
+/**
+ * Some util to calc mouse position relative to the center of an element
+ * @param {Vector2} mouseCoordinates
+ * @param {Vector2} centerCoordinates
+ * @return {Vector2}
+ *
+ * @TODO find better way to handle skinny-wide objects
+ */
+const calc = (
+  [mouseX, mouseY]: Vector2,
+  [centerX, centerY]: Vector2,
+  width: number,
+  height: number
+) => {
+  const xy = [
+    -((mouseY - centerY) / (width / 2)) * 20,
+    ((mouseX - centerX) / (height / 2)) * 10,
+  ]
+  return xy
+}
 /**
  * # FROM_STYLE
  * - starting animated-style
+ * - currently just used for boxShadow
  */
 const FROM_STYLE = {
   boxShadow: `0px 15px 30px -15px ${Colors.blackDark}`,
@@ -28,12 +52,14 @@ const FROM_STYLE = {
 /**
  * # MOUSEOVER_STYLE
  * - target animated-style
+ * - currently just used for boxShadow
  */
 const MOUSEOVER_STYLE = {
   boxShadow: `0px 17px 40px -13px ${Colors.blackDarker}`,
 }
 /**
  * # MOUSEDOWN_STYLE
+ * - currently just used for boxShadow
  */
 const MOUSEDOWN_STYLE = {
   boxShadow: `0px 15px 20px -17px ${Colors.blackDarker}`,
@@ -45,7 +71,16 @@ const Card = styled(animated.div)`
   /* This clips the square top corners of the child image */
   overflow: hidden;
 `
-
+type BoundingClientRect = {
+  bottom: number
+  height: number
+  left: number
+  right: number
+  top: number
+  width: number
+  x: number
+  y: number
+}
 interface Props {
   key: string
   linkTo: string
@@ -55,7 +90,7 @@ interface Props {
   excerpt: string
   tags: Array<string>
   id: string
-  image: { fluid: { any } }
+  image: { fluid: { any } } | { childImageSharp: { fluid: { any } } }
   index: number
   nodeType: string
   animatedStyles: AnimatedValue<any>
@@ -87,28 +122,101 @@ const Post = memo(
       title: title,
     }
 
-    const [{ xy, scale, deg, ...springProps }, set] = useSpring(() => {
+    /** slowMo instance variable */
+    const slowMoRef: React.MutableRefObject<any> = useRef(false)
+
+    /** All spring props, aka AnimatedValues */
+    const [
+      { xy, scale, deg, rotateXY, center, width, height, ...springProps },
+      set,
+    ] = useSpring(() => {
       return {
-        from: { ...FROM_STYLE, xy: [0, 0], scale: 1, deg: 0 },
-        // to: { ...FROM_STYLE },
-        config: config.wobbly,
+        from: {
+          ...FROM_STYLE,
+          xy: [0, 0],
+          scale: 1,
+          deg: 0,
+          /**
+           * rotateXY
+           * combines the values for:
+           * - rotateX
+           * - rotateY
+           * @see https://codesandbox.io/embed/rj998k4vmm
+           */
+          rotateXY: [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          /**
+           * center / width / height
+           * - this ges overwritten on mount
+           * - do not update/reset it
+           */
+          center: [69, 69],
+          width: 0,
+          height: 0,
+        },
       }
     })
+
+    /**
+     * ref
+     * to access `getBoundingClientRect()`
+     */
+    const ref: React.MutableRefObject<any> = useRef(null)
+    /**
+     * update center / width / height
+     * on every render
+     */
+    useEffect(() => {
+      /**
+       * Find own bounds & update spring props
+       * @FIXME this doesn't update when 'transformXY' is applied
+       */
+      const bounds: BoundingClientRect = ReactDOM.findDOMNode(
+        ref.current
+      ).getBoundingClientRect()
+      const center: Vector2 = [
+        bounds.x + bounds.width / 2,
+        bounds.y + bounds.height / 2,
+      ]
+      const { width, height } = bounds
+      set({ center, width, height })
+    })
+
+    /**
+     * bind all gesture handlers
+     *  @usage
+     * ```ts
+     * <Component
+     *   {...bind()}
+     * />
+     * ```
+     */
     const bind = useGesture(
       {
+        /** drag */
         onDrag: ({ event, delta: [dX, dY], memo = xy.getValue() }) => {
           event.preventDefault()
-          const [mX, mY] = memo
-          set({ xy: [mX + dX, mY + dY] })
+
+          const [mX, mY]: Vector2 = memo
+          /**
+           * movement (will be introduced in V6)
+           * - memo + delta
+           * @see https://github.com/react-spring/react-use-gesture/issues/45#issuecomment-531008361
+           */
+          const movement: Vector2 = [mX + dX, mY + dY]
+          set({
+            xy: movement,
+          })
           return memo
         },
-        onHover: ({ hovering }) => {
+        /** hover */
+        onHover: ({ hovering, ...hover }) => {
           set({
             ...(hovering ? MOUSEOVER_STYLE : FROM_STYLE),
-            scale: hovering ? 1.02 : 1,
           })
         },
-        onMove: ({ down, hovering, delta, memo = xy.getValue() }) => {
+        /** move */
+        onMove: ({ down, hovering, event, memo, last }) => {
           set({
             ...(down && hovering
               ? MOUSEDOWN_STYLE
@@ -116,23 +224,44 @@ const Post = memo(
               ? MOUSEOVER_STYLE
               : FROM_STYLE),
             scale: down ? 0.98 : hovering ? 1.02 : 1,
-            /** Turn this on for trolling */
-            // xy: addVectors(memo, delta),
+            rotateXY: hovering
+              ? calc(
+                  /**
+                   * when `last` is true, a synthetic event gets reused.
+                   * I'm not sure what those pageX/pageY are.
+                   *
+                   * So use the memoized values instead.
+                   */
+                  last ? memo : [event.pageX, event.pageY],
+                  center.getValue(),
+                  width.getValue(),
+                  height.getValue()
+                )
+              : [0, 0],
           })
+          /** return these to update `memo` */
+          return [event.pageX, event.pageY]
         },
       },
       {
         event: {
           passive: false,
-          // capture: true // this disables `onHover`
+          /** TRUE disables `onHover` */
+          capture: false,
         },
       }
     )
-    /**
-     * reset position
-     */
+
+    /** Attach keypress event listeners to the `window`*/
     useEffect(() => {
-      const resetPos = () => set({ xy: [0, 0], deg: 0 })
+      /** resets the Cards' position / orientation */
+      const resetPos = () =>
+        set({
+          xy: [0, 0],
+          deg: 0,
+          scale: 1,
+          rotateXY: [0, 0],
+        })
 
       /**
        * This function is dedicated to
@@ -145,17 +274,37 @@ const Post = memo(
        */
       const fuckMyShitUpFam = () =>
         set({
-          xy: [_.random(-500, 500), _.random(-1000, 1000)],
+          // randomize up/left/right, but not down
+          xy: [_.random(-500, 500), _.random(-100, -1000)],
           deg: _.random(-360, 360),
-          config: { friction: 26 },
+          rotateXY: [_.random(-500, 500), _.random(-1000, 1000)],
         })
 
-      const handleKeyPress = e => {
-        e.key === "r" && resetPos()
-        e.key === "f" && fuckMyShitUpFam()
+      /** keypress event listener  */
+      const handleKeyPress = (e: React.KeyboardEvent) => {
+        switch (e.key) {
+          /** ONLY SET CONFIG HERE!, otherwise it is config.default */
+          case "s":
+            slowMoRef.current = !slowMoRef.current
+            set({
+              config: slowMoRef.current
+                ? { ...config.molasses, mass: 10, friction: 400 }
+                : config.default,
+            })
+            return
+          case "r":
+            return setTimeout(resetPos, index * 50)
+          case "f":
+            return setTimeout(fuckMyShitUpFam, index * 50)
+          default:
+            return
+        }
       }
+
+      /** add event listener */
       typeof window !== undefined &&
         window.addEventListener("keypress", handleKeyPress)
+      /** clean up event listener*/
       return () => {
         window.removeEventListener("keypress", handleKeyPress)
       }
@@ -170,13 +319,14 @@ const Post = memo(
         xs={12}
       >
         <Card
+          ref={ref}
           className={"Card"}
           style={{
             ...springProps,
             transform: interpolate(
-              [xy, scale, deg],
-              ([x, y], scale, deg) =>
-                `scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg)`
+              [xy, scale, deg, rotateXY],
+              ([x, y], scale, deg, [rX, rY]) =>
+                `perspective(500px) scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg) rotateX(${rX}deg) rotateY(${rY}deg)`
             ),
           }}
           {...bind()}
