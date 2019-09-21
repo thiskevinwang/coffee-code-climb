@@ -51,8 +51,16 @@ module.exports = {
       options: {
         alias: {
           src: "src",
-          consts: "src/consts",
           components: "src/components",
+          consts: "src/consts",
+          css: "src/css",
+          fonts: "src/fonts",
+          hooks: "src/hooks",
+          pages: "src/pages",
+          state: "src/state",
+          svg: "src/svg",
+          templates: "src/templates",
+          utils: "src/utils",
         },
         extensions: [],
       },
