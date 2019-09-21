@@ -1,3 +1,7 @@
+/**
+ * @TODO
+ * deprecate this.
+ */
 export const styles = {
   bgLight: {
     background: "white",
