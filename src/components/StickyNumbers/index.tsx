@@ -9,14 +9,13 @@ import {
   AnimatedValue,
   OpaqueInterpolation,
 } from "react-spring"
-import { useScroll, useDrag, useHover, useGesture } from "react-use-gesture"
+import { useScroll, useHover, useGesture } from "react-use-gesture"
 import { ReactEventHandlers } from "react-use-gesture/dist/types"
-
-import styled, { css } from "styled-components"
+import styled from "styled-components"
 import _ from "lodash"
 
-import useIO from "../../hooks/useIO"
-import { rhythm, scale } from "src/utils/typography"
+import useIO from "hooks/useIO"
+import { rhythm } from "utils/typography"
 
 // TODO: FIX THE OVERFLOW FOR MOBILE
 const STICKY_STYLE = {

@@ -1,8 +1,8 @@
 import React from "react"
-import { rhythm, scale } from "src/utils/typography"
+import { rhythm } from "utils/typography"
 
-const GIT: string = "https://github.com/thiskevinwang/coffee-code-climb"
-const WEB: string = "https://thekevinwang.com"
+const GIT = "https://github.com/thiskevinwang/coffee-code-climb"
+const WEB = "https://thekevinwang.com"
 
 const footerStyle = {
   paddingTop: rhythm(2),
@@ -19,9 +19,7 @@ export default function Footer(): JSX.Element {
       <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
       <script
         async
-        src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${
-          process.env.GATSBY_AD_INSTANCE_ID
-        }`}
+        src={`//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US&adInstanceId=${process.env.GATSBY_AD_INSTANCE_ID}`}
       />
     </footer>
   )

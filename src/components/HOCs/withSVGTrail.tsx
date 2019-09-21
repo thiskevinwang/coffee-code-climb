@@ -2,13 +2,12 @@ import React, { useRef, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config, interpolate } from "react-spring"
 import { useMove } from "react-use-gesture"
-
 import styled from "styled-components"
 import _ from "lodash"
 
 import { svgZ } from "consts"
-import { setIsDarkMode } from "src/state"
-import * as SVG from "src/svg"
+import { setIsDarkMode } from "state"
+import * as SVG from "svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
 // SVG animation trail configs
@@ -52,7 +51,7 @@ const Wrapper = ({ children }) => {
   const isDarkMode = useSelector(state => state.isDarkMode)
   const dispatch = useDispatch()
   const dispatchSetIsDarkMode = useCallback(
-    (state: boolean): void => dispatch(setIsDarkMode(state)),
+    (state: boolean) => dispatch(setIsDarkMode(state)),
     []
   )
 

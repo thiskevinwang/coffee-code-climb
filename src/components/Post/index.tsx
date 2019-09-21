@@ -18,7 +18,7 @@ import { useGesture } from "react-use-gesture"
 import styled from "styled-components"
 
 import * as Colors from "consts/Colors"
-import { rhythm } from "src/utils/typography"
+import { rhythm } from "utils/typography"
 
 type Vector2 = [number, number]
 /**

@@ -1,8 +1,9 @@
 import React from "react"
 import styled, { css } from "styled-components"
 import { animated, useSpring } from "react-spring"
+import { useGesture } from "react-use-gesture"
 
-import { rhythm, scale } from "src/utils/typography"
+import { rhythm, scale } from "utils/typography"
 import * as Colors from "consts/Colors"
 
 /**
@@ -77,24 +78,17 @@ const Renderer = styled(animated.div)`
   }
 `
 export const Button = props => {
-  const [springProps, setSpringProps] = useSpring(() => ({
+  const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
   }))
+  const bind = useGesture({
+    onHover: ({ hovering }) => {
+      set(hovering ? MOUSEOVER_STYLE : FROM_STYLE)
+    },
+    onDrag: ({ down, hovering }) => {
+      set(down ? MOUSEDOWN_STYLE : hovering ? MOUSEOVER_STYLE : FROM_STYLE)
+    },
+  })
 
-  const updateStyles = stylesObject => e => {
-    setSpringProps({ ...stylesObject })
-  }
-
-  return (
-    <Renderer
-      {...props}
-      style={{ ...springProps }}
-      onMouseEnter={updateStyles(MOUSEOVER_STYLE)}
-      onMouseLeave={updateStyles(FROM_STYLE)}
-      onMouseDown={updateStyles(MOUSEDOWN_STYLE)}
-      onMouseUp={updateStyles(MOUSEOVER_STYLE)}
-      onTouchStart={updateStyles(MOUSEDOWN_STYLE)}
-      onTouchEnd={updateStyles(FROM_STYLE)}
-    />
-  )
+  return <Renderer {...props} style={{ ...springProps }} {...bind()} />
 }

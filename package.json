@@ -65,6 +65,8 @@
   },
   "devDependencies": {
     "@hot-loader/react-dom": "^16.9.0",
+    "@types/react-redux": "^7.1.2",
+    "@types/styled-components": "^4.1.19",
     "gatsby-plugin-tslint": "0.0.2",
     "prettier": "^1.17.1",
     "resize-observer-polyfill": "^1.5.1",

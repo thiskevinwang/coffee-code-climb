@@ -5,12 +5,12 @@ import sortBy from "lodash/sortBy"
 
 // Components
 import { Link, graphql } from "gatsby"
-import Bio from "../components/bio"
-import Layout from "../components/layout"
+import Bio from "components/bio"
+import Layout from "components/layout"
 // import SEO from "../components/seo"
 
 // Utilities
-import { rhythm } from "src/utils/typography"
+import { rhythm } from "utils/typography"
 
 const Tags = ({ pageContext, data, location }) => {
   const { tag } = pageContext
