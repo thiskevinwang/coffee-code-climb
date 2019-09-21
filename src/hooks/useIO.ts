@@ -32,18 +32,16 @@ export default function useIO(): [
    *
    * https://reactjs.org/docs/hooks-reference.html#lazy-initial-state
    */
-  let [io, setIo] = useState(null)
+  let [io] = useState(
+    () =>
+      typeof IntersectionObserver !== "undefined" &&
+      new IntersectionObserver(([entry], observer) => {
+        entry.isIntersecting
+          ? setIsIntersecting(true)
+          : setIsIntersecting(false)
+      }, defaultOptions)
+  )
 
-  useEffect(() => {
-    setIo(
-      () =>
-        new IntersectionObserver(([entry], observer) => {
-          entry.isIntersecting
-            ? setIsIntersecting(true)
-            : setIsIntersecting(false)
-        }, defaultOptions)
-    )
-  }, [])
   useEffect(() => {
     if (io) io.observe(ref.current)
 
