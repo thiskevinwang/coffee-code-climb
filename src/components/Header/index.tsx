@@ -1,8 +1,9 @@
-import React, { useState, useRef, useMemo, memo } from "react"
+import React, { useRef, useMemo, memo } from "react"
 import { Link } from "gatsby"
-import { rhythm, scale } from "src/utils/typography"
-import { useSpring, useTransition, useChain, a } from "react-spring"
+import { useTransition, useChain, a } from "react-spring"
 import uuid from "uuid/v4"
+
+import { rhythm, scale } from "utils/typography"
 
 function Header({ location, title }: { location: Location; title: string }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
