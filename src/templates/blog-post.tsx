@@ -1,12 +1,12 @@
-import React, { useState } from "react"
+import React from "react"
 import { Link, graphql } from "gatsby"
 import kebabCase from "lodash/kebabCase"
 
-import Bio from "../components/bio"
-import Layout from "../components/layout"
-import SEO from "../components/seo"
-import { rhythm, scale } from "src/utils/typography"
+import Bio from "components/bio"
+import Layout from "components/layout"
+import SEO from "components/seo"
 import { Discussion, PrevNextNavigation } from "components/TemplateComponents"
+import { rhythm, scale } from "utils/typography"
 
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark

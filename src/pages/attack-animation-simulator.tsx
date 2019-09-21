@@ -26,7 +26,7 @@ import uuid from "uuid"
 
 import Layout from "components/layout"
 import SEO from "components/seo"
-import { rhythm, scale } from "src/utils/typography"
+import { rhythm, scale } from "utils/typography"
 import { Button } from "components/Button"
 import * as Colors from "consts/Colors"
 

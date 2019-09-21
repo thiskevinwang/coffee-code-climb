@@ -2,17 +2,14 @@ import React from "react"
 import { useSelector } from "react-redux"
 import PropTypes from "prop-types"
 import styled from "styled-components"
-
-// Utilities
-import kebabCase from "lodash/kebabCase"
-import { rhythm } from "src/utils/typography"
-import { combineTagGroups } from "src/utils/combineTagGroups"
-
-// Components
 import { Link, graphql } from "gatsby"
-import Bio from "../components/bio"
-import Layout from "../components/layout"
-import SEO from "../components/seo"
+import kebabCase from "lodash/kebabCase"
+
+import { rhythm } from "utils/typography"
+import { combineTagGroups } from "utils/combineTagGroups"
+import Bio from "components/bio"
+import Layout from "components/layout"
+import SEO from "components/seo"
 
 const black = `rgba(20,20,20,0.8)`
 

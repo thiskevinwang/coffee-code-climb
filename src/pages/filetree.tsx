@@ -1,17 +1,16 @@
-import React, { memo, useState, useRef, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { graphql } from "gatsby"
-import styled, { createGlobalStyle } from "styled-components"
+import styled from "styled-components"
 import uuid from "uuid"
-
 import _ from "lodash"
 import * as moment from "moment"
 
 import * as Colors from "consts/Colors"
-import { rhythm } from "src/utils/typography"
-import Layout from "../components/layout"
-import SEO from "../components/seo"
-import { Icons, usePrevious, useMeasure, Tree } from "components/Pages/FileTree"
+import { rhythm } from "utils/typography"
+import Layout from "components/layout"
+import SEO from "components/seo"
+import { Tree } from "components/Pages/FileTree"
 
 // prettier-ignore
 const MOCK_DATA = [

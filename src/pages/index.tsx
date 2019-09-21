@@ -7,15 +7,14 @@ import { Grid } from "@material-ui/core"
 import { animated, useSpring, config } from "react-spring"
 import styled from "styled-components"
 
-import Bio from "../components/bio"
-import Layout from "../components/layout"
-import SEO from "../components/seo"
-import { Post } from "../components/Post"
-import { KEYWORDS } from "../consts"
-import { setShowBlogImage } from "../state"
-
-import { rhythm } from "src/utils/typography"
+import Bio from "components/bio"
+import Layout from "components/layout"
+import SEO from "components/seo"
+import { Post } from "components/Post"
+import { setShowBlogImage } from "state"
+import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
+import { KEYWORDS } from "consts"
 
 /**
  * # FROM_STYLE

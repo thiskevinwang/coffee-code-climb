@@ -1,10 +1,10 @@
 import Typography from "typography"
 import CodePlugin from "typography-plugin-code"
 import Wordpress2016 from "typography-theme-wordpress-2016"
-import * as Colors from "consts/Colors"
-import { store } from "src/state"
 
-import "src/css/typography.css"
+import * as Colors from "consts/Colors"
+import { store } from "state"
+import "css/typography.css"
 
 Wordpress2016.headerFontFamily = ["Cereal"]
 Wordpress2016.bodyFontFamily = ["Cereal"]
