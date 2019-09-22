@@ -46,9 +46,7 @@ export const onRouteUpdate = ({ location, prevLocation, ...rest }, plugins) => {
           location: location.href,
         },
       })
-      .then(result => {
-        console.log("CREATE_PAGE", result)
-      })
+      .then(result => {})
   } catch (err) {
     console.log("I think this page was already created:", err)
   }
