@@ -2,7 +2,6 @@ import React, { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated, config } from "react-spring"
 import { compose } from "redux"
-import { useQuery } from "@apollo/react-hooks"
 
 import {
   ButtonAndDrawer,
@@ -16,8 +15,7 @@ import { StickyNumbers } from "components/StickyNumbers"
 import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
 import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
-
-import { GET_PAGE } from "apollo"
+import { PageViewCounter } from "components/PageViewCounter"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
@@ -28,10 +26,6 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.css"
  */
 
 function Layout({ location, title, children }: Props) {
-  const { data, loading, error } = useQuery(GET_PAGE, {
-    variables: { id: 1, location: location.href },
-  })
-  // console.log("DA", data.getPage.attributes.views)
   const rootPath: string = `${__PATH_PREFIX__}/`
   const isDarkMode = useSelector(state => state.isDarkMode)
 
@@ -67,17 +61,9 @@ function Layout({ location, title, children }: Props) {
   return (
     <>
       <NavBar />
-      <small style={{ position: "sticky", top: 70, paddingLeft: 5 }}>
-        {loading
-          ? "..."
-          : error
-          ? "😵"
-          : data
-          ? `${data.getPage.attributes.views} ${
-              data.getPage.attributes.views === 1 ? "view" : "views"
-            }`
-          : "..."}
-      </small>
+
+      <PageViewCounter location={location} />
+
       {/* Background stuffs */}
       <>
         <div
