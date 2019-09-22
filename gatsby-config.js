@@ -50,6 +50,7 @@ module.exports = {
       resolve: `gatsby-plugin-alias-imports`,
       options: {
         alias: {
+          "*": "src/*",
           src: "src",
           apollo: "src/apollo",
           components: "src/components",
