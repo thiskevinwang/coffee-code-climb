@@ -51,6 +51,7 @@ module.exports = {
       options: {
         alias: {
           src: "src",
+          apollo: "src/apollo",
           components: "src/components",
           consts: "src/consts",
           css: "src/css",
