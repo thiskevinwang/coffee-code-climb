@@ -36,39 +36,26 @@ export const onClientEntry = async () => {
 
 // fires when arriving and leaving...
 export const onRouteUpdate = ({ location, prevLocation, ...rest }, plugins) => {
-  // console.log({ location })
+  /**
+   * shared vars for client mutations
+   */
+  const variables = { id: 1, location: location.href }
+
   try {
     client
       .mutate({
         mutation: CREATE_PAGE,
-        variables: {
-          id: 1,
-          location: location.href,
-        },
+        variables: variables,
       })
       .then(result => {})
   } catch (err) {
     console.log("I think this page was already created:", err)
   }
 
-  // client
-  //   .query({
-  //     query: GET_PAGE,
-  //     variables: {
-  //       id: 1,
-  //       location: location.href,
-  //     },
-  //   })
-  //   .then(result => {
-  //     console.log("GET_PAGE", result)
-  //   })
   client
     .mutate({
       mutation: INCREMENT_VIEWS,
-      variables: {
-        id: 1,
-        location: location.href,
-      },
+      variables: variables,
     })
     .then(result => {
       console.log(
