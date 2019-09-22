@@ -1,4 +1,6 @@
 import ApolloClient, { gql } from "apollo-boost"
+import { ApolloProvider } from "@apollo/react-hooks"
+import fetch from "isomorphic-fetch"
 
 /**
  * # token
@@ -19,6 +21,14 @@ const client = new ApolloClient({
   headers: {
     authorization: token ? `Bearer ${token}` : "",
   },
+  /**
+   * Issue with `fetch` during gatsby's build process
+   * https://github.com/gatsbyjs/gatsby/issues/3650#issuecomment-410146046
+   *
+   * > Whatever fetch apollo-boost uses does not work when Gatsby is compiling.
+   * > https://www.apollographql.com/docs/link/links/http/#fetch
+   */
+  fetch,
 })
 
 const GET_PAGE = gql`
@@ -59,4 +69,4 @@ const INCREMENT_VIEWS = gql`
   }
 `
 
-export { client, CREATE_PAGE, GET_PAGE, INCREMENT_VIEWS }
+export { ApolloProvider, client, CREATE_PAGE, GET_PAGE, INCREMENT_VIEWS }
