@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect } from "react"
 import { useSelector } from "react-redux"
-import { useSpring, animated, useTrail, config } from "react-spring"
-import styled, { css } from "styled-components"
+import { useSpring, animated, config } from "react-spring"
 import { compose } from "redux"
+import { useQuery } from "@apollo/react-hooks"
 
 import {
   ButtonAndDrawer,
@@ -11,70 +11,15 @@ import {
   styles,
   withSVGTrail,
   NavBar,
-} from "../components"
-import { StickyNumbers } from "../components/StickyNumbers"
-import { rhythm } from "src/utils/typography"
+} from "components"
+import { StickyNumbers } from "components/StickyNumbers"
+import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
-import { titleZ } from "consts"
+import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
+
+import { GET_PAGE } from "apollo"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
-
-/**
- * NOTE: on useSpring() interpolations
- * Make sure arrays passed to `range` & `output` are equal in length
- **/
-const LIGHT_GRADIENTS = [
-  `linear-gradient(0deg, #ffecde 0%, #ffd1ff 100%)`,
-  `linear-gradient(90deg, #ffccdd 0%, #fcb69f 100%)`,
-  `linear-gradient(0deg, #ff9a9e 0%, #fcb3ef 100%)`,
-  `linear-gradient(120deg, #ef8a8a 0%, #fda085 100%)`,
-  `linear-gradient(180deg, #a18cd1 0%, #fbc2eb 100%)`,
-]
-const DARK_GRADIENTS = [
-  `linear-gradient(-10deg, #21D4FD 0%, #B721FF 100%)`,
-  `linear-gradient(-5deg, #08AEEA 0%, #2AF598 100%)`,
-  `linear-gradient(0deg, #8EC5FC 0%, #E0C3FC 100%)`,
-  `linear-gradient(0deg, #9890e3 0%, #b1f4cf 100%)`,
-  `linear-gradient(0deg, #5ee7df 0%, #b490ca 100%)`,
-]
-
-const DottedBackground = styled.div`
-  background-image: -webkit-repeating-radial-gradient(
-    center center,
-    ${props =>
-      props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`},
-    ${props =>
-        props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`}
-      1px,
-    transparent 1px,
-    transparent 100%
-  );
-  background-image: -moz-repeating-radial-gradient(
-    center center,
-    rgba(0, 0, 0, 0.5),
-    rgba(0, 0, 0, 0.5) 1px,
-    transparent 1px,
-    transparent 100%
-  );
-  background-image: -ms-repeating-radial-gradient(
-    center center,
-    rgba(0, 0, 0, 0.5),
-    rgba(0, 0, 0, 0.5) 1px,
-    transparent 1px,
-    transparent 100%
-  );
-  background-image: repeating-radial-gradient(
-    center center,
-    rgba(0, 0, 0, 0.5),
-    rgba(0, 0, 0, 0.5) 1px,
-    transparent 1px,
-    transparent 100%
-  );
-  -webkit-background-size: 15px 15px;
-  -moz-background-size: 15px 15px;
-  background-size: 15px 15px;
-`
-const AnimatedDottedBackground = animated(DottedBackground)
 
 /** http://usejsdoc.org/tags-param.html
  * @param {string} props.title data.site.siteMetadata.title from graphql-pageQuery
@@ -83,6 +28,10 @@ const AnimatedDottedBackground = animated(DottedBackground)
  */
 
 function Layout({ location, title, children }: Props) {
+  const { data, loading, error } = useQuery(GET_PAGE, {
+    variables: { id: 1, location: location.href },
+  })
+  // console.log("DA", data.getPage.attributes.views)
   const rootPath: string = `${__PATH_PREFIX__}/`
   const isDarkMode = useSelector(state => state.isDarkMode)
 
@@ -118,6 +67,17 @@ function Layout({ location, title, children }: Props) {
   return (
     <>
       <NavBar />
+      <small style={{ position: "sticky", top: 70, paddingLeft: 5 }}>
+        {loading
+          ? "..."
+          : error
+          ? "😵"
+          : data
+          ? `${data.getPage.attributes.views} ${
+              data.getPage.attributes.views === 1 ? "view" : "views"
+            }`
+          : "..."}
+      </small>
       {/* Background stuffs */}
       <>
         <div
@@ -132,7 +92,9 @@ function Layout({ location, title, children }: Props) {
             ...styles.bg1,
             background: scrollY.percent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
-              output: isDarkMode ? DARK_GRADIENTS : LIGHT_GRADIENTS,
+              output: isDarkMode
+                ? Colors.DARK_GRADIENTS
+                : Colors.LIGHT_GRADIENTS,
             }),
             transform: scrollY.percent.interpolate({
               range: [0, 1],
