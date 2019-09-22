@@ -2,6 +2,7 @@ import * as React from "react"
 import { Provider } from "react-redux"
 
 import { store } from "./src/state"
+import { ApolloProvider, client } from "src/apollo"
 
 // NOTE:
 // For redux to cooperate with gatsby when running `npm run build`
@@ -9,5 +10,9 @@ import { store } from "./src/state"
 
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
-  return <Provider store={store}>{element}</Provider>
+  return (
+    <ApolloProvider client={client}>
+      <Provider store={store}>{element}</Provider>
+    </ApolloProvider>
+  )
 }

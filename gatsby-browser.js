@@ -6,11 +6,21 @@ import * as React from "react"
 import { Provider } from "react-redux"
 
 import { store } from "./src/state"
-import { client, CREATE_PAGE, GET_PAGE, INCREMENT_VIEWS } from "src/apollo"
+import {
+  ApolloProvider,
+  client,
+  CREATE_PAGE,
+  GET_PAGE,
+  INCREMENT_VIEWS,
+} from "src/apollo"
 
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
-  return <Provider store={store}>{element}</Provider>
+  return (
+    <ApolloProvider client={client}>
+      <Provider store={store}>{element}</Provider>
+    </ApolloProvider>
+  )
 }
 
 /**
