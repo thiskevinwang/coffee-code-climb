@@ -66,7 +66,6 @@ export const Tree = memo(
     const previous = usePrevious(isOpen)
 
     const [bind, { height: viewHeight }] = useMeasure()
-    console.log("viewHeight", viewHeight)
 
     const { height, opacity, transform } = useSpring({
       from: { height: 0, opacity: 0, transform: "translate3d(20px,0,0)" },
