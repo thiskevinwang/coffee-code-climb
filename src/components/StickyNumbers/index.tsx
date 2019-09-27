@@ -90,7 +90,6 @@ const StickyNumbers = () => {
   const [ro] = React.useState(
     () =>
       new ResizeObserver(([entry]: [ResizeObserverEntry]) => {
-        console.log(entry.target + " is resizing")
         setSentinelProps({
           height: Math.floor(entry.contentRect.height / DIVISIONS),
         })
@@ -221,7 +220,7 @@ const StickyNumbers = () => {
   const containerRef = React.useRef(null)
   const bindContainerProps = useHover(
     state => {
-      console.log(state)
+      // console.log(state)
       setIsHovering(state.hovering)
     },
     { domTarget: containerRef }
