@@ -22,7 +22,7 @@ const Bar = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  height: 70px;
+  height: 50px;
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
@@ -62,30 +62,7 @@ const NavBar = () => {
           dispatchSetIsDarkMode(!isDarkMode)
         }}
       >
-        <label>(Press D)</label>
         <span>{`Dark Mode`}</span>
-      </Button>
-      <Button
-        sm
-        textSm
-        isDarkMode={isDarkMode}
-        onClick={e => {
-          dispatchSetSetSlowMo(!slowMo)
-        }}
-      >
-        <label>(Press S)</label>
-        <span>{`Slow-Mo`}</span>
-      </Button>
-      <Button
-        sm
-        textSm
-        isDarkMode={isDarkMode}
-        onClick={e => {
-          dispatchSetShowTrail(!showTrail)
-        }}
-      >
-        <label>(Press T)</label>
-        <span>{`Icon Trail`}</span>
       </Button>
     </Bar>
   )
