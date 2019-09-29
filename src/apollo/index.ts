@@ -3,13 +3,6 @@ import { ApolloProvider } from "@apollo/react-hooks"
 import fetch from "isomorphic-fetch"
 
 /**
- * # token
- * An authorization token needed in the headers of mutations/queries
- * @see https://github.com/settings/tokens
- */
-const token = process.env.REACT_APP_GITHUB_TOKEN
-
-/**
  * # client
  * Initialize the client
  */
@@ -18,9 +11,6 @@ const client = new ApolloClient({
     process.env.NODE_ENV === "development"
       ? "http://localhost:4000/"
       : "https://graphql-server-example.thekevinwang.now.sh/",
-  headers: {
-    authorization: token ? `Bearer ${token}` : "",
-  },
   /**
    * Issue with `fetch` during gatsby's build process
    * https://github.com/gatsbyjs/gatsby/issues/3650#issuecomment-410146046
