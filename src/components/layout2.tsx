@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated, config } from "react-spring"
 import { compose } from "redux"
+import { Link } from "gatsby"
 
 import {
   ButtonAndDrawer,
@@ -25,28 +26,44 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
 function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
+  const topLinkText = location.pathname === rootPath ? title : "Go home"
+
   const isDarkMode = useSelector(state => state.isDarkMode)
 
-  const { background } = useSpring({
-    background: isDarkMode ? Colors.black : Colors.silver,
+  const { background, maxWidth } = useSpring({
+    background: isDarkMode ? Colors.black : Colors.silverLighter,
+    maxWidth: isDarkMode
+      ? rhythm(location.pathname === rootPath ? 36 : 24)
+      : rhythm(location.pathname === rootPath ? 48 : 24),
   })
   return (
     <animated.div
       style={{
-        overflowX: "hidden",
         background,
       }}
     >
-      <div
+      <animated.div
         style={{
           marginLeft: `auto`,
           marginRight: `auto`,
-          maxWidth: rhythm(location.pathname === rootPath ? 48 : 24),
+          maxWidth,
           padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
         }}
       >
+        <Link
+          to={`/`}
+          style={{
+            display: "flex",
+            flexFlow: "row wrap",
+            boxShadow: `none`,
+            textDecoration: `none`,
+            color: `inherit`,
+          }}
+        >
+          <h1>{topLinkText}</h1>
+        </Link>
         <main>{children}</main>
-      </div>
+      </animated.div>
     </animated.div>
   )
 }

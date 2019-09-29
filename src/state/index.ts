@@ -39,11 +39,17 @@ export const setShowBlogImage = (showBlogImage: boolean) =>
       showBlogImage,
     })
   )
-export const setLayoutVersion = (layoutVersion: string) => async (
+export const setLayoutVersion = (layoutVersion: "1" | "2" | "3") => async (
   dispatch,
   getState
 ) => {
   return dispatch({ type: SET_LAYOUT_VERSION, layoutVersion })
+}
+export const setPostsVersion = (postsVersion: "V1" | "V2" | "V3") => async (
+  dispatch,
+  getState
+) => {
+  return dispatch({ type: SET_POSTS_VERSION, postsVersion })
 }
 
 /**
@@ -54,6 +60,7 @@ const TOGGLE_TRAIL = "TOGGLE_TRAIL"
 const TOGGLE_SLOWMO = "TOGGLE_SLOWMO"
 const TOGGLE_BLOG_IMAGE = "TOGGLE_BLOG_IMAGE"
 const SET_LAYOUT_VERSION = "SET_LAYOUT_VERSION"
+const SET_POSTS_VERSION = "SET_POSTS_VERSION"
 
 /**
  * initialState
@@ -63,7 +70,8 @@ const initialState = {
   showTrail: false,
   slowMo: false,
   showBlogImage: true,
-  layoutVersion: "1",
+  layoutVersion: "2",
+  postsVersion: "V2",
 }
 
 /**
@@ -81,6 +89,8 @@ const reducer = (state = initialState, action: any) => {
       return { ...state, showBlogImage: action.showBlogImage }
     case SET_LAYOUT_VERSION:
       return { ...state, layoutVersion: action.layoutVersion }
+    case SET_POSTS_VERSION:
+      return { ...state, postsVersions: action.postsVersions }
     default:
       return state
   }

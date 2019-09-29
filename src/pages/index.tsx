@@ -3,15 +3,15 @@ import { useSelector, useDispatch } from "react-redux"
 import _ from "lodash"
 import moment from "moment"
 import { graphql } from "gatsby"
-import { Grid } from "@material-ui/core"
 import { animated, useSpring, config } from "react-spring"
 import styled from "styled-components"
 
 import Bio from "components/bio"
 import Layout from "components/layout"
 import { LayoutManager } from "components/layoutManager"
+import { PostsManager } from "components/PostsManager"
 import SEO from "components/seo"
-import { Post } from "components/Post"
+import * as Posts from "components/Posts"
 import { setShowBlogImage } from "state"
 import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
@@ -55,6 +55,10 @@ const BlogIndex = ({ data, location }) => {
   const siteTitle = data.site.siteMetadata.title
   const markdownPosts = data.allMarkdownRemark.edges
   const contentfulPosts = data.allContentfulBlogPost.edges
+  /**
+   * unsorted
+   */
+  const allPosts = [...markdownPosts, ...contentfulPosts]
 
   const showBlogImage = useSelector(state => state.showBlogImage)
   const dispatch = useDispatch()
@@ -105,39 +109,7 @@ const BlogIndex = ({ data, location }) => {
         {showBlogImage ? "hide images" : "show images"}
       </SpringButton>
 
-      <Grid container direction="row" spacing={4}>
-        {posts.map(({ node }, index) => {
-          const isMarkdownRemark = node.internal.type === `MarkdownRemark`
-          const isContentfulBlogPost =
-            node.internal.type === `ContentfulBlogPost`
-
-          const title =
-            node.internal.type === `MarkdownRemark` &&
-            (node.frontmatter.title || node.fields.slug)
-
-          return (
-            <Post
-              key={isMarkdownRemark ? node.fields.slug : node.slug}
-              linkTo={isMarkdownRemark ? node.fields.slug : node.slug}
-              date={isMarkdownRemark ? node.frontmatter.date : node.date}
-              title={isMarkdownRemark ? title : node.title}
-              description={
-                isMarkdownRemark
-                  ? node.frontmatter.description
-                  : node.description
-              }
-              excerpt={isMarkdownRemark ? node.excerpt : null}
-              tags={isMarkdownRemark ? node.frontmatter.tags : node.tags}
-              origin={isMarkdownRemark ? location.origin : null}
-              id={node.id}
-              image={isMarkdownRemark ? node.frontmatter.image : node.image}
-              index={index}
-              nodeType={node.internal.type}
-              showBlogImage={showBlogImage}
-            />
-          )
-        })}
-      </Grid>
+      <PostsManager allPosts={allPosts} />
     </LayoutManager>
   )
 }
