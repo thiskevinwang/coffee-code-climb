@@ -1,6 +1,6 @@
 import React from "react"
 import styled, { css } from "styled-components"
-import { animated, useSpring } from "react-spring"
+import { animated, useSpring, config } from "react-spring"
 import { useGesture } from "react-use-gesture"
 
 import { rhythm, scale } from "utils/typography"
@@ -20,7 +20,7 @@ const FROM_STYLE = {
  */
 const MOUSEOVER_STYLE = {
   boxShadow: `0px 17px 40px -13px ${Colors.blackDarker}`,
-  transform: `scale(1.01)`,
+  transform: `scale(1.1)`,
 }
 /**
  * # MOUSEDOWN_STYLE
@@ -37,6 +37,22 @@ interface Props {
   textSm: boolean
 }
 
+const Renderer = styled(animated.div)`
+  background: ${Colors.silverLighter};
+  border-radius: 5px;
+  font-size: ${props => props.textSm && `12px`};
+  line-height: 1.2;
+  display: inline-block;
+  text-align: center;
+  padding: ${rhythm(0.5)};
+  margin: 5px;
+  ${(props: Props) =>
+    props.isDarkMode &&
+    css`
+      background: ${Colors.blackLight};
+    `}
+`
+
 /**
  * # Button
  * A *not-too-shabbily* styled button
@@ -47,39 +63,14 @@ interface Props {
  *
  * ```jsx
  * <Button isDarkMode={isDarkMode} lg>
- *   <label>Press me</label>
  *   <span>we need span here for global style update</span>
  * </Button>
  * ```
  */
-const Renderer = styled(animated.div)`
-  background: ${Colors.silverLight};
-  border-radius: 5px;
-  font-size: ${props => props.textSm && `10px`};
-  line-height: 1.2;
-  display: inline-block;
-  text-align: center;
-  padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
-  margin: ${rhythm(0.5)};
-  width: ${(props: Props) =>
-    props.lg ? `600` : props.md ? `400` : props.sm ? `200` : `100`}px;
-
-  ${(props: Props) =>
-    props.isDarkMode &&
-    css`
-      background: ${Colors.blackLight};
-    `}
-
-  label {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    ${scale(-0.5)}
-  }
-`
 export const Button = props => {
   const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
+    config: config.stiff,
   }))
   const bind = useGesture({
     onHover: ({ hovering }) => {
