@@ -37,8 +37,13 @@ const GitHubPage = props => {
 
       <>
         {data.repository.stargazers.edges.map(
-          ({ node: { name, avatarUrl } }) => (
-            <img width={75} src={avatarUrl} style={{ borderRadius: `100%` }} />
+          ({ node: { name, avatarUrl } }, i) => (
+            <img
+              width={75}
+              src={avatarUrl}
+              style={{ borderRadius: `100%` }}
+              key={i}
+            />
           )
         )}
       </>
