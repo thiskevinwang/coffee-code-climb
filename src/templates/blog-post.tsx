@@ -4,6 +4,7 @@ import kebabCase from "lodash/kebabCase"
 
 import Bio from "components/bio"
 import Layout from "components/layout"
+import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { Discussion, PrevNextNavigation } from "components/TemplateComponents"
 import { rhythm, scale } from "utils/typography"
@@ -14,7 +15,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const { previous, next } = pageContext
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <LayoutManager location={location} title={siteTitle}>
       <SEO
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
@@ -59,7 +60,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         identifier={post.id}
         title={post.frontmatter.title}
       />
-    </Layout>
+    </LayoutManager>
   )
 }
 

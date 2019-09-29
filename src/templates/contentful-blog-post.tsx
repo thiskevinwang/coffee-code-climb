@@ -4,6 +4,7 @@ import kebabCase from "lodash/kebabCase"
 
 import Bio from "components/bio"
 import Layout from "components/layout"
+import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import {
   Discussion,
@@ -22,7 +23,7 @@ export default function ContentfulBlogPostTemplate({
   const { previous, next } = pageContext
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <LayoutManager location={location} title={siteTitle}>
       <SEO title={post.title} description={post.description} />
       <h1>{post.title}</h1>
 
@@ -68,7 +69,7 @@ export default function ContentfulBlogPostTemplate({
         identifier={post.id}
         title={post.title}
       />
-    </Layout>
+    </LayoutManager>
   )
 }
 

@@ -9,6 +9,7 @@ import styled from "styled-components"
 
 import Bio from "components/bio"
 import Layout from "components/layout"
+import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { Post } from "components/Post"
 import { setShowBlogImage } from "state"
@@ -87,7 +88,7 @@ const BlogIndex = ({ data, location }) => {
   )
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <LayoutManager location={location} title={siteTitle}>
       <SEO title="All posts" keywords={KEYWORDS} />
       <Bio />
 
@@ -137,7 +138,7 @@ const BlogIndex = ({ data, location }) => {
           )
         })}
       </Grid>
-    </Layout>
+    </LayoutManager>
   )
 }
 

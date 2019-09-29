@@ -32,12 +32,6 @@ export const setSlowMo = (slowMo: boolean) => {
     slowMo,
   }
 }
-export const setVibrate = (vibrate: boolean) => {
-  return {
-    type: TOGGLE_VIBRATE,
-    vibrate,
-  }
-}
 export const setShowBlogImage = (showBlogImage: boolean) =>
   new Promise((res, rej) =>
     res({
@@ -45,6 +39,12 @@ export const setShowBlogImage = (showBlogImage: boolean) =>
       showBlogImage,
     })
   )
+export const setLayoutVersion = (layoutVersion: string) => async (
+  dispatch,
+  getState
+) => {
+  return dispatch({ type: SET_LAYOUT_VERSION, layoutVersion })
+}
 
 /**
  * actionTypes
@@ -52,8 +52,8 @@ export const setShowBlogImage = (showBlogImage: boolean) =>
 const TOGGLE_DARKMODE = "TOGGLE_DARKMODE"
 const TOGGLE_TRAIL = "TOGGLE_TRAIL"
 const TOGGLE_SLOWMO = "TOGGLE_SLOWMO"
-const TOGGLE_VIBRATE = "TOGGLE_VIBRATE"
 const TOGGLE_BLOG_IMAGE = "TOGGLE_BLOG_IMAGE"
+const SET_LAYOUT_VERSION = "SET_LAYOUT_VERSION"
 
 /**
  * initialState
@@ -62,8 +62,8 @@ const initialState = {
   isDarkMode: false,
   showTrail: false,
   slowMo: false,
-  vibrate: false,
   showBlogImage: true,
+  layoutVersion: "1",
 }
 
 /**
@@ -77,10 +77,10 @@ const reducer = (state = initialState, action: any) => {
       return { ...state, showTrail: action.showTrail }
     case TOGGLE_SLOWMO:
       return { ...state, slowMo: action.slowMo }
-    case TOGGLE_VIBRATE:
-      return { ...state, vibrate: action.vibrate }
     case TOGGLE_BLOG_IMAGE:
       return { ...state, showBlogImage: action.showBlogImage }
+    case SET_LAYOUT_VERSION:
+      return { ...state, layoutVersion: action.layoutVersion }
     default:
       return state
   }
