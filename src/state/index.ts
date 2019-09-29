@@ -1,13 +1,24 @@
-import { createStore } from "redux"
+import { createStore, applyMiddleware } from "redux"
+
+import {
+  logger,
+  thunk,
+  timeoutScheduler,
+  readyStatePromise,
+  vanillaPromise,
+} from "./middleware"
 
 /**
  * action
  */
-export const setIsDarkMode = (isDarkMode: boolean) => {
-  return {
+export const setIsDarkMode = (isDarkMode: boolean) => async (
+  dispatch,
+  getState
+) => {
+  return dispatch({
     type: TOGGLE_DARKMODE,
     isDarkMode,
-  }
+  })
 }
 export const setShowTrail = (showTrail: boolean) => {
   return {
@@ -27,12 +38,13 @@ export const setVibrate = (vibrate: boolean) => {
     vibrate,
   }
 }
-export const setShowBlogImage = (showBlogImage: boolean) => {
-  return {
-    type: TOGGLE_BLOG_IMAGE,
-    showBlogImage,
-  }
-}
+export const setShowBlogImage = (showBlogImage: boolean) =>
+  new Promise((res, rej) =>
+    res({
+      type: TOGGLE_BLOG_IMAGE,
+      showBlogImage,
+    })
+  )
 
 /**
  * actionTypes
@@ -77,4 +89,14 @@ const reducer = (state = initialState, action: any) => {
 /**
  * store
  */
-export const store = createStore(reducer, initialState)
+export const store = createStore(
+  reducer,
+  initialState,
+  applyMiddleware(
+    logger,
+    thunk,
+    timeoutScheduler,
+    readyStatePromise,
+    vanillaPromise
+  )
+)
