@@ -46,11 +46,19 @@ const Renderer = styled(animated.div)`
   text-align: center;
   padding: ${rhythm(0.5)};
   margin: 5px;
+
   ${(props: Props) =>
     props.isDarkMode &&
     css`
       background: ${Colors.blackLight};
-    `}
+    `};
+
+  > label {
+    background: ${props =>
+      props.isDarkMode ? Colors.greyDarker : Colors.greyLighter};
+    padding: 5px 10px;
+    margin-left: 5px;
+  }
 `
 
 /**

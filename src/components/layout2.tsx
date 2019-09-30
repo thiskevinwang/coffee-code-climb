@@ -31,7 +31,7 @@ function Layout({ location, title, children }: Props) {
   const isDarkMode = useSelector(state => state.isDarkMode)
 
   const { background, maxWidth } = useSpring({
-    background: isDarkMode ? Colors.black : Colors.silverLighter,
+    background: isDarkMode ? Colors.blackDarker : Colors.silverLighter,
     maxWidth: isDarkMode
       ? rhythm(location.pathname === rootPath ? 36 : 24)
       : rhythm(location.pathname === rootPath ? 48 : 24),

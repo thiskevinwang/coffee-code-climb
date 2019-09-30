@@ -3,8 +3,8 @@ import { Link } from "gatsby"
 import styled, { css } from "styled-components"
 import { useSelector, useDispatch } from "react-redux"
 
-import { setIsDarkMode, setShowTrail, setSlowMo } from "src/state"
-import { rhythm } from "src/utils/typography"
+import { setIsDarkMode, setLayoutVersion, setPostsVersion } from "state"
+import { rhythm } from "utils/typography"
 import { Button } from "components/Button"
 import * as Colors from "consts/Colors"
 import { navbarZ, MUIBoxShadow } from "consts"
@@ -21,7 +21,7 @@ const Bar = styled.div`
   color: white;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: flex-end;
   height: 50px;
   position: -webkit-sticky;
   position: sticky;
@@ -36,19 +36,20 @@ const Bar = styled.div`
  */
 const NavBar = () => {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const { isDarkMode, slowMo, showTrail } = useSelector(state => state)
+  const { isDarkMode, layoutVersion } = useSelector(state => state)
+  const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
-    state => dispatch(setIsDarkMode(state)),
+    value => e => dispatch(setIsDarkMode(value)),
     []
   )
-  const dispatchSetSetSlowMo = useCallback(
-    state => dispatch(setSlowMo(state)),
+  const dispatchSetLayoutVersion = useCallback(
+    value => e => dispatch(setLayoutVersion(value)),
     []
   )
-  const dispatchSetShowTrail = useCallback(
-    state => dispatch(setShowTrail(state)),
+  const dispatchSetPostsVersion = useCallback(
+    value => e => dispatch(setPostsVersion(value)),
     []
   )
 
@@ -58,11 +59,25 @@ const NavBar = () => {
         sm
         textSm
         isDarkMode={isDarkMode}
-        onClick={e => {
-          dispatchSetIsDarkMode(!isDarkMode)
-        }}
+        onClick={dispatchSetIsDarkMode(!isDarkMode)}
       >
-        <span>{`Dark Mode`}</span>
+        <span>{`Dark Mode`}</span> <label>{isDarkMode ? "on" : "off"}</label>
+      </Button>
+      <Button
+        sm
+        textSm
+        isDarkMode={isDarkMode}
+        onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}
+      >
+        <span>{`Layout Version`}</span> <label>V{layoutVersion}</label>
+      </Button>
+      <Button
+        sm
+        textSm
+        isDarkMode={isDarkMode}
+        onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}
+      >
+        <span>{`Posts Version`}</span> <label>V{postsVersion}</label>
       </Button>
     </Bar>
   )

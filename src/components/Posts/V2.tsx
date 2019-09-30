@@ -1,13 +1,12 @@
-import * as ReactDOM from "react-dom"
-import * as React from "react"
-import { useEffect, memo, useRef } from "react"
+import React, { useEffect, memo, useRef, useState } from "react"
+import { useSelector } from "react-redux"
 import _ from "lodash"
 import { Link } from "gatsby"
 import * as ReactSpring from "react-spring"
 import {
   animated,
   useSpring,
-  AnimatedValue,
+  useChain,
   config,
   interpolate,
 } from "react-spring"
@@ -19,12 +18,12 @@ import * as Colors from "consts/Colors"
 import { rhythm } from "utils/typography"
 
 const Sentinel = styled(animated.div)`
-  border: 1px solid red;
-  height: 200vh;
+  /* border: 1px solid red; */
+  height: 100vh;
 `
 
-const Content = styled(animated.div)`
-  border: 1px solid blue;
+const ContentContainer = styled(animated.div)`
+  /* border: 1px solid blue; */
   margin: ${rhythm(2 / 3)};
   margin-left: auto;
   margin-right: auto;
@@ -33,6 +32,11 @@ const Content = styled(animated.div)`
   position: -webkit-sticky;
   transform: translateY(-50%);
   top: 50vh;
+`
+const InnerContent = styled(animated.div)``
+const InnerContainer = styled(animated.div)`
+  border-radius: 10px / 15px;
+  padding: ${rhythm(1)};
 `
 
 // To avoid <Post> rerenders when <BlogPostIndex> subscribes to redux
@@ -51,34 +55,97 @@ const V2 = memo(
     nodeType,
     showBlogImage,
   }) => {
+    const isDarkMode = useSelector(state => state.isDarkMode)
     const [isIntersecting, bind] = useIO({
       root: null,
       rootMargin: "0px",
-      threshold: 0.35,
+      threshold: [0.35],
+    })
+    const [didIntersect, setDidIntersect] = useState(false)
+    useEffect(() => {
+      if (isIntersecting) setDidIntersect(true)
+    }, [isIntersecting])
+
+    const springRef1 = useRef()
+    const { transform, background } = useSpring({
+      ref: springRef1,
+      from: {
+        background: isDarkMode ? Colors.black : Colors.silverLighter,
+        transform: "scale(0) translate3d(0%,0%,0px) rotate(900deg)",
+      },
+      to: {
+        background: isDarkMode ? Colors.black : Colors.silverLighter,
+        transform: didIntersect
+          ? `scale(1) translate3d(${_.random(-50, 50)}%,${_.random(
+              -50,
+              50
+            )}%,0px) rotate(0deg)`
+          : "scale(0) translate3d(0%,0%,0px) rotate(900deg)",
+      },
     })
 
+    const springRef2 = useRef()
+    const { opacity } = useSpring({
+      ref: springRef2,
+      config: config.stiff,
+      from: { opacity: 0 },
+      to: {
+        opacity: didIntersect ? 1 : 0,
+      },
+    })
+
+    useChain(
+      didIntersect ? [springRef1, springRef2] : [springRef2, springRef1],
+      [0, didIntersect ? 0.4 : 0.7]
+    )
     return (
       <Sentinel {...bind}>
-        {isIntersecting ? "inter" : "no"}
-        <Content>
-          <Link style={{ color: `inherit`, boxShadow: `none` }} to={linkTo}>
-            <h3
+        <animated.h1
+          style={{
+            opacity,
+            zIndex: -1,
+            color: isDarkMode ? Colors.greyDarker : Colors.greyLighter,
+            transform: `scale(2)`,
+            textAlign: `center`,
+          }}
+        >
+          {date}
+        </animated.h1>
+        <ContentContainer>
+          <InnerContainer
+            style={{
+              boxShadow: `0px 15px 30px -15px ${
+                isDarkMode ? Colors.silverDarker : Colors.blackDark
+              }`,
+              transform,
+              background,
+            }}
+          >
+            <InnerContent
               style={{
-                marginTop: rhythm(1 / 2),
-                marginBottom: rhythm(1 / 2),
+                opacity,
               }}
             >
-              {title}
-            </h3>
-            <small>{date}</small>
-            <br />
-            <small
-              dangerouslySetInnerHTML={{
-                __html: description || excerpt,
-              }}
-            />
-          </Link>
-        </Content>
+              <Link style={{ color: `inherit`, boxShadow: `none` }} to={linkTo}>
+                <h3
+                  style={{
+                    marginTop: rhythm(1 / 2),
+                    marginBottom: rhythm(1 / 2),
+                  }}
+                >
+                  {title}
+                </h3>
+                <small>{date}</small>
+                <br />
+                <small
+                  dangerouslySetInnerHTML={{
+                    __html: description || excerpt,
+                  }}
+                />
+              </Link>
+            </InnerContent>
+          </InnerContainer>
+        </ContentContainer>
       </Sentinel>
     )
   }

@@ -7,8 +7,8 @@ import { Grid } from "@material-ui/core"
 import * as Posts from "components/Posts"
 
 const PostsManager = ({ allPosts }) => {
-  const showBlogImage = useSelector(state => state.showBlogImage)
-  const postsVersion = useSelector(state => state.postsVersion)
+  const showBlogImage: boolean = useSelector(state => state.showBlogImage)
+  const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
    */
@@ -20,7 +20,7 @@ const PostsManager = ({ allPosts }) => {
     )
     return -date
   })
-  if (postsVersion === "V1")
+  if (postsVersion === 1)
     return (
       <Grid container direction="row" spacing={4}>
         {posts.map(({ node }, index) => {
@@ -56,7 +56,7 @@ const PostsManager = ({ allPosts }) => {
         })}
       </Grid>
     )
-  if (postsVersion === "V2")
+  if (postsVersion === 2)
     return posts.map(({ node }, index) => {
       const isMarkdownRemark = node.internal.type === `MarkdownRemark`
       const isContentfulBlogPost = node.internal.type === `ContentfulBlogPost`
@@ -89,34 +89,3 @@ const PostsManager = ({ allPosts }) => {
 }
 
 export { PostsManager }
-
-// <Grid container direction="row" spacing={4}>
-//   {posts.map(({ node }, index) => {
-//     const isMarkdownRemark = node.internal.type === `MarkdownRemark`
-//     const isContentfulBlogPost = node.internal.type === `ContentfulBlogPost`
-
-//     const title =
-//       node.internal.type === `MarkdownRemark` &&
-//       (node.frontmatter.title || node.fields.slug)
-
-//     return (
-//       <Post
-//         key={isMarkdownRemark ? node.fields.slug : node.slug}
-//         linkTo={isMarkdownRemark ? node.fields.slug : node.slug}
-//         date={isMarkdownRemark ? node.frontmatter.date : node.date}
-//         title={isMarkdownRemark ? title : node.title}
-//         description={
-//           isMarkdownRemark ? node.frontmatter.description : node.description
-//         }
-//         excerpt={isMarkdownRemark ? node.excerpt : null}
-//         tags={isMarkdownRemark ? node.frontmatter.tags : node.tags}
-//         origin={isMarkdownRemark ? location.origin : null}
-//         id={node.id}
-//         image={isMarkdownRemark ? node.frontmatter.image : node.image}
-//         index={index}
-//         nodeType={node.internal.type}
-//         showBlogImage={showBlogImage}
-//       />
-//     )
-//   })}
-// </Grid>
