@@ -109,7 +109,18 @@ const BlogIndex = ({ data, location }) => {
         {showBlogImage ? "hide images" : "show images"}
       </SpringButton>
 
-      <PostsManager allPosts={allPosts} />
+      <PostsManager
+        allPosts={allPosts}
+        /**
+         * **props.location** is only available in the `/pages` directory
+         * @TODO
+         * see if there's a way to create & hook into context, or some
+         * alternative to props-juggling this down to <PostsManager>
+         * - maybe react-router v5?
+         */
+        location={location}
+        title={siteTitle}
+      />
     </LayoutManager>
   )
 }

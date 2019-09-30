@@ -6,7 +6,7 @@ import { Grid } from "@material-ui/core"
 
 import * as Posts from "components/Posts"
 
-const PostsManager = ({ allPosts }) => {
+const PostsManager = ({ allPosts, location }) => {
   const showBlogImage: boolean = useSelector(state => state.showBlogImage)
   const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
   /**

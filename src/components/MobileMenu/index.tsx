@@ -71,7 +71,6 @@ export const MobileMenu = ({ defaultOpen = false }) => {
    * @usage where props normally go: `{...bind}`
    */
   const [bind, { height: viewHeight }] = useMeasure()
-  console.log("viewHeight", viewHeight)
 
   const { height, opacity, transform } = useSpring({
     from: {
