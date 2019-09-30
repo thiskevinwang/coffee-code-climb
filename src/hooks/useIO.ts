@@ -56,7 +56,7 @@ function useIO(
   const ref = useRef()
   const [isIntersecting, setIsIntersecting] = useState(false)
 
-  const defaultOptions = {
+  const defaultOptions: Options = {
     root: null,
     rootMargin: `-100px 0px 100%`,
     threshold: 0.99,

@@ -3,11 +3,17 @@ import { Link } from "gatsby"
 import styled, { css } from "styled-components"
 import { useSelector, useDispatch } from "react-redux"
 
-import { setIsDarkMode, setLayoutVersion, setPostsVersion } from "state"
+import {
+  setIsDarkMode,
+  setLayoutVersion,
+  setPostsVersion,
+  setShowMobileMenu,
+} from "state"
 import { rhythm } from "utils/typography"
 import { Button } from "components/Button"
+import { MobileMenu } from "components/MobileMenu"
 import * as Colors from "consts/Colors"
-import { navbarZ, MUIBoxShadow } from "consts"
+import { navbarZ } from "consts"
 
 /**
  * Bar
@@ -23,6 +29,27 @@ const Bar = styled.div`
   position: sticky;
   top: 0px;
   z-index: ${navbarZ};
+
+  /* for debugging */
+  ${process.env.NODE_ENV === "development" &&
+    css`
+      @media (max-width: 768px) {
+        /* background: rgba(255, 0, 0, 0.3); */
+      }
+      @media (min-width: 769px) {
+        /* background: rgba(0, 255, 0, 0.3); */
+      }
+    `}
+  @media (max-width: 768px) {
+    > .max_width_768 {
+      display: none;
+    }
+  }
+  @media (min-width: 769px) {
+    > .min_width_769 {
+      display: none;
+    }
+  }
 `
 
 /**
@@ -32,7 +59,9 @@ const Bar = styled.div`
  */
 const NavBar2 = () => {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const { isDarkMode, layoutVersion } = useSelector(state => state)
+  const { isDarkMode, layoutVersion, showMobileMenu } = useSelector(
+    state => state
+  )
   const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
   const dispatch = useDispatch()
 
@@ -48,33 +77,55 @@ const NavBar2 = () => {
     value => e => dispatch(setPostsVersion(value)),
     []
   )
+  const dispatchSetShowMobileMenu = useCallback(
+    value => e => dispatch(setShowMobileMenu(value)),
+    []
+  )
 
   return (
     <Bar isDarkMode={isDarkMode}>
-      <Button
-        sm
-        textSm
-        isDarkMode={isDarkMode}
-        onClick={dispatchSetIsDarkMode(!isDarkMode)}
+      <div className={"max_width_768"}>
+        <Button
+          sm
+          textSm
+          isDarkMode={isDarkMode}
+          onClick={dispatchSetIsDarkMode(!isDarkMode)}
+        >
+          <span>{`Dark Mode`}</span> <label>{isDarkMode ? "on" : "off"}</label>
+        </Button>
+        <Button
+          sm
+          textSm
+          isDarkMode={isDarkMode}
+          onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}
+        >
+          <span>{`Layout Version`}</span> <label>V{layoutVersion}</label>
+        </Button>
+        <Button
+          sm
+          textSm
+          isDarkMode={isDarkMode}
+          onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}
+        >
+          <span>{`Posts Version`}</span> <label>V{postsVersion}</label>
+        </Button>
+      </div>
+      <div
+        className={"min_width_769"}
+        style={{
+          textAlign: "right",
+        }}
       >
-        <span>{`Dark Mode`}</span> <label>{isDarkMode ? "on" : "off"}</label>
-      </Button>
-      <Button
-        sm
-        textSm
-        isDarkMode={isDarkMode}
-        onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}
-      >
-        <span>{`Layout Version`}</span> <label>V{layoutVersion}</label>
-      </Button>
-      <Button
-        sm
-        textSm
-        isDarkMode={isDarkMode}
-        onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}
-      >
-        <span>{`Posts Version`}</span> <label>V{postsVersion}</label>
-      </Button>
+        <Button
+          sm
+          textSm
+          isDarkMode={isDarkMode}
+          onClick={dispatchSetShowMobileMenu(!showMobileMenu)}
+        >
+          <span>{`Menu`}</span> <label>{showMobileMenu ? "-" : "+"}</label>
+        </Button>
+        <MobileMenu />
+      </div>
     </Bar>
   )
 }

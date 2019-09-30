@@ -19,7 +19,7 @@ import { rhythm } from "utils/typography"
 
 const Sentinel = styled(animated.div)`
   /* border: 1px solid red; */
-  height: 100vh;
+  height: 150vh;
 `
 
 const ContentContainer = styled(animated.div)`
@@ -71,23 +71,19 @@ const V2 = memo(
       ref: springRef1,
       from: {
         background: isDarkMode ? Colors.black : Colors.silverLighter,
-        transform: "scale(0) translate3d(0%,0%,0px) rotate(900deg)",
+        transform: "scale(0) rotate(900deg)",
       },
       to: {
         background: isDarkMode ? Colors.black : Colors.silverLighter,
         transform: didIntersect
-          ? `scale(1) translate3d(${_.random(-50, 50)}%,${_.random(
-              -50,
-              50
-            )}%,0px) rotate(0deg)`
-          : "scale(0) translate3d(0%,0%,0px) rotate(900deg)",
+          ? `scale(1) rotate(0deg)`
+          : "scale(0) rotate(900deg)",
       },
     })
 
     const springRef2 = useRef()
     const { opacity } = useSpring({
       ref: springRef2,
-      config: config.stiff,
       from: { opacity: 0 },
       to: {
         opacity: didIntersect ? 1 : 0,
@@ -98,15 +94,23 @@ const V2 = memo(
       didIntersect ? [springRef1, springRef2] : [springRef2, springRef1],
       [0, didIntersect ? 0.4 : 0.7]
     )
+
+    const dateProps = useSpring({
+      opacity: isIntersecting ? 1 : 0,
+      transform: isIntersecting ? `translateX(0%)` : `translateX(-100%)`,
+    })
     return (
       <Sentinel {...bind}>
         <animated.h1
           style={{
-            opacity,
-            zIndex: -1,
+            transform: dateProps.transform,
+            opacity: dateProps.opacity,
+            position: "fixed",
+            bottom: `15%`,
+            left: `15%`,
+            // zIndex: -1,
             color: isDarkMode ? Colors.greyDarker : Colors.greyLighter,
-            transform: `scale(2)`,
-            textAlign: `center`,
+            textAlign: ``,
           }}
         >
           {date}
