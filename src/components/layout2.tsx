@@ -1,8 +1,9 @@
 import React, { useEffect } from "react"
 import { useSelector } from "react-redux"
-import { useSpring, animated, config } from "react-spring"
+import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
 import { Link } from "gatsby"
+import { useScroll } from "react-use-gesture"
 
 import { withSVGTrail } from "components"
 import { NavBar2 } from "components/Layout2Components/NavBar2"
@@ -29,10 +30,35 @@ function Layout({ location, title, children }: Props) {
     maxWidth: rhythm(location.pathname === rootPath ? 36 : 24),
   })
 
+  const [{ scrollPercent }, setScrollProps] = useSpring(() => ({
+    scrollPercent: 0,
+  }))
+  const bindScrollGesture = useScroll(
+    state => {
+      const {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+      } = state.event.target.documentElement
+
+      // console.log(scrollTop / (scrollHeight - clientHeight))
+      setScrollProps({
+        scrollPercent: scrollTop / (scrollHeight - clientHeight),
+      })
+    },
+    { domTarget: typeof window !== "undefined" && window }
+  )
+  useEffect(bindScrollGesture, [bindScrollGesture])
+
   return (
     <animated.div
       style={{
-        background,
+        background: scrollPercent.interpolate({
+          range: [0, 1],
+          output: isDarkMode
+            ? [Colors.blackLighter, Colors.blackDarker]
+            : [Colors.silverLighter, Colors.silverDarker],
+        }),
       }}
     >
       <NavBar2 />

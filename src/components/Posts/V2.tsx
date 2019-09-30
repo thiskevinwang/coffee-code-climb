@@ -71,13 +71,11 @@ const V2 = memo(
       ref: springRef1,
       from: {
         background: isDarkMode ? Colors.black : Colors.silverLighter,
-        transform: "scale(0) rotate(900deg)",
+        transform: "scale(0)",
       },
       to: {
         background: isDarkMode ? Colors.black : Colors.silverLighter,
-        transform: didIntersect
-          ? `scale(1) rotate(0deg)`
-          : "scale(0) rotate(900deg)",
+        transform: didIntersect ? `scale(1)` : "scale(0)",
       },
     })
 
