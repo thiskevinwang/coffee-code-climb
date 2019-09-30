@@ -26,10 +26,9 @@ function Layout({ location, title, children }: Props) {
 
   const { background, maxWidth } = useSpring({
     background: isDarkMode ? Colors.blackDarker : Colors.silverLighter,
-    maxWidth: isDarkMode
-      ? rhythm(location.pathname === rootPath ? 36 : 24)
-      : rhythm(location.pathname === rootPath ? 48 : 24),
+    maxWidth: rhythm(location.pathname === rootPath ? 36 : 24),
   })
+
   return (
     <animated.div
       style={{
