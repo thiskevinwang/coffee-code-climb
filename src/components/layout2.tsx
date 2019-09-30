@@ -4,14 +4,8 @@ import { useSpring, animated, config } from "react-spring"
 import { compose } from "redux"
 import { Link } from "gatsby"
 
-import {
-  ButtonAndDrawer,
-  Footer,
-  Header,
-  styles,
-  withSVGTrail,
-  NavBar,
-} from "components"
+import { withSVGTrail } from "components"
+import { NavBar2 } from "components/Layout2Components/NavBar2"
 
 import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
@@ -42,6 +36,7 @@ function Layout({ location, title, children }: Props) {
         background,
       }}
     >
+      <NavBar2 />
       <animated.div
         style={{
           marginLeft: `auto`,
