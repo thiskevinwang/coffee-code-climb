@@ -98,7 +98,7 @@ interface Props {
 }
 // To avoid <Post> rerenders when <BlogPostIndex> subscribes to redux
 // state(like isDarkMode), add `memo()` here
-const Post = memo(
+const V1 = memo(
   ({
     linkTo,
     date,
@@ -417,4 +417,4 @@ const Post = memo(
   }
 )
 
-export { Post }
+export { V1 }

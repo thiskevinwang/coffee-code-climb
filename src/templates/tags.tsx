@@ -7,6 +7,7 @@ import sortBy from "lodash/sortBy"
 import { Link, graphql } from "gatsby"
 import Bio from "components/bio"
 import Layout from "components/layout"
+import { LayoutManager } from "components/layoutManager"
 // import SEO from "../components/seo"
 
 // Utilities
@@ -47,7 +48,7 @@ const Tags = ({ pageContext, data, location }) => {
   const siteTitle = data.site.siteMetadata.title
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <LayoutManager location={location} title={siteTitle}>
       <div
         style={{
           marginBottom: rhythm(1 / 4),
@@ -79,7 +80,7 @@ const Tags = ({ pageContext, data, location }) => {
         }}
       />
       <Bio />
-    </Layout>
+    </LayoutManager>
   )
 }
 

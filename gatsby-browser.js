@@ -35,14 +35,17 @@ export const onClientEntry = async () => {
 }
 
 // fires when arriving and leaving...
-export const onRouteUpdate = ({ location, prevLocation, ...rest }, plugins) => {
+export const onRouteUpdate = async (
+  { location, prevLocation, ...rest },
+  plugins
+) => {
   /**
    * shared vars for client mutations
    */
   const variables = { id: 1, location: location.href }
 
   try {
-    client
+    await client
       .mutate({
         mutation: CREATE_PAGE,
         variables: variables,

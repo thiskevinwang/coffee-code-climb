@@ -3,21 +3,13 @@
  * deprecate this.
  */
 export const styles = {
-  bgLight: {
-    background: "white",
-    zIndex: -5,
-  },
-  bgDark: {
-    background: `rgba(35,35,50)`,
-    zIndex: -5,
-  },
   mixed: {
-    transition: `background 150ms ease-in-out `,
     position: "fixed",
     top: 0,
     left: 0,
     minHeight: `100vh`,
     minWidth: `100vw`,
+    zIndex: -5,
   },
   bg1: {
     position: "fixed",

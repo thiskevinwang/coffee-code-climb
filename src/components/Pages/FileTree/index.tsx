@@ -10,7 +10,7 @@ import styled, { css } from "styled-components"
 import { useSpring, a, animated } from "react-spring"
 import * as Colors from "src/consts/Colors"
 
-import { useMeasure } from "../../../hooks/useMeasure"
+import { useMeasure } from "hooks/useMeasure"
 
 const MinusSquareO = props => (
   <svg {...props} viewBox="64 -65 897 897">
