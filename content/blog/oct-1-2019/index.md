@@ -1,5 +1,5 @@
 ---
-title: "Number Sundays on the First of the Month, in the 20th Century"
+title: "Number of Sundays on the First of the Month, in the 20th Century"
 date: "2019-10-01T00:57:16.192Z"
 description: "Revisiting a coding interview question that I failed, 6 months ago."
 tags:
