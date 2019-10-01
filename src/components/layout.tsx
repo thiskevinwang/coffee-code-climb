@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated, config } from "react-spring"
+import { useScroll } from "react-use-gesture"
 import { compose } from "redux"
 
 import {
@@ -43,23 +44,22 @@ function Layout({ location, title, children }: Props) {
     config: { ...config.molasses, clamp: true },
   }))
 
-  // Attach scroll event listener to window when <Layout /> mounts
-  useEffect(() => {
-    const handleScroll = () => {
+  const bindScrollGesture = useScroll(
+    state => {
+      const {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+      } = state.event.target.documentElement
+
+      // console.log(scrollTop / (scrollHeight - clientHeight))
       setScrollY({
-        percent:
-          window.pageYOffset /
-          (document.documentElement.scrollHeight - window.innerHeight),
+        percent: scrollTop / (scrollHeight - clientHeight),
       })
-    }
-
-    typeof window !== "undefined" &&
-      window.addEventListener("scroll", handleScroll)
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
+    },
+    { domTarget: typeof window !== "undefined" && window }
+  )
+  useEffect(bindScrollGesture, [bindScrollGesture])
 
   return (
     <>

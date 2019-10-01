@@ -31,7 +31,7 @@ const ContentContainer = styled(animated.div)`
   position: sticky;
   position: -webkit-sticky;
   transform: translateY(-50%);
-  top: 50vh;
+  top: 50%;
 `
 const InnerContent = styled(animated.div)``
 const InnerContainer = styled(animated.div)`
