@@ -20,6 +20,7 @@ Wordpress2016.overrideThemeStyles = () => {
       boxShadow: `none`,
     },
     h1: {
+      fontFamily: "Cereal",
       fontWeight: 900,
     },
     h2: {
@@ -40,8 +41,39 @@ Wordpress2016.overrideThemeStyles = () => {
     p: {
       fontWeight: 300,
     },
-    "h1, h2, h3, h4, h5, h6, p, label, span, li": {
+    "h1, h2, h3, h4, h5, h6, p, label, span, li, td, th, summary": {
       color: isDarkMode ? Colors.silverLight : Colors.blackDark,
+    },
+    "th, td": {
+      borderBottomColor: isDarkMode ? Colors.greyDarker : Colors.greyLighter,
+    },
+    "th:first-child, td:first-child": {
+      borderLeft: `10px solid ${
+        isDarkMode ? Colors.greyDarker : Colors.greyLighter
+      }`,
+      paddingLeft: "10px",
+    },
+    // details "closed" styling
+    details: {
+      borderRadius: `5px`,
+      paddingTop: `1px`,
+      paddingLeft: `9px`,
+      paddingRight: `9px`,
+    },
+    "details[open]": {
+      paddingTop: `0px`,
+      paddingLeft: `8px`,
+      paddingRight: `8px`,
+      border: `1px dashed ${isDarkMode ? Colors.greyLighter : Colors.grey}`,
+    },
+    // indent <ul> & <ol> inside details
+    "details > ul, details > ol": {
+      marginLeft: `23px`,
+    },
+    "a.anchor": {
+      // float: "none",
+      // marginLeft: "auto",
+      boxShadow: "none",
     },
     small: {
       color: isDarkMode ? Colors.greyLighter : Colors.grey,

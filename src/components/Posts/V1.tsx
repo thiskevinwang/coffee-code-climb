@@ -35,10 +35,9 @@ const calc = (
   width: number,
   height: number
 ) => {
-  const xy = [
-    -((mouseY - centerY) / (width / 2)) * 20,
-    ((mouseX - centerX) / (height / 2)) * 10,
-  ]
+  const x = -((mouseY - centerY) / (width / 2)) * 20
+  const y = ((mouseX - centerX) / (height / 2)) * 10
+  const xy = [_.clamp(x, -10, 10), _.clamp(y, -10, 10)]
   return xy
 }
 /**
