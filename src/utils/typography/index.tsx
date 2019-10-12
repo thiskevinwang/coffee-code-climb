@@ -47,6 +47,29 @@ Wordpress2016.overrideThemeStyles = () => {
     "th, td": {
       borderBottomColor: isDarkMode ? Colors.greyDarker : Colors.greyLighter,
     },
+    "th:first-child, td:first-child": {
+      borderLeft: `10px solid ${
+        isDarkMode ? Colors.greyDarker : Colors.greyLighter
+      }`,
+      paddingLeft: "10px",
+    },
+    // details "closed" styling
+    details: {
+      borderRadius: `5px`,
+      paddingTop: `1px`,
+      paddingLeft: `9px`,
+      paddingRight: `9px`,
+    },
+    "details[open]": {
+      paddingTop: `0px`,
+      paddingLeft: `8px`,
+      paddingRight: `8px`,
+      border: `1px dashed ${isDarkMode ? Colors.greyLighter : Colors.grey}`,
+    },
+    // indent <ul> & <ol> inside details
+    "details > ul, details > ol": {
+      marginLeft: `23px`,
+    },
     "a.anchor": {
       // float: "none",
       // marginLeft: "auto",
