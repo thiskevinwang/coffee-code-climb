@@ -20,6 +20,7 @@ Wordpress2016.overrideThemeStyles = () => {
       boxShadow: `none`,
     },
     h1: {
+      fontFamily: "Cereal",
       fontWeight: 900,
     },
     h2: {
@@ -40,8 +41,16 @@ Wordpress2016.overrideThemeStyles = () => {
     p: {
       fontWeight: 300,
     },
-    "h1, h2, h3, h4, h5, h6, p, label, span, li": {
+    "h1, h2, h3, h4, h5, h6, p, label, span, li, td, th, summary": {
       color: isDarkMode ? Colors.silverLight : Colors.blackDark,
+    },
+    "th, td": {
+      borderBottomColor: isDarkMode ? Colors.greyDarker : Colors.greyLighter,
+    },
+    "a.anchor": {
+      // float: "none",
+      // marginLeft: "auto",
+      boxShadow: "none",
     },
     small: {
       color: isDarkMode ? Colors.greyLighter : Colors.grey,
