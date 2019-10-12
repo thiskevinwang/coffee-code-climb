@@ -218,22 +218,113 @@ run [options] [-v VOLUME...] [-p PORT...] [-e KEY=VAL...] [-l KEY=VALUE...] SERV
 
 Runs a one-time command against a service.
 
-The following command instructs Compose to run `django-admin startproject exampleproj` in a container, using the `web` service's image and configuration.
+The following command instructs Compose to run `django-admin startproject composeexample` in a container, using the `web` service's image and configuration.
 
 Because the `web` image doesn't exist yet, Compose builds it from the current directory, as specified by the `build: .` line in `docker-compose.yml`
 
 </details>
 
 ```bash
-sudo docker-compose run web django-admin startproject exampleproj .
+sudo docker-compose run web django-admin startproject composeexample .
 #                       [SERVICE]
 #                       web
 #                           [COMMAND]
-#                           django-admin startproject exampleproj
-#                           - "create a project called exampleproj"
+#                           django-admin startproject composeexample
+#                           - "create a project called composeexample"
 #                                                                 [ARGS]
 #                                                                 .
 ```
+
+<details>
+  <summary>Sample Terminal Log</summary>
+
+```
+~/r/docker-compose-django $
+~/r/docker-compose-django $ touch Dockerfile
+~/r/docker-compose-django $ vim Dockerfile
+~/r/docker-compose-django $ touch requirements.txt
+~/r/docker-compose-django $ vim requirements.txt
+~/r/docker-compose-django $ touch docker-compose.yml
+~/r/docker-compose-django $ vim docker-compose.yml
+~/r/docker-compose-django $ sudo docker-compose run web django-admin startproject composeexample .
+Password:
+Creating network "docker-compose-django_default" with the default driver
+Pulling db (postgres:)...
+latest: Pulling from library/postgres
+b8f262c62ec6: Pull complete
+fe6da876d968: Pull complete
+46b9d53972f5: Pull complete
+23a11bddcc75: Pull complete
+d6744ba78bdc: Pull complete
+8d95423a7aa9: Pull complete
+8590ba4183e5: Pull complete
+ed97b9b8e039: Pull complete
+d9b574d4da1e: Pull complete
+04119344259c: Pull complete
+774edf2116fc: Pull complete
+2d839f35fc94: Pull complete
+77d2dd4efe0a: Pull complete
+22c5d24859af: Pull complete
+Digest: sha256:3dbb3cb945dfe0316dcdd3a75e8a3c6192ce30f87a9952f285b9ba2f02b81982
+Status: Downloaded newer image for postgres:latest
+Creating docker-compose-django_db_1 ... done
+Building web
+Step 1/7 : FROM python:3
+3: Pulling from library/python
+4a56a430b2ba: Pull complete
+4b5cacb629f5: Pull complete
+14408c8d4f9a: Pull complete
+ea67eaa7dd42: Pull complete
+4d134ac3fe4b: Pull complete
+4c55f6f5d7f0: Pull complete
+6ae475e50652: Pull complete
+6f4152644229: Pull complete
+6933d3d46042: Pull complete
+Digest: sha256:9455815814cd05da0fe73fba64dbed5a3dcb582c757b6c7591c49178c3a4398c
+Status: Downloaded newer image for python:3
+ ---> 02d2bb146b3b
+Step 2/7 : ENV PYTHONUNBUFFERED 1
+ ---> Running in 4eb161cc1ff9
+Removing intermediate container 4eb161cc1ff9
+ ---> c47637decb35
+Step 3/7 : RUN mkdir /code
+ ---> Running in dac0b2776f8c
+Removing intermediate container dac0b2776f8c
+ ---> 906b1e10b143
+Step 4/7 : WORKDIR /code
+ ---> Running in 19cecd5bb2d9
+Removing intermediate container 19cecd5bb2d9
+ ---> 606becca4aea
+Step 5/7 : COPY requirements.txt /code/
+ ---> 98b4d6c6d83e
+Step 6/7 : RUN pip install -r requirements.txt
+ ---> Running in 61c6a6b94003
+Collecting Django<3.0,>=2.0 (from -r requirements.txt (line 1))
+  Downloading https://files.pythonhosted.org/packages/b2/79/df0ffea7bf1e02c073c2633702c90f4384645c40a1dd09a308e02ef0c817/Django-2.2.6-py3-none-any.whl (7.5MB)
+Collecting psycopg2<3.0,>=2.7 (from -r requirements.txt (line 2))
+  Downloading https://files.pythonhosted.org/packages/5c/1c/6997288da181277a0c29bc39a5f9143ff20b8c99f2a7d059cfb55163e165/psycopg2-2.8.3.tar.gz (377kB)
+Collecting sqlparse (from Django<3.0,>=2.0->-r requirements.txt (line 1))
+  Downloading https://files.pythonhosted.org/packages/ef/53/900f7d2a54557c6a37886585a91336520e5539e3ae2423ff1102daf4f3a7/sqlparse-0.3.0-py2.py3-none-any.whl
+Collecting pytz (from Django<3.0,>=2.0->-r requirements.txt (line 1))
+  Downloading https://files.pythonhosted.org/packages/e7/f9/f0b53f88060247251bf481fa6ea62cd0d25bf1b11a87888e53ce5b7c8ad2/pytz-2019.3-py2.py3-none-any.whl (509kB)
+Building wheels for collected packages: psycopg2
+  Building wheel for psycopg2 (setup.py): started
+  Building wheel for psycopg2 (setup.py): finished with status 'done'
+  Created wheel for psycopg2: filename=psycopg2-2.8.3-cp37-cp37m-linux_x86_64.whl size=465788 sha256=6d3889e010861b408ec9cc225ca637438d0394685fd4ae5daf324eb79e671eb7
+  Stored in directory: /root/.cache/pip/wheels/48/06/67/475967017d99b988421b87bf7ee5fad0dad789dc349561786b
+Successfully built psycopg2
+Installing collected packages: sqlparse, pytz, Django, psycopg2
+Successfully installed Django-2.2.6 psycopg2-2.8.3 pytz-2019.3 sqlparse-0.3.0
+Removing intermediate container 61c6a6b94003
+ ---> febdc392632b
+Step 7/7 : COPY . /code/
+ ---> e17ab833112b
+Successfully built e17ab833112b
+Successfully tagged docker-compose-django_web:latest
+WARNING: Image for service web was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+```
+
+</details>
 
 ### Connect the database
 
@@ -256,6 +347,39 @@ docker-compose up [options] [--scale SERVICE=NUM...] [SERVICE...]
 docker-compose up
 ```
 
+<details>
+  <summary>Sample Terminal Log</summary>
+
+```
+~/r/docker-compose-django $ docker-compose up                                                                               11:59:26
+Starting docker-compose-django_db_1 ... done
+Recreating docker-compose-django_web_1 ... done
+Attaching to docker-compose-django_db_1, docker-compose-django_web_1
+db_1   | 2019-10-12 15:59:45.658 UTC [1] LOG:  starting PostgreSQL 12.0 (Debian 12.0-2.pgdg100+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit
+db_1   | 2019-10-12 15:59:45.658 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db_1   | 2019-10-12 15:59:45.658 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db_1   | 2019-10-12 15:59:45.661 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db_1   | 2019-10-12 15:59:45.674 UTC [25] LOG:  database system was interrupted; last known up at 2019-10-12 15:59:09 UTC
+db_1   | 2019-10-12 15:59:45.761 UTC [25] LOG:  database system was not properly shut down; automatic recovery in progress
+db_1   | 2019-10-12 15:59:45.763 UTC [25] LOG:  redo starts at 0/1645598
+db_1   | 2019-10-12 15:59:45.763 UTC [25] LOG:  invalid record length at 0/16455D0: wanted 24, got 0
+db_1   | 2019-10-12 15:59:45.763 UTC [25] LOG:  redo done at 0/1645598
+db_1   | 2019-10-12 15:59:45.773 UTC [1] LOG:  database system is ready to accept connections
+web_1  | Watching for file changes with StatReloader
+web_1  | Performing system checks...
+web_1  |
+web_1  | System check identified no issues (0 silenced).
+web_1  |
+web_1  | You have 17 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.
+web_1  | Run 'python manage.py migrate' to apply them.
+web_1  | October 12, 2019 - 15:59:47
+web_1  | Django version 2.2.6, using settings 'composeexample.settings'
+web_1  | Starting development server at http://0.0.0.0:8000/
+web_1  | Quit the server with CONTROL-C.
+```
+
+</details>
+
 ### Stop your Django Project
 
 <details>
@@ -271,4 +395,37 @@ docker-compose down [options]
 
 ```bash
 docker-compose down
+# ctrl + c
 ```
+
+#### 17 unapplied migration(s)?
+
+```bash
+docker-compose run python manage.py migrate
+# ERROR: No such service: python
+```
+
+```bash
+docker-compose run web python manage.py migrate
+# Starting docker-compose-django_db_1 ... done
+# Operations to perform:
+#   Apply all migrations: admin, auth, contenttypes, sessions
+# Running migrations:
+#   Applying contenttypes.0001_initial... OK
+#   Applying auth.0001_initial... OK
+#   Applying admin.0001_initial... OK
+#   Applying admin.0002_logentry_remove_auto_add... OK
+#   Applying admin.0003_logentry_add_action_flag_choices... OK
+#   Applying contenttypes.0002_remove_content_type_name... OK
+#   Applying auth.0002_alter_permission_name_max_length... OK
+#   Applying auth.0003_alter_user_email_max_length... OK
+#   Applying auth.0004_alter_user_username_opts... OK
+#   Applying auth.0005_alter_user_last_login_null... OK
+#   Applying auth.0006_require_contenttypes_0002... OK
+#   Applying auth.0007_alter_validators_add_error_messages... OK
+#   Applying auth.0008_alter_user_username_max_length... OK
+#   Applying auth.0009_alter_user_last_name_max_length... OK
+#   Applying auth.0010_alter_group_name_max_length... OK
+```
+
+## To be continued...
