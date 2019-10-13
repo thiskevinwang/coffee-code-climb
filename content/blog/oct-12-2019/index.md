@@ -428,4 +428,21 @@ docker-compose run web python manage.py migrate
 #   Applying auth.0010_alter_group_name_max_length... OK
 ```
 
-## To be continued...
+#### Recap: "Anatomy of a docker-compose command"
+
+```bash
+docker-compose run web python manage.py migrate
+├ [base]
+  # docker-compose run
+                   ├ [service]
+                   # web
+                   # ...see docker-compose.yml
+                       ├ [command]
+                       # python manage.py migrate
+```
+
+#### Recap: "Where are my containers?"
+
+```bash
+docker ps
+```
