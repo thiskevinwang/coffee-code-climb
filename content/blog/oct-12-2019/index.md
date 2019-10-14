@@ -11,7 +11,7 @@ Notes & Commands from my first _real_ attempt at learning Docker (...but I proba
 ### List Containers
 
 <details>
-  <summary>Syntax</summary>
+  <summary><code>docker ps</code> syntax</summary>
 
 ```
 docker ps [OPTIONS]
@@ -31,7 +31,7 @@ docker ps
 ### List Docker Images
 
 <details>
-  <summary>Syntax</summary>
+  <summary><code>docker images</code> syntax</summary>
 
 ```
 docker images [OPTIONS] [REPOSITORY[:TAG]]
@@ -52,7 +52,7 @@ docker images
 ### Pull an image or a repository from a registry
 
 <details>
-  <summary>Syntax</summary>
+  <summary><code>docker pull</code> syntax</summary>
 
 ```
 docker pull [OPTIONS] NAME[:TAG|@DIGEST]
@@ -71,7 +71,7 @@ docker pull amazon/dynamodb-local
 ### Run a command in a new container
 
 <details>
-  <summary>Syntax</summary>
+  <summary><code>docker run</code> syntax</summary>
 
 ```
 docker run [OPTIONS] IMAGE [COMMAND][arg...]
@@ -83,18 +83,144 @@ docker run [OPTIONS] IMAGE [COMMAND][arg...]
 
 ```bash
 docker run -p 8000:8000 amazon/dynamodb-local
-#          [Options]
-#          -p Host:Container
-#                       [Image]
-#                       amazon/dynamodb-local
+           ├ [Options]
+           # -p (Host:Container)
+                        ├ [Image]
+                        # amazon/dynamodb-local
 ```
 
-#### `docker run` options
+<details>
+  <summary><code>docker run</code> options</summary>
 
 | Name, shorthand    | Default | Description                                                                                                                            |
 | :----------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------- |
 | `--publish` , `-p` |         | Publish a container’s port(s) to the host. See [container-networking](https://docs.docker.com/config/containers/container-networking/) |
 | `--detach` , `-d`  |         | Run container in background and print container ID                                                                                     |
+
+</details>
+
+### Run a command in a running container
+
+<details>
+  <summary><code>docker exec</code> syntax</summary>
+
+```
+docker exec [OPTIONS] CONTAINER COMMAND [ARG...]
+```
+
+[exec-docs](https://docs.docker.com/engine/reference/commandline/exec/)
+
+</details>
+
+```
+docker exec ...
+```
+
+<details>
+  <summary>Example: <b>List files in a running container</b></summary>
+
+```bash
+docker ps -al
+
+# CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+# a928b1a90fb3        postgres            "docker-entrypoint.s…"   47 hours ago        Up 46 hours         5432/tcp            docker-compose-django_db_1
+
+docker exec a928b1a90fb3 ls
+
+# bin
+# boot
+# dev
+# docker-entrypoint-initdb.d
+# docker-entrypoint.sh
+# etc
+# home
+# lib
+# lib64
+# media
+# mnt
+# opt
+# proc
+# root
+# run
+# sbin
+# srv
+# sys
+# tmp
+# usr
+# var
+```
+
+</details>
+
+### Deleting unused containers
+
+<details>
+  <summary><code>docker system prune</code> syntax</summary>
+
+```bash
+docker system prune [OPTIONS]
+       ├ [base]
+       # system
+              ├ [COMMAND]
+              # prune
+
+```
+
+[system docs](https://docs.docker.com/engine/reference/commandline/system/)
+
+[system prune docs](https://docs.docker.com/engine/reference/commandline/system_prune/)
+
+</details>
+
+```bash
+docker system prune
+```
+
+<details>
+<summary>Example</summary>
+
+```bash
+docker system prune
+
+# WARNING! This will remove:
+#  - all stopped containers
+#  - all networks not used by at least one container
+#  - all dangling images
+#  - all dangling build cache
+#
+# Are you sure you want to continue? [y/N]
+
+y
+
+# Deleted Containers:
+# 8bc3730ccf92cde2ba71648487810af163fb3f765a4f9e2e310e5f2eeab1e08e
+# ...(truncated)
+
+# Deleted Networks:
+# ...(truncated)
+
+# Deleted Images:
+# deleted: sha256:6938bb2bf6917e2d4e2e0af781b199e2643b6d1d27b00f993a5c7770faa23c76
+# deleted: sha256:47e443d20a18d3720df4afc842529527e0a0fdb18641421c4bf17c3636728e1f
+# ...(truncated)
+
+# Deleted build cache objects:
+# vbv35t98brzqtai4ryp7iq7hq
+# ypjmoyte081rvb2y69sgktqi0
+# ...(truncated)
+
+# Total reclaimed space: 754.3MB
+```
+
+Before: <code>docker ps -al</code>
+
+![too many containers](./too_many_containers.png)
+
+After: <code>docker ps -al</code>
+
+![just one container](./just_one_container.png)
+
+</details>
 
 # Docker Compose
 
@@ -184,7 +310,7 @@ services:
       - db
 ```
 
-<details open>
+<details>
   <summary>Uh, what?</summary>
 
 [Compose file reference](https://docs.docker.com/compose/compose-file/)
@@ -442,6 +568,12 @@ docker-compose run web python manage.py migrate
 ```
 
 #### Recap: "Where are my containers?"
+
+```bash
+docker ps
+```
+
+#### Recap: "Docker run vs Docker exec"
 
 ```bash
 docker ps
