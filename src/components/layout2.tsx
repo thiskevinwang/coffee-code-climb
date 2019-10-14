@@ -21,7 +21,8 @@ import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
 function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const topLinkText = location.pathname === rootPath ? title : "Go home"
+  const topLink =
+    location.pathname === rootPath ? <h1>{title}</h1> : <h3>← Go home</h3>
 
   const isDarkMode = useSelector(state => state.isDarkMode)
 
@@ -80,7 +81,7 @@ function Layout({ location, title, children }: Props) {
             color: `inherit`,
           }}
         >
-          <h1>{topLinkText}</h1>
+          {topLink}
         </Link>
         <main>{children}</main>
       </animated.div>
