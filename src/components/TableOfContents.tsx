@@ -4,10 +4,13 @@ import { useSpring, animated } from "react-spring"
 import { useScroll } from "react-use-gesture"
 import { Link } from "gatsby"
 
+import { rhythm } from "utils/typography"
+
 const DesktopContainer = styled(animated.div)`
   position: absolute;
   right: 0;
   margin-right: 20px;
+  max-width: ${rhythm(12)};
 
   @media (max-width: 1200px) {
     display: none;
