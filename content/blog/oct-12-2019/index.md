@@ -577,12 +577,6 @@ docker-compose run web python manage.py migrate
 docker ps
 ```
 
-## Recap: "Docker run vs Docker exec"
-
-```bash
-docker ps
-```
-
 ## Glossary
 
 After 2 days of writing this Docker blog post, I figured out how to use Docker, but realized that I still couldn't define some key terms... So here are some of them... for myself.
