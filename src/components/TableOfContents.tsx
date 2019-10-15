@@ -36,11 +36,38 @@ const TableOfContents = ({ title, __html }) => {
 
       set({
         top: scrollTop + 50,
+        // onFrame: props => window.scroll(0, props.top),
       })
     },
     { domTarget: typeof window !== "undefined" && window }
   )
   useEffect(bindScrollGesture, [bindScrollGesture])
+
+  /**
+   * @TODO onFrame window.scroll doesn't seem to cooperate with bindScrollGesture...
+   *
+   * https://codesandbox.io/s/interesting-waterfall-pgo0y?from-embed
+   */
+  // useEffect(() => {
+  //   const handleHashChange = e => {
+  //     /**
+  //      * @TODO need to intercept default jump-behavior
+  //      * on hash change
+  //      */
+  //     set({
+  //       top: e.target.scrollY,
+  //       // from: { top: window.scrollY },
+  //       // reset: true,
+  //       onFrame: props => window.scroll(0, props.top),
+  //     })
+  //   }
+
+  //   typeof window !== undefined &&
+  //     window.addEventListener("hashchange", handleHashChange)
+  //   return () => {
+  //     window.removeEventListener("hashchange", handleHashChange)
+  //   }
+  // }, [])
 
   return (
     <DesktopContainer style={{ top }}>
