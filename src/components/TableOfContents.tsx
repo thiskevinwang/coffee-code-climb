@@ -21,6 +21,12 @@ const DesktopContainer = styled(animated.div)`
   }
 `
 
+/**
+ * @TODO figure out how to handle styling of individual elements inside
+ * props.__html (aka tableOfContents)
+ *
+ * @TODO smooth/spring scroll when clicking anchor links
+ */
 const TableOfContents = ({ title, __html }) => {
   const [{ top }, set] = useSpring(() => ({ top: 50 }))
 
@@ -28,7 +34,6 @@ const TableOfContents = ({ title, __html }) => {
     state => {
       const { scrollTop } = state.event.target.documentElement
 
-      // console.log(scrollTop / (scrollHeight - clientHeight))
       set({
         top: scrollTop + 50,
       })
@@ -39,9 +44,9 @@ const TableOfContents = ({ title, __html }) => {
 
   return (
     <DesktopContainer style={{ top }}>
-      <div style={{ textAlign: "center", marginBottom: 20, fontSize: 20 }}>
+      <p style={{ textAlign: "center", marginBottom: 20, fontSize: 20 }}>
         Table of Contents
-      </div>
+      </p>
       <Link to={window.location.pathname}>{title}</Link>
       <div dangerouslySetInnerHTML={{ __html }} />
     </DesktopContainer>
