@@ -30,8 +30,25 @@ const DesktopContainer = styled(animated.div)`
  *
  * @TODO smooth/spring scroll when clicking anchor links
  */
-const TableOfContents = ({ title, __html }) => {
+const TableOfContents = ({
+  title,
+  __html,
+}: {
+  title: string
+  __html: string
+}) => {
   const [{ top }, set] = useSpring(() => ({ top: 50 }))
+
+  /**
+   * some ideas
+   */
+  // const HTML = __html.replace(
+  //   new RegExp(`${window.location.pathname}`, "g"),
+  //   ``
+  // )
+  // const HTML = __html
+  // console.log(HTML)
+  // console.log(window.location.pathname)
 
   const bindScrollGesture = useScroll(
     state => {
