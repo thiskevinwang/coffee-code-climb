@@ -61,8 +61,6 @@
     "react-use-gesture": "^5.2.4",
     "redux": "4.0.4",
     "styled-components": "5.0.0-beta.9",
-    "typeface-merriweather": "0.0.72",
-    "typeface-montserrat": "0.0.54",
     "typography": "^0.16.19",
     "typography-plugin-code": "^0.16.19",
     "typography-theme-wordpress-2016": "^0.16.19",
