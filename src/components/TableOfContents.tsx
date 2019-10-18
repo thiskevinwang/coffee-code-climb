@@ -6,7 +6,7 @@ import { Link } from "gatsby"
 
 import { rhythm } from "utils/typography"
 
-const DesktopContainer = styled(animated.div)`
+const Container = styled(animated.div)`
   position: absolute;
   right: 0;
   margin-right: 20px;
@@ -96,7 +96,7 @@ const TableOfContents = ({
   // }, [])
 
   return (
-    <DesktopContainer style={{ top }}>
+    <Container style={{ top }}>
       <hr className="TOC__hr" />
       <p
         style={{
@@ -109,12 +109,15 @@ const TableOfContents = ({
         TABLE OF CONTENTS
       </p>
       <hr className="TOC__hr" />
-      <Link className={"TOC__link"} to={window?.location.pathname}>
+      <Link
+        className={"TOC__link"}
+        to={typeof window !== "undefined" && window.location.pathname}
+      >
         {title}
       </Link>
       <div dangerouslySetInnerHTML={{ __html: HTML }} />
       <hr className="TOC__hr" />
-    </DesktopContainer>
+    </Container>
   )
 }
 
