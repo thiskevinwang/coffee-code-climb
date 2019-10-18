@@ -109,7 +109,7 @@ const TableOfContents = ({
         TABLE OF CONTENTS
       </p>
       <hr className="TOC__hr" />
-      <Link className={"TOC__link"} to={window.location.pathname}>
+      <Link className={"TOC__link"} to={window?.location.pathname}>
         {title}
       </Link>
       <div dangerouslySetInnerHTML={{ __html: HTML }} />
