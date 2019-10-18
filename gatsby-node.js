@@ -20,6 +20,7 @@ exports.createPages = ({ graphql, actions }) => {
         ) {
           edges {
             node {
+              tableOfContents
               internal {
                 type
               }
@@ -94,6 +95,8 @@ exports.createPages = ({ graphql, actions }) => {
             slug: post.node.fields.slug,
             previous,
             next,
+            postTitle: post.node.frontmatter.title,
+            tableOfContents: post.node.tableOfContents,
           },
         })
       } else if (type === `ContentfulBlogPost`) {

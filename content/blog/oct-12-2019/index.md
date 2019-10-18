@@ -8,7 +8,7 @@ tags: ["docker", "docker-compose", "image", "container", "amazon", "dynamodb"]
 
 Notes & Commands from my first _real_ attempt at learning Docker (...but I probably spent more time fiddling with markdown styling & css of this post)
 
-### List Containers
+## List Containers
 
 <details>
   <summary><code>docker ps</code> syntax</summary>
@@ -28,7 +28,7 @@ docker ps
 # e9e1f48613d9        amazon/dynamodb-local   "java -jar DynamoDBL…"   9 seconds ago       Up 8 seconds        8000/tcp, 0.0.0.0:8000->8008/tcp   festive_lamport
 ```
 
-### List Docker Images
+## List Docker Images
 
 <details>
   <summary><code>docker images</code> syntax</summary>
@@ -49,7 +49,7 @@ docker images
 # node                      7.2.1-alpine        a1c188c2c5e1        2 years ago         55.3MB
 ```
 
-### Pull an image or a repository from a registry
+## Pull an image or a repository from a registry
 
 <details>
   <summary><code>docker pull</code> syntax</summary>
@@ -68,7 +68,7 @@ docker pull amazon/dynamodb-local
 #           amazon/dynamodb-local
 ```
 
-### Run a command in a new container
+## Run a command in a new container
 
 <details>
   <summary><code>docker run</code> syntax</summary>
@@ -99,7 +99,7 @@ docker run -p 8000:8000 amazon/dynamodb-local
 
 </details>
 
-### Run a command in a running container
+## Run a command in a running container
 
 <details>
   <summary><code>docker exec</code> syntax</summary>
@@ -152,7 +152,7 @@ docker exec a928b1a90fb3 ls
 
 </details>
 
-### Deleting unused containers
+## Deleting unused containers
 
 <details>
   <summary><code>docker system prune</code> syntax</summary>
@@ -250,7 +250,7 @@ I just started learning Django last week, so coming across this is a perfect coi
 
 [compose + django docs](https://docs.docker.com/compose/django/)
 
-##### `Dockerfile`
+1. `Dockerfile`
 
 ```Dockerfile
 FROM python:3
@@ -277,7 +277,9 @@ COPY . /code/
 
 </details>
 
-##### `requirements.txt`
+<br>
+
+`requirements.txt`
 
 ```txt
 Django>=2.0,<3.0
@@ -291,7 +293,9 @@ This file is used by the `RUN pip install -r requirements.txt` command in the `D
 
 </details>
 
-##### `docker-compose.yml`
+<br>
+
+`docker-compose.yml`
 
 ```yaml
 version: "3"
@@ -524,7 +528,7 @@ docker-compose down
 # ctrl + c
 ```
 
-#### 17 unapplied migration(s)?
+### 17 unapplied migration(s)?
 
 ```bash
 docker-compose run python manage.py migrate
@@ -554,7 +558,7 @@ docker-compose run web python manage.py migrate
 #   Applying auth.0010_alter_group_name_max_length... OK
 ```
 
-#### Recap: "Anatomy of a docker-compose command"
+## Recap: "Anatomy of a docker-compose command"
 
 ```bash
 docker-compose run web python manage.py migrate
@@ -567,14 +571,20 @@ docker-compose run web python manage.py migrate
                        # python manage.py migrate
 ```
 
-#### Recap: "Where are my containers?"
+## Recap: "Where are my containers?"
 
 ```bash
 docker ps
 ```
 
-#### Recap: "Docker run vs Docker exec"
+## Glossary
 
-```bash
-docker ps
-```
+After 2 days of writing this Docker blog post, I figured out how to use Docker, but realized that I still couldn't define some key terms... So here are some of them... for myself.
+
+| Term                                                                  | Definition                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| :-------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [container](https://docs.docker.com/glossary/?term=container)         | A container is a runtime instance of a docker image.                                                                                                                                                                                                                                                                                                                                                                                          |
+| [image](https://docs.docker.com/glossary/?term=image)                 | Docker images are the basis of containers. An Image is an ordered collection of root filesystem changes and the corresponding execution parameters for use within a container runtime. An image typically contains a union of layered filesystems stacked on top of each other. An image does not have state and it never changes.                                                                                                            |
+| [layer](https://docs.docker.com/glossary/?term=layer)                 | In an image, a layer is modification to the image, represented by an instruction in the Dockerfile. Layers are applied in sequence to the base image to create the final image. When an image is updated or rebuilt, only layers that change need to be updated, and unchanged layers are cached locally. This is part of why Docker images are so fast and lightweight. The sizes of each layer add up to equal the size of the final image. |
+| [base image](https://docs.docker.com/glossary/?term=base%20image)     | An image that has no parent is a base image.                                                                                                                                                                                                                                                                                                                                                                                                  |
+| [parent image](https://docs.docker.com/glossary/?term=parent%20image) | An image’s parent image is the image designated in the `FROM` directive in the image’s Dockerfile. All subsequent commands are applied to this parent image. A Dockerfile with no `FROM` directive has no parent image, and is called a base image.                                                                                                                                                                                           |

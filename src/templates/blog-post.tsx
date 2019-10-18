@@ -4,6 +4,7 @@ import kebabCase from "lodash/kebabCase"
 
 import Bio from "components/bio"
 import Layout from "components/layout"
+import { TableOfContents } from "components/TableOfContents"
 import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { Discussion, PrevNextNavigation } from "components/TemplateComponents"
@@ -12,7 +13,7 @@ import { rhythm, scale } from "utils/typography"
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
   const { title: siteTitle } = data.site.siteMetadata
-  const { previous, next } = pageContext
+  const { previous, next, postTitle, tableOfContents } = pageContext
 
   return (
     <LayoutManager location={location} title={siteTitle}>
@@ -20,6 +21,11 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
       />
+
+      {/** only Markdown pages have tableOfContents*/
+      tableOfContents && (
+        <TableOfContents title={postTitle} __html={tableOfContents} />
+      )}
       <h1>{post.frontmatter.title}</h1>
       <p
         style={{
