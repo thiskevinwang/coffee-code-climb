@@ -6,6 +6,10 @@ import { Grid } from "@material-ui/core"
 
 import * as Posts from "components/Posts"
 
+const checkIsMarkdownRemark = node => node.internal.type === `MarkdownRemark`
+const checkIsContentfulBlogPost = node =>
+  node.internal.type === `ContentfulBlogPost`
+
 const PostsManager = ({ allPosts, location }) => {
   const showBlogImage: boolean = useSelector(state => state.showBlogImage)
   const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
@@ -24,9 +28,8 @@ const PostsManager = ({ allPosts, location }) => {
     return (
       <Grid container direction="row" spacing={4}>
         {posts.map(({ node }, index) => {
-          const isMarkdownRemark = node.internal.type === `MarkdownRemark`
-          const isContentfulBlogPost =
-            node.internal.type === `ContentfulBlogPost`
+          const isMarkdownRemark = checkIsMarkdownRemark(node)
+          const isContentfulBlogPost = checkIsContentfulBlogPost(node)
 
           const title =
             node.internal.type === `MarkdownRemark` &&
@@ -58,8 +61,8 @@ const PostsManager = ({ allPosts, location }) => {
     )
   if (postsVersion === 2)
     return posts.map(({ node }, index) => {
-      const isMarkdownRemark = node.internal.type === `MarkdownRemark`
-      const isContentfulBlogPost = node.internal.type === `ContentfulBlogPost`
+      const isMarkdownRemark = checkIsMarkdownRemark(node)
+      const isContentfulBlogPost = checkIsContentfulBlogPost(node)
 
       const title =
         node.internal.type === `MarkdownRemark` &&

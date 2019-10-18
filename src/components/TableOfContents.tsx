@@ -13,7 +13,8 @@ const DesktopContainer = styled(animated.div)`
   max-width: ${rhythm(12)};
 
   @media (max-width: 1200px) {
-    display: none;
+    position: relative;
+    top: 0 !important;
   }
 
   li {
@@ -27,6 +28,8 @@ const DesktopContainer = styled(animated.div)`
 /**
  * @TODO figure out how to handle styling of individual elements inside
  * props.__html (aka tableOfContents)
+ *
+ * - use regex to manually add `class`, then inject styles via  `typography/index.js`
  *
  * @TODO smooth/spring scroll when clicking anchor links
  */
@@ -47,8 +50,11 @@ const TableOfContents = ({
   //   ``
   // )
   // const HTML = __html
+
   // console.log(HTML)
   // console.log(window.location.pathname)
+
+  const HTML = __html.replace(/<a/g, `<a class="TOC__link"`)
 
   const bindScrollGesture = useScroll(
     state => {
@@ -91,11 +97,23 @@ const TableOfContents = ({
 
   return (
     <DesktopContainer style={{ top }}>
-      <p style={{ textAlign: "center", marginBottom: 20, fontSize: 20 }}>
-        Table of Contents
+      <hr className="TOC__hr" />
+      <p
+        style={{
+          textAlign: "center",
+          marginTop: 20,
+          marginBottom: 20,
+          fontSize: 16,
+        }}
+      >
+        TABLE OF CONTENTS
       </p>
-      <Link to={window.location.pathname}>{title}</Link>
-      <div dangerouslySetInnerHTML={{ __html }} />
+      <hr className="TOC__hr" />
+      <Link className={"TOC__link"} to={window.location.pathname}>
+        {title}
+      </Link>
+      <div dangerouslySetInnerHTML={{ __html: HTML }} />
+      <hr className="TOC__hr" />
     </DesktopContainer>
   )
 }
