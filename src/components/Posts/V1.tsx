@@ -14,7 +14,7 @@ import {
   config,
   interpolate,
 } from "react-spring"
-import { useGesture } from "react-use-gesture"
+import { useGesture, addV } from "react-use-gesture"
 import styled from "styled-components"
 
 import * as Colors from "consts/Colors"
@@ -193,18 +193,9 @@ const V1 = memo(
     const bind = useGesture(
       {
         /** drag */
-        onDrag: ({ event, delta: [dX, dY], memo = xy.getValue() }) => {
-          event.preventDefault()
-
-          const [mX, mY]: Vector2 = memo
-          /**
-           * movement (will be introduced in V6)
-           * - memo + delta
-           * @see https://github.com/react-spring/react-use-gesture/issues/45#issuecomment-531008361
-           */
-          const movement: Vector2 = [mX + dX, mY + dY]
+        onDrag: ({ movement, event, memo = xy.getValue() }) => {
           set({
-            xy: movement,
+            xy: addV(movement, memo),
           })
           return memo
         },
@@ -231,7 +222,7 @@ const V1 = memo(
                    *
                    * So use the memoized values instead.
                    */
-                  last ? memo : [event.pageX, event.pageY],
+                  last ? memo : [event?.pageX, event?.pageY],
                   center.getValue(),
                   width.getValue(),
                   height.getValue()
@@ -239,7 +230,7 @@ const V1 = memo(
               : [0, 0],
           })
           /** return these to update `memo` */
-          return [event.pageX, event.pageY]
+          return [event?.pageX, event?.pageY]
         },
       },
       {

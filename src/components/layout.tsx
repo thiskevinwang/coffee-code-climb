@@ -46,15 +46,25 @@ function Layout({ location, title, children }: Props) {
 
   const bindScrollGesture = useScroll(
     state => {
-      const {
-        scrollTop,
-        scrollHeight,
-        clientHeight,
-      } = state.event.target.documentElement
+      // These two are the same
+      // console.log("state", state.values[1])
+      // console.log("window", window.document.scrollingElement.scrollTop)
+
+      const { values } = state
+      // const scrollTop = state?.event?.target?.documentElement?.scrollTop
+      // const scrollHeight = state?.event?.target?.documentElement?.scrollHeight
+      // const clientHeight = state?.event?.target?.documentElement?.clientHeight
+
+      const scrollHeight =
+        typeof window !== "undefined" &&
+        window.document.scrollingElement.scrollHeight
+      const clientHeight =
+        typeof window !== "undefined" &&
+        window.document.scrollingElement.clientHeight
 
       // console.log(scrollTop / (scrollHeight - clientHeight))
       setScrollY({
-        percent: scrollTop / (scrollHeight - clientHeight),
+        percent: values[1] / (scrollHeight - clientHeight),
       })
     },
     { domTarget: typeof window !== "undefined" && window }

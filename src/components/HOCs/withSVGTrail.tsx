@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config, interpolate } from "react-spring"
-import { useMove } from "react-use-gesture"
+import { useMove, addV } from "react-use-gesture"
 import styled from "styled-components"
 import _ from "lodash"
 
@@ -84,9 +84,12 @@ const Wrapper = ({ children }) => {
   }, [isDarkMode])
 
   const bindMoveGesture = useMove(
-    ({ event }) => {
+    ({ ...state }) => {
       setTrail({
-        xy: [event.pageX, event.pageY],
+        /**
+         * @TODO get [x,y] of entire documentElement, not just window
+         */
+        xy: state.values,
         opacity: showTrailRef.current ? 1 : 0,
         background: isDarkMode
           ? `rgba(10, 10, 10, 0.3)`

@@ -58,7 +58,7 @@ const TableOfContents = ({
 
   const bindScrollGesture = useScroll(
     state => {
-      const { scrollTop } = state.event.target.documentElement
+      const scrollTop = state.values[1]
 
       set({
         top: scrollTop + 50,
