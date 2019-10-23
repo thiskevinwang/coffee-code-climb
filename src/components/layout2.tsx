@@ -7,6 +7,7 @@ import { useScroll } from "react-use-gesture"
 
 import { withSVGTrail } from "components"
 import { NavBar2 } from "components/Layout2Components/NavBar2"
+import { PageViewCounter } from "components/PageViewCounter"
 
 import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
@@ -36,15 +37,25 @@ function Layout({ location, title, children }: Props) {
   }))
   const bindScrollGesture = useScroll(
     state => {
-      const {
-        scrollTop,
-        scrollHeight,
-        clientHeight,
-      } = state.event.target.documentElement
+      // These two are the same
+      // console.log("state", state.values[1])
+      // console.log("window", window.document.scrollingElement.scrollTop)
+
+      const { values } = state
+      // const scrollTop = state?.event?.target?.documentElement?.scrollTop
+      // const scrollHeight = state?.event?.target?.documentElement?.scrollHeight
+      // const clientHeight = state?.event?.target?.documentElement?.clientHeight
+
+      const scrollHeight =
+        typeof window !== "undefined" &&
+        window.document.scrollingElement.scrollHeight
+      const clientHeight =
+        typeof window !== "undefined" &&
+        window.document.scrollingElement.clientHeight
 
       // console.log(scrollTop / (scrollHeight - clientHeight))
       setScrollProps({
-        scrollPercent: scrollTop / (scrollHeight - clientHeight),
+        scrollPercent: values[1] / (scrollHeight - clientHeight),
       })
     },
     { domTarget: typeof window !== "undefined" && window }
@@ -63,6 +74,9 @@ function Layout({ location, title, children }: Props) {
       }}
     >
       <NavBar2 />
+
+      <PageViewCounter location={location} />
+
       <animated.div
         style={{
           marginLeft: `auto`,

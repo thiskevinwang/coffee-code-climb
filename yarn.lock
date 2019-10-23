@@ -11223,10 +11223,10 @@ react-typography@^0.16.19:
   resolved "https://registry.yarnpkg.com/react-typography/-/react-typography-0.16.19.tgz#5736b47961dcf6b9605b6fa38d41980db2588e28"
   integrity sha512-kV2qLEsdm0x9P4YXQEDVc88tDb4Vg0h/vdVZGgbqaRn8ERvNzV76JHUeOby3vvcUYU5MPd5Kz5DPH9Bhp4I/iw==
 
-react-use-gesture@^5.2.4:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/react-use-gesture/-/react-use-gesture-5.2.4.tgz#c84ebe0d79703fd90cb26a220812c2f430d3e40d"
-  integrity sha512-oay95IPKBTAIqsZWwPAXJVVlDCpXdg4y2kEKz8oGLSqewpmXsXC4vKlAZq/ZDwZa4djzWlK1pnSIJY2iylx4QQ==
+react-use-gesture@^6.0.12:
+  version "6.0.12"
+  resolved "https://registry.yarnpkg.com/react-use-gesture/-/react-use-gesture-6.0.12.tgz#33574a2222eace64f0fe027c91e886463862b15c"
+  integrity sha512-1BxbILSvhGmAjHttDhRKRzq+noHorfjPJAIGfGCiX1Dm2SerON6WiBOxK49qxFsiW8x8/uJixTcotb0BDfsUVA==
 
 react@^16.10.0:
   version "16.10.0"

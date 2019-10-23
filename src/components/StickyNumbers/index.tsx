@@ -9,7 +9,7 @@ import {
   AnimatedValue,
   OpaqueInterpolation,
 } from "react-spring"
-import { useScroll, useHover, useGesture } from "react-use-gesture"
+import { useScroll, useHover, useGesture, addV } from "react-use-gesture"
 import { ReactEventHandlers } from "react-use-gesture/dist/types"
 import styled from "styled-components"
 import _ from "lodash"
@@ -125,7 +125,7 @@ const StickyNumbers = () => {
     const bindDragProps = useGesture({
       onDrag: ({
         down,
-        delta: [dX, dY],
+        movement,
         event,
         memo = xy.getValue(),
         // I didn't know you could do this!
@@ -133,9 +133,7 @@ const StickyNumbers = () => {
       }) => {
         event.preventDefault()
 
-        const [mX, mY] = memo
-
-        setXY({ xy: [dX + mX, dY + mY] })
+        setXY({ xy: addV(movement, memo) })
         setIsDragging(down)
         return memo
       },

@@ -58,7 +58,7 @@
     "react-spring": "8.0.27",
     "react-transition-group": "^4.1.1",
     "react-typography": "^0.16.19",
-    "react-use-gesture": "^5.2.4",
+    "react-use-gesture": "^6.0.12",
     "redux": "4.0.4",
     "styled-components": "5.0.0-beta.9",
     "typography": "^0.16.19",
