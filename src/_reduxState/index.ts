@@ -69,10 +69,18 @@ const SET_LAYOUT_VERSION = "SET_LAYOUT_VERSION"
 const SET_POSTS_VERSION = "SET_POSTS_VERSION"
 const SET_SHOW_MOBILE_MENU = "SET_SHOW_MOBILE_MENU"
 
+export interface RootState {
+  isDarkMode: boolean
+  showTrail: boolean
+  slowMo: boolean
+  showBlogImage: boolean
+  layoutVersion: number
+  postsVersion: number
+}
 /**
  * initialState
  */
-const initialState = {
+const initialState: RootState = {
   isDarkMode: false,
   showTrail: false,
   slowMo: false,

@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Provider } from "react-redux"
 
-import { store } from "./src/state"
+import { store } from "./src/_reduxState"
 import {
   ApolloProvider,
   client,

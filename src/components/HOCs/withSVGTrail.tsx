@@ -6,7 +6,7 @@ import styled from "styled-components"
 import _ from "lodash"
 
 import { svgZ } from "consts"
-import { setIsDarkMode } from "state"
+import { setIsDarkMode } from "_reduxState"
 import * as SVG from "svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]

@@ -3,7 +3,7 @@ import CodePlugin from "typography-plugin-code"
 import Wordpress2016 from "typography-theme-wordpress-2016"
 
 import * as Colors from "consts/Colors"
-import { store } from "state"
+import { store } from "_reduxState"
 import "css/typography.css"
 
 Wordpress2016.headerFontFamily = ["Cereal"]

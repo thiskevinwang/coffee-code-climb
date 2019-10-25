@@ -8,7 +8,7 @@ import {
   setLayoutVersion,
   setPostsVersion,
   setShowMobileMenu,
-} from "state"
+} from "_reduxState"
 import { rhythm } from "utils/typography"
 import { Button } from "components/Button"
 import { MobileMenu } from "components/MobileMenu"

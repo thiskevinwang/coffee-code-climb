@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux"
 
 import Layout from "./layout"
 import Layout2 from "./layout2"
-import { setLayoutVersion } from "state"
+import { setLayoutVersion } from "_reduxState"
 import { rhythm } from "utils/typography"
 
 const LayoutManager = props => {

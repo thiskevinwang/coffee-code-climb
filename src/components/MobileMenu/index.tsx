@@ -9,7 +9,7 @@ import {
   setLayoutVersion,
   setPostsVersion,
   setShowMobileMenu,
-} from "state"
+} from "_reduxState"
 import { Button } from "components/Button"
 import { rhythm, scale } from "utils/typography"
 import * as Colors from "consts/Colors"
