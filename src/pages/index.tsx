@@ -7,7 +7,6 @@ import { LayoutManager } from "components/layoutManager"
 import { PostsManager } from "components/PostsManager"
 import SEO from "components/seo"
 import { KEYWORDS } from "consts"
-s
 
 /**
  * BlogIndex
