@@ -93,7 +93,6 @@ interface Props {
   index: number
   nodeType: string
   animatedStyles: AnimatedValue<any>
-  showBlogImage: boolean
 }
 // To avoid <Post> rerenders when <BlogPostIndex> subscribes to redux
 // state(like isDarkMode), add `memo()` here
@@ -109,7 +108,6 @@ const V1 = memo(
     image,
     index,
     nodeType,
-    showBlogImage,
   }: Props) => {
     //_.map + _.kebabCase each tag in frontmatter.tags
     let kebabTags = _.map(tags, tag => _.kebabCase(tag))
@@ -303,9 +301,9 @@ const V1 = memo(
     return (
       <Grid
         item
-        lg={!showBlogImage ? 12 : index === 0 ? 12 : 3}
-        md={!showBlogImage ? 12 : index === 0 ? 12 : 4}
-        sm={!showBlogImage ? 12 : index === 0 ? 12 : 6}
+        lg={index === 0 ? 12 : 3}
+        md={index === 0 ? 12 : 4}
+        sm={index === 0 ? 12 : 6}
         xs={12}
       >
         <Card
@@ -322,7 +320,7 @@ const V1 = memo(
           {...bind()}
         >
           <Link style={{ boxShadow: `none` }} to={linkTo}>
-            {showBlogImage && image && (
+            {image && (
               <Image
                 fluid={
                   nodeType === `MarkdownRemark`

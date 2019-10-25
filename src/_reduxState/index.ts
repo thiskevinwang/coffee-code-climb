@@ -32,20 +32,13 @@ export const setSlowMo = (slowMo: boolean) => {
     slowMo,
   }
 }
-export const setShowBlogImage = (showBlogImage: boolean) =>
-  new Promise((res, rej) =>
-    res({
-      type: TOGGLE_BLOG_IMAGE,
-      showBlogImage,
-    })
-  )
-export const setLayoutVersion = (layoutVersion: 1 | 2 | 3) => async (
+export const setLayoutVersion = (layoutVersion: number) => async (
   dispatch,
   getState
 ) => {
   return dispatch({ type: SET_LAYOUT_VERSION, layoutVersion })
 }
-export const setPostsVersion = (postsVersion: 1 | 2 | 3) => async (
+export const setPostsVersion = (postsVersion: number) => async (
   dispatch,
   getState
 ) => {
@@ -64,7 +57,6 @@ export const setShowMobileMenu = (showMobileMenu: boolean) => async (
 const TOGGLE_DARKMODE = "TOGGLE_DARKMODE"
 const TOGGLE_TRAIL = "TOGGLE_TRAIL"
 const TOGGLE_SLOWMO = "TOGGLE_SLOWMO"
-const TOGGLE_BLOG_IMAGE = "TOGGLE_BLOG_IMAGE"
 const SET_LAYOUT_VERSION = "SET_LAYOUT_VERSION"
 const SET_POSTS_VERSION = "SET_POSTS_VERSION"
 const SET_SHOW_MOBILE_MENU = "SET_SHOW_MOBILE_MENU"
@@ -73,7 +65,6 @@ export interface RootState {
   isDarkMode: boolean
   showTrail: boolean
   slowMo: boolean
-  showBlogImage: boolean
   layoutVersion: number
   postsVersion: number
 }
@@ -84,7 +75,6 @@ const initialState: RootState = {
   isDarkMode: false,
   showTrail: false,
   slowMo: false,
-  showBlogImage: true,
   layoutVersion: 2,
   postsVersion: 1,
 }
@@ -100,8 +90,6 @@ const reducer = (state = initialState, action: any) => {
       return { ...state, showTrail: action.showTrail }
     case TOGGLE_SLOWMO:
       return { ...state, slowMo: action.slowMo }
-    case TOGGLE_BLOG_IMAGE:
-      return { ...state, showBlogImage: action.showBlogImage }
     case SET_LAYOUT_VERSION:
       return { ...state, layoutVersion: action.layoutVersion }
     case SET_POSTS_VERSION:

@@ -11,8 +11,7 @@ const checkIsContentfulBlogPost = node =>
   node.internal.type === `ContentfulBlogPost`
 
 const PostsManager = ({ allPosts, location }) => {
-  const showBlogImage: boolean = useSelector(state => state.showBlogImage)
-  const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
+  const postsVersion = useSelector(state => state.postsVersion)
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
    */
@@ -53,7 +52,6 @@ const PostsManager = ({ allPosts, location }) => {
               image={isMarkdownRemark ? node.frontmatter.image : node.image}
               index={index}
               nodeType={node.internal.type}
-              showBlogImage={showBlogImage}
             />
           )
         })}
@@ -84,7 +82,6 @@ const PostsManager = ({ allPosts, location }) => {
           image={isMarkdownRemark ? node.frontmatter.image : node.image}
           index={index}
           nodeType={node.internal.type}
-          showBlogImage={showBlogImage}
         />
       )
     })

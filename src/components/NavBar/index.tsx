@@ -14,13 +14,16 @@ import { Button } from "components/Button"
 import * as Colors from "consts/Colors"
 import { navbarZ, MUIBoxShadow } from "consts"
 
+interface BarProps {
+  isDarkMode: boolean
+}
 /**
  * Bar
  * A styled component that is our navbar.
  * @prop {boolean} isDarkMode - redux state
  */
 const Bar = styled.div`
-  background: ${props =>
+  background: ${(props: BarProps) =>
     props.isDarkMode ? Colors.blackDarker : Colors.silverLight};
   box-shadow: ${MUIBoxShadow};
   color: white;
@@ -40,7 +43,7 @@ const Bar = styled.div`
  * Also dispatches actions to update the store.
  */
 const NavBar = () => {
-  const rootPath: string = `${__PATH_PREFIX__}/`
+  // const rootPath = `${__PATH_PREFIX__}/`
 
   /**
    * @todo: typed Selector
@@ -57,19 +60,19 @@ const NavBar = () => {
     layoutVersion: state.layoutVersion,
   }))
 
-  const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
+  const postsVersion = useSelector<RootState, any>(state => state.postsVersion)
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
-    value => e => dispatch(setIsDarkMode(value)),
+    (value: boolean) => e => dispatch(setIsDarkMode(value)),
     []
   )
   const dispatchSetLayoutVersion = useCallback(
-    value => e => dispatch(setLayoutVersion(value)),
+    (value: number) => e => dispatch(setLayoutVersion(value)),
     []
   )
   const dispatchSetPostsVersion = useCallback(
-    value => e => dispatch(setPostsVersion(value)),
+    (value: number) => e => dispatch(setPostsVersion(value)),
     []
   )
 
