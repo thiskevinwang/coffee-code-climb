@@ -3,7 +3,12 @@ import { Link } from "gatsby"
 import styled, { css } from "styled-components"
 import { useSelector, useDispatch } from "react-redux"
 
-import { setIsDarkMode, setLayoutVersion, setPostsVersion } from "state"
+import {
+  setIsDarkMode,
+  setLayoutVersion,
+  setPostsVersion,
+  RootState,
+} from "_reduxState"
 import { rhythm } from "utils/typography"
 import { Button } from "components/Button"
 import * as Colors from "consts/Colors"
@@ -36,7 +41,22 @@ const Bar = styled.div`
  */
 const NavBar = () => {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const { isDarkMode, layoutVersion } = useSelector(state => state)
+
+  /**
+   * @todo: typed Selector
+   * @example export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector
+   * @see https://stackoverflow.com/a/57472389/9823455
+   *
+   * useSelector<TState, TSelected>
+   */
+  const { isDarkMode, layoutVersion } = useSelector<
+    RootState,
+    { isDarkMode: boolean; layoutVersion: number }
+  >(state => ({
+    isDarkMode: state.isDarkMode,
+    layoutVersion: state.layoutVersion,
+  }))
+
   const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
   const dispatch = useDispatch()
 
