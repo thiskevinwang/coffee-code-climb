@@ -6,7 +6,6 @@ import { Link } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
 import { Grid, Tooltip } from "@material-ui/core"
-import * as ReactSpring from "react-spring"
 import {
   animated,
   useSpring,
@@ -220,7 +219,7 @@ const V1 = memo(
                    *
                    * So use the memoized values instead.
                    */
-                  last ? memo : [event?.pageX, event?.pageY],
+                  last ? memo : [event.pageX, event.pageY],
                   center.getValue(),
                   width.getValue(),
                   height.getValue()
@@ -228,7 +227,7 @@ const V1 = memo(
               : [0, 0],
           })
           /** return these to update `memo` */
-          return [event?.pageX, event?.pageY]
+          return !last && [event.pageX, event.pageY]
         },
       },
       {
