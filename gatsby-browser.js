@@ -1,8 +1,8 @@
 import * as React from "react"
 // import ReactDOM from "react-dom"
 import { Provider, useSelector, useDispatch } from "react-redux"
-import { Transition } from "react-transition-group"
-import { useSpring, animated } from "react-spring"
+// import { Transition } from "react-transition-group"
+// import { useSpring, animated } from "react-spring"
 
 import { store } from "./src/_reduxState"
 import {
@@ -13,60 +13,58 @@ import {
   INCREMENT_VIEWS,
 } from "src/apollo"
 
-const duration = 600
-const defaultStyle = {
-  transition: `opacity ${duration}ms ease-in-out`,
-  opacity: 0,
-}
+// const duration = 600
+// const defaultStyle = {
+//   transition: `opacity ${duration}ms ease-in-out`,
+//   opacity: 0,
+// }
 
-const transitionStyles = {
-  entering: { opacity: 1 },
-  entered: { opacity: 1 },
-  exiting: { opacity: 0 },
-  exited: { opacity: 0 },
-}
+// const transitionStyles = {
+//   entering: { opacity: 1 },
+//   entered: { opacity: 1 },
+//   exiting: { opacity: 0 },
+//   exited: { opacity: 0 },
+// }
 
-const RootTransitionWrapper = props => {
-  const [inProp, setInProp] = React.useState(false)
+// const RootTransitionWrapper = props => {
+//   const [inProp, setInProp] = React.useState(false)
 
-  /**
-   * @TODO Spring animate this
-   */
-  // const [{ opacity }, set] = useSpring(() => ({
-  //   opacity: inProp ? 1 : 0,
-  // }))
+//   /**
+//    * @TODO Spring animate this
+//    */
+//   // const [{ opacity }, set] = useSpring(() => ({
+//   //   opacity: inProp ? 1 : 0,
+//   // }))
 
-  React.useEffect(() => {
-    setInProp(true)
-    return () => {}
-  }, [])
+//   React.useEffect(() => {
+//     setInProp(true)
+//     return () => {}
+//   }, [])
 
-  return (
-    <Transition timeout={duration} in={inProp} appear={true}>
-      {state => {
-        return (
-          <animated.div
-            // style={{ opacity }}
-            style={{
-              ...defaultStyle,
-              ...transitionStyles[state],
-            }}
-          >
-            {props.children}
-          </animated.div>
-        )
-      }}
-    </Transition>
-  )
-}
+//   return (
+//     <Transition timeout={duration} in={inProp} appear={true}>
+//       {state => {
+//         return (
+//           <animated.div
+//             // style={{ opacity }}
+//             style={{
+//               ...defaultStyle,
+//               ...transitionStyles[state],
+//             }}
+//           >
+//             {props.children}
+//           </animated.div>
+//         )
+//       }}
+//     </Transition>
+//   )
+// }
 
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (
     <ApolloProvider client={client}>
-      <Provider store={store}>
-        <RootTransitionWrapper>{element}</RootTransitionWrapper>
-      </Provider>
+      <Provider store={store}>{element}</Provider>
     </ApolloProvider>
   )
 }
