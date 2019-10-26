@@ -31,9 +31,9 @@ const MOUSEDOWN_STYLE = {
 }
 interface Props {
   isDarkMode: boolean
-  lg: boolean
-  md: boolean
-  sm: boolean
+  lg?: boolean
+  md?: boolean
+  sm?: boolean
   textSm: boolean
 }
 
@@ -75,7 +75,7 @@ const Renderer = styled(animated.div)`
  * </Button>
  * ```
  */
-export const Button = props => {
+export const Button = (props: Props) => {
   const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
     config: config.stiff,
