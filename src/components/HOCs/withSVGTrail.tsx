@@ -84,18 +84,29 @@ const Wrapper = ({ children }) => {
   }, [isDarkMode])
 
   const bindMoveGesture = useMove(
-    ({ ...state }) => {
+    ({
+      last,
+
+      /**
+       * event is undefined when last === true
+       */
+      event,
+
+      /**
+       * The return value of this callback
+       */
+
+      memo,
+    }) => {
       setTrail({
-        /**
-         * @TODO get [x,y] of entire documentElement, not just window
-         */
-        xy: state.values,
+        xy: last ? memo : [event.pageX, event.pageY],
         opacity: showTrailRef.current ? 1 : 0,
         background: isDarkMode
           ? `rgba(10, 10, 10, 0.3)`
           : `rgba(255, 255, 255, 0.5)`,
         border: isDarkMode ? `1px dotted black` : `1px dotted white`,
       })
+      return !last && [event.pageX, event.pageY]
     },
     { domTarget: typeof window !== "undefined" && window }
   )
