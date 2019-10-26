@@ -1,4 +1,5 @@
 import * as React from "react"
+// import ReactDOM from "react-dom"
 import { Provider, useSelector, useDispatch } from "react-redux"
 import { Transition } from "react-transition-group"
 import { useSpring, animated } from "react-spring"
@@ -132,3 +133,22 @@ export const onRouteUpdate = async (
       )
     })
 }
+
+/**
+ * CONCURRENT MODE!!!
+ *
+ * https://reactjs.org/docs/concurrent-mode-adoption.html
+ */
+// export const replaceHydrateFunction = () => {
+//   return (element, container, callback) => {
+//     /**
+//      * Old
+//      */
+//     // ReactDOM.render(element, container, callback);
+
+//     /**
+//      * New
+//      */
+//     ReactDOM.unstable_createRoot(container).render(element)
+//   }
+// }
