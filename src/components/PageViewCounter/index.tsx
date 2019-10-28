@@ -48,8 +48,10 @@ const PageViewCounter = ({ location }: { location: Location }) => {
   if (called && loading) return <Small>...</Small>
   if (error) return <Small>oops</Small>
 
-  if (!data.getPage) return <Small>oops</Small>
-  if (!data.getPage.attributes) return <Small>oops</Small>
+
+
+  if (!data ?.getPage) return <Small>oops</Small>
+  if (!data?.getPage.attributes) return <Small>oops</Small>
 
   return (
     <Small>{`${data.getPage.attributes.views} ${

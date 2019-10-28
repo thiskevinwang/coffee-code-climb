@@ -6,7 +6,6 @@ import { Link } from "gatsby"
 import Image from "gatsby-image"
 import { CommentCount } from "disqus-react"
 import { Grid, Tooltip } from "@material-ui/core"
-import * as ReactSpring from "react-spring"
 import {
   animated,
   useSpring,
@@ -40,6 +39,14 @@ const calc = (
   const xy = [_.clamp(x, -10, 10), _.clamp(y, -10, 10)]
   return xy
 }
+
+const CSSGrid = styled(animated.div)`
+  /* grid-column-start: span 3; */
+  /* grid-column-end: 5; */
+  grid-row-start: span;
+  grid-row-end: span;
+`
+
 /**
  * # FROM_STYLE
  * - starting animated-style
@@ -93,7 +100,6 @@ interface Props {
   index: number
   nodeType: string
   animatedStyles: AnimatedValue<any>
-  showBlogImage: boolean
 }
 // To avoid <Post> rerenders when <BlogPostIndex> subscribes to redux
 // state(like isDarkMode), add `memo()` here
@@ -109,7 +115,6 @@ const V1 = memo(
     image,
     index,
     nodeType,
-    showBlogImage,
   }: Props) => {
     //_.map + _.kebabCase each tag in frontmatter.tags
     let kebabTags = _.map(tags, tag => _.kebabCase(tag))
@@ -222,7 +227,7 @@ const V1 = memo(
                    *
                    * So use the memoized values instead.
                    */
-                  last ? memo : [event?.pageX, event?.pageY],
+                  last ? memo : [event.pageX, event.pageY],
                   center.getValue(),
                   width.getValue(),
                   height.getValue()
@@ -230,7 +235,7 @@ const V1 = memo(
               : [0, 0],
           })
           /** return these to update `memo` */
-          return [event?.pageX, event?.pageY]
+          return !last && [event.pageX, event.pageY]
         },
       },
       {
@@ -300,13 +305,22 @@ const V1 = memo(
       }
     }, [])
 
+    // const [gridProps, setGP] = useSpring({
+    //   to: {
+    //     gridColumnStart: `span `,
+    //     gridColumnEnd: `span 2`,
+    //     gridRowEnd: `span 2`,
+    //   },
+    //   // from: {
+    //   //   gridColumnStart: `span 3`,
+    //   //   gridColumnEnd: `span 3`,
+    //   //   gridRowEnd: `span 3`,
+    //   // },
+    // })
+
     return (
-      <Grid
-        item
-        lg={!showBlogImage ? 12 : index === 0 ? 12 : 3}
-        md={!showBlogImage ? 12 : index === 0 ? 12 : 4}
-        sm={!showBlogImage ? 12 : index === 0 ? 12 : 6}
-        xs={12}
+      <CSSGrid
+      // style={{ ...gridProps }}
       >
         <Card
           ref={ref}
@@ -322,7 +336,7 @@ const V1 = memo(
           {...bind()}
         >
           <Link style={{ boxShadow: `none` }} to={linkTo}>
-            {showBlogImage && image && (
+            {image && (
               <Image
                 fluid={
                   nodeType === `MarkdownRemark`
@@ -402,7 +416,7 @@ const V1 = memo(
             </code>
           </div>
         </Card>
-      </Grid>
+      </CSSGrid>
     )
   }
 )

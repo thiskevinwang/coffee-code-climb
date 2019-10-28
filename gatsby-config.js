@@ -59,7 +59,7 @@ module.exports = {
           fonts: "src/fonts",
           hooks: "src/hooks",
           pages: "src/pages",
-          state: "src/state",
+          _reduxState: "src/_reduxState",
           svg: "src/svg",
           templates: "src/templates",
           utils: "src/utils",

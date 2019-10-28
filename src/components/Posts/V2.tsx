@@ -53,7 +53,6 @@ const V2 = memo(
     image,
     index,
     nodeType,
-    showBlogImage,
   }) => {
     const isDarkMode = useSelector(state => state.isDarkMode)
     const [isIntersecting, bind] = useIO({
