@@ -3,8 +3,22 @@ import { useSelector, useDispatch } from "react-redux"
 import _ from "lodash"
 import moment from "moment"
 import { Grid } from "@material-ui/core"
+import styled from "styled-components"
+import { useSpring, animated, config } from "react-spring"
 
 import * as Posts from "components/Posts"
+
+const CSSGrid = styled(animated.div)`
+  display: grid;
+
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  /* grid-template-rows: repeat(auto-fill, minmax(9%, 1fr)); */
+  /* grid-auto-rows: auto-fill; */
+  /* grid-template-rows: 25% 100px auto; */
+
+  row-gap: 10px;
+  column-gap: 10px;
+`
 
 const checkIsMarkdownRemark = node => node.internal.type === `MarkdownRemark`
 const checkIsContentfulBlogPost = node =>
@@ -23,9 +37,23 @@ const PostsManager = ({ allPosts, location }) => {
     )
     return -date
   })
+
+  const [props, set] = useSpring(() => ({
+    // from: {
+    //   rowGap: 0,
+    //   columnGap: 0,
+    //   gridTemplateColumns: `repeat(auto-fill, minmax(0px, 1fr))`,
+    // },
+    // to: {
+    //   rowGap: 20,
+    //   columnGap: 20,
+    //   gridTemplateColumns: `repeat(auto-fill, minmax(200px, 1fr))`,
+    // },
+  }))
+
   if (postsVersion === 1)
     return (
-      <Grid container direction="row" spacing={4}>
+      <CSSGrid style={props}>
         {posts.map(({ node }, index) => {
           const isMarkdownRemark = checkIsMarkdownRemark(node)
           const isContentfulBlogPost = checkIsContentfulBlogPost(node)
@@ -55,7 +83,7 @@ const PostsManager = ({ allPosts, location }) => {
             />
           )
         })}
-      </Grid>
+      </CSSGrid>
     )
   if (postsVersion === 2)
     return posts.map(({ node }, index) => {

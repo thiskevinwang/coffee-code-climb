@@ -39,6 +39,14 @@ const calc = (
   const xy = [_.clamp(x, -10, 10), _.clamp(y, -10, 10)]
   return xy
 }
+
+const CSSGrid = styled(animated.div)`
+  /* grid-column-start: span 3; */
+  /* grid-column-end: 5; */
+  grid-row-start: span;
+  grid-row-end: span;
+`
+
 /**
  * # FROM_STYLE
  * - starting animated-style
@@ -297,13 +305,22 @@ const V1 = memo(
       }
     }, [])
 
+    // const [gridProps, setGP] = useSpring({
+    //   to: {
+    //     gridColumnStart: `span `,
+    //     gridColumnEnd: `span 2`,
+    //     gridRowEnd: `span 2`,
+    //   },
+    //   // from: {
+    //   //   gridColumnStart: `span 3`,
+    //   //   gridColumnEnd: `span 3`,
+    //   //   gridRowEnd: `span 3`,
+    //   // },
+    // })
+
     return (
-      <Grid
-        item
-        lg={index === 0 ? 12 : 3}
-        md={index === 0 ? 12 : 4}
-        sm={index === 0 ? 12 : 6}
-        xs={12}
+      <CSSGrid
+      // style={{ ...gridProps }}
       >
         <Card
           ref={ref}
@@ -399,7 +416,7 @@ const V1 = memo(
             </code>
           </div>
         </Card>
-      </Grid>
+      </CSSGrid>
     )
   }
 )

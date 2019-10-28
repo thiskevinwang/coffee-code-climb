@@ -4,7 +4,7 @@ import { Provider, useSelector, useDispatch } from "react-redux"
 // import { Transition } from "react-transition-group"
 // import { useSpring, animated } from "react-spring"
 
-import { store } from "./src/_reduxState"
+import { store } from "_reduxState"
 import {
   ApolloProvider,
   client,
