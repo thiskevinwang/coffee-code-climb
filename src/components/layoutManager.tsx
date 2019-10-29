@@ -1,19 +1,24 @@
 import React, { useState, useReducer, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import styled from "styled-components"
-import { useSpring, useChain, animated } from "react-spring"
+import { useSpring, useChain, animated, AnimatedValue } from "react-spring"
 
 import Layout from "./layout"
 import Layout2 from "./layout2"
 import { setLayoutVersion, RootState } from "_reduxState"
 import { rhythm } from "utils/typography"
 
-const XIcon = (
-  <svg viewBox="0 0 24 24" s>
-    <g>
-      <path d="M13.414 12l5.793-5.793c.39-.39.39-1.023 0-1.414s-1.023-.39-1.414 0L12 10.586 6.207 4.793c-.39-.39-1.023-.39-1.414 0s-.39 1.023 0 1.414L10.586 12l-5.793 5.793c-.39.39-.39 1.023 0 1.414.195.195.45.293.707.293s.512-.098.707-.293L12 13.414l5.793 5.793c.195.195.45.293.707.293s.512-.098.707-.293c.39-.39.39-1.023 0-1.414L13.414 12z"></path>
-    </g>
-  </svg>
+import * as Colors from "consts/Colors"
+
+const XIcon = ({ fill }: { fill: AnimatedValue<any> }) => (
+  <animated.svg viewBox="0 0 24 24" s>
+    <animated.g>
+      <animated.path
+        fill={fill}
+        d="M13.414 12l5.793-5.793c.39-.39.39-1.023 0-1.414s-1.023-.39-1.414 0L12 10.586 6.207 4.793c-.39-.39-1.023-.39-1.414 0s-.39 1.023 0 1.414L10.586 12l-5.793 5.793c-.39.39-.39 1.023 0 1.414.195.195.45.293.707.293s.512-.098.707-.293L12 13.414l5.793 5.793c.195.195.45.293.707.293s.512-.098.707-.293c.39-.39.39-1.023 0-1.414L13.414 12z"
+      ></animated.path>
+    </animated.g>
+  </animated.svg>
 )
 const XIconContainer = styled.div`
   border-radius: 100%;
@@ -79,17 +84,12 @@ const Modal = styled(animated.div)`
 `
 
 const ModalTitleText = styled(animated.h2)`
-  /* override typography */
-  color: black;
   margin-bottom: 0;
   @media (max-width: 350px) {
     margin-top: 20%;
   }
 `
 const Key = styled(animated.p)`
-  /* override typography */
-  color: black;
-
   font-weight: 700;
   font-size: 20px;
   margin-bottom: 5px;
@@ -131,6 +131,8 @@ const LayoutManager = props => {
     (s: boolean) => !s,
     false
   )
+
+  const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const layoutVersion = useSelector((state: RootState) => state.layoutVersion)
   const dispatch = useDispatch()
 
@@ -151,8 +153,11 @@ const LayoutManager = props => {
         setModalProps({ opacity: 1 })
       }, 2000)
   }, [])
-  const [modalProps, setModalProps] = useSpring(() => ({
+
+  const [{ opacity, modalBackground, fill }, setModalProps] = useSpring(() => ({
     opacity: showModal ? 1 : 0,
+    modalBackground: isDarkMode ? Colors.blackDarker : Colors.silverLighter,
+    fill: isDarkMode ? Colors.silverLighter : Colors.blackDarker,
   }))
 
   /**
@@ -170,6 +175,13 @@ const LayoutManager = props => {
       })
     }
   }, [shouldExit])
+
+  useEffect(() => {
+    setModalProps({
+      modalBackground: isDarkMode ? Colors.blackDarker : Colors.silverLighter,
+      fill: isDarkMode ? Colors.silverLighter : Colors.blackDarker,
+    })
+  }, [isDarkMode])
 
   useEffect(() => {
     console.log("layoutVersion", layoutVersion)
@@ -197,31 +209,31 @@ const LayoutManager = props => {
     <>
       {showModal && (
         <>
-          <Modal style={modalProps}>
+          <Modal style={{ opacity, background: modalBackground }}>
             <XIconContainer
               onClick={() => {
                 setShouldExit(true)
               }}
             >
-              {XIcon}
+              <XIcon fill={fill} />
             </XIconContainer>
             <ModalTitleText>Some Fun Buttons</ModalTitleText>
 
             <ItemRowContainer>
               <ItemRow>
-                <Key>T</Key> Toggle Icon Trail
+                <Key>T</Key> <span>Toggle Icon Trail</span>
               </ItemRow>
               <ItemRow>
-                <Key>S</Key> Slow Mo
+                <Key>S</Key> <span>Slow Mo</span>
               </ItemRow>
               <ItemRow>
-                <Key>F</Key> ???
+                <Key>F</Key> <span>???</span>
               </ItemRow>
               <ItemRow>
-                <Key>R</Key> Reset
+                <Key>R</Key> <span>Reset</span>
               </ItemRow>
               <ItemRow>
-                <Key>D</Key> Dark Mode
+                <Key>D</Key> <span>Dark Mode</span>
               </ItemRow>
             </ItemRowContainer>
 
@@ -247,7 +259,7 @@ const LayoutManager = props => {
               </Button>
             </ButtonContainer>
           </Modal>
-          <ModalBackground style={modalProps} />
+          <ModalBackground style={{ opacity }} />
         </>
       )}
       {(() => {
