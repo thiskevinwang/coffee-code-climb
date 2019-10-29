@@ -109,12 +109,14 @@ const TableOfContents = ({
         TABLE OF CONTENTS
       </p>
       <hr className="TOC__hr" />
-      <Link
-        className={"TOC__link"}
-        to={typeof window !== "undefined" && window.location.pathname}
-      >
-        {title}
-      </Link>
+      <li>
+        <Link
+          className={"TOC__link"}
+          to={typeof window !== "undefined" && window.location.pathname}
+        >
+          {title}
+        </Link>
+      </li>
       <div dangerouslySetInnerHTML={{ __html: HTML }} />
       <hr className="TOC__hr" />
     </Container>
