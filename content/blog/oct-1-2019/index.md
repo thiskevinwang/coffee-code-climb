@@ -20,7 +20,7 @@ tags:
 # image: coffee.png
 ---
 
-### TL;DR
+## TL;DR + Solution
 
 Revisiting a coding interview question that I failed, 6 months ago.
 
@@ -66,21 +66,23 @@ function main() {
 main()
 ```
 
-## The Not Too Long; Will Read + personal reflecting
+## Personal Reflecting
 
-About 6 months ago, I was trying to balance learning programming, an unpaid web development internship 3 days a week, and a continuous job hunt, all at once. It was hectic.Now, I'm reflecting on a coding interview question that I failed during that time.
+About 6 months ago, I was trying to balance learning programming, an unpaid web development internship 3 days a week, and a continuous job hunt, all at once. It was hectic. Now, I'm reflecting on a coding interview question that I failed during that time.
 
 It is totally worth noting that my interviewer was so encouraging, and the experience was overall very pleasant and educational. Had he not been so kind, I might've gave up on self-teaching programming, for a week or two, or indefinitely...
 
-### The coding question
+Thanks S.P.!
+
+### The Interview Question
 
 > Without using any date/time libraries, figure out how many Sundays fell on the first day of the month during the twentieth century: **January 1, 1901 to December 31, 2000**
 >
-> Jan 1, 1900 was a Monday
+> Dec 31, 1899 was a Sunday
 >
 > On years evenly divisible by 4, February has 29 days, except on a century, unless the year is divisble by 400. On all other years February has 28 days.
 
-### Struggles
+### Struggles + Attempt
 
 Looking back, I had no idea where to begin tackling this. I was missing a few key points in my understanding.
 
@@ -88,7 +90,7 @@ Looking back, I had no idea where to begin tackling this. I was missing a few ke
 2. How do I establish a _starting point_?
 3. Expect "nested for-loops"
 
-#### Establish your starting point
+#### ✖ Establishing a Starting Point
 
 I was able to establish the helper functions that I'd need to call on each iteration, but I wasn't able draw the line from Jan 1, 1900 to Jan 1, 1901, to establish my starting point.
 
@@ -103,14 +105,18 @@ const days = [0, 1, 2, 3, 4, 5, 6]
 That means Monday === 1. But what I was missing was that Monday could also equal 8, 71, 106, and (n \* 7) + 1. All I needed to do was add 365 to my reference point and "modulo" by 7 to get the day-of-week of my starting point.
 
 ```ts
-// Monday - Jan 1, 1900
-const ref = 1
+// Monday - Dec 31, 1899
+const clue = 0
 
+// Monday - Jan 1, 1900
+const reference = 1
+
+// 1900 is a regular year, so it has 365 days
 // Tuesday - Jan 1, 1901
-const currentDay = (ref + 365) % 7 // 2
+const currentDay = (reference + 365) % 7 // 2
 ```
 
-#### Visualizing the days per month
+#### ✖ Visualizing the Days Per Month
 
 This is how I visualized the days for a regular year.
 
@@ -122,13 +128,13 @@ const REG_YEAR = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 But I couldn't seem to figure out how to check if Sunday was on the first day of each. If I visualized it differently, it might've helped. Like:
 
 ```ts
-let currentDay = /* some value I never resolved */
 const ALSO_REG_YEAR = [3, 0, 3, 2, 3, 2, 3, 3, 2, 3, 2, 3]
+const LEAP_YEAR = [3, 1, 3, 2, 3, 2, 3, 3, 2, 3, 2, 3]
 ```
 
 And "for each of these, increment your current day. If it, modulo 7 equals 0, increment your sunday counter."
 
-#### I ran out of time
+#### ✖ I Ran Out of Time
 
 After an hour, I think my code looked something like this, but 100x messier:
 
@@ -149,7 +155,12 @@ const getDaysInYear = (year: number): number[] =>
 
 function main() {
   let sundayCounter = 0
-  let currentDay = /* I never resolved this*/
+
+  /**
+   * I never established a starting 'index' for my
+   * function to base off of.
+   */
+  let currentDay = undefined
 
   for (let i = 1901; i <= 2000; i++) {
     const days = getDaysInYear(i)
@@ -173,15 +184,15 @@ I gave a good effort, my interviewer commended me for explaining my processes cl
 
 I left the interview defeated, but happy and inspired... and I immediately googled the solution.
 
-## Today, looking back
+## Today, Looking Back
 
 I tried solving this, and honestly it still gave me a tough time.
 
-### What's the time complexity?
+### What's the Time Complexity?
 
 Even now, 6 months of full-time frontend engineering (_psh, css, am I rite? lolz_) later, I'm not confident in how the time-complexity should be notated... **_O(n)_**? There is a nested for-loop, but the inner for loop only doesn't grow with the outer (if the outer were to grow).
 
-### Any other approaches?
+### Any Other Approaches?
 
 One of my brother's friends said,
 
