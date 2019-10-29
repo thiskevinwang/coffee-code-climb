@@ -1,7 +1,7 @@
-import * as React from "react"
+import React, { useRef } from "react"
 
 import styled from "styled-components"
-import { animated, AnimatedValue } from "react-spring"
+import { useSpring, useChain, animated, AnimatedValue } from "react-spring"
 
 const XIcon = ({ fill }: { fill: AnimatedValue<any> }) => (
   <animated.svg viewBox="0 0 24 24" s>
@@ -118,15 +118,37 @@ const Button = styled(animated.div)`
 `
 const FunButtonsModal = ({
   animatedOpacity,
-  contentOpacity,
+  // contentOpacity,
   animatedModalBackground,
   animatedFill,
+  shouldExit,
   setShouldExit,
   neverShowModalChecked,
   toggleNeverShowModalChecked,
-  modalWidth,
-  modalHeight,
+  // modalWidth,
+  // modalHeight,
 }) => {
+  const resizeRef = useRef()
+  const { modalWidth, modalHeight } = useSpring({
+    ref: resizeRef,
+    from: { modalWidth: 0, modalHeight: 0 },
+    to: { modalWidth: shouldExit ? 0 : 25, modalHeight: shouldExit ? 0 : 50 },
+  })
+
+  const contentOpacityRef = useRef()
+  const { contentOpacity } = useSpring({
+    ref: contentOpacityRef,
+    from: { contentOpacity: 0 },
+    to: { contentOpacity: shouldExit ? 0 : 1 },
+  })
+
+  // useChain(open ? [springRef, transRef] : [transRef, springRef], [0, open ? 0.1 : 0.6])
+  useChain(
+    shouldExit
+      ? [contentOpacityRef, resizeRef]
+      : [resizeRef, contentOpacityRef],
+    [0, 0.5]
+  )
   return (
     <>
       <Modal

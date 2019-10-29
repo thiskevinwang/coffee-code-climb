@@ -47,33 +47,12 @@ const LayoutManager = props => {
     fill: isDarkMode ? Colors.silverLighter : Colors.blackDarker,
   }))
 
-  const resizeRef = useRef()
-  const { modalWidth, modalHeight } = useSpring({
-    ref: resizeRef,
-    from: { modalWidth: 0, modalHeight: 0 },
-    to: { modalWidth: shouldExit ? 0 : 25, modalHeight: shouldExit ? 0 : 50 },
-  })
-
-  const contentOpacityRef = useRef()
-  const { contentOpacity } = useSpring({
-    ref: contentOpacityRef,
-    from: { contentOpacity: 0 },
-    to: { contentOpacity: shouldExit ? 0 : 1 },
-  })
-
-  // useChain(open ? [springRef, transRef] : [transRef, springRef], [0, open ? 0.1 : 0.6])
-  useChain(
-    shouldExit
-      ? [contentOpacityRef, resizeRef]
-      : [resizeRef, contentOpacityRef],
-    shouldExit ? [0, 0] : [2.1, 3]
-  )
-
   /**
    * side effect of `shouldExit`
    * 1. decrease opacity to 0
    * 2. then toggle modal FALSE
    */
+  //TODO DELAY THIS by 1ish second
   useEffect(() => {
     if (shouldExit) {
       setModalProps({
@@ -119,11 +98,12 @@ const LayoutManager = props => {
       {showModal && (
         <FunButtonsModal
           animatedOpacity={opacity}
-          contentOpacity={contentOpacity}
+          // contentOpacity={contentOpacity}
           animatedModalBackground={modalBackground}
           animatedFill={fill}
-          modalWidth={modalWidth}
-          modalHeight={modalHeight}
+          // modalWidth={modalWidth}
+          // modalHeight={modalHeight}
+          shouldExit={shouldExit}
           setShouldExit={setShouldExit}
           neverShowModalChecked={neverShowModalChecked}
           toggleNeverShowModalChecked={toggleNeverShowModalChecked}
