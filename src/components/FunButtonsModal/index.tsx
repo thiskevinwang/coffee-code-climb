@@ -78,11 +78,13 @@ const Modal = styled(animated.div)`
 
 const ModalTitleText = styled(animated.h2)`
   margin-bottom: 10px;
-  / @media (max-width: 350px) {
+
+  @media (max-width: 350px) {
     margin-top: 20%;
   }
 `
-const Key = styled(animated.p)`
+
+const Key = styled(animated.kbd)`
   font-weight: 700;
   font-size: 20px;
   margin-bottom: 5px;
