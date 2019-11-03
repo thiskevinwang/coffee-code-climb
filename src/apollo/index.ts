@@ -59,4 +59,17 @@ const INCREMENT_VIEWS = gql`
   }
 `
 
-export { ApolloProvider, client, CREATE_PAGE, GET_PAGE, INCREMENT_VIEWS }
+const TRACK_IP_VISITS = gql`
+  mutation {
+    trackIpVisits
+  }
+`
+
+export {
+  ApolloProvider,
+  client,
+  CREATE_PAGE,
+  GET_PAGE,
+  INCREMENT_VIEWS,
+  TRACK_IP_VISITS,
+}

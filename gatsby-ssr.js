@@ -2,7 +2,7 @@ import * as React from "react"
 import { Provider } from "react-redux"
 
 import { store } from "./src/_reduxState"
-import { ApolloProvider, client } from "src/apollo"
+import { ApolloProvider, client } from "./src/apollo"
 
 // NOTE:
 // For redux to cooperate with gatsby when running `npm run build`
