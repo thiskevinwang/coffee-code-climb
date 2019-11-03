@@ -11,7 +11,9 @@ import {
   CREATE_PAGE,
   GET_PAGE,
   INCREMENT_VIEWS,
-} from "src/apollo"
+  TRACK_IP,
+  TRACK_IP_VISITS,
+} from "./src/apollo"
 
 // const duration = 600
 // const defaultStyle = {
@@ -92,6 +94,7 @@ export const wrapRootElement = ({ element }) => {
  * https://github.com/gatsbyjs/gatsby/issues/10435#issuecomment-446627549
  */
 export const onClientEntry = async (_, plugins) => {
+  client.mutate({ mutation: TRACK_IP_VISITS })
   if (typeof IntersectionObserver === `undefined`) {
     await import(`intersection-observer`)
   }
