@@ -139,7 +139,7 @@ export const onRouteUpdate = async (
         )
       })
   } catch (error) {
-    console.error("INCREMENT_VIEWS:", err)
+    console.error("INCREMENT_VIEWS:", error)
   }
 }
 
