@@ -11,7 +11,6 @@ import {
   CREATE_PAGE,
   GET_PAGE,
   INCREMENT_VIEWS,
-  TRACK_IP,
   TRACK_IP_VISITS,
 } from "./src/apollo"
 
