@@ -94,7 +94,11 @@ export const wrapRootElement = ({ element }) => {
  * https://github.com/gatsbyjs/gatsby/issues/10435#issuecomment-446627549
  */
 export const onClientEntry = async (_, plugins) => {
-  client.mutate({ mutation: TRACK_IP_VISITS })
+  try {
+    client.mutate({ mutation: TRACK_IP_VISITS })
+  } catch (error) {
+    console.error("TRACK_IP_VISITS", error)
+  }
   if (typeof IntersectionObserver === `undefined`) {
     await import(`intersection-observer`)
   }
@@ -118,21 +122,25 @@ export const onRouteUpdate = async (
       })
       .then(result => {})
   } catch (err) {
-    console.log("I think this page was already created:", err)
+    console.error("I think this page was already created:", err)
   }
 
-  await client
-    .mutate({
-      mutation: INCREMENT_VIEWS,
-      variables: variables,
-    })
-    .then(result => {
-      console.log(
-        "INCREMENT_VIEWS",
-        location.href,
-        result.data.incrementViews.views
-      )
-    })
+  try {
+    await client
+      .mutate({
+        mutation: INCREMENT_VIEWS,
+        variables: variables,
+      })
+      .then(result => {
+        console.log(
+          "INCREMENT_VIEWS",
+          location.href,
+          result.data.incrementViews.views
+        )
+      })
+  } catch (error) {
+    console.error("INCREMENT_VIEWS:", err)
+  }
 }
 
 /**
