@@ -57,12 +57,12 @@ Coming from JavaScript, this is foreign to me, but not exactly. It's kind of lik
 
 ```js
 // JavaScript
-const fn = ({keyOne, keyTwo}) => {
+const fn = ({ keyOne, keyTwo }) => {
   console.log(keyOne)
   console.log(keyTwo)
 }
 
-fn({keyOne: "Hello,", keyTwo: "World!})
+fn({ keyOne: "Hello,", keyTwo: "World!" })
 ```
 
 ```python
