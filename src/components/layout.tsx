@@ -1,7 +1,6 @@
-import React, { useEffect } from "react"
+import * as React from "react"
 import { useSelector } from "react-redux"
-import { useSpring, animated, config } from "react-spring"
-import { useScroll } from "react-use-gesture"
+import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
 
 import {
@@ -18,6 +17,8 @@ import * as Colors from "consts/Colors"
 import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
 import { PageViewCounter } from "components/PageViewCounter"
 
+import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
+
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
 /** http://usejsdoc.org/tags-param.html
@@ -33,43 +34,7 @@ function Layout({ location, title, children }: Props) {
     background: isDarkMode ? Colors.black : Colors.silver,
   })
 
-  /**
-   * scrollY & setScrollyY
-   * @usage scrollY.percent.interpolate({range: [any], output: [any]})
-   *
-   * @usage setScrollyY({percent: [any] })
-   */
-  const [scrollY, setScrollY] = useSpring(() => ({
-    percent: 0,
-    config: { ...config.molasses, clamp: true },
-  }))
-
-  const bindScrollGesture = useScroll(
-    state => {
-      // These two are the same
-      // console.log("state", state.values[1])
-      // console.log("window", window.document.scrollingElement.scrollTop)
-
-      const { values } = state
-      // const scrollTop = state?.event?.target?.documentElement?.scrollTop
-      // const scrollHeight = state?.event?.target?.documentElement?.scrollHeight
-      // const clientHeight = state?.event?.target?.documentElement?.clientHeight
-
-      const scrollHeight =
-        typeof window !== "undefined" &&
-        window.document.scrollingElement.scrollHeight
-      const clientHeight =
-        typeof window !== "undefined" &&
-        window.document.scrollingElement.clientHeight
-
-      // console.log(scrollTop / (scrollHeight - clientHeight))
-      setScrollY({
-        percent: values[1] / (scrollHeight - clientHeight),
-      })
-    },
-    { domTarget: typeof window !== "undefined" && window }
-  )
-  useEffect(bindScrollGesture, [bindScrollGesture])
+  const [scrollYPercent] = useWindowScrollPercent()
 
   return (
     <>
@@ -89,21 +54,21 @@ function Layout({ location, title, children }: Props) {
         <animated.div
           style={{
             ...styles.bg1,
-            background: scrollY.percent.interpolate({
+            background: scrollYPercent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
               output: isDarkMode
                 ? Colors.DARK_GRADIENTS
                 : Colors.LIGHT_GRADIENTS,
             }),
-            transform: scrollY.percent.interpolate({
+            transform: scrollYPercent.interpolate({
               range: [0, 1],
               output: [`skewY(-6deg)`, `skewY(6deg)`],
             }),
-            transformOrigin: scrollY.percent.interpolate({
+            transformOrigin: scrollYPercent.interpolate({
               range: [0, 1],
               output: [`0% 0%`, `100% 0%`],
             }),
-            height: scrollY.percent.interpolate({
+            height: scrollYPercent.interpolate({
               range: [0, 0.5, 1],
               output: [`50%`, `45%`, `50%`],
             }),
@@ -114,7 +79,7 @@ function Layout({ location, title, children }: Props) {
           isDarkMode={isDarkMode}
           style={{
             ...styles.dottedBackground,
-            backgroundSize: scrollY.percent
+            backgroundSize: scrollYPercent
               .interpolate({
                 range: [0, 1],
                 output: [25, 50],
@@ -137,13 +102,13 @@ function Layout({ location, title, children }: Props) {
         >
           <animated.header
             style={{
-              transform: scrollY.percent
+              transform: scrollYPercent
                 .interpolate({
                   range: [0, 1, 2],
                   output: [1, 100, 3],
                 })
                 .interpolate(x => `translateY(${2 * x}vh)`),
-              opacity: scrollY.percent
+              opacity: scrollYPercent
                 .interpolate({
                   range: [0, 0.25, 1, 2],
                   output: [1, 0, 0, 0],
