@@ -38,22 +38,20 @@ const PostsManager = ({ allPosts, location }) => {
     return -date
   })
 
-  const [props, set] = useSpring(() => ({
-    // from: {
-    //   rowGap: 0,
-    //   columnGap: 0,
-    //   gridTemplateColumns: `repeat(auto-fill, minmax(0px, 1fr))`,
-    // },
-    // to: {
-    //   rowGap: 20,
-    //   columnGap: 20,
-    //   gridTemplateColumns: `repeat(auto-fill, minmax(200px, 1fr))`,
-    // },
-  }))
-
-  if (postsVersion === 1)
+  if (postsVersion === 1) {
+    /**
+     * postsVersion-2 can scroll quite deep, and when toggling versions,
+     * the `scrollTop` value is persisted.
+     *
+     * As a courtesy, scroll the window back to the top.
+     */
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    })
     return (
-      <CSSGrid style={props}>
+      <CSSGrid>
         {posts.map(({ node }, index) => {
           const isMarkdownRemark = checkIsMarkdownRemark(node)
           const isContentfulBlogPost = checkIsContentfulBlogPost(node)
@@ -85,6 +83,7 @@ const PostsManager = ({ allPosts, location }) => {
         })}
       </CSSGrid>
     )
+  }
   if (postsVersion === 2)
     return posts.map(({ node }, index) => {
       const isMarkdownRemark = checkIsMarkdownRemark(node)
