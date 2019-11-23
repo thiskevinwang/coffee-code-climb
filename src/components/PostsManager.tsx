@@ -1,17 +1,16 @@
 import React from "react"
-import { useSelector, useDispatch } from "react-redux"
+import { useSelector } from "react-redux"
 import _ from "lodash"
 import moment from "moment"
-import { Grid } from "@material-ui/core"
 import styled from "styled-components"
-import { useSpring, animated, config } from "react-spring"
+import { animated } from "react-spring"
 
 import * as Posts from "components/Posts"
 
 const CSSGrid = styled(animated.div)`
   display: grid;
 
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   /* grid-template-rows: repeat(auto-fill, minmax(9%, 1fr)); */
   /* grid-auto-rows: auto-fill; */
   /* grid-template-rows: 25% 100px auto; */
