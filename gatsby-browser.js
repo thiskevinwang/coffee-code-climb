@@ -64,11 +64,9 @@ import {
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (
-    <React.StrictMode>
-      <ApolloProvider client={client}>
-        <Provider store={store}>{element}</Provider>
-      </ApolloProvider>
-    </React.StrictMode>
+    <ApolloProvider client={client}>
+      <Provider store={store}>{element}</Provider>
+    </ApolloProvider>
   )
 }
 
