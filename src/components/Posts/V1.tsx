@@ -1,4 +1,3 @@
-import * as ReactDOM from "react-dom"
 import * as React from "react"
 import { useEffect, memo, useRef } from "react"
 import _ from "lodash"
@@ -40,13 +39,6 @@ const calc = (
   return xy
 }
 
-const CSSGrid = styled(animated.div)`
-  /* grid-column-start: span 3; */
-  /* grid-column-end: 5; */
-  grid-row-start: span;
-  grid-row-end: span;
-`
-
 /**
  * # FROM_STYLE
  * - starting animated-style
@@ -72,6 +64,22 @@ const MOUSEDOWN_STYLE = {
 }
 
 const Card = styled(animated.div)`
+  grid-column: ${({ index }) => {
+    /**
+     * Items' starting grid columns will cycle through
+     * 1,2,3, and they will span 1,2,3, columns.
+     *
+     * If the grid is 5 columns wide, you could see:
+     * |-1-|-2-|-3-|-3-|-3-|
+     * |-4-|-5-|-5-|-5-|-.-|
+     * |-.-|-.-|-6-|-6-|-.-| etc.
+     *
+     */
+    /* return `${(index % 3) + 1} / span ${_.random(1, 3)}` */
+
+    // Keeping it simple for now
+    return `span ${_.random(1, 3)}`
+  }};
   border-radius: 5px;
   /* box-shadow: 0px 10px 40px -10px ${Colors.blackDark}; */
   /* This clips the square top corners of the child image */
@@ -175,9 +183,7 @@ const V1 = memo(
        * Find own bounds & update spring props
        * @FIXME this doesn't update when 'transformXY' is applied
        */
-      const bounds: BoundingClientRect = ReactDOM.findDOMNode(
-        ref.current
-      ).getBoundingClientRect()
+      const bounds: BoundingClientRect = ref.current?.getBoundingClientRect()
       const center: Vector2 = [
         bounds.x + bounds.width / 2,
         bounds.y + bounds.height / 2,
@@ -305,118 +311,100 @@ const V1 = memo(
       }
     }, [])
 
-    // const [gridProps, setGP] = useSpring({
-    //   to: {
-    //     gridColumnStart: `span `,
-    //     gridColumnEnd: `span 2`,
-    //     gridRowEnd: `span 2`,
-    //   },
-    //   // from: {
-    //   //   gridColumnStart: `span 3`,
-    //   //   gridColumnEnd: `span 3`,
-    //   //   gridRowEnd: `span 3`,
-    //   // },
-    // })
-
     return (
-      <CSSGrid
-      // style={{ ...gridProps }}
+      <Card
+        index={index}
+        ref={ref}
+        s
+        className={"Card"}
+        style={{
+          ...springProps,
+          transform: interpolate(
+            [xy, scale, deg, rotateXY],
+            ([x, y], scale, deg, [rX, rY]) =>
+              `perspective(500px) scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg) rotateX(${rX}deg) rotateY(${rY}deg)`
+          ),
+        }}
+        {...bind()}
       >
-        <Card
-          ref={ref}
-          className={"Card"}
+        <Link style={{ boxShadow: `none` }} to={linkTo}>
+          {image && (
+            <Image
+              fluid={
+                nodeType === `MarkdownRemark`
+                  ? image.childImageSharp.fluid
+                  : image.fluid
+              }
+              alt={linkTo}
+              style={{}}
+              imgStyle={{}}
+            />
+          )}
+        </Link>
+        <div
           style={{
-            ...springProps,
-            transform: interpolate(
-              [xy, scale, deg, rotateXY],
-              ([x, y], scale, deg, [rX, rY]) =>
-                `perspective(500px) scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg) rotateX(${rX}deg) rotateY(${rY}deg)`
-            ),
+            margin: rhythm(2 / 3),
           }}
-          {...bind()}
         >
-          <Link style={{ boxShadow: `none` }} to={linkTo}>
-            {image && (
-              <Image
-                fluid={
-                  nodeType === `MarkdownRemark`
-                    ? image.childImageSharp.fluid
-                    : image.fluid
-                }
-                alt={linkTo}
-                style={{}}
-                imgStyle={{}}
-              />
-            )}
-          </Link>
-          <div
-            style={{
-              margin: rhythm(2 / 3),
-            }}
-          >
-            <Link style={{ color: `inherit`, boxShadow: `none` }} to={linkTo}>
-              <h3
-                style={{
-                  marginTop: rhythm(1 / 2),
-                  marginBottom: rhythm(1 / 2),
-                }}
-              >
-                {title}
-              </h3>
-              <small>{date}</small>
-              <br />
-              <small
-                dangerouslySetInnerHTML={{
-                  __html: description || excerpt,
-                }}
-              />
-            </Link>
+          <Link style={{ color: `inherit`, boxShadow: `none` }} to={linkTo}>
+            <h3
+              style={{
+                marginTop: rhythm(1 / 2),
+                marginBottom: rhythm(1 / 2),
+              }}
+            >
+              {title}
+            </h3>
+            <small>{date}</small>
             <br />
-            {_.includes(kebabTags, "coffee") && (
-              <Tooltip title={`tagged with "coffee"`}>
-                <Link style={{ boxShadow: `none` }} to={"/tags/coffee/"}>
-                  <span role="img" aria-label="tagged with coffee">
-                    ☕️
-                  </span>
-                </Link>
-              </Tooltip>
-            )}
-            {_.includes(kebabTags, "code") && (
-              <Tooltip title={`tagged with "code"`}>
-                <Link style={{ boxShadow: `none` }} to={"/tags/code/"}>
-                  <span role="img" aria-label="tagged with code">
-                    💻
-                  </span>
-                </Link>
-              </Tooltip>
-            )}
-            {_.includes(kebabTags, "climbing") && (
-              <Tooltip title={`tagged with "climbing"`}>
-                <Link style={{ boxShadow: `none` }} to={"/tags/climbing/"}>
-                  <span role="img" aria-label="tagged with climbing">
-                    🧗🏻‍♂️
-                  </span>
-                </Link>
-              </Tooltip>
-            )}{" "}
-            <code>
-              <small>
-                <Link
-                  style={{ color: `inherit`, boxShadow: `none` }}
-                  to={`${linkTo}#disqus_thread`}
-                >
-                  <CommentCount
-                    shortname={disqusShortname}
-                    config={disqusConfig}
-                  >
-                    Comments
-                  </CommentCount>
-                </Link>
-              </small>
-            </code>
-          </div>
-        </Card>
-      </CSSGrid>
+            <small
+              dangerouslySetInnerHTML={{
+                __html: description || excerpt,
+              }}
+            />
+          </Link>
+          <br />
+          {_.includes(kebabTags, "coffee") && (
+            <Tooltip title={`tagged with "coffee"`}>
+              <Link style={{ boxShadow: `none` }} to={"/tags/coffee/"}>
+                <span role="img" aria-label="tagged with coffee">
+                  ☕️
+                </span>
+              </Link>
+            </Tooltip>
+          )}
+          {_.includes(kebabTags, "code") && (
+            <Tooltip title={`tagged with "code"`}>
+              <Link style={{ boxShadow: `none` }} to={"/tags/code/"}>
+                <span role="img" aria-label="tagged with code">
+                  💻
+                </span>
+              </Link>
+            </Tooltip>
+          )}
+          {_.includes(kebabTags, "climbing") && (
+            <Tooltip title={`tagged with "climbing"`}>
+              <Link style={{ boxShadow: `none` }} to={"/tags/climbing/"}>
+                <span role="img" aria-label="tagged with climbing">
+                  🧗🏻‍♂️
+                </span>
+              </Link>
+            </Tooltip>
+          )}{" "}
+          <code>
+            <small>
+              <Link
+                style={{ color: `inherit`, boxShadow: `none` }}
+                to={`${linkTo}#disqus_thread`}
+              >
+                <CommentCount shortname={disqusShortname} config={disqusConfig}>
+                  ...
+                </CommentCount>
+              </Link>
+            </small>
+          </code>
+        </div>
+      </Card>
     )
   }
 )
