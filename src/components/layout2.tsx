@@ -4,7 +4,7 @@ import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
 import { Link } from "gatsby"
 
-import { withSVGTrail } from "components"
+import { withSVGTrail, Footer } from "components"
 import { NavBar2 } from "components/Layout2Components/NavBar2"
 import { PageViewCounter } from "components/PageViewCounter"
 
@@ -64,6 +64,7 @@ function Layout({ location, title, children }) {
           {topLink}
         </Link>
         <main>{children}</main>
+        <Footer />
       </animated.div>
     </animated.div>
   )
