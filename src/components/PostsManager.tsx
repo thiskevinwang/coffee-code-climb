@@ -44,11 +44,12 @@ const PostsManager = ({ allPosts, location }) => {
      *
      * As a courtesy, scroll the window back to the top.
      */
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth",
-    })
+    typeof window !== "undefined" &&
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      })
     return (
       <CSSGrid>
         {posts.map(({ node }, index) => {
