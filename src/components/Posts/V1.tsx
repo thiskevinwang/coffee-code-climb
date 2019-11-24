@@ -315,7 +315,6 @@ const V1 = memo(
       <Card
         index={index}
         ref={ref}
-        s
         className={"Card"}
         style={{
           ...springProps,
