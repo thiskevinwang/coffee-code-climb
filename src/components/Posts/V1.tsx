@@ -45,7 +45,7 @@ const calc = (
  * - currently just used for boxShadow
  */
 const FROM_STYLE = {
-  boxShadow: `0px 15px 30px -15px ${Colors.blackDark}`,
+  boxShadow: `0px 15px 30px -15px ${Colors.grey}`,
 }
 /**
  * # MOUSEOVER_STYLE
@@ -64,22 +64,15 @@ const MOUSEDOWN_STYLE = {
 }
 
 const Card = styled(animated.div)`
-  grid-column: ${({ index }) => {
-    /**
-     * Items' starting grid columns will cycle through
-     * 1,2,3, and they will span 1,2,3, columns.
-     *
-     * If the grid is 5 columns wide, you could see:
-     * |-1-|-2-|-3-|-3-|-3-|
-     * |-4-|-5-|-5-|-5-|-.-|
-     * |-.-|-.-|-6-|-6-|-.-| etc.
-     *
-     */
-    /* return `${(index % 3) + 1} / span ${_.random(1, 3)}` */
-
-    // Keeping it simple for now
-    return `span ${_.random(1, 3)}`
-  }};
+  border: 1px solid grey;
+  :hover {
+    border: 1px dashed white;
+  }
+  position: absolute;
+  /* left: ${({ index }) => `${(index % 4) * 25}%`}; */
+  /* top: ${({ index }) => `${Math.floor(index / 4) * 200}px`}; */
+  width: 300px;
+  height: 300px;
   border-radius: 5px;
   /* box-shadow: 0px 10px 40px -10px ${Colors.blackDark}; */
   /* This clips the square top corners of the child image */
@@ -96,6 +89,7 @@ type BoundingClientRect = {
   y: number
 }
 interface Props {
+  style: any // AnimatedValues
   key: string
   linkTo: string
   date: string
@@ -123,6 +117,7 @@ const V1 = memo(
     image,
     index,
     nodeType,
+    style,
   }: Props) => {
     //_.map + _.kebabCase each tag in frontmatter.tags
     let kebabTags = _.map(tags, tag => _.kebabCase(tag))
@@ -317,6 +312,7 @@ const V1 = memo(
         ref={ref}
         className={"Card"}
         style={{
+          ...style,
           ...springProps,
           transform: interpolate(
             [xy, scale, deg, rotateXY],
