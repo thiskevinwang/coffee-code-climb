@@ -1,4 +1,5 @@
 import React from "react"
+import { useSelector } from "react-redux"
 import styled, { css } from "styled-components"
 import { animated, useSpring, config } from "react-spring"
 import { useGesture } from "react-use-gesture"
@@ -31,13 +32,10 @@ const MOUSEDOWN_STYLE = {
 }
 interface Props {
   isDarkMode: boolean
-  lg?: boolean
-  md?: boolean
-  sm?: boolean
   textSm: boolean
 }
 
-const Renderer = styled(animated.div)`
+const Renderer = styled(animated.button)`
   background: ${Colors.silverLighter};
   border-radius: 5px;
   font-size: ${props => props.textSm && `12px`};
@@ -51,6 +49,7 @@ const Renderer = styled(animated.div)`
     props.isDarkMode &&
     css`
       background: ${Colors.blackLight};
+      color: ${Colors.silverLight};
     `};
 
   > label {
@@ -70,12 +69,13 @@ const Renderer = styled(animated.div)`
  * @usage
  *
  * ```jsx
- * <Button isDarkMode={isDarkMode} lg>
+ * <Button>
  *   <span>we need span here for global style update</span>
  * </Button>
  * ```
  */
 export const Button = (props: Props) => {
+  const isDarkMode = useSelector(state => state.isDarkMode)
   const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
     config: config.stiff,
@@ -89,5 +89,12 @@ export const Button = (props: Props) => {
     },
   })
 
-  return <Renderer {...props} style={{ ...springProps }} {...bind()} />
+  return (
+    <Renderer
+      isDarkMode={isDarkMode}
+      {...props}
+      style={{ ...springProps }}
+      {...bind()}
+    />
+  )
 }
