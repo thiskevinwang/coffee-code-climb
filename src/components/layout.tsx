@@ -2,12 +2,12 @@ import * as React from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
+import styled from "styled-components"
 
 import {
   ButtonAndDrawer,
   Footer,
   Header,
-  styles,
   withSVGTrail,
   NavBar,
 } from "components"
@@ -21,16 +21,39 @@ import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
-/** http://usejsdoc.org/tags-param.html
- * @param {string} props.title data.site.siteMetadata.title from graphql-pageQuery
- * @param {Location} props.location Parent.props.location
- * @param {React$Node} props.children mapped posts, or markdown
- */
+const ThemedBackground = styled(animated.div)`
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -9000;
+`
+
+const GradientBackground = styled(animated.div)`
+  position: fixed;
+  top: -20%; /* overwritten by react-spring */
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0.7;
+  z-index: -8999;
+`
+
+const LayoutFrame = styled.div`
+  border: ${process.env.NODE_ENV === "development" && `1px dotted red`};
+`
+const Main = styled.main`
+  border: ${process.env.NODE_ENV === "development" && `1px dotted orange`};
+`
+const Inner = styled.div`
+  border: ${process.env.NODE_ENV === "development" && `1px dotted yellow`};
+`
 
 function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
   const isDarkMode = useSelector(state => state.isDarkMode)
-  const { background } = useSpring({
+  const themedBackgroundProps = useSpring({
     background: isDarkMode ? Colors.black : Colors.silver,
   })
 
@@ -44,16 +67,9 @@ function Layout({ location, title, children }: Props) {
 
       {/* Background stuffs */}
       <>
-        <animated.div
+        <ThemedBackground style={themedBackgroundProps} />
+        <GradientBackground
           style={{
-            ...styles.mixed,
-            background: background,
-          }}
-        />
-        {/* Gradient Background */}
-        <animated.div
-          style={{
-            ...styles.bg1,
             background: scrollYPercent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
               output: isDarkMode
@@ -62,23 +78,21 @@ function Layout({ location, title, children }: Props) {
             }),
             transform: scrollYPercent.interpolate({
               range: [0, 1],
-              output: [`skewY(-6deg)`, `skewY(6deg)`],
+              output: [`skewY(-25deg)`, `skewY(25deg)`],
             }),
             transformOrigin: scrollYPercent.interpolate({
               range: [0, 1],
               output: [`0% 0%`, `100% 0%`],
             }),
-            height: scrollYPercent.interpolate({
+            top: scrollYPercent.interpolate({
               range: [0, 0.5, 1],
-              output: [`50%`, `45%`, `50%`],
+              output: [`-20%`, `-45%`, `-20%`],
             }),
           }}
         />
-        {/* Dotted Background */}
         <AnimatedDottedBackground
           isDarkMode={isDarkMode}
           style={{
-            ...styles.dottedBackground,
             backgroundSize: scrollYPercent
               .interpolate({
                 range: [0, 1],
@@ -89,10 +103,10 @@ function Layout({ location, title, children }: Props) {
         />
       </>
 
-      {/* Numbers */}
-      <StickyNumbers />
-      <div style={{ overflowX: "hidden" }}>
-        <div
+      {/* <StickyNumbers /> */}
+
+      <LayoutFrame>
+        <Inner
           style={{
             marginLeft: `auto`,
             marginRight: `auto`,
@@ -120,10 +134,16 @@ function Layout({ location, title, children }: Props) {
           </animated.header>
 
           <ButtonAndDrawer />
-          <main>{children}</main>
+          <Main
+            style={{
+              height: document.documentElement.scrollHeight,
+            }}
+          >
+            {children}
+          </Main>
           <Footer />
-        </div>
-      </div>
+        </Inner>
+      </LayoutFrame>
     </>
   )
 }
