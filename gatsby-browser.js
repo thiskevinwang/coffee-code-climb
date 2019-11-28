@@ -1,6 +1,6 @@
 import * as React from "react"
 // import ReactDOM from "react-dom"
-import { Provider, useSelector, useDispatch } from "react-redux"
+import { Provider } from "react-redux"
 // import { Transition } from "react-transition-group"
 // import { useSpring, animated } from "react-spring"
 
@@ -9,7 +9,6 @@ import {
   ApolloProvider,
   client,
   CREATE_PAGE,
-  GET_PAGE,
   INCREMENT_VIEWS,
   TRACK_IP_VISITS,
 } from "./src/apollo"

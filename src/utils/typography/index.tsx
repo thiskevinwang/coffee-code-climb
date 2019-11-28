@@ -123,9 +123,6 @@ Wordpress2016.overrideThemeStyles = () => {
     ".TOC__link:active": {
       color: "green",
     },
-    ".TOC__hr": {
-      background: isDarkMode ? Colors.greyLighter : Colors.grey,
-    },
   }
 }
 Wordpress2016.plugins = [new CodePlugin()]

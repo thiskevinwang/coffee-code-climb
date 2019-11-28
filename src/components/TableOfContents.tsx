@@ -97,7 +97,6 @@ const TableOfContents = ({
 
   return (
     <Container style={{ top }}>
-      <hr className="TOC__hr" />
       <p
         style={{
           textAlign: "center",
@@ -108,7 +107,6 @@ const TableOfContents = ({
       >
         TABLE OF CONTENTS
       </p>
-      <hr className="TOC__hr" />
       <li>
         <Link
           className={"TOC__link"}
@@ -118,7 +116,6 @@ const TableOfContents = ({
         </Link>
       </li>
       <div dangerouslySetInnerHTML={{ __html: HTML }} />
-      <hr className="TOC__hr" />
     </Container>
   )
 }
