@@ -40,14 +40,16 @@ const GradientBackground = styled(animated.div)`
   z-index: -8999;
 `
 
-const LayoutFrame = styled.div`
-  border: ${process.env.NODE_ENV === "development" && `1px dotted red`};
+const LayoutFrame = styled(animated.div)`
+  /* border: ${process.env.NODE_ENV === "development" && `1px dotted red`}; */
 `
-const Main = styled.main`
-  border: ${process.env.NODE_ENV === "development" && `1px dotted orange`};
+const Main = styled(animated.main)`
+  /* border: ${process.env.NODE_ENV === "development" &&
+    `1px dotted orange`}; */
 `
-const Inner = styled.div`
-  border: ${process.env.NODE_ENV === "development" && `1px dotted yellow`};
+const Inner = styled(animated.div)`
+  /* border: ${process.env.NODE_ENV === "development" &&
+    `1px dotted yellow`}; */
 `
 
 function Layout({ location, title, children }: Props) {
@@ -103,7 +105,7 @@ function Layout({ location, title, children }: Props) {
         />
       </>
 
-      {/* <StickyNumbers /> */}
+      <StickyNumbers />
 
       <LayoutFrame>
         <Inner
@@ -134,13 +136,7 @@ function Layout({ location, title, children }: Props) {
           </animated.header>
 
           <ButtonAndDrawer />
-          <Main
-            style={{
-              height: document.documentElement.scrollHeight,
-            }}
-          >
-            {children}
-          </Main>
+          <Main>{children}</Main>
           <Footer />
         </Inner>
       </LayoutFrame>
