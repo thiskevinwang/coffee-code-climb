@@ -69,14 +69,16 @@ const Card = styled(animated.div)`
     border: 1px dashed white;
   }
   position: absolute;
-  /* left: ${({ index }) => `${(index % 4) * 25}%`}; */
-  /* top: ${({ index }) => `${Math.floor(index / 4) * 200}px`}; */
-  width: 300px;
-  height: 300px;
   border-radius: 5px;
   /* box-shadow: 0px 10px 40px -10px ${Colors.blackDark}; */
   /* This clips the square top corners of the child image */
-  overflow: hidden;
+  overflow: scroll;
+
+  /* hide scroll bars */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
 `
 type BoundingClientRect = {
   bottom: number
