@@ -2,6 +2,15 @@ import styled from "styled-components"
 import { animated } from "react-spring"
 
 const AnimatedDottedBackground = styled(animated.div)`
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 30%;
+  transform: skewX(6deg);
+  transform-origin: top right;
+  z-index: -8998;
+
   background-image: -webkit-repeating-radial-gradient(
     center center,
     ${props =>
