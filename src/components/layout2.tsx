@@ -3,6 +3,7 @@ import { useSelector } from "react-redux"
 import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
 import { Link } from "gatsby"
+import styled from "styled-components"
 
 import { withSVGTrail, Footer } from "components"
 import { NavBar2 } from "components/Layout2Components/NavBar2"
@@ -14,6 +15,15 @@ import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
+
+const FixedBG = styled(animated.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -9000;
+`
 
 function Layout({ location, title, children }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
@@ -29,16 +39,17 @@ function Layout({ location, title, children }) {
   const [scrollYPercent] = useWindowScrollPercent()
 
   return (
-    <animated.div
-      style={{
-        background: scrollYPercent.interpolate({
-          range: [0, 1],
-          output: isDarkMode
-            ? [Colors.blackLighter, Colors.blackDarker]
-            : [Colors.silverLighter, Colors.silverDarker],
-        }),
-      }}
-    >
+    <>
+      <FixedBG
+        style={{
+          background: scrollYPercent.interpolate({
+            range: [0, 1],
+            output: isDarkMode
+              ? [Colors.blackLighter, Colors.blackDarker]
+              : [Colors.silverLighter, Colors.silverDarker],
+          }),
+        }}
+      />
       <NavBar2 />
 
       <PageViewCounter location={location} />
@@ -66,7 +77,7 @@ function Layout({ location, title, children }) {
         <main>{children}</main>
         <Footer />
       </animated.div>
-    </animated.div>
+    </>
   )
 }
 
