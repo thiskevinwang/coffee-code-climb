@@ -16,13 +16,38 @@ import * as Colors from "consts/Colors"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
-const FixedBG = styled(animated.div)`
+const ThemedBackground = styled(animated.div)`
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   z-index: -9000;
+`
+
+const Dots = styled(animated.div)`
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 30%;
+  transform: skewX(6deg);
+  transform-origin: top right;
+  z-index: -8998;
+
+  background-image: -webkit-repeating-radial-gradient(
+    center center,
+    ${props =>
+      !props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`},
+    ${props =>
+        !props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`}
+      1px,
+    transparent 1px,
+    transparent 100%
+  );
+  -webkit-background-size: 15px 15px;
+  -moz-background-size: 15px 15px;
+  background-size: 15px 15px;
 `
 
 function Layout({ location, title, children }) {
@@ -40,14 +65,16 @@ function Layout({ location, title, children }) {
 
   return (
     <>
-      <FixedBG
+      <Dots />
+      <ThemedBackground
         style={{
-          background: scrollYPercent.interpolate({
-            range: [0, 1],
-            output: isDarkMode
-              ? [Colors.blackLighter, Colors.blackDarker]
-              : [Colors.silverLighter, Colors.silverDarker],
-          }),
+          background,
+          // background: scrollYPercent.interpolate({
+          //   range: [0, 1],
+          //   output: isDarkMode
+          //     ? [Colors.blackLighter, Colors.blackDarker]
+          //     : [Colors.silverLighter, Colors.silverDarker],
+          // }),
         }}
       />
       <NavBar2 />

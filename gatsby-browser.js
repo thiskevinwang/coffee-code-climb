@@ -1,10 +1,11 @@
 import * as React from "react"
 // import ReactDOM from "react-dom"
-import { Provider } from "react-redux"
+import { Provider, useDispatch } from "react-redux"
+import { useMediaQuery } from "@material-ui/core"
 // import { Transition } from "react-transition-group"
 // import { useSpring, animated } from "react-spring"
 
-import { store } from "_reduxState"
+import { store, setIsDarkMode } from "_reduxState"
 import {
   ApolloProvider,
   client,
@@ -60,11 +61,32 @@ import {
 //   )
 // }
 
+/**
+ * @TODO export this if context is needed elsewhere
+ */
+const PrefersDarkColorSchemeContext = React.createContext(false)
+
+const ColorSchemeProvider = ({ children }) => {
+  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
+  const dispatch = useDispatch()
+  React.useEffect(() => {
+    dispatch(setIsDarkMode(prefersDark))
+  }, [prefersDark])
+
+  return (
+    <PrefersDarkColorSchemeContext.Provider value={prefersDark}>
+      {children}
+    </PrefersDarkColorSchemeContext.Provider>
+  )
+}
+
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (
     <ApolloProvider client={client}>
-      <Provider store={store}>{element}</Provider>
+      <Provider store={store}>
+        <ColorSchemeProvider>{element} </ColorSchemeProvider>
+      </Provider>
     </ApolloProvider>
   )
 }
