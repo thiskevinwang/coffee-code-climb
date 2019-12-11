@@ -85,7 +85,7 @@ export const wrapRootElement = ({ element }) => {
   return (
     <ApolloProvider client={client}>
       <Provider store={store}>
-        <ColorSchemeProvider>{element} </ColorSchemeProvider>
+        <ColorSchemeProvider>{element}</ColorSchemeProvider>
       </Provider>
     </ApolloProvider>
   )
