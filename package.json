@@ -65,7 +65,8 @@
     "typography": "^0.16.19",
     "typography-plugin-code": "^0.16.19",
     "typography-theme-wordpress-2016": "^0.16.19",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "ws": "^7.2.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
@@ -74,6 +75,7 @@
     "@types/lodash": "^4.14.149",
     "@types/react-redux": "^7.1.5",
     "@types/styled-components": "^4.4.0",
+    "@types/ws": "^6.0.4",
     "babel-preset-gatsby": "^0.2.22",
     "gatsby-plugin-tslint": "0.0.2",
     "prettier": "^1.19.1",

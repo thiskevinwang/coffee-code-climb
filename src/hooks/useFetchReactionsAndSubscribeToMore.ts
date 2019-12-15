@@ -8,6 +8,8 @@ import { InMemoryCache } from "apollo-cache-inmemory"
 import { gql } from "apollo-boost"
 import { useLazyQuery, useSubscription } from "@apollo/react-hooks"
 import { SubscriptionClient } from "subscriptions-transport-ws"
+import * as ws from "ws"
+import { OperationDefinitionNode } from "graphql"
 // import fetch from "isomorphic-fetch"
 
 const QUERY = gql`
@@ -64,10 +66,12 @@ const SUBSCRIPTION_ENDPOINT = `${WSS_PROTOCOL}${ENDPOINT}`
 
 export const useFetchReactionsAndSubscribeToMore = () => {
   const [subscriptionClient] = useState(
-    () =>
-      new SubscriptionClient(SUBSCRIPTION_ENDPOINT, {
-        reconnect: true,
-      })
+    /**
+     * Passing `ws` as the 3rd constructor argument fixes this error when running `gatsby build`
+     * > WebpackError: Unable to find native implementation, or alternative implementation for WebSocket!
+     * @see https://github.com/apollographql/subscriptions-transport-ws/issues/191#issuecomment-311441663
+     */
+    () => new SubscriptionClient(SUBSCRIPTION_ENDPOINT, { reconnect: true }, ws)
   )
   const [wsLink] = useState(() => new WebSocketLink(subscriptionClient))
   const [httpLink] = useState(() => new HttpLink({ uri: QUERY_ENDPOINT }))
@@ -75,7 +79,9 @@ export const useFetchReactionsAndSubscribeToMore = () => {
     split(
       // split based on operation type
       ({ query }) => {
-        const { kind, operation } = getMainDefinition(query)
+        const { kind, operation } = getMainDefinition(
+          query
+        ) as OperationDefinitionNode
         return kind === "OperationDefinition" && operation === "subscription"
       },
       wsLink,
