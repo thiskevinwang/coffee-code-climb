@@ -28,7 +28,7 @@ const ReactionRenderer = styled(animated.div)`
   font-size: 36px;
 `
 
-const RdsPage = props => {
+function useReactionLogic() {
   const {
     lazyQueryProps: [fetchAllReactions, queryProps],
     subscriptionProps,
@@ -89,6 +89,13 @@ const RdsPage = props => {
       trail: 50,
     }
   )
+
+  return { transition, reactions, isQueryLoading: queryProps.loading }
+}
+
+const RdsPage = props => {
+  const { transition, reactions, isQueryLoading } = useReactionLogic()
+
   const containerProps = useSpring({
     height: reactions.length === 0 ? 0 : ITEM_HEIGHT * reactions.length,
   })
@@ -99,7 +106,7 @@ const RdsPage = props => {
       <h1>Reaction System</h1>
 
       <Container style={containerProps}>
-        {queryProps.loading && <LoadingIndicator />}
+        {isQueryLoading && <LoadingIndicator />}
         {transition.map(({ item, props, key }) => {
           return (
             <ReactionRenderer key={key} style={props}>
