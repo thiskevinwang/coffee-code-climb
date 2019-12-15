@@ -3,10 +3,10 @@ import { HttpLink } from "apollo-link-http"
 import { WebSocketLink } from "apollo-link-ws"
 import { split } from "apollo-link"
 import { getMainDefinition } from "apollo-utilities"
-import { ApolloClient, ApolloError } from "apollo-client"
+import { ApolloClient } from "apollo-client"
 import { InMemoryCache } from "apollo-cache-inmemory"
 import { gql } from "apollo-boost"
-import { useQuery, useSubscription } from "@apollo/react-hooks"
+import { useLazyQuery, useSubscription } from "@apollo/react-hooks"
 import { SubscriptionClient } from "subscriptions-transport-ws"
 // import fetch from "isomorphic-fetch"
 
@@ -42,7 +42,7 @@ const SUBSCRIPTION = gql`
     }
   }
 `
-type Reaction = {
+export type Reaction = {
   id: number
   variant: string
   created: Date
@@ -55,23 +55,6 @@ type Reaction = {
   }
 }
 
-type Query = {
-  getAllReactions: Reaction[]
-}
-type Subscription = {
-  newReaction: Reaction
-}
-type QueryProps = {
-  loading: boolean
-  error: ApolloError
-  data: Query
-}
-type SubscriptionProps = {
-  loading: boolean
-  error: ApolloError
-  data: Subscription
-}
-
 const ENDPOINT = process.env.GATSBY_RDS_API_ENDPOINT
 const HTTPS_PROTOCOL = "https://"
 const WSS_PROTOCOL = "wss://"
@@ -79,11 +62,7 @@ const QUERY_ENDPOINT = `${HTTPS_PROTOCOL}${ENDPOINT}`
 const SUBSCRIPTION_ENDPOINT = `${WSS_PROTOCOL}${ENDPOINT}`
 // const GRAPHQL_ENDPOINT = "ws://localhost:4044/graphql"
 
-export const useFetchReactionsAndSubscribeToMore = (): [
-  QueryProps,
-  SubscriptionProps,
-  typeof client
-] => {
+export const useFetchReactionsAndSubscribeToMore = () => {
   const [subscriptionClient] = useState(
     () =>
       new SubscriptionClient(SUBSCRIPTION_ENDPOINT, {
@@ -111,32 +90,9 @@ export const useFetchReactionsAndSubscribeToMore = (): [
       })
   )
 
-  const { loading: que_loading, error: que_error, data: que_data } = <
-    {
-      loading: boolean
-      error: ApolloError
-      data: Query
-    }
-  >useQuery(QUERY, { client })
-
-  const { loading: sub_loading, error: sub_error, data: sub_data } = <
-    {
-      loading: boolean
-      error: ApolloError
-      data: Subscription
-    }
-  >useSubscription(SUBSCRIPTION, { client })
-
-  const queryProps: QueryProps = {
-    loading: que_loading,
-    error: que_error,
-    data: que_data,
-  }
-  const subscriptionProps: SubscriptionProps = {
-    loading: sub_loading,
-    error: sub_error,
-    data: sub_data,
-  }
-
-  return [queryProps, subscriptionProps, client]
+  return [
+    useLazyQuery(QUERY, { client }),
+    useSubscription(SUBSCRIPTION, { client }),
+    client,
+  ]
 }

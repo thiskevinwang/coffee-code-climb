@@ -6,7 +6,10 @@ import styled from "styled-components"
 import { LayoutManager } from "src/components/layoutManager"
 import SEO from "../components/seo"
 import { LoadingIndicator, switchVariant } from "./rds/utils"
-import { useFetchReactionsAndSubscribeToMore } from "hooks/useFetchReactionsAndSubscribeToMore"
+import {
+  useFetchReactionsAndSubscribeToMore,
+  Reaction,
+} from "hooks/useFetchReactionsAndSubscribeToMore"
 
 const ITEM_HEIGHT = 63
 
@@ -26,19 +29,38 @@ const Item = styled(animated.div)`
 
 const RdsPage = props => {
   const [
-    queryProps,
+    [fetchAllReactions, queryProps],
     subscriptionProps,
     client,
   ] = useFetchReactionsAndSubscribeToMore()
+  useEffect(fetchAllReactions, [])
 
-  const [reactions, setReactions] = useState([])
+  const [reactions, setReactions] = useState([] as Reaction[])
   useEffect(() => {
-    if (!queryProps.loading)
+    if (!queryProps.loading && queryProps.called) {
+      console.log(queryProps.data.getAllReactions)
       setReactions(
         queryProps.data.getAllReactions.sort(e => e.comment.id) ?? []
       )
+    }
     return () => {}
-  }, [queryProps])
+  }, [queryProps.loading, queryProps.called])
+  useEffect(() => {
+    if (!subscriptionProps.loading) {
+      const newReaction: Reaction = subscriptionProps.data?.newReaction
+      if (newReaction) {
+        setReactions(s => {
+          /* index of oldReaction to replace with `newReaction` */
+          const i = _.findIndex(s, { id: newReaction.id })
+          /* "left" and "right" of the oldReaction array element */
+          const left = s.slice(0, i)
+          const right = s.slice(i + 1)
+          return [...left, newReaction, ...right]
+        })
+      }
+    }
+    return () => {}
+  }, [subscriptionProps.loading, subscriptionProps.data?.newReaction])
 
   const containerProps = useSpring({
     height: reactions.length === 0 ? 0 : ITEM_HEIGHT * reactions.length,
