@@ -5,7 +5,7 @@ import { useTransition, useSpring, animated } from "react-spring"
 import styled from "styled-components"
 import { LayoutManager } from "src/components/layoutManager"
 import SEO from "../components/seo"
-import { LoadingIndicator, switchVariant } from "./rds/utils"
+import { LoadingIndicator, switchVariant } from "../utils/rds"
 import {
   useFetchReactionsAndSubscribeToMore,
   Reaction,
