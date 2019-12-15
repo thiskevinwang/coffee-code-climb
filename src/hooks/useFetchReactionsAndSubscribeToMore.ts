@@ -70,8 +70,16 @@ export const useFetchReactionsAndSubscribeToMore = () => {
      * Passing `ws` as the 3rd constructor argument fixes this error when running `gatsby build`
      * > WebpackError: Unable to find native implementation, or alternative implementation for WebSocket!
      * @see https://github.com/apollographql/subscriptions-transport-ws/issues/191#issuecomment-311441663
+     *
+     * Error: ws does not work in the browser. Browser clients must use the native WebSocket object
+     * - so only add it when window is undefined, aka during build process / ssr
      */
-    () => new SubscriptionClient(SUBSCRIPTION_ENDPOINT, { reconnect: true }, ws)
+    () =>
+      new SubscriptionClient(
+        SUBSCRIPTION_ENDPOINT,
+        { reconnect: true },
+        typeof window === "undefined" && ws
+      )
   )
   const [wsLink] = useState(() => new WebSocketLink(subscriptionClient))
   const [httpLink] = useState(() => new HttpLink({ uri: QUERY_ENDPOINT }))
