@@ -90,7 +90,7 @@ const RdsPage = props => {
     }
   )
   const containerProps = useSpring({
-    height: transition.length === 0 ? 0 : ITEM_HEIGHT * transition.length,
+    height: reactions.length === 0 ? 0 : ITEM_HEIGHT * reactions.length,
   })
 
   return (
