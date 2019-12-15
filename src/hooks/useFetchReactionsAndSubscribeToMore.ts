@@ -104,9 +104,9 @@ export const useFetchReactionsAndSubscribeToMore = () => {
       })
   )
 
-  return [
-    useLazyQuery(QUERY, { client }),
-    useSubscription(SUBSCRIPTION, { client }),
+  return {
+    lazyQueryProps: useLazyQuery(QUERY, { client }),
+    subscriptionProps: useSubscription(SUBSCRIPTION, { client }),
     client,
-  ]
+  }
 }

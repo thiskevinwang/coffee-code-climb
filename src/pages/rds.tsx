@@ -17,7 +17,7 @@ const ITEM_HEIGHT = 63
 const Container = styled(animated.div)`
   position: relative;
 `
-const Item = styled(animated.div)`
+const ReactionRenderer = styled(animated.div)`
   display: flex;
   justify-content: center;
   border: 1px dashed white;
@@ -29,26 +29,23 @@ const Item = styled(animated.div)`
 `
 
 const RdsPage = props => {
-  const [
-    [fetchAllReactions, queryProps],
+  const {
+    lazyQueryProps: [fetchAllReactions, queryProps],
     subscriptionProps,
     client,
-  ] = useFetchReactionsAndSubscribeToMore()
+  } = useFetchReactionsAndSubscribeToMore()
   useEffect(fetchAllReactions, [])
 
   const [reactions, setReactions] = useState([] as Reaction[])
   useEffect(() => {
-    if (!queryProps.loading && queryProps.called) {
-      console.log(queryProps.data.getAllReactions)
-      setReactions(
-        queryProps.data.getAllReactions.sort(e => e.comment.id) ?? []
-      )
+    if (!queryProps.loading && !queryProps.error && queryProps.called) {
+      setReactions(queryProps.data.getAllReactions ?? [])
     }
     return () => {}
   }, [queryProps.loading, queryProps.called])
   useEffect(() => {
-    if (!subscriptionProps.loading) {
-      const newReaction: Reaction = subscriptionProps.data?.newReaction
+    if (!subscriptionProps.loading && !subscriptionProps.error) {
+      const newReaction: Reaction = subscriptionProps.data.newReaction
       if (newReaction) {
         setReactions(s => {
           /* index of oldReaction to replace with `newReaction` */
@@ -63,9 +60,6 @@ const RdsPage = props => {
     return () => {}
   }, [subscriptionProps.loading, subscriptionProps.data?.newReaction])
 
-  const containerProps = useSpring({
-    height: reactions.length === 0 ? 0 : ITEM_HEIGHT * reactions.length,
-  })
   const transition = useTransition(
     reactions,
     e => `${e.id}-${e.created}-${e.updated}-${e.variant}`,
@@ -95,6 +89,9 @@ const RdsPage = props => {
       trail: 50,
     }
   )
+  const containerProps = useSpring({
+    height: transition.length === 0 ? 0 : ITEM_HEIGHT * transition.length,
+  })
 
   return (
     <LayoutManager location={props.location}>
@@ -105,9 +102,9 @@ const RdsPage = props => {
         {queryProps.loading && <LoadingIndicator />}
         {transition.map(({ item, props, key }) => {
           return (
-            <Item key={key} style={props}>
+            <ReactionRenderer key={key} style={props}>
               {switchVariant(item?.variant)}
-            </Item>
+            </ReactionRenderer>
           )
         })}
       </Container>
