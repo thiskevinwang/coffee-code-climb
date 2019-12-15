@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useReducer, useEffect } from "react"
 import _ from "lodash"
 import { graphql } from "gatsby"
 import { useTransition, useSpring, animated } from "react-spring"
@@ -28,6 +28,35 @@ const ReactionRenderer = styled(animated.div)`
   font-size: 36px;
 `
 
+/**
+ * thank god for
+ * https://artsy.github.io/blog/2018/11/21/conditional-types-in-typescript/
+ */
+type Action =
+  | {
+      type: "getAllReactions"
+      getAllReactions: Reaction[]
+    }
+  | {
+      type: "newReaction"
+      newReaction: Reaction
+    }
+
+function reducer(state: Reaction[], action: Action): Reaction[] {
+  switch (action.type) {
+    case "getAllReactions":
+      return action.getAllReactions
+    case "newReaction":
+      /* index of oldReaction to replace with `newReaction` */
+      const i = _.findIndex(state, { id: action.newReaction.id })
+      /* "left" and "right" of the oldReaction array element */
+      const left = state.slice(0, i)
+      const right = state.slice(i + 1)
+      return [...left, action.newReaction, ...right]
+    default:
+      return state
+  }
+}
 function useReactionLogic() {
   const {
     lazyQueryProps: [fetchAllReactions, queryProps],
@@ -36,10 +65,13 @@ function useReactionLogic() {
   } = useFetchReactionsAndSubscribeToMore()
   useEffect(fetchAllReactions, [])
 
-  const [reactions, setReactions] = useState([] as Reaction[])
+  const [reactions, dispatch] = useReducer(reducer, [])
   useEffect(() => {
     if (!queryProps.loading && !queryProps.error && queryProps.called) {
-      setReactions(queryProps.data.getAllReactions ?? [])
+      dispatch({
+        type: "getAllReactions",
+        getAllReactions: queryProps.data.getAllReactions ?? [],
+      })
     }
     return () => {}
   }, [queryProps.loading, queryProps.called])
@@ -47,13 +79,9 @@ function useReactionLogic() {
     if (!subscriptionProps.loading && !subscriptionProps.error) {
       const newReaction: Reaction = subscriptionProps.data.newReaction
       if (newReaction) {
-        setReactions(s => {
-          /* index of oldReaction to replace with `newReaction` */
-          const i = _.findIndex(s, { id: newReaction.id })
-          /* "left" and "right" of the oldReaction array element */
-          const left = s.slice(0, i)
-          const right = s.slice(i + 1)
-          return [...left, newReaction, ...right]
+        dispatch({
+          type: "newReaction",
+          newReaction: newReaction,
         })
       }
     }
