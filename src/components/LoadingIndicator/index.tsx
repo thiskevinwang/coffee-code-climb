@@ -6,7 +6,7 @@ const COLORS = ["red", "orange", "goldenyellow", "green", "blue", "purple"]
 /**
  * # LoadingIndicator
  */
-export const LoadingIndicator = ({ style }) => {
+export const LoadingIndicator = ({ style = {} }) => {
   /** state */
   const [i, setI] = useState(0)
 
