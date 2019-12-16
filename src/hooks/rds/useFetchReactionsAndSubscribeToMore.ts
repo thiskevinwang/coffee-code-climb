@@ -10,7 +10,6 @@ import { useLazyQuery, useSubscription } from "@apollo/react-hooks"
 import { SubscriptionClient } from "subscriptions-transport-ws"
 import * as ws from "ws"
 import { OperationDefinitionNode } from "graphql"
-// import fetch from "isomorphic-fetch"
 
 const QUERY = gql`
   query {
@@ -46,7 +45,7 @@ const SUBSCRIPTION = gql`
 `
 export type Reaction = {
   id: number
-  variant: string
+  variant: "Like" | "Love" | "Haha" | "Wow" | "Sad" | "Angry" | "None"
   created: Date
   updated: Date
   user: {
