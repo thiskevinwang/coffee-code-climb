@@ -1,16 +1,15 @@
 import * as React from "react"
 import _ from "lodash"
 import { graphql } from "gatsby"
-import { useTransition, useSpring, animated } from "react-spring"
+import { useSpring, animated } from "react-spring"
 import styled from "styled-components"
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "../components/seo"
 import { switchVariant } from "../utils/rds"
-import {
-  useFetchReactionsAndSubscribeToMore,
-  Reaction,
-} from "hooks/useFetchReactionsAndSubscribeToMore"
+import { useCommentLogic } from "hooks/rds/useCommentLogic"
+import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
+import { Reaction } from "hooks/rds/useFetchReactionsAndSubscribeToMore"
 
 const LEFT_OFFSET = 20
 
@@ -60,10 +59,19 @@ const CommentRenderer = styled(animated.div)`
 `
 
 const RdsPage = props => {
-  const { transition, reactions, isQueryLoading } = useReactionLogic()
+  const {
+    transition: reactionsTransition,
+    reactions,
+    isQueryLoading: isReactionQueryLoading,
+  } = useReactionLogic()
+  const {
+    transition: commentsTransition,
+    comments,
+    isQueryLoading: isCommentQueryLoading,
+  } = useCommentLogic()
 
-  const containerProps = useSpring({
-    height: reactions.length === 0 ? 0 : ITEM_HEIGHT * reactions.length,
+  const reactionContainerProps = useSpring({
+    height: ITEM_HEIGHT,
   })
 
   return (
@@ -71,15 +79,71 @@ const RdsPage = props => {
       <SEO title="RDS" />
       <h1>Reaction System</h1>
 
-      <Container style={containerProps}>
-        {isQueryLoading && <LoadingIndicator />}
-        {transition.map(({ item, props, key }) => {
-          return (
-            <ReactionRenderer key={key} style={props}>
-              {switchVariant(item?.variant)}
-            </ReactionRenderer>
-          )
-        })}
+      <Container className={"comments"}>
+        {isCommentQueryLoading && <LoadingIndicator />}
+        {commentsTransition.map(({ item: _comment, props, key }) => (
+          <CommentRenderer key={key} style={props}>
+            <p>{_comment.body}</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <small>
+                Author: <b>{_comment.user.username}</b>
+              </small>
+              <FlexColumn>
+                <small>Posted: {timeDifferenceForDate(_comment.created)}</small>
+                {_comment.updated && (
+                  <small>
+                    Edited: {timeDifferenceForDate(_comment.updated)}
+                  </small>
+                )}
+              </FlexColumn>
+            </div>
+
+            <Container className={"reactions"} style={reactionContainerProps}>
+              <ReactionsContainer>
+                {getListOfUniqueVariants(_comment.reactions as Reaction[]).map(
+                  (variant, i) => (
+                    <Variant
+                      style={{
+                        left: `${LEFT_OFFSET * i}px`,
+                        zIndex: `${10 - i}`,
+                      }}
+                    >
+                      {switchVariant(variant)}
+                    </Variant>
+                  )
+                )}
+                <div
+                  style={{
+                    top: 0,
+                    position: "absolute",
+                    left: `${(getListOfUniqueVariants(
+                      _comment.reactions as Reaction[]
+                    ).length +
+                      1) *
+                      LEFT_OFFSET}px`,
+                  }}
+                >
+                  <small>
+                    {isReactionQueryLoading ? (
+                      <LoadingIndicator />
+                    ) : (
+                      _.intersectionWith(
+                        _.map(reactions, e => e.id),
+                        _.map(_comment.reactions, e => e.id),
+                        _.isEqual
+                      ).length
+                    )}
+                  </small>
+                </div>
+              </ReactionsContainer>
+            </Container>
+          </CommentRenderer>
+        ))}
       </Container>
     </LayoutManager>
   )
