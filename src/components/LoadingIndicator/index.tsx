@@ -6,7 +6,7 @@ const COLORS = ["red", "orange", "goldenyellow", "green", "blue", "purple"]
 /**
  * # LoadingIndicator
  */
-export const LoadingIndicator = () => {
+export const LoadingIndicator = ({ style }) => {
   /** state */
   const [i, setI] = useState(0)
 
@@ -23,5 +23,5 @@ export const LoadingIndicator = () => {
     }
   }, [])
 
-  return <div style={{ fontSize: 35, color: COLORS[i] }}>{ICONS[i]}</div>
+  return <div style={{ ...style, color: COLORS[i] }}>{ICONS[i]}</div>
 }
