@@ -37,15 +37,13 @@ function reactionsReducer(state: Reaction[], action: Action): Reaction[] {
   }
 }
 
-export function useReactionLogic({ delay }: { delay: number }) {
+export function useReactionLogic() {
   const {
     lazyQueryProps: [fetchAllReactions, queryProps],
     subscriptionProps,
     client,
   } = useFetchReactionsAndSubscribeToMore()
-  useEffect(() => {
-    setTimeout(fetchAllReactions, delay ?? 0)
-  }, [])
+  useEffect(fetchAllReactions, [])
 
   const [reactions, dispatch] = useReducer(reactionsReducer, [])
   useEffect(() => {
