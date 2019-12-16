@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react"
+import * as React from "react"
 import _ from "lodash"
 import { graphql } from "gatsby"
 import { useTransition, useSpring, animated } from "react-spring"
@@ -12,114 +12,52 @@ import {
   Reaction,
 } from "hooks/useFetchReactionsAndSubscribeToMore"
 
-const ITEM_HEIGHT = 63
+const LEFT_OFFSET = 20
 
-const Container = styled(animated.div)`
-  position: relative;
-`
-const ReactionRenderer = styled(animated.div)`
+const Variant = styled(animated.div)`
+  background: grey;
   display: flex;
+  position: absolute;
   justify-content: center;
   border: 1px dashed white;
   border-radius: 100%;
+  text-align: center;
   height: ${ITEM_HEIGHT}px;
   width: ${ITEM_HEIGHT}px;
-  position: absolute;
-  font-size: 36px;
+  padding-left: 4px;
+  top: 0px;
 `
 
-/**
- * thank god for
- * https://artsy.github.io/blog/2018/11/21/conditional-types-in-typescript/
- */
-type Action =
-  | {
-      type: "getAllReactions"
-      getAllReactions: Reaction[]
-    }
-  | {
-      type: "newReaction"
-      newReaction: Reaction
-    }
+const FlexColumn = styled(animated.div)`
+  display: flex;
+  flex-direction: column;
+`
+const Container = styled(animated.div)`
+  position: relative;
+`
 
-function reducer(state: Reaction[], action: Action): Reaction[] {
-  switch (action.type) {
-    case "getAllReactions":
-      return action.getAllReactions
-    case "newReaction":
-      /* index of oldReaction to replace with `newReaction` */
-      const i = _.findIndex(state, { id: action.newReaction.id })
-      /* "left" and "right" of the oldReaction array element */
-      const left = state.slice(0, i)
-      const right = state.slice(i + 1)
-      return [...left, action.newReaction, ...right]
-    default:
-      return state
+const ReactionRenderer = styled(animated.div)``
+const ReactionsContainer = styled(animated.div)`
+  width: 100%;
+  left: 0;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`
+
+const CommentRenderer = styled(animated.div)`
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed white;
+  border-radius: 10px;
+  margin: 5px;
+  padding: 25px;
+
+  > p {
+    border-bottom: 1px dashed grey;
   }
-}
-function useReactionLogic() {
-  const {
-    lazyQueryProps: [fetchAllReactions, queryProps],
-    subscriptionProps,
-    client,
-  } = useFetchReactionsAndSubscribeToMore()
-  useEffect(fetchAllReactions, [])
-
-  const [reactions, dispatch] = useReducer(reducer, [])
-  useEffect(() => {
-    if (!queryProps.loading && !queryProps.error && queryProps.called) {
-      dispatch({
-        type: "getAllReactions",
-        getAllReactions: queryProps.data.getAllReactions ?? [],
-      })
-    }
-    return () => {}
-  }, [queryProps.loading, queryProps.called])
-  useEffect(() => {
-    if (!subscriptionProps.loading && !subscriptionProps.error) {
-      const newReaction: Reaction = subscriptionProps.data.newReaction
-      if (newReaction) {
-        dispatch({
-          type: "newReaction",
-          newReaction: newReaction,
-        })
-      }
-    }
-    return () => {}
-  }, [subscriptionProps.loading, subscriptionProps.data?.newReaction])
-
-  const transition = useTransition(
-    reactions,
-    e => `${e.id}-${e.created}-${e.updated}-${e.variant}`,
-    {
-      from: item => ({
-        opacity: 0,
-        transform: `translateX(-200%) rotate(-360deg)`,
-        borderColor: `white`,
-        top: ITEM_HEIGHT * (reactions.indexOf(item) ?? 0),
-      }),
-      enter: item => ({
-        opacity: 1,
-        transform: `translateX(0%) rotate(0deg)`,
-        borderColor: `white`,
-        top: ITEM_HEIGHT * (reactions.indexOf(item) ?? 0),
-      }),
-      update: item => ({
-        opacity: 1,
-        borderColor: `green`,
-        top: ITEM_HEIGHT * (reactions.indexOf(item) ?? 0),
-      }),
-      leave: {
-        opacity: 0,
-        transform: `translateX(200%) rotate(360deg)`,
-        borderColor: `red`,
-      },
-      trail: 50,
-    }
-  )
-
-  return { transition, reactions, isQueryLoading: queryProps.loading }
-}
+`
 
 const RdsPage = props => {
   const { transition, reactions, isQueryLoading } = useReactionLogic()
