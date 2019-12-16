@@ -3,7 +3,7 @@ export const switchVariant = (variant: string) => {
     case "Like":
       return "👍"
     case "Love":
-      return "😍"
+      return "❤️"
     case "Haha":
       return "🤣"
     case "Wow":
