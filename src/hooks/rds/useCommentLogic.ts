@@ -24,13 +24,22 @@ function commentsReducer(state: Comment[], action: Action): Comment[] {
   }
 }
 
-export function useCommentLogic() {
+/**
+ * @TODO sort out `isIntersecting` logic.
+ * I want to fire an api call if "some element"
+ * is intersecting with the viewport
+ * - Like for a blog post, only load comments when
+ *   the reader scrolls to the bottom.
+ */
+export function useCommentLogic({ isIntersecting } = { isIntersecting: true }) {
   const {
     lazyQueryProps: [fetchComments, { called, loading, error, data }],
     subscriptionProps,
     client,
   } = useFetchComments()
-  useEffect(fetchComments, [])
+  useEffect(() => {
+    isIntersecting && fetchComments()
+  }, [isIntersecting])
 
   const [comments, dispatch] = useReducer(commentsReducer, [])
   useEffect(() => {
