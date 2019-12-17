@@ -13,6 +13,7 @@ import jwt from "jsonwebtoken"
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "components/seo"
+import { Button } from "components/Button"
 import { useIO } from "hooks/useIO"
 
 const Field = styled(animated.div)`
@@ -51,12 +52,12 @@ const Field = styled(animated.div)`
     top: 2px;
   }
 `
-const Button = styled(animated.button)`
-  border: 1px solid lightgray;
-  border-radius: 0.25rem;
-  width: 10rem;
-  margin-bottom: 2rem;
-`
+// const Button = styled(animated.button)`
+//   border: 1px solid lightgray;
+//   border-radius: 0.25rem;
+//   width: 10rem;
+//   margin-bottom: 2rem;
+// `
 const Error = styled(animated.div)`
   border: 3px solid #ff7979;
   border-radius: 0.25rem;
@@ -97,16 +98,30 @@ const AuthLogin = ({ location }: { location: Location }) => {
    * Form state
    */
   const [state, dispatch] = useReducer(authReducer, { email: "", password: "" })
-  const assignGenericProps = (fieldName: string) => ({
-    id: fieldName /* need this for <label for=""> */,
-    name: fieldName,
-    type: fieldName,
-    placeholder: fieldName,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      setErrorMessage("")
-      dispatch({ [fieldName]: e.target.value })
-    },
-  })
+  const assignFormProps = (fieldName: string) => {
+    switch (fieldName) {
+      case "submit":
+        return {
+          type: "submit",
+          onClick: (e: React.SyntheticEvent<HTMLButtonElement>) => {
+            e.preventDefault()
+            login()
+          },
+          disabled: !state.email || !state.password,
+        }
+      default:
+        return {
+          id: fieldName /* need this for <label for=""> */,
+          name: fieldName,
+          type: fieldName,
+          placeholder: fieldName,
+          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+            setErrorMessage("")
+            dispatch({ [fieldName]: e.target.value })
+          },
+        }
+    }
+  }
   const [errorMessage, setErrorMessage] = useState("")
 
   const token = typeof window !== "undefined" && localStorage.getItem("token")
@@ -147,21 +162,14 @@ const AuthLogin = ({ location }: { location: Location }) => {
       <h1>Login</h1>
       <form>
         <Field>
-          <input {...assignGenericProps("email")} />
+          <input {...assignFormProps("email")} />
           <label for={"email"}>email</label>
         </Field>
         <Field>
-          <input {...assignGenericProps("password")} />
+          <input {...assignFormProps("password")} />
           <label for={"password"}>password</label>
         </Field>
-        <Button
-          type="submit"
-          onClick={e => {
-            e.preventDefault()
-            login()
-          }}
-          disabled={!state.email || !state.password}
-        >
+        <Button widthRem={10} {...assignFormProps("submit")}>
           {loading ? <LoadingIndicator /> : "Login"}
         </Button>
         {errorMessage && <Error>{errorMessage}</Error>}
