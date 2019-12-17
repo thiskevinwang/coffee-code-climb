@@ -49,6 +49,11 @@ const link = split(
 const client = new ApolloClient({
   link: link,
   cache: new InMemoryCache(),
+  /**
+   * Passing fetch here fixes "Webpack Invariant" error when gatsby compiles
+   * https://github.com/gatsbyjs/gatsby/issues/3650#issuecomment-410146046
+   */
+  fetch,
 })
 
 const GET_PAGE = gql`
