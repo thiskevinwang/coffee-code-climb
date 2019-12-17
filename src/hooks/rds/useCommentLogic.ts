@@ -35,7 +35,6 @@ export function useCommentLogic({ isIntersecting } = { isIntersecting: true }) {
   const {
     lazyQueryProps: [fetchComments, { called, loading, error, data }],
     subscriptionProps,
-    client,
   } = useFetchComments()
   useEffect(() => {
     isIntersecting && fetchComments()
