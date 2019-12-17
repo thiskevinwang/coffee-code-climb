@@ -1,6 +1,5 @@
 import * as React from "react"
 import { navigate } from "gatsby"
-import jwt from "jsonwebtoken"
 import moment from "moment"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -17,6 +16,7 @@ import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { Reaction } from "hooks/rds/useFetchReactionsAndSubscribeToMore"
 import { useIO } from "hooks/useIO"
+import { useAuthentication } from "hooks/useAuthentication"
 
 const LEFT_OFFSET = 20
 
@@ -126,10 +126,17 @@ const LikeOrComment = () => {
   )
 }
 const RdsPage = props => {
-  const token = typeof window !== "undefined" && localStorage.getItem("token")
-
-  // @TODO Message if logged out vs logged in
+  const isAuthenticated = useAuthentication()
+  /**
+   * @TODO
+   * - return this func from `useAuthentication`
+   * - expose an optional `callback` argument, so you can pass
+   *   a `navigate()`, or other behavior to it, after
+   *   clearing a token
+   *
+   */
   const handleLogout = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+    e.preventDefault()
     localStorage.removeItem("token")
     navigate("/auth/login", {
       replace: true,
@@ -160,7 +167,7 @@ const RdsPage = props => {
       <SEO title="RDS" />
       <h1 {...bind}>Social Network Simulator</h1>
       <Button widthRem={10} onClick={handleLogout}>
-        Logout
+        {isAuthenticated ? "Logout" : "Login"}
       </Button>
       <Container className={"comments"}>
         {isCommentQueryLoading && <LoadingIndicator />}
