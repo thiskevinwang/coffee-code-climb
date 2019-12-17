@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react"
-import { useTransition } from "react-spring"
+import { useTransition, config } from "react-spring"
 import _ from "lodash"
 import { useFetchComments, Comment } from "hooks/rds/useFetchComments"
 
@@ -61,21 +61,25 @@ export function useCommentLogic() {
     {
       from: item => ({
         opacity: 0,
-        transform: `scale(0)`,
+        transform: `scale(0.8)`,
+        filter: `blur(10px)`,
+        willChange: `opacity, transform, filter`,
       }),
       enter: item => ({
         opacity: 1,
         transform: `scale(1)`,
+        filter: `blur(0px)`,
       }),
       update: item => ({
         opacity: 1,
       }),
       leave: {
         opacity: 0,
-        transform: `scale(0)`,
-        borderColor: `red`,
+        transform: `scale(0.8)`,
+        filter: `blur(10px)`,
       },
       trail: 50,
+      config: config.slow,
     }
   )
 
