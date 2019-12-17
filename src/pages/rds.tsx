@@ -1,4 +1,6 @@
 import * as React from "react"
+import { navigate } from "gatsby"
+import jwt from "jsonwebtoken"
 import moment from "moment"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -8,8 +10,9 @@ import { useMediaQuery } from "@material-ui/core"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
-import SEO from "../components/seo"
-import { switchVariant } from "../utils/rds"
+import SEO from "components/seo"
+import { Button } from "components/Button"
+import { switchVariant } from "utils/rds"
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { Reaction } from "hooks/rds/useFetchReactionsAndSubscribeToMore"
@@ -123,6 +126,16 @@ const LikeOrComment = () => {
   )
 }
 const RdsPage = props => {
+  const token = typeof window !== "undefined" && localStorage.getItem("token")
+
+  // @TODO Message if logged out vs logged in
+  const handleLogout = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+    localStorage.removeItem("token")
+    navigate("/auth/login", {
+      replace: true,
+    })
+  }
+
   const [isIntersecting, bind] = useIO({
     rootMargin: "0px 0px 0px 0px",
     threshold: 0.25,
@@ -146,7 +159,9 @@ const RdsPage = props => {
     <LayoutManager location={props.location}>
       <SEO title="RDS" />
       <h1 {...bind}>Social Network Simulator</h1>
-
+      <Button widthRem={10} onClick={handleLogout}>
+        Logout
+      </Button>
       <Container className={"comments"}>
         {isCommentQueryLoading && <LoadingIndicator />}
         {commentsTransition.map(({ item: _comment, props, key }) => (
