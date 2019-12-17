@@ -62,7 +62,6 @@ export function useCommentLogic() {
       from: item => ({
         opacity: 0,
         transform: `scale(0)`,
-        borderColor: `white`,
       }),
       enter: item => ({
         opacity: 1,
