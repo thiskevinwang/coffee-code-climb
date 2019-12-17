@@ -41,7 +41,6 @@ export function useReactionLogic() {
   const {
     lazyQueryProps: [fetchAllReactions, queryProps],
     subscriptionProps,
-    client,
   } = useFetchReactionsAndSubscribeToMore()
   useEffect(fetchAllReactions, [])
 
