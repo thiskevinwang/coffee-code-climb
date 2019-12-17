@@ -40,9 +40,9 @@ interface Options {
 
 /**
  * # useIO
- * @param {{root: HTMLElement}} root
- * @param {{rootMargin: string}} rootMargin
- * @param {{threshold: number | number[]}} root
+ * @param {{root: HTMLElement}} options.root null | window
+ * @param {{rootMargin: string}} options.rootMargin "0px 0px 0px 0px"
+ * @param {{threshold: number | number[]}} options.threshold 0.25
  * @usage
  * ```ts
  * const [isIntersecting, bind] = useIO(options?)
