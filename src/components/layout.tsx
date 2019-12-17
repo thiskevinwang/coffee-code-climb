@@ -15,7 +15,6 @@ import { StickyNumbers } from "components/StickyNumbers"
 import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
 import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
-import { PageViewCounter } from "components/PageViewCounter"
 
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
 
@@ -64,8 +63,6 @@ function Layout({ location, title, children }: Props) {
   return (
     <>
       <NavBar />
-
-      <PageViewCounter location={location} />
 
       {/* Background stuffs */}
       <>
