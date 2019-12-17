@@ -15,9 +15,6 @@ import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "components/seo"
 import { useIO } from "hooks/useIO"
 
-const Error = styled(animated.div)`
-  color: red;
-`
 const Field = styled(animated.div)`
   display: flex;
   flex-direction: column;
@@ -58,6 +55,16 @@ const Button = styled(animated.button)`
   border: 1px solid lightgray;
   border-radius: 0.25rem;
   width: 10rem;
+  margin-bottom: 2rem;
+`
+const Error = styled(animated.div)`
+  border: 3px solid #ff7979;
+  border-radius: 0.25rem;
+  color: #ffaaaa;
+  background: #f00;
+  max-width: 15rem;
+  padding: 0.5rem 1rem;
+  font-weight: 400;
 `
 
 const LOGIN = gql`
@@ -96,6 +103,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
     type: fieldName,
     placeholder: fieldName,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setErrorMessage("")
       dispatch({ [fieldName]: e.target.value })
     },
   })
@@ -137,19 +145,27 @@ const AuthLogin = ({ location }: { location: Location }) => {
     <LayoutManager location={location}>
       <SEO title="RDS" />
       <h1>Login</h1>
-
-      <Field>
-        <input {...assignGenericProps("email")} />
-        <label for={"email"}>email</label>
-      </Field>
-      <Field>
-        <input {...assignGenericProps("password")} />
-        <label for={"password"}>password</label>
-      </Field>
-      <Error>{errorMessage}</Error>
-      <Button onClick={login} disabled={!state.email || !state.password}>
-        {loading ? <LoadingIndicator /> : "Login"}
-      </Button>
+      <form>
+        <Field>
+          <input {...assignGenericProps("email")} />
+          <label for={"email"}>email</label>
+        </Field>
+        <Field>
+          <input {...assignGenericProps("password")} />
+          <label for={"password"}>password</label>
+        </Field>
+        <Button
+          type="submit"
+          onClick={e => {
+            e.preventDefault()
+            login()
+          }}
+          disabled={!state.email || !state.password}
+        >
+          {loading ? <LoadingIndicator /> : "Login"}
+        </Button>
+        {errorMessage && <Error>{errorMessage}</Error>}
+      </form>
     </LayoutManager>
   )
 }
