@@ -33,6 +33,7 @@ const MOUSEDOWN_STYLE = {
 interface Props {
   isDarkMode: boolean
   textSm: boolean
+  widthRem?: number
 }
 
 const Renderer = styled(animated.button)`
@@ -93,7 +94,7 @@ export const Button = (props: Props) => {
     <Renderer
       isDarkMode={isDarkMode}
       {...props}
-      style={{ ...springProps }}
+      style={{ ...springProps, width: `${props.widthRem}rem` }}
       {...bind()}
     />
   )
