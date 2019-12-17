@@ -109,7 +109,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
   })
   const [errorMessage, setErrorMessage] = useState("")
 
-  const token = localStorage.getItem("token")
+  const token = typeof window !== "undefined" && localStorage.getItem("token")
   useEffect(() => {
     jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {
       const userId = decoded?.userId
