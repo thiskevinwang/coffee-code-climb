@@ -143,6 +143,11 @@ const AuthLogin = ({ location }: { location: Location }) => {
       localStorage.setItem("token", data.login.token)
 
       jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {
+        /**
+         * @TODO Set an error, if the JWT isn't decoded correctly
+         * - ex. app secret is incorrect, or something
+         *
+         */
         const userId = decoded?.userId
         if (userId) {
           navigate("/rds", {
