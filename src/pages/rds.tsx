@@ -1,8 +1,11 @@
 import * as React from "react"
+import moment from "moment"
 import _ from "lodash"
 import { graphql } from "gatsby"
 import { useSpring, animated } from "react-spring"
 import styled from "styled-components"
+import { useMediaQuery } from "@material-ui/core"
+
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "../components/seo"
@@ -10,6 +13,7 @@ import { switchVariant } from "../utils/rds"
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { Reaction } from "hooks/rds/useFetchReactionsAndSubscribeToMore"
+import { useIO } from "hooks/useIO"
 
 const LEFT_OFFSET = 20
 
@@ -18,7 +22,7 @@ const Variant = styled(animated.div)`
   display: flex;
   position: absolute;
   justify-content: center;
-  border: 1px dashed white;
+  border: 1px solid #808080;
   border-radius: 100%;
   text-align: center;
   height: ${ITEM_HEIGHT}px;
@@ -31,11 +35,24 @@ const FlexColumn = styled(animated.div)`
   display: flex;
   flex-direction: column;
 `
+const FlexRow = styled(animated.div)`
+  display: flex;
+  flex-direction: row;
+`
 const Container = styled(animated.div)`
   position: relative;
 `
 
-const ReactionRenderer = styled(animated.div)``
+const Avatar = styled(animated.div)`
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  background: rebeccapurple;
+  margin-right: 10px;
+`
+
 const ReactionsContainer = styled(animated.div)`
   width: 100%;
   left: 0;
@@ -48,17 +65,68 @@ const ReactionsContainer = styled(animated.div)`
 const CommentRenderer = styled(animated.div)`
   display: flex;
   flex-direction: column;
-  border: 1px dashed white;
-  border-radius: 10px;
-  margin: 5px;
-  padding: 25px;
+  border: 1px solid lightgrey;
+  border-radius: 0.2rem;
+  margin-bottom: 1.25rem;
+  padding: 1.5rem 1.5rem 0;
 
   > p {
-    border-bottom: 1px dashed grey;
+    margin-bottom: 1rem; /* 16px */
   }
 `
 
+const FlexBoxButton = styled.div`
+  align-items: center;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  height: 3rem;
+  justify-content: center;
+  margin: 5px;
+
+  transition: background 200ms ease-in-out;
+  will-change: background;
+  > p {
+    margin-bottom: 0px;
+    will-change: color;
+  }
+
+  :hover {
+    background: lightgrey;
+    > p {
+      color: black;
+    }
+  }
+`
+
+const LikeOrComment = () => {
+  const windowSm = useMediaQuery("(max-width:480px)")
+  return (
+    <FlexRow
+      style={{
+        borderTop: `1px solid lightgrey`,
+      }}
+    >
+      <FlexBoxButton>
+        <p>Like</p>
+      </FlexBoxButton>
+      <FlexBoxButton>
+        <p>Comment</p>
+      </FlexBoxButton>
+      {!windowSm && (
+        <FlexBoxButton>
+          <p>Share</p>
+        </FlexBoxButton>
+      )}
+    </FlexRow>
+  )
+}
 const RdsPage = props => {
+  const [isIntersecting, bind] = useIO({
+    rootMargin: "0px 0px 0px 0px",
+    threshold: 0.25,
+  })
   const {
     transition: reactionsTransition,
     reactions,
@@ -68,7 +136,7 @@ const RdsPage = props => {
     transition: commentsTransition,
     comments,
     isQueryLoading: isCommentQueryLoading,
-  } = useCommentLogic()
+  } = useCommentLogic({ isIntersecting })
 
   const reactionContainerProps = useSpring({
     height: ITEM_HEIGHT,
@@ -77,12 +145,26 @@ const RdsPage = props => {
   return (
     <LayoutManager location={props.location}>
       <SEO title="RDS" />
-      <h1>Reaction System</h1>
+      <h1 {...bind}>Social Network Simulator</h1>
 
       <Container className={"comments"}>
         {isCommentQueryLoading && <LoadingIndicator />}
         {commentsTransition.map(({ item: _comment, props, key }) => (
           <CommentRenderer key={key} style={props}>
+            <FlexRow style={{ marginBottom: `.5rem` }}>
+              <Avatar />
+              <FlexColumn>
+                <small>
+                  <b>
+                    {_comment.user.first_name} {_comment.user.last_name}
+                  </b>
+                </small>
+                <small>
+                  {moment(_comment.created).format("MMMM DD \\at h:mm A")}
+                </small>
+              </FlexColumn>
+            </FlexRow>
+
             <p>{_comment.body}</p>
             <div
               style={{
@@ -90,11 +172,7 @@ const RdsPage = props => {
                 justifyContent: "space-between",
               }}
             >
-              <small>
-                Author: <b>{_comment.user.username}</b>
-              </small>
               <FlexColumn>
-                <small>Posted: {timeDifferenceForDate(_comment.created)}</small>
                 {_comment.updated && (
                   <small>
                     Edited: {timeDifferenceForDate(_comment.updated)}
@@ -103,7 +181,10 @@ const RdsPage = props => {
               </FlexColumn>
             </div>
 
-            <Container className={"reactions"} style={reactionContainerProps}>
+            <Container
+              className={"reactions"}
+              style={{ ...reactionContainerProps, marginBottom: `1rem` }}
+            >
               <ReactionsContainer>
                 {getListOfUniqueVariants(_comment.reactions as Reaction[]).map(
                   (variant, i) => (
@@ -142,6 +223,7 @@ const RdsPage = props => {
                 </div>
               </ReactionsContainer>
             </Container>
+            <LikeOrComment />
           </CommentRenderer>
         ))}
       </Container>
