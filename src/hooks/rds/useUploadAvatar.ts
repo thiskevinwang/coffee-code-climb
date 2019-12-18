@@ -48,7 +48,7 @@ export function useUploadAvatar() {
     UPDATE_USER_AVATAR
   )
 
-  const foo = async (file: File) => {
+  const uploadAvatar = async (file: File) => {
     try {
       const response: S3 = await getSignedUrl({
         variables: {
@@ -75,7 +75,7 @@ export function useUploadAvatar() {
     }
   }
 
-  return { foo }
+  return { uploadAvatar }
 }
 
 const formatFilename = (filename: string) => {
