@@ -17,6 +17,7 @@ import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { Reaction } from "hooks/rds/useFetchReactionsAndSubscribeToMore"
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
+import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
 
 const LEFT_OFFSET = 20
 
@@ -106,6 +107,34 @@ const FlexBoxButton = styled.div`
   }
 `
 
+/**
+ * @TODO
+ * https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/
+ */
+const ChooseFile = styled(animated.input)`
+  /* Hide the actual input */
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+
+  + label {
+    border: 1px solid lightgray;
+    border-radius: 0.25rem;
+    padding: 0.75rem 0.5rem;
+  }
+  :focus + label,
+  + label:hover {
+    cursor: pointer;
+  }
+`
+const UploadButton = styled(animated.button)`
+  border: 1px solid lightgray;
+  border-radius: 0.25rem;
+`
+
 const LikeOrComment = () => {
   const windowSm = useMediaQuery("(max-width:480px)")
   return (
@@ -165,10 +194,34 @@ const RdsPage = props => {
     height: ITEM_HEIGHT,
   })
 
+  const [file, setFile] = React.useState(null as File)
+  const handleChange = (selectorFiles: FileList) => {
+    if (selectorFiles) {
+      setFile(selectorFiles[0])
+    }
+  }
+
+  const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
+
   return (
     <LayoutManager location={props.location}>
       <SEO title="RDS" />
       <h1 {...bind}>Social Network Simulator</h1>
+      <ChooseFile
+        name="file"
+        id="file"
+        type="file"
+        accept={"image/png, image/jpeg"}
+        onChange={e => handleChange(e.target.files)}
+      />
+      <label for="file">Select an img</label>
+
+      {file && (
+        <UploadButton
+          onClick={() => uploadAvatar(file)}
+        >{`Upload ${file.name}`}</UploadButton>
+      )}
+
       <Button widthRem={10} onClick={handleLogout}>
         {isAuthenticated ? "Logout" : "Login"}
       </Button>

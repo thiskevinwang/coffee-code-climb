@@ -32,7 +32,7 @@ const UPDATE_USER_AVATAR = gql`
   }
 `
 
-export function useUploadAvatar() {
+export function useUploadAvatar({ onSuccess }: { onSuccess: () => void }) {
   // if (!file) throw new Error("Missing a required 'file' argument")
   // These args just come from client state
   const [getSignedUrl, { data: data_1, loading: loading_1 }] = useMutation(
@@ -45,7 +45,13 @@ export function useUploadAvatar() {
 
   // These args are dependent on the response from the earlier mutation
   const [updateUserAvatar, { data: data_2, loading: loading_2 }] = useMutation(
-    UPDATE_USER_AVATAR
+    UPDATE_USER_AVATAR,
+    {
+      onCompleted: data => {
+        onSuccess && onSuccess()
+      },
+      onError: (error: ApolloError) => {},
+    }
   )
 
   const uploadAvatar = async (file: File) => {
