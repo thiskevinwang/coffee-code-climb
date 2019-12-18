@@ -17,6 +17,8 @@ const WSS_PROTOCOL = "wss://"
 const QUERY_ENDPOINT = `${HTTPS_PROTOCOL}${ENDPOINT}`
 const SUBSCRIPTION_ENDPOINT = `${WSS_PROTOCOL}${ENDPOINT}`
 
+const __DEV__ = process.env.NODE_ENV !== "production"
+
 const subscriptionClient =
   /**
    * Passing `ws` as the 3rd constructor argument fixes this error when running `gatsby build`
@@ -27,13 +29,15 @@ const subscriptionClient =
    * - so only add it when window is undefined, aka during build process / ssr
    */
   new SubscriptionClient(
-    SUBSCRIPTION_ENDPOINT,
+    __DEV__ ? "ws://localhost:4044/graphql" : SUBSCRIPTION_ENDPOINT,
     { reconnect: true },
     typeof window === "undefined" && ws
   )
 
 const wsLink = new WebSocketLink(subscriptionClient)
-const httpLink = new HttpLink({ uri: QUERY_ENDPOINT })
+const httpLink = new HttpLink({
+  uri: __DEV__ ? "http://localhost:4044/graphql" : QUERY_ENDPOINT,
+})
 const link = split(
   // split based on operation type
   ({ query }) => {
