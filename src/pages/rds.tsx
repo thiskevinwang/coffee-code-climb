@@ -214,6 +214,7 @@ const RdsPage = props => {
                 {getListOfUniqueVariants(_comment.reactions as Reaction[]).map(
                   (variant, i) => (
                     <Variant
+                      key={`${variant}-${i}`}
                       style={{
                         left: `${LEFT_OFFSET * i}px`,
                         zIndex: `${10 - i}`,
