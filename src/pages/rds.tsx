@@ -195,9 +195,14 @@ const RdsPage = props => {
   })
 
   const [file, setFile] = React.useState(null as File)
-  const handleChange = (selectorFiles: FileList) => {
-    if (selectorFiles) {
-      setFile(selectorFiles[0])
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+
+    if (files) {
+      const file = files[0]
+      setFile(file)
+    } else {
+      setFile(null)
     }
   }
 
@@ -212,7 +217,7 @@ const RdsPage = props => {
         id="file"
         type="file"
         accept={"image/png, image/jpeg"}
-        onChange={e => handleChange(e.target.files)}
+        onChange={handleChange}
       />
       <label for="file">Select an img</label>
 
