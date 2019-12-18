@@ -223,7 +223,7 @@ const RdsPage = props => {
       )}
 
       <Button widthRem={10} onClick={handleLogout}>
-        {isAuthenticated ? "Logout" : "Login"}
+        {currentUserId ? "Logout" : "Login"}
       </Button>
       <Container className={"comments"}>
         {isCommentQueryLoading && <LoadingIndicator />}
@@ -232,7 +232,12 @@ const RdsPage = props => {
             <FlexRow style={{ marginBottom: `.5rem` }}>
               <Avatar src={_comment.user.avatar_url} />
               <FlexColumn>
-                <small>
+                <small
+                  style={{
+                    // Make name green if it's the currently authenticated user
+                    color: currentUserId == _comment.user.id && "green",
+                  }}
+                >
                   <b>
                     {_comment.user.first_name} {_comment.user.last_name}
                   </b>
