@@ -1,6 +1,7 @@
 import { ApolloProvider } from "@apollo/react-hooks"
 import { HttpLink } from "apollo-link-http"
 import { WebSocketLink } from "apollo-link-ws"
+import { setContext } from "apollo-link-context"
 import { split } from "apollo-link"
 import { getMainDefinition } from "apollo-utilities"
 import { ApolloClient } from "apollo-client"
@@ -50,8 +51,21 @@ const link = split(
   httpLink
 )
 
+// https://www.apollographql.com/docs/react/networking/authentication/#header
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem("token")
+  // return the headers to the context so thhe link can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  }
+})
+
 const client = new ApolloClient({
-  link: link,
+  link: authLink.concat(link),
   cache: new InMemoryCache(),
   /**
    * Passing fetch here fixes "Webpack Invariant" error when gatsby compiles
