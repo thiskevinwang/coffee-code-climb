@@ -5,17 +5,17 @@ import jwt from "jsonwebtoken"
  * - Checks local storage for `token`
  * - Adds `onstorage` event listener to update state accordingly
  *
- * @returns {boolean} `isAuthenticated`
+ * @returns {object} `{ currentUserId }`
  */
-export function useAuthentication(): boolean {
+export function useAuthentication(): { currentUserId: string } {
   const token = typeof window !== "undefined" && localStorage.getItem("token")
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState(null)
 
   useEffect(() => {
     jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {
       const userId = decoded?.userId
       if (userId) {
-        setIsAuthenticated(true)
+        setCurrentUserId(userId)
       }
     })
 
@@ -23,11 +23,11 @@ export function useAuthentication(): boolean {
       window.onstorage = () => {
         const _token = window.localStorage.getItem("token")
         if (!_token) {
-          setIsAuthenticated(false)
+          setCurrentUserId(null)
         }
       }
     }
   }, [])
 
-  return isAuthenticated
+  return { currentUserId }
 }
