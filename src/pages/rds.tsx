@@ -158,7 +158,7 @@ const LikeOrComment = () => {
   )
 }
 const RdsPage = props => {
-  const isAuthenticated = useAuthentication()
+  const { currentUserId } = useAuthentication()
   /**
    * @TODO
    * - return this func from `useAuthentication`
