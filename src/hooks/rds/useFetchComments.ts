@@ -15,6 +15,7 @@ const QUERY = gql`
         username
         first_name
         last_name
+        avatar_url
       }
       reactions {
         id
@@ -38,6 +39,7 @@ const SUBSCRIPTION = gql`
         username
         first_name
         last_name
+        avatar_url
       }
     }
   }
@@ -55,6 +57,7 @@ export type Comment = {
     username: string
     first_name: string
     last_name: string
+    avatar_url: string
   }
   reactions: {
     id: number

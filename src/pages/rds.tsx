@@ -52,7 +52,10 @@ const Avatar = styled(animated.div)`
   width: 40px;
   height: 40px;
   border-radius: 100%;
-  background: rebeccapurple;
+  background: rebeccapurple /* fallback when there's no props.src url */;
+  background-image: url(${props => props.src});
+  background-position: center;
+  background-size: 100%;
   margin-right: 10px;
 `
 
@@ -174,7 +177,7 @@ const RdsPage = props => {
         {commentsTransition.map(({ item: _comment, props, key }) => (
           <CommentRenderer key={key} style={props}>
             <FlexRow style={{ marginBottom: `.5rem` }}>
-              <Avatar />
+              <Avatar src={_comment.user.avatar_url} />
               <FlexColumn>
                 <small>
                   <b>
