@@ -163,7 +163,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
 
   return (
     <LayoutManager location={location}>
-      <SEO title="RDS" />
+      <SEO title="Login" />
       <h1>Login</h1>
       <form>
         <Field>
