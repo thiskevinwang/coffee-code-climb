@@ -6,6 +6,7 @@ import { graphql } from "gatsby"
 import { useSpring, animated } from "react-spring"
 import styled from "styled-components"
 import { useMediaQuery } from "@material-ui/core"
+import { useApolloClient } from "@apollo/react-hooks"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
@@ -159,6 +160,7 @@ const LikeOrComment = () => {
 }
 const RdsPage = props => {
   const { currentUserId } = useAuthentication()
+  const client = useApolloClient()
   /**
    * @TODO
    * - return this func from `useAuthentication`
@@ -170,6 +172,7 @@ const RdsPage = props => {
   const handleLogout = (e: React.SyntheticEvent<HTMLButtonElement>) => {
     e.preventDefault()
     localStorage.removeItem("token")
+    client.resetStore()
     navigate("/auth/login", {
       replace: true,
     })
