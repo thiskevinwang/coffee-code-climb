@@ -56,10 +56,19 @@ const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = localStorage.getItem("token")
   // return the headers to the context so thhe link can read them
+
+  /**
+   * @warning
+   * `Authorization` needs to come first, as `headers` may contain
+   * an imperatively set `Authorization` from a mutation/query. In
+   * that case, we want the later to take precedence over the
+   * `Authorization` value here, so we destructure `headers` AFTER
+   * `Authorization`
+   */
   return {
     headers: {
-      ...headers,
       Authorization: token ? `Bearer ${token}` : "",
+      ...headers,
     },
   }
 })
