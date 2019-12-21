@@ -1,7 +1,8 @@
 import * as React from "react"
 // import ReactDOM from "react-dom"
-import { Provider, useDispatch } from "react-redux"
+import { Provider, useDispatch, useSelector } from "react-redux"
 import { useMediaQuery } from "@material-ui/core"
+import { ThemeProvider } from "styled-components"
 // import { Transition } from "react-transition-group"
 // import { useSpring, animated } from "react-spring"
 
@@ -13,11 +14,12 @@ import {
   INCREMENT_VIEWS,
   TRACK_IP_VISITS,
 } from "./src/apollo"
+import DARK_THEME from "./src/Themes/dark"
+import LIGHT_THEME from "./src/Themes/light"
 
 /**
  * @TODO export this if context is needed elsewhere
  */
-const PrefersDarkColorSchemeContext = React.createContext(false)
 
 const ColorSchemeProvider = ({ children }) => {
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
@@ -25,11 +27,12 @@ const ColorSchemeProvider = ({ children }) => {
   React.useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
   }, [prefersDark])
+  const isDarkMode = useSelector(state => state.isDarkMode)
 
   return (
-    <PrefersDarkColorSchemeContext.Provider value={prefersDark}>
+    <ThemeProvider theme={isDarkMode ? DARK_THEME : LIGHT_THEME}>
       {children}
-    </PrefersDarkColorSchemeContext.Provider>
+    </ThemeProvider>
   )
 }
 
