@@ -4,7 +4,8 @@ import moment from "moment"
 import _ from "lodash"
 import { graphql } from "gatsby"
 import { useSpring, animated } from "react-spring"
-import styled from "styled-components"
+import styled, { BaseProps } from "styled-components"
+import theme from "styled-theming"
 import { useMediaQuery } from "@material-ui/core"
 import { useApolloClient } from "@apollo/react-hooks"
 
@@ -12,7 +13,7 @@ import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "components/seo"
 import { Button } from "components/Button"
-import { switchVariant } from "utils/rds"
+// import { switchVariant } from "utils/rds"
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { Reaction } from "hooks/rds/useFetchReactionsAndSubscribeToMore"
@@ -22,19 +23,33 @@ import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
 
 const LEFT_OFFSET = 20
 
+type VariantNames = Reaction["variant"]
+const backgroundPosition = theme.variants("mode", "variant", {
+  default: { light: "0% 0%", dark: "0% 0%" },
+  Like: { light: "0% 0%", dark: "33.3333% 0%" }, //                    :smile: | :upside_down:
+  Love: { light: "41.6667% 0%", dark: "83.3333% 0%" }, //              :heart_eyes: | :star_struck:
+  Haha: { light: "16.6667% 0%", dark: "19.4444% 0%" }, //              :joy: | :rofl:
+  Wow: { light: "100% 2.85714%", dark: "0% 0%" }, //                   :open_mouth: | :exploding_head:
+  Sad: { light: "19.4444% 2.85714%", dark: "22.2222% 2.85714%" }, //   :cry: | :sob:
+  Angry: { light: "27.7778% 2.85714%", dark: "30.5556% 2.85714%" }, // :angry: | :rage:
+  None: { light: "0% 0%", dark: "0% 0%" }, // :_: | :_:
+})
+
 const Variant = styled(animated.div)`
-  background: grey;
-  display: flex;
-  position: absolute;
-  justify-content: center;
-  border: 1px solid #808080;
-  border-radius: 100%;
-  text-align: center;
+  /* transition: background 150ms ease-in-out; */
+  will-change: background;
+  background-image: url(https://pf-emoji-service--cdn.us-east-1.prod.public.atl-paas.net/standard/a51a7674-8d5d-4495-a2d2-a67c090f5c3b/32x32/spritesheets/people.png);
+  background-position: ${backgroundPosition};
+  background-size: 3700% 3600%;
   height: ${ITEM_HEIGHT}px;
   width: ${ITEM_HEIGHT}px;
-  padding-left: 4px;
+
+  position: absolute;
   top: 0px;
 `
+// Variant.defaultProps = {
+//   variant: "default",
+// }
 
 const FlexColumn = styled(animated.div)`
   display: flex;
@@ -280,13 +295,14 @@ const RdsPage = props => {
                 {getListOfUniqueVariants(_comment.reactions as Reaction[]).map(
                   (variant, i) => (
                     <Variant
+                      variant={variant}
                       key={`${variant}-${i}`}
                       style={{
                         left: `${LEFT_OFFSET * i}px`,
                         zIndex: `${10 - i}`,
                       }}
                     >
-                      {switchVariant(variant)}
+                      {/* ... */}
                     </Variant>
                   )
                 )}
