@@ -6,10 +6,11 @@
 // import original module declarations
 import "styled-components"
 // import your custom theme
-import theme from "./Themes/dark"
+import darkTheme from "./Themes/dark"
+import lightTheme from "./Themes/light"
 
 // extend the module declarations using custom theme type
-type Theme = typeof theme
+type Theme = typeof darkTheme | typeof lightTheme
 type Props = { theme: Theme }
 
 /**
