@@ -71,3 +71,6 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+
+#
+JIRA_emoji.ts
