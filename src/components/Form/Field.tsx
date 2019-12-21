@@ -40,6 +40,14 @@ const FieldRenderer = styled(animated.div)`
     outline: none;
   }
 
+  > input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: ${color};
+    -webkit-box-shadow: 0 0 0px 1000px ${background} inset;
+    box-shadow: 0 0 0px 1000px ${background} inset;
+  }
+
   > input:focus {
     border-color: ${borderColorFocus};
   }
