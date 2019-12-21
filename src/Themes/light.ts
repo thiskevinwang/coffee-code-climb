@@ -1,11 +1,25 @@
 import * as Colors from "consts/Colors"
 
-export default {
-  colors: {
-    background: "#ECEFF4",
-    cardBackground: "#E5E9F0",
-    buttonBackground: "#5E81AC",
-    textColor: "#2E3440",
-    buttonColor: "#ECEFF4",
-  },
+enum formInput {
+  background = Colors.silverLighter,
+  borderColorBase = Colors.greyLighter,
+  borderColorFocus = Colors.blackDarker,
+  borderColorError = "#e00",
+  color = Colors.blackDarker,
 }
+
+enum formButton {
+  background = Colors.blackDarker,
+  backgroundDisabled = Colors.silverLighter,
+  backgroundHover = Colors.silverLighter,
+  borderColorDisabled = Colors.greyLighter,
+  color = Colors.silverLighter,
+  colorHover = Colors.blackDarker,
+}
+
+const lightTheme = {
+  formInput,
+  formButton,
+}
+
+export default lightTheme
