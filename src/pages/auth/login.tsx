@@ -1,63 +1,18 @@
 import React, { useState, useEffect, useReducer } from "react"
 import { navigate, Link } from "gatsby"
-import moment from "moment"
 import _ from "lodash"
 import { graphql } from "gatsby"
-import { useSpring, animated } from "react-spring"
+import { animated } from "react-spring"
 import styled from "styled-components"
-import { useMediaQuery } from "@material-ui/core"
-import { useMutation, useApolloClient } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/react-hooks"
 import { gql, ApolloError } from "apollo-boost"
 import jwt from "jsonwebtoken"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "components/seo"
-import { Button } from "components/Button"
-import { useIO } from "hooks/useIO"
+import { Field, SubmitButton } from "components/Form"
 
-const Field = styled(animated.div)`
-  display: flex;
-  flex-direction: column;
-  max-width: 15rem;
-  margin-bottom: 2rem;
-  position: relative;
-
-  > input {
-    border: 1px solid lightgray;
-    border-radius: 0.25rem;
-    padding-left: 0.2rem;
-  }
-
-  > input::placeholder {
-    transition: opacity 200ms ease-in-out;
-    will-change: opacity;
-  }
-  > input:focus::placeholder {
-    opacity: 0;
-  }
-
-  > input:focus + label,
-  > input:not(:placeholder-shown) + label {
-    transform: translateY(-2rem) scale(0.8);
-    opacity: 1;
-  }
-
-  > label {
-    opacity: 0;
-    transition: opacity 200ms ease-in-out, transform 200ms ease-in-out;
-    will-change: opacity transform;
-    position: absolute;
-    left: 2px;
-    top: 2px;
-  }
-`
-// const Button = styled(animated.button)`
-//   border: 1px solid lightgray;
-//   border-radius: 0.25rem;
-//   width: 10rem;
-//   margin-bottom: 2rem;
-// `
 const Error = styled(animated.div)`
   border: 3px solid #ff7979;
   border-radius: 0.25rem;
@@ -166,17 +121,11 @@ const AuthLogin = ({ location }: { location: Location }) => {
       <SEO title="Login" />
       <h1>Login</h1>
       <form>
-        <Field>
-          <input {...assignFormProps("email")} />
-          <label for={"email"}>email</label>
-        </Field>
-        <Field>
-          <input {...assignFormProps("password")} />
-          <label for={"password"}>password</label>
-        </Field>
-        <Button widthRem={10} {...assignFormProps("submit")}>
+        <Field {...assignFormProps("email")} />
+        <Field {...assignFormProps("password")} />
+        <SubmitButton {...assignFormProps("submit")}>
           {loading ? <LoadingIndicator /> : "Login"}
-        </Button>
+        </SubmitButton>
         {errorMessage && <Error>{errorMessage}</Error>}
       </form>
       <small>
