@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer } from "react"
-import { navigate } from "gatsby"
+import { navigate, Link } from "gatsby"
 import moment from "moment"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -179,6 +179,9 @@ const AuthLogin = ({ location }: { location: Location }) => {
         </Button>
         {errorMessage && <Error>{errorMessage}</Error>}
       </form>
+      <small>
+        <Link to="/auth/forgot">Forgot your password?</Link>
+      </small>
     </LayoutManager>
   )
 }
