@@ -30,7 +30,13 @@ const ColorSchemeProvider = ({ children }) => {
   const isDarkMode = useSelector(state => state.isDarkMode)
 
   return (
-    <ThemeProvider theme={isDarkMode ? DARK_THEME : LIGHT_THEME}>
+    <ThemeProvider
+      theme={
+        isDarkMode
+          ? { ...DARK_THEME, mode: "dark" }
+          : { ...LIGHT_THEME, mode: "light" }
+      }
+    >
       {children}
     </ThemeProvider>
   )
