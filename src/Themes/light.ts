@@ -17,9 +17,14 @@ enum formButton {
   colorHover = Colors.blackDarker,
 }
 
+enum commentRenderer {
+  borderColor = Colors.greyLighter,
+}
+
 const lightTheme = {
   formInput,
   formButton,
+  commentRenderer,
 }
 
 export default lightTheme

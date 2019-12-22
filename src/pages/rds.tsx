@@ -8,11 +8,12 @@ import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { useMediaQuery } from "@material-ui/core"
 import { useApolloClient } from "@apollo/react-hooks"
+import { Tooltip } from "@material-ui/core"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "components/seo"
-import { Button } from "components/Button"
+import { SubmitButton } from "components/Form"
 // import { switchVariant } from "utils/rds"
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
@@ -85,10 +86,17 @@ const ReactionsContainer = styled(animated.div)`
   align-items: center;
 `
 
+const borderColor = theme("mode", {
+  light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+  dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+})
 const CommentRenderer = styled(animated.div)`
   display: flex;
   flex-direction: column;
-  border: 1px solid lightgrey;
+  /* border: 1px solid lightgrey; */
+  border-width: 1px;
+  border-color: ${borderColor};
+  border-style: solid;
   border-radius: 0.2rem;
   margin-bottom: 1.25rem;
   padding: 1.5rem 1.5rem 0;
@@ -96,6 +104,10 @@ const CommentRenderer = styled(animated.div)`
   > p {
     margin-bottom: 1rem; /* 16px */
   }
+`
+const Line = styled(animated.div)`
+  height: 1px;
+  background: ${borderColor};
 `
 
 const FlexBoxButton = styled.div`
@@ -110,16 +122,17 @@ const FlexBoxButton = styled.div`
 
   transition: background 200ms ease-in-out;
   will-change: background;
-  > p {
-    margin-bottom: 0px;
-    will-change: color;
-  }
+
+  color: ${theme("mode", {
+    light: (props: BaseProps) => props.theme.formInput.color,
+    dark: (props: BaseProps) => props.theme.formInput.color,
+  })};
 
   :hover {
-    background: lightgrey;
-    > p {
-      color: black;
-    }
+    background: ${theme("mode", {
+      light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+      dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+    })};
   }
 `
 
@@ -154,23 +167,14 @@ const UploadButton = styled(animated.button)`
 const LikeOrComment = () => {
   const windowSm = useMediaQuery("(max-width:480px)")
   return (
-    <FlexRow
-      style={{
-        borderTop: `1px solid lightgrey`,
-      }}
-    >
-      <FlexBoxButton>
-        <p>Like</p>
-      </FlexBoxButton>
-      <FlexBoxButton>
-        <p>Comment</p>
-      </FlexBoxButton>
-      {!windowSm && (
-        <FlexBoxButton>
-          <p>Share</p>
-        </FlexBoxButton>
-      )}
-    </FlexRow>
+    <>
+      <Line />
+      <FlexRow>
+        <FlexBoxButton>Like</FlexBoxButton>
+        <FlexBoxButton>Comment</FlexBoxButton>
+        {!windowSm && <FlexBoxButton>Share</FlexBoxButton>}
+      </FlexRow>
+    </>
   )
 }
 const RdsPage = props => {
@@ -212,24 +216,25 @@ const RdsPage = props => {
     height: ITEM_HEIGHT,
   })
 
-  const [file, setFile] = React.useState(null as File)
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
+  // const [file, setFile] = React.useState(null as File)
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = e.target.files
 
-    if (files) {
-      const file = files[0]
-      setFile(file)
-    } else {
-      setFile(null)
-    }
-  }
+  //   if (files) {
+  //     const file = files[0]
+  //     setFile(file)
+  //   } else {
+  //     setFile(null)
+  //   }
+  // }
 
-  const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
+  // const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
 
   return (
     <LayoutManager location={props.location}>
       <SEO title="RDS" />
       <h1 {...bind}>Social Network Simulator</h1>
+      {/* 
       <ChooseFile
         name="file"
         id="file"
@@ -244,10 +249,11 @@ const RdsPage = props => {
           onClick={() => uploadAvatar(file)}
         >{`Upload ${file.name}`}</UploadButton>
       )}
+      */}
 
-      <Button widthRem={10} onClick={handleLogout}>
+      <SubmitButton onClick={handleLogout}>
         {currentUserId ? "Logout" : "Login"}
-      </Button>
+      </SubmitButton>
       <Container className={"comments"}>
         {isCommentQueryLoading && <LoadingIndicator />}
         {commentsTransition.map(({ item: _comment, props, key }) => (
@@ -257,8 +263,8 @@ const RdsPage = props => {
               <FlexColumn>
                 <small
                   style={{
-                    // Make name green if it's the currently authenticated user
-                    color: currentUserId == _comment.user.id && "green",
+                    // Make name highlighted if it's the currently authenticated user
+                    color: currentUserId == _comment.user.id && "#3978ff",
                   }}
                 >
                   <b>
@@ -292,27 +298,27 @@ const RdsPage = props => {
               style={{ ...reactionContainerProps, marginBottom: `1rem` }}
             >
               <ReactionsContainer>
-                {getListOfUniqueVariants(_comment.reactions as Reaction[]).map(
-                  (variant, i) => (
-                    <Variant
-                      variant={variant}
-                      key={`${variant}-${i}`}
-                      style={{
-                        left: `${LEFT_OFFSET * i}px`,
-                        zIndex: `${10 - i}`,
-                      }}
-                    >
-                      {/* ... */}
-                    </Variant>
-                  )
-                )}
+                {_.uniqBy(_comment.reactions, "variant").map((e, i) => (
+                  <Variant
+                    variant={e.variant}
+                    key={`${e.variant}-${i}`}
+                    style={{
+                      left: `${LEFT_OFFSET * i}px`,
+                      zIndex: `${10 - i}`,
+                    }}
+                  >
+                    {/* ... */}
+                  </Variant>
+                ))}
                 <div
                   style={{
                     top: 0,
                     position: "absolute",
-                    left: `${(getListOfUniqueVariants(
-                      _comment.reactions as Reaction[]
-                    ).length +
+                    /**
+                     * offset the reactionCount by # of unique
+                     * reaction variants, + 1
+                     */
+                    left: `${(_.uniqBy(_comment.reactions, "variant").length +
                       1) *
                       LEFT_OFFSET}px`,
                   }}
@@ -350,12 +356,6 @@ export const pageQuery = graphql`
     }
   }
 `
-
-// TODO: move these out
-
-function getListOfUniqueVariants(reactions: Reaction[]) {
-  return reactions ? _.uniq(reactions.map(e => e.variant)) : []
-}
 
 function timeDifference(current, previous) {
   const milliSecondsPerMinute = 60 * 1000
