@@ -1,8 +1,9 @@
-declare type ReactionVariant =
-  | "Like"
-  | "Love"
-  | "Haha"
-  | "Wow"
-  | "Sad"
-  | "Angry"
-  | "None"
+declare enum ReactionVariant {
+  Like,
+  Love,
+  Haha,
+  Wow,
+  Sad,
+  Angry,
+  None,
+}
