@@ -35,7 +35,7 @@ const SUBSCRIPTION = gql`
 `
 export type Reaction = {
   id: number
-  variant: "Like" | "Love" | "Haha" | "Wow" | "Sad" | "Angry" | "None"
+  variant: ReactionVariant
   created: Date
   updated: Date
   user: {
@@ -43,6 +43,7 @@ export type Reaction = {
   }
   comment: {
     id: number
+    reactions: Reaction[]
   }
 }
 
