@@ -13,12 +13,14 @@ type Action =
       newComment: Comment
     }
 
+const sortByNewest = _.flow(_.partialRight(_.sortBy, "created"), _.reverse)
+
 function commentsReducer(state: Comment[], action: Action): Comment[] {
   switch (action.type) {
     case "getAllComments":
-      return action.getAllComments
+      return sortByNewest(action.getAllComments)
     case "newComment":
-      return [...state, action.newComment]
+      return sortByNewest([...state, action.newComment])
     default:
       return state
   }
