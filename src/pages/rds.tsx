@@ -2,13 +2,13 @@ import * as React from "react"
 import { navigate } from "gatsby"
 import moment from "moment"
 import _ from "lodash"
-import { graphql } from "gatsby"
+import { graphql, Link } from "gatsby"
 import { useSpring, animated } from "react-spring"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { useMediaQuery } from "@material-ui/core"
 import { useApolloClient } from "@apollo/react-hooks"
-import { Tooltip } from "@material-ui/core"
+import Popover from "@material-ui/core/Popover"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
@@ -22,6 +22,8 @@ import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
 import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
 
+import * as Colors from "consts/Colors"
+
 const LEFT_OFFSET = 20
 
 type VariantNames = Reaction["variant"]
@@ -30,26 +32,23 @@ const backgroundPosition = theme.variants("mode", "variant", {
   Like: { light: "0% 0%", dark: "33.3333% 0%" }, //                    :smile: | :upside_down:
   Love: { light: "41.6667% 0%", dark: "83.3333% 0%" }, //              :heart_eyes: | :star_struck:
   Haha: { light: "16.6667% 0%", dark: "19.4444% 0%" }, //              :joy: | :rofl:
-  Wow: { light: "100% 2.85714%", dark: "0% 0%" }, //                   :open_mouth: | :exploding_head:
+  Wow: { light: "100% 2.85714%", dark: "36.1111% 2.85714%" }, //                   :open_mouth: | :exploding_head:
   Sad: { light: "19.4444% 2.85714%", dark: "22.2222% 2.85714%" }, //   :cry: | :sob:
   Angry: { light: "27.7778% 2.85714%", dark: "30.5556% 2.85714%" }, // :angry: | :rage:
   None: { light: "0% 0%", dark: "0% 0%" }, // :_: | :_:
 })
 
 const Variant = styled(animated.div)`
-  /* transition: background 150ms ease-in-out; */
+  transition: background-position 150ms ease-in-out;
   will-change: background;
   background-image: url(https://pf-emoji-service--cdn.us-east-1.prod.public.atl-paas.net/standard/a51a7674-8d5d-4495-a2d2-a67c090f5c3b/32x32/spritesheets/people.png);
   background-position: ${backgroundPosition};
   background-size: 3700% 3600%;
   height: ${ITEM_HEIGHT}px;
   width: ${ITEM_HEIGHT}px;
-
-  position: absolute;
-  top: 0px;
 `
 // Variant.defaultProps = {
-//   variant: "default",
+//   position: "relative",
 // }
 
 const FlexColumn = styled(animated.div)`
@@ -110,6 +109,28 @@ const Line = styled(animated.div)`
   background: ${borderColor};
 `
 
+const popoverBackground = theme("mode", {
+  // light: Colors.LIGHT_GRADIENTS[0],
+  // dark: Colors.DARK_GRADIENTS[0],
+  light: Colors.silverLighter,
+  dark: Colors.blackLighter,
+})
+const VariantButton = styled(animated.button)`
+  background: none;
+  display: flex;
+  justify-content: center;
+  border-radius: 0.2rem;
+  height: ${ITEM_HEIGHT + 10}px;
+  width: ${ITEM_HEIGHT + 10}px;
+  padding: 0px;
+  border: none;
+
+  transition: background 150ms ease-in-out;
+  :hover {
+    background: ${borderColor};
+  }
+`
+
 const FlexBoxButton = styled.div`
   align-items: center;
   border-radius: 0.2rem;
@@ -164,13 +185,87 @@ const UploadButton = styled(animated.button)`
   border-radius: 0.25rem;
 `
 
+const PopoverContents = styled(animated.div)`
+  color: ${theme("mode", {
+    light: (props: BaseProps) => props.theme.formInput.color,
+    dark: (props: BaseProps) => props.theme.formInput.color,
+  })};
+  background: ${popoverBackground};
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+
+  :first-child > :not(:first-child) {
+    /* border: 1px dotted red; */
+    margin-left: 0.75rem;
+  }
+`
+
 const LikeOrComment = () => {
+  const { currentUserId } = useAuthentication()
   const windowSm = useMediaQuery("(max-width:480px)")
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const open = Boolean(anchorEl)
+  const id = open ? "simple-popover" : undefined
+
   return (
     <>
       <Line />
       <FlexRow>
-        <FlexBoxButton>Like</FlexBoxButton>
+        <FlexBoxButton onClick={handleClick}>Like</FlexBoxButton>
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+        >
+          <PopoverContents>
+            {currentUserId ? (
+              <>
+                <VariantButton>
+                  <Variant variant={"Like"} />
+                </VariantButton>
+                <VariantButton>
+                  <Variant variant={"Love"} />
+                </VariantButton>
+                <VariantButton>
+                  <Variant variant={"Haha"} />
+                </VariantButton>
+                <VariantButton>
+                  <Variant variant={"Wow"} />
+                </VariantButton>
+                <VariantButton>
+                  <Variant variant={"Sad"} />
+                </VariantButton>
+                <VariantButton>
+                  <Variant variant={"Angry"} />
+                </VariantButton>
+              </>
+            ) : (
+              <>
+                Please&nbsp;
+                <Link to={"/auth/login"}>{"log in"}</Link>
+                &nbsp;to react
+              </>
+            )}
+          </PopoverContents>
+        </Popover>
         <FlexBoxButton>Comment</FlexBoxButton>
         {!windowSm && <FlexBoxButton>Share</FlexBoxButton>}
       </FlexRow>
@@ -303,6 +398,8 @@ const RdsPage = props => {
                     variant={e.variant}
                     key={`${e.variant}-${i}`}
                     style={{
+                      position: "absolute",
+                      top: 0,
                       left: `${LEFT_OFFSET * i}px`,
                       zIndex: `${10 - i}`,
                     }}
