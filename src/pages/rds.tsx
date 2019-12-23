@@ -21,7 +21,7 @@ import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
 // import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
-import { Reaction } from "entities"
+import { PossibleVariants } from "entities/Reaction"
 
 import * as Colors from "consts/Colors"
 
@@ -212,8 +212,6 @@ const LikeOrComment = ({ commentId }: { commentId: number }) => {
   const windowSm = useMediaQuery("(max-width:480px)")
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
-  const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT)
-
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -224,6 +222,13 @@ const LikeOrComment = ({ commentId }: { commentId: number }) => {
 
   const open = Boolean(anchorEl)
   const id = open ? "simple-popover" : undefined
+
+  const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT)
+  const handleSelectReaction = ({ variant }: { variant: string }) => event => {
+    reactToComment({
+      variables: { variant: variant, commentId },
+    })
+  }
 
   return (
     <>
@@ -248,52 +253,32 @@ const LikeOrComment = ({ commentId }: { commentId: number }) => {
             {currentUserId ? (
               <>
                 <VariantButton
-                  onClick={() => {
-                    reactToComment({
-                      variables: { variant: "Like", commentId },
-                    })
-                  }}
+                  onClick={handleSelectReaction({ variant: "Like" })}
                 >
                   <Variant variant={"Like"} />
                 </VariantButton>
                 <VariantButton
-                  onClick={() => {
-                    reactToComment({
-                      variables: { variant: "Love", commentId },
-                    })
-                  }}
+                  onClick={handleSelectReaction({ variant: "Love" })}
                 >
                   <Variant variant={"Love"} />
                 </VariantButton>
                 <VariantButton
-                  onClick={() => {
-                    reactToComment({
-                      variables: { variant: "Haha", commentId },
-                    })
-                  }}
+                  onClick={handleSelectReaction({ variant: "Haha" })}
                 >
                   <Variant variant={"Haha"} />
                 </VariantButton>
                 <VariantButton
-                  onClick={() => {
-                    reactToComment({ variables: { variant: "Wow", commentId } })
-                  }}
+                  onClick={handleSelectReaction({ variant: "Wow" })}
                 >
                   <Variant variant={"Wow"} />
                 </VariantButton>
                 <VariantButton
-                  onClick={() => {
-                    reactToComment({ variables: { variant: "Sad", commentId } })
-                  }}
+                  onClick={handleSelectReaction({ variant: "Sad" })}
                 >
                   <Variant variant={"Sad"} />
                 </VariantButton>
                 <VariantButton
-                  onClick={() => {
-                    reactToComment({
-                      variables: { variant: "Angry", commentId },
-                    })
-                  }}
+                  onClick={handleSelectReaction({ variant: "Angry" })}
                 >
                   <Variant variant={"Angry"} />
                 </VariantButton>

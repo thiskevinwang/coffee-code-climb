@@ -18,3 +18,5 @@ export type Reaction = {
   comment: Comment
   user: User
 }
+
+export const PossibleVariants = ["Like", "Love", "Haha", "Wow", "Sad", "Angry"]
