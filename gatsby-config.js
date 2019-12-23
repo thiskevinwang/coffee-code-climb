@@ -53,6 +53,7 @@ module.exports = {
           "*": "src/*",
           src: "src",
           apollo: "src/apollo",
+          entities: "src/entities",
           components: "src/components",
           consts: "src/consts",
           css: "src/css",
