@@ -111,7 +111,7 @@ const composeEnhancers =
 
 const enhancer = composeEnhancers(
   applyMiddleware(
-    logger,
+    // logger,
     thunk,
     timeoutScheduler,
     readyStatePromise,

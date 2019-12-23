@@ -7,7 +7,6 @@ import styled from "styled-components"
 
 import { withSVGTrail, Footer } from "components"
 import { NavBar2 } from "components/Layout2Components/NavBar2"
-import { PageViewCounter } from "components/PageViewCounter"
 
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
 
@@ -78,8 +77,6 @@ function Layout({ location, title, children }) {
         }}
       />
       <NavBar2 />
-
-      <PageViewCounter location={location} />
 
       <animated.div
         style={{

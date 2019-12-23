@@ -71,28 +71,6 @@ const LayoutManager = props => {
     })
   }, [isDarkMode])
 
-  useEffect(() => {
-    console.log("layoutVersion", layoutVersion)
-
-    const handleKeypress = e => {
-      switch (e.key) {
-        case "1":
-          return dispatch(setLayoutVersion(1))
-        case "2":
-          return dispatch(setLayoutVersion(2))
-        case "3":
-          return dispatch(setLayoutVersion(3))
-        default:
-          return
-      }
-    }
-
-    window.addEventListener("keypress", handleKeypress)
-    return () => {
-      window.removeEventListener("keypress", handleKeypress)
-    }
-  }, [layoutVersion])
-
   return (
     <>
       {showModal && (

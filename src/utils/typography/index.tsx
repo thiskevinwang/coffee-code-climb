@@ -141,16 +141,8 @@ let currentValue
 store.subscribe(() => {
   let previousValue = currentValue
   currentValue = store.getState().isDarkMode
-  console.log("currentValue", currentValue)
 
   if (previousValue !== currentValue) {
-    console.log(
-      "**isDarkMode** changed from",
-      previousValue,
-      "to",
-      currentValue,
-      "...typography will be injecting styles now"
-    )
     typography.injectStyles()
   }
 })
