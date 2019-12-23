@@ -33,19 +33,6 @@ const SUBSCRIPTION = gql`
     }
   }
 `
-export type Reaction = {
-  id: number
-  variant: ReactionVariant
-  created: Date
-  updated: Date
-  user: {
-    id: number
-  }
-  comment: {
-    id: number
-    reactions: Reaction[]
-  }
-}
 
 export const useFetchReactionsAndSubscribeToMore = () => {
   return {
