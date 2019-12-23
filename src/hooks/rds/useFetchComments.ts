@@ -25,7 +25,7 @@ const QUERY = gql`
   }
 `
 
-const SUBSCRIPTION = gql`
+const SUBSCRIPTION_NEW_COMMENT = gql`
   subscription {
     newComment {
       id
@@ -45,29 +45,22 @@ const SUBSCRIPTION = gql`
   }
 `
 
-export type Comment = {
-  id: number
-  body: string
-  url: string
-  created: Date
-  updated: Date
-  deleted: boolean
-  user: {
-    id: number
-    username: string
-    first_name: string
-    last_name: string
-    avatar_url: string
+const SUBSCRIPTION_NEW_REACTION = gql`
+  subscription {
+    newReaction {
+      id
+      variant
+      comment {
+        id
+      }
+    }
   }
-  reactions: {
-    id: number
-    variant: "Like" | "Love" | "Haha" | "Wow" | "Sad" | "Angry" | "None"
-  }[]
-}
+`
 
 export const useFetchComments = () => {
   return {
-    lazyQueryProps: useLazyQuery(QUERY),
-    subscriptionProps: useSubscription(SUBSCRIPTION),
+    getAllCommentsLazyQuery: useLazyQuery(QUERY),
+    newCommentSubscription: useSubscription(SUBSCRIPTION_NEW_COMMENT),
+    newReactionSubscription: useSubscription(SUBSCRIPTION_NEW_REACTION),
   }
 }
