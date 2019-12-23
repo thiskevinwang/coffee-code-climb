@@ -7,7 +7,8 @@ import { useSpring, animated } from "react-spring"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { useMediaQuery } from "@material-ui/core"
-import { useApolloClient } from "@apollo/react-hooks"
+import { useApolloClient, useMutation } from "@apollo/react-hooks"
+import { gql } from "apollo-boost"
 import Popover from "@material-ui/core/Popover"
 
 import { LayoutManager } from "components/layoutManager"
@@ -17,22 +18,21 @@ import { SubmitButton } from "components/Form"
 // import { switchVariant } from "utils/rds"
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
-import { Reaction } from "hooks/rds/useFetchReactionsAndSubscribeToMore"
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
-import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
+// import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
+import { Reaction } from "entities"
 
 import * as Colors from "consts/Colors"
 
 const LEFT_OFFSET = 20
 
-type VariantNames = Reaction["variant"]
 const backgroundPosition = theme.variants("mode", "variant", {
   default: { light: "0% 0%", dark: "0% 0%" },
   Like: { light: "0% 0%", dark: "33.3333% 0%" }, //                    :smile: | :upside_down:
   Love: { light: "41.6667% 0%", dark: "83.3333% 0%" }, //              :heart_eyes: | :star_struck:
   Haha: { light: "16.6667% 0%", dark: "19.4444% 0%" }, //              :joy: | :rofl:
-  Wow: { light: "100% 2.85714%", dark: "36.1111% 2.85714%" }, //                   :open_mouth: | :exploding_head:
+  Wow: { light: "100% 2.85714%", dark: "36.1111% 2.85714%" }, //       :open_mouth: | :exploding_head:
   Sad: { light: "19.4444% 2.85714%", dark: "22.2222% 2.85714%" }, //   :cry: | :sob:
   Angry: { light: "27.7778% 2.85714%", dark: "30.5556% 2.85714%" }, // :angry: | :rage:
   None: { light: "0% 0%", dark: "0% 0%" }, // :_: | :_:
@@ -200,11 +200,20 @@ const PopoverContents = styled(animated.div)`
     margin-left: 0.75rem;
   }
 `
-
-const LikeOrComment = () => {
+const REACT_TO_COMMENT = gql`
+  mutation($variant: ReactionVariant!, $commentId: Int!) {
+    reactToComment(variant: $variant, commentId: $commentId) {
+      id
+    }
+  }
+`
+const LikeOrComment = ({ commentId }: { commentId: number }) => {
   const { currentUserId } = useAuthentication()
   const windowSm = useMediaQuery("(max-width:480px)")
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+
+  const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT)
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -238,22 +247,54 @@ const LikeOrComment = () => {
           <PopoverContents>
             {currentUserId ? (
               <>
-                <VariantButton>
+                <VariantButton
+                  onClick={() => {
+                    reactToComment({
+                      variables: { variant: "Like", commentId },
+                    })
+                  }}
+                >
                   <Variant variant={"Like"} />
                 </VariantButton>
-                <VariantButton>
+                <VariantButton
+                  onClick={() => {
+                    reactToComment({
+                      variables: { variant: "Love", commentId },
+                    })
+                  }}
+                >
                   <Variant variant={"Love"} />
                 </VariantButton>
-                <VariantButton>
+                <VariantButton
+                  onClick={() => {
+                    reactToComment({
+                      variables: { variant: "Haha", commentId },
+                    })
+                  }}
+                >
                   <Variant variant={"Haha"} />
                 </VariantButton>
-                <VariantButton>
+                <VariantButton
+                  onClick={() => {
+                    reactToComment({ variables: { variant: "Wow", commentId } })
+                  }}
+                >
                   <Variant variant={"Wow"} />
                 </VariantButton>
-                <VariantButton>
+                <VariantButton
+                  onClick={() => {
+                    reactToComment({ variables: { variant: "Sad", commentId } })
+                  }}
+                >
                   <Variant variant={"Sad"} />
                 </VariantButton>
-                <VariantButton>
+                <VariantButton
+                  onClick={() => {
+                    reactToComment({
+                      variables: { variant: "Angry", commentId },
+                    })
+                  }}
+                >
                   <Variant variant={"Angry"} />
                 </VariantButton>
               </>
@@ -272,6 +313,7 @@ const LikeOrComment = () => {
     </>
   )
 }
+
 const RdsPage = props => {
   const { currentUserId } = useAuthentication()
   const client = useApolloClient()
@@ -393,20 +435,25 @@ const RdsPage = props => {
               style={{ ...reactionContainerProps, marginBottom: `1rem` }}
             >
               <ReactionsContainer>
-                {_.uniqBy(_comment.reactions, "variant").map((e, i) => (
-                  <Variant
-                    variant={e.variant}
-                    key={`${e.variant}-${i}`}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: `${LEFT_OFFSET * i}px`,
-                      zIndex: `${10 - i}`,
-                    }}
-                  >
-                    {/* ... */}
-                  </Variant>
-                ))}
+                {_.flow(
+                  _.partialRight(_.uniqBy, "variant"),
+                  _.partialRight(_.filter, e => e.variant !== "None")
+                )(_comment.reactions).map((e, i) => {
+                  return (
+                    <Variant
+                      variant={e.variant}
+                      key={`${e.variant}-${i}`}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: `${LEFT_OFFSET * i}px`,
+                        zIndex: `${10 - i}`,
+                      }}
+                    >
+                      {/* ... */}
+                    </Variant>
+                  )
+                })}
                 <div
                   style={{
                     top: 0,
@@ -415,7 +462,10 @@ const RdsPage = props => {
                      * offset the reactionCount by # of unique
                      * reaction variants, + 1
                      */
-                    left: `${(_.uniqBy(_comment.reactions, "variant").length +
+                    left: `${(_.flow(
+                      _.partialRight(_.uniqBy, "variant"),
+                      _.partialRight(_.filter, e => e.variant !== "None")
+                    )(_comment.reactions).length +
                       1) *
                       LEFT_OFFSET}px`,
                   }}
@@ -425,8 +475,16 @@ const RdsPage = props => {
                       <LoadingIndicator />
                     ) : (
                       _.intersectionWith(
-                        _.map(reactions, e => e.id),
-                        _.map(_comment.reactions, e => e.id),
+                        // _.map(reactions, e => e.id),
+                        _.flow(
+                          _.partialRight(_.filter, e => e.variant !== "None"),
+                          _.partialRight(_.map, e => e.id)
+                        )(reactions),
+                        // _.map(_comment.reactions, e => e.id),
+                        _.flow(
+                          _.partialRight(_.filter, e => e.variant !== "None"),
+                          _.partialRight(_.map, e => e.id)
+                        )(_comment.reactions),
                         _.isEqual
                       ).length
                     )}
@@ -434,7 +492,7 @@ const RdsPage = props => {
                 </div>
               </ReactionsContainer>
             </Container>
-            <LikeOrComment />
+            <LikeOrComment commentId={parseInt(_comment.id)} />
           </CommentRenderer>
         ))}
       </Container>
