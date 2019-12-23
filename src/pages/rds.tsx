@@ -21,7 +21,7 @@ import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
 // import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
-import { PossibleVariants } from "entities/Reaction"
+import { POSSIBLE_VARIANTS } from "entities/Reaction"
 
 import * as Colors from "consts/Colors"
 
@@ -251,38 +251,14 @@ const LikeOrComment = ({ commentId }: { commentId: number }) => {
         >
           <PopoverContents>
             {currentUserId ? (
-              <>
+              POSSIBLE_VARIANTS.map((variant, i) => (
                 <VariantButton
-                  onClick={handleSelectReaction({ variant: "Like" })}
+                  key={variant}
+                  onClick={handleSelectReaction({ variant: variant })}
                 >
-                  <Variant variant={"Like"} />
+                  <Variant variant={variant} />
                 </VariantButton>
-                <VariantButton
-                  onClick={handleSelectReaction({ variant: "Love" })}
-                >
-                  <Variant variant={"Love"} />
-                </VariantButton>
-                <VariantButton
-                  onClick={handleSelectReaction({ variant: "Haha" })}
-                >
-                  <Variant variant={"Haha"} />
-                </VariantButton>
-                <VariantButton
-                  onClick={handleSelectReaction({ variant: "Wow" })}
-                >
-                  <Variant variant={"Wow"} />
-                </VariantButton>
-                <VariantButton
-                  onClick={handleSelectReaction({ variant: "Sad" })}
-                >
-                  <Variant variant={"Sad"} />
-                </VariantButton>
-                <VariantButton
-                  onClick={handleSelectReaction({ variant: "Angry" })}
-                >
-                  <Variant variant={"Angry"} />
-                </VariantButton>
-              </>
+              ))
             ) : (
               <>
                 Please&nbsp;
