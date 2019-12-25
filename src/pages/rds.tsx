@@ -1,3 +1,4 @@
+// Dependencies
 import * as React from "react"
 import { navigate } from "gatsby"
 import moment from "moment"
@@ -11,18 +12,23 @@ import { useApolloClient, useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import Popover from "@material-ui/core/Popover"
 
-import { LayoutManager } from "components/layoutManager"
-import { LoadingIndicator } from "components/LoadingIndicator"
-import SEO from "components/seo"
-import { SubmitButton } from "components/Form"
-// import { switchVariant } from "utils/rds"
+// Hooks
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
 // import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
-import { POSSIBLE_VARIANTS } from "entities/Reaction"
 
+// Components
+import SEO from "components/seo"
+import { LayoutManager } from "components/layoutManager"
+import { LoadingIndicator } from "components/LoadingIndicator"
+import { CreateComment } from "components/CreateComment"
+import { SubmitButton } from "components/Form"
+import { Avatar } from "components/Avatar"
+
+// Other
+import { POSSIBLE_VARIANTS } from "entities/Reaction"
 import * as Colors from "consts/Colors"
 
 const LEFT_OFFSET = 20
@@ -61,19 +67,6 @@ const FlexRow = styled(animated.div)`
 `
 const Container = styled(animated.div)`
   position: relative;
-`
-
-const Avatar = styled(animated.div)`
-  min-width: 40px;
-  min-height: 40px;
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  background: rebeccapurple /* fallback when there's no props.src url */;
-  background-image: url(${props => props.src});
-  background-position: center;
-  background-size: 100%;
-  margin-right: 10px;
 `
 
 const ReactionsContainer = styled(animated.div)`
@@ -353,6 +346,7 @@ const RdsPage = props => {
         {currentUserId ? "Logout" : "Login"}
       </SubmitButton>
       <Container className={"comments"}>
+        <CreateComment />
         {isCommentQueryLoading && <LoadingIndicator />}
         {commentsTransition.map(({ item: _comment, props, key }) => (
           <CommentRenderer key={key} style={props}>
