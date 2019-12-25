@@ -1,7 +1,11 @@
 import React, { useRef } from "react"
-
 import styled from "styled-components"
+import theme from "styled-theming"
 import { useSpring, useChain, animated, AnimatedValue } from "react-spring"
+
+import { SubmitButton } from "components/Form"
+
+import * as Colors from "consts/Colors"
 
 const XIcon = ({ fill }: { fill: AnimatedValue<any> }) => (
   <animated.svg viewBox="0 0 24 24" s>
@@ -86,7 +90,7 @@ const ModalTitleText = styled(animated.h2)`
 
 const Key = styled(animated.kbd)`
   font-weight: 700;
-  font-size: 20px;
+  font-size: 16px;
   margin-bottom: 5px;
 `
 
@@ -95,29 +99,19 @@ const ItemRow = styled(animated.div)`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  color: ${theme("mode", {
+    light: Colors.blackLighter,
+    dark: Colors.silverDarker,
+  })};
 `
 const ButtonContainer = styled(animated.div)``
 const CheckboxContainer = styled(animated.div)`
   text-align: center;
+  margin-bottom: 1rem;
 `
 const Checkbox = styled(animated.input)``
-const Button = styled(animated.div)`
-  /* position: absolute; */
-  /* bottom: 0; */
-  border-radius: 10px;
-  border: 1px solid white;
-  background: grey;
-  text-align: center;
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: 5px;
-  color: white;
-  transition: border 200ms ease-in-out;
 
-  :hover {
-    border: 1px solid black;
-  }
-`
 const FunButtonsModal = ({
   animatedOpacity,
   // contentOpacity,
@@ -180,19 +174,34 @@ const FunButtonsModal = ({
           // style={{ opacity: contentOpacity }}
           >
             <ItemRow>
-              <Key>T</Key> <span>Toggle Icon Trail</span>
+              <ItemRow>
+                <Key>Ctrl</Key>&nbsp;+&nbsp;<Key>t</Key>
+              </ItemRow>
+              <small>Toggle Icon Trail</small>
             </ItemRow>
             <ItemRow>
-              <Key>S</Key> <span>Slow Mo</span>
+              <ItemRow>
+                <Key>Ctrl</Key>&nbsp;+&nbsp;<Key>s</Key>
+              </ItemRow>
+              <small>Slow Mo</small>
             </ItemRow>
             <ItemRow>
-              <Key>F</Key> <span>???</span>
+              <ItemRow>
+                <Key>Ctrl</Key>&nbsp;+&nbsp;<Key>f</Key>
+              </ItemRow>
+              <small>Flip Cards</small>
             </ItemRow>
             <ItemRow>
-              <Key>R</Key> <span>Reset</span>
+              <ItemRow>
+                <Key>Ctrl</Key>&nbsp;+&nbsp;<Key>r</Key>
+              </ItemRow>
+              <small>Reset Cards</small>
             </ItemRow>
             <ItemRow>
-              <Key>D</Key> <span>Dark Mode</span>
+              <ItemRow>
+                <Key>Ctrl</Key>&nbsp;+&nbsp;<Key>d</Key>
+              </ItemRow>
+              <small>Dark Mode</small>
             </ItemRow>
           </ItemRowContainer>
 
@@ -209,7 +218,8 @@ const FunButtonsModal = ({
               />{" "}
               <small>Never show this again</small>
             </CheckboxContainer>
-            <Button
+            <SubmitButton
+              style={{ width: `100%` }}
               onClick={() => {
                 setShouldExit(true)
                 neverShowModalChecked &&
@@ -217,7 +227,7 @@ const FunButtonsModal = ({
               }}
             >
               OK
-            </Button>
+            </SubmitButton>
           </ButtonContainer>
         </animated.div>
       </Modal>
