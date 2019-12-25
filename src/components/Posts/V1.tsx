@@ -278,33 +278,34 @@ const V1 = memo(
           rotateXY: [_.random(-500, 500), _.random(-1000, 1000)],
         })
 
-      /** keypress event listener  */
-      const handleKeyPress = (e: React.KeyboardEvent) => {
-        switch (e.key) {
-          /** ONLY SET CONFIG HERE!, otherwise it is config.default */
-          case "s":
-            slowMoRef.current = !slowMoRef.current
-            set({
-              config: slowMoRef.current
-                ? { ...config.molasses, mass: 10, friction: 400 }
-                : config.default,
-            })
-            return
-          case "r":
-            return setTimeout(resetPos, index * 50)
-          case "f":
-            return setTimeout(fuckMyShitUpFam, index * 50)
-          default:
-            return
+      const handleKeyUp = (e: React.KeyboardEvent) => {
+        if (e.ctrlKey) {
+          switch (e.keyCode) {
+            /** ONLY SET CONFIG HERE!, otherwise it is config.default */
+            case 83 /** "s" */:
+              slowMoRef.current = !slowMoRef.current
+              set({
+                config: slowMoRef.current
+                  ? { ...config.molasses, mass: 10, friction: 400 }
+                  : config.default,
+              })
+              return
+            case 82 /** "r" */:
+              return setTimeout(resetPos, index * 50)
+            case 70 /** "f" */:
+              return setTimeout(fuckMyShitUpFam, index * 50)
+            default:
+              return
+          }
         }
       }
 
       /** add event listener */
       typeof window !== undefined &&
-        window.addEventListener("keypress", handleKeyPress)
+        window.addEventListener("keyup", handleKeyUp)
       /** clean up event listener*/
       return () => {
-        window.removeEventListener("keypress", handleKeyPress)
+        window.removeEventListener("keyup", handleKeyUp)
       }
     }, [])
 

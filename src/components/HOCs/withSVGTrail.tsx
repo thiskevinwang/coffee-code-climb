@@ -35,17 +35,10 @@ const AnimatedSVG = styled(animated.div)`
 const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
-const translate2dVibrate = (x, y, size = 1) =>
-  `translate3d(${_.random(x - 5, x + 5)}px,${_.random(
-    y - 5,
-    y + 5
-  )}px,0) translate3d(-50%,-50%,0)`
-
 const Wrapper = ({ children }) => {
   /** instance variables */
   const slowMoRef = useRef(false)
   const showTrailRef = useRef(false)
-  const vibrateRef = useRef(false)
 
   // Redux hooks
   const isDarkMode = useSelector(state => state.isDarkMode)
@@ -113,42 +106,41 @@ const Wrapper = ({ children }) => {
   useEffect(bindMoveGesture, [bindMoveGesture])
 
   useEffect(() => {
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-      switch (e.key) {
-        case "d":
-          /** this will trigger a component rerender */
-          return dispatchSetIsDarkMode(!isDarkMode)
-        case "s":
-          slowMoRef.current = !slowMoRef.current
-          /**
-           * Config needs to be updated here - for if an animation is still
-           * in-progress/lingering, but the `useMove` gesture has finished.
-           */
-          setTrail({
-            config: i => (slowMoRef.current ? config.molasses : configs[i]),
-          })
-          return
-        case "t":
-          return (showTrailRef.current = !showTrailRef.current)
-        case "v":
-          return (vibrateRef.current = !vibrateRef.current)
-        default:
-          return
+    const handleKeyUp = (e: React.KeyboardEvent) => {
+      if (e.ctrlKey) {
+        switch (e.keyCode) {
+          case 68 /** "d" */:
+            /** this will trigger a component rerender */
+            return dispatchSetIsDarkMode(!isDarkMode)
+          case 83 /** "s" */:
+            slowMoRef.current = !slowMoRef.current
+            /**
+             * Config needs to be updated here - for if an animation is still
+             * in-progress/lingering, but the `useMove` gesture has finished.
+             */
+            setTrail({
+              config: i => (slowMoRef.current ? config.molasses : configs[i]),
+            })
+            return
+          case 84 /** "t" */:
+            return (showTrailRef.current = !showTrailRef.current)
+          default:
+            return
+        }
       }
     }
 
     typeof window !== "undefined" &&
-      window.addEventListener("keypress", handleKeyPress)
+      window.addEventListener("keyup", handleKeyUp)
 
     return () => {
-      window.removeEventListener("keypress", handleKeyPress)
+      window.removeEventListener("keyup", handleKeyUp)
     }
   }, [isDarkMode])
 
   /**
    * changes in ref.current values don't get reflected in `return`
    * until the component rerenders
-   * @see vibrateRef
    * @see dispatchSetIsDarkMode
    */
   return (
@@ -158,15 +150,7 @@ const Wrapper = ({ children }) => {
           key={index}
           style={{
             ...props,
-            /** interpolate util method 1 */
-            // transform: interpolate([props.xy] props.padding, ([x, y], p) =>
-            //   vibrate ? translate2dVibrate(x, y) : translate2d(x, y)
-            // ),
-            /** interpolate util method 2 */
-            transform: interpolate(
-              props.xy,
-              vibrateRef.current ? translate2dVibrate : translate2d
-            ),
+            transform: interpolate(props.xy, translate2d),
             // opacity: props.opacity.interpolate((x: number) => x),
             padding: props.padding
               .interpolate({
