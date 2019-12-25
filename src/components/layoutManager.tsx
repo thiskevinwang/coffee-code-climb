@@ -73,7 +73,8 @@ const LayoutManager = props => {
 
   return (
     <>
-      {showModal && (
+      {/** @TODO TEMPORARILY DISABLE THIS */
+      showModal && false && (
         <FunButtonsModal
           animatedOpacity={opacity}
           // contentOpacity={contentOpacity}
