@@ -217,17 +217,18 @@ const LikeOrComment = ({ commentId }: { commentId: number }) => {
   const id = open ? "simple-popover" : undefined
 
   const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT)
-  const handleSelectReaction = ({ variant }: { variant: string }) => event => {
+  const handleSelectReaction = ({ variant }) => event => {
     reactToComment({
       variables: { variant: variant, commentId },
     })
+    handleClose()
   }
 
   return (
     <>
       <Line />
       <FlexRow>
-        <FlexBoxButton onClick={handleClick}>Like</FlexBoxButton>
+        <FlexBoxButton onClick={handleClick}>React</FlexBoxButton>
         <Popover
           id={id}
           open={open}

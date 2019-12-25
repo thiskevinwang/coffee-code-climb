@@ -40,6 +40,7 @@ const DivTitle = styled(animated.div)`
   border-bottom-color: ${borderColor};
   border-bottom-width: 1px;
   border-bottom-style: solid;
+  margin-bottom: 1rem;
 
   font-weight: 500;
   color: ${theme("mode", {
@@ -151,7 +152,7 @@ export const CreateComment = () => {
   if (queryLoading)
     return (
       <Renderer>
-        <DivTitle style={{ marginBottom: `1rem` }}>&nbsp;</DivTitle>
+        <DivTitle>&nbsp;</DivTitle>
         <SubmitButton style={{ width: `100%` }} disabled>
           &nbsp;
         </SubmitButton>
@@ -163,7 +164,7 @@ export const CreateComment = () => {
       <DivTitle>Create Post</DivTitle>
       {currentUserId ? (
         <>
-          <div style={{ display: `flex`, paddingTop: `1rem` }}>
+          <div style={{ display: `flex` }}>
             <Avatar src={avatarUrl}></Avatar>
             <Textarea
               value={state.body}
