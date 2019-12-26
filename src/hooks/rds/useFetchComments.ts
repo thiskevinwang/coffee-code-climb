@@ -25,7 +25,7 @@ const QUERY = gql`
   }
 `
 
-const NEW_COMMENT_SUBSCRIPTION = gql`
+export const NEW_COMMENT_SUBSCRIPTION = gql`
   subscription {
     newComment {
       id
