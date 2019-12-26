@@ -120,7 +120,7 @@ const UploadButton = styled(animated.button)`
   border-radius: 0.25rem;
 `
 
-const RdsPage = props => {
+const RdsPage = ({ location }: { location: Location }) => {
   const { currentUserId } = useAuthentication()
   const client = useApolloClient()
   /**
@@ -174,7 +174,7 @@ const RdsPage = props => {
   // const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
 
   return (
-    <LayoutManager location={props.location}>
+    <LayoutManager location={location}>
       <SEO title="RDS" />
       <h1 {...bind}>Social Network Simulator</h1>
       {/* 
@@ -198,7 +198,7 @@ const RdsPage = props => {
         {currentUserId ? "Logout" : "Login"}
       </SubmitButton>
       <Container className={"comments"}>
-        <CreateComment />
+        <CreateComment url={location.pathname} />
         {isCommentQueryLoading && <LoadingIndicator />}
         {commentsTransition.map(({ item: _comment, props, key }) => (
           <CommentRenderer key={key} style={props}>

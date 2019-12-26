@@ -89,7 +89,7 @@ const commentReducer = (state: CommentState, action: any): CommentState => {
   return { ...state, ...action }
 }
 
-export const CreateComment = () => {
+export const CreateComment = ({ url }) => {
   const { currentUserId } = useAuthentication()
 
   const [state, dispatch] = useReducer(commentReducer, { body: "" })
@@ -108,7 +108,7 @@ export const CreateComment = () => {
     {
       variables: {
         body: state.body,
-        url: window.location.pathname,
+        url,
       },
       onCompleted: () => {
         dispatch({ body: "" })

@@ -79,7 +79,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <PrevNextNavigation previous={previous} next={next} />
       <Hr />
       <h3>Comments</h3>
-      <CreateComment />
+      <CreateComment url={location.pathname} />
       <CommentsByUrl url={location.pathname} />
     </LayoutManager>
   )
