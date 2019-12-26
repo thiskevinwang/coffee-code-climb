@@ -12,6 +12,7 @@ import { useAuthentication } from "hooks/useAuthentication"
 // Components
 import { Avatar } from "components/Avatar"
 import { LikeCommentShare } from "components/LikeCommentShare"
+import { LoadingIndicator } from "components/LoadingIndicator"
 
 // Other
 import { Comment } from "entities"
@@ -121,9 +122,9 @@ export const CommentsByUrl = ({ url }) => {
   if (queryLoading)
     return (
       <CommentRenderer {...bind}>
-        <FlexRow style={{ marginBottom: `.5rem` }}>
-          <p>Loading</p>
-        </FlexRow>
+        <FlexColumn style={{ textAlign: `center`, marginBottom: `.5rem` }}>
+          <LoadingIndicator />
+        </FlexColumn>
       </CommentRenderer>
     )
   if (data?.getCommentsByUrl.length < 1)
