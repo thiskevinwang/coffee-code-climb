@@ -25,7 +25,7 @@ const QUERY = gql`
   }
 `
 
-const SUBSCRIPTION_NEW_COMMENT = gql`
+const NEW_COMMENT_SUBSCRIPTION = gql`
   subscription {
     newComment {
       id
@@ -45,7 +45,7 @@ const SUBSCRIPTION_NEW_COMMENT = gql`
   }
 `
 
-const SUBSCRIPTION_NEW_REACTION = gql`
+const NEW_REACTION_SUBSCRIPTION = gql`
   subscription {
     newReaction {
       id
@@ -60,7 +60,7 @@ const SUBSCRIPTION_NEW_REACTION = gql`
 export const useFetchComments = () => {
   return {
     getAllCommentsLazyQuery: useLazyQuery(QUERY),
-    newCommentSubscription: useSubscription(SUBSCRIPTION_NEW_COMMENT),
-    newReactionSubscription: useSubscription(SUBSCRIPTION_NEW_REACTION),
+    newCommentSubscription: useSubscription(NEW_COMMENT_SUBSCRIPTION),
+    newReactionSubscription: useSubscription(NEW_REACTION_SUBSCRIPTION),
   }
 }
