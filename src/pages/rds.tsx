@@ -23,7 +23,7 @@ import { useAuthentication } from "hooks/useAuthentication"
 import SEO from "components/seo"
 import { LayoutManager } from "components/layoutManager"
 import { LoadingIndicator } from "components/LoadingIndicator"
-import { CreateComment } from "components/CreateComment"
+import { CreateComment } from "components/Comments/Create"
 import { SubmitButton } from "components/Form"
 import { Avatar } from "components/Avatar"
 
@@ -57,11 +57,11 @@ const Variant = styled(animated.div)`
 //   position: "relative",
 // }
 
-const FlexColumn = styled(animated.div)`
+export const FlexColumn = styled(animated.div)`
   display: flex;
   flex-direction: column;
 `
-const FlexRow = styled(animated.div)`
+export const FlexRow = styled(animated.div)`
   display: flex;
   flex-direction: row;
 `
@@ -82,7 +82,7 @@ const borderColor = theme("mode", {
   light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
   dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
 })
-const CommentRenderer = styled(animated.div)`
+export const CommentRenderer = styled(animated.div)`
   display: flex;
   flex-direction: column;
   /* border: 1px solid lightgrey; */

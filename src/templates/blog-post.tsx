@@ -11,7 +11,8 @@ import SEO from "components/seo"
 import { TableOfContents } from "components/TableOfContents"
 import { LayoutManager } from "components/layoutManager"
 import { PrevNextNavigation } from "components/TemplateComponents"
-import { CreateComment } from "components/CreateComment"
+import { CreateComment } from "components/Comments/Create"
+import { CommentsByUrl } from "components/Comments/Display/ByUrl"
 
 // Other
 import { rhythm, scale } from "utils/typography"
@@ -79,6 +80,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <Hr />
       <h3>Comments</h3>
       <CreateComment />
+      <CommentsByUrl url={location.pathname} />
     </LayoutManager>
   )
 }

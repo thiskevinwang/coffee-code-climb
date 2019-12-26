@@ -1,9 +1,9 @@
-import React, { useState, useReducer } from "react"
+import React, { useState, useReducer, useEffect } from "react"
 import { Link } from "gatsby"
 import styled from "styled-components"
 import theme from "styled-theming"
 import { useSpring, animated } from "react-spring"
-import { useApolloClient, useMutation, useQuery } from "@apollo/react-hooks"
+import { useApolloClient, useMutation, useLazyQuery } from "@apollo/react-hooks"
 import _ from "lodash"
 
 // Hooks
@@ -91,12 +91,18 @@ const commentReducer = (state: CommentState, action: any): CommentState => {
 
 export const CreateComment = () => {
   const { currentUserId } = useAuthentication()
+
   const [state, dispatch] = useReducer(commentReducer, { body: "" })
-  const {
-    data,
-    loading: queryLoading,
-    query: queryError,
-  } = useQuery(GET_USER_BY_ID_QUERY, { variables: { id: currentUserId } })
+  const [
+    getUserById,
+    { data, called: queryCalled, loading: queryLoading, query: queryError },
+  ] = useLazyQuery(GET_USER_BY_ID_QUERY)
+
+  /** Only send this query if currentUserId exists */
+  useEffect(() => {
+    if (currentUserId) getUserById({ variables: { id: currentUserId } })
+  }, [currentUserId])
+
   const [createComment, { loading: mutationLoading, error }] = useMutation(
     CREATE_COMMENT_MUTATION,
     {
