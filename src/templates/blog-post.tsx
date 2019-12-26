@@ -1,14 +1,31 @@
-import React from "react"
+import * as React from "react"
 import { Link, graphql } from "gatsby"
-import kebabCase from "lodash/kebabCase"
+import _ from "lodash"
+import styled from "styled-components"
+import theme from "styled-theming"
+import { animated } from "react-spring"
 
+// Components
 import Bio from "components/bio"
-import Layout from "components/layout"
+import SEO from "components/seo"
 import { TableOfContents } from "components/TableOfContents"
 import { LayoutManager } from "components/layoutManager"
-import SEO from "components/seo"
-import { Discussion, PrevNextNavigation } from "components/TemplateComponents"
+import { PrevNextNavigation } from "components/TemplateComponents"
+import { CreateComment } from "components/Comments/Create"
+import { CommentsByUrl } from "components/Comments/Display/ByUrl"
+
+// Other
 import { rhythm, scale } from "utils/typography"
+import * as Colors from "consts/Colors"
+
+export const Hr = styled(animated.div)`
+  min-height: 1px;
+  margin-bottom: 2px;
+  background: ${theme("mode", {
+    light: Colors.greyLighter,
+    dark: Colors.greyDarker,
+  })};
+`
 
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
@@ -44,7 +61,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         Tags:{" "}
         {post.frontmatter.tags.map((tag, index) => (
           <Link
-            to={`/tags/${kebabCase(tag)}/`}
+            to={`/tags/${_.kebabCase(tag)}/`}
             style={{ color: "#A6B1BB", margin: 3 }}
             key={index}
           >
@@ -60,12 +77,10 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <Bio />
 
       <PrevNextNavigation previous={previous} next={next} />
-
-      <Discussion
-        locationPathname={location.pathname}
-        identifier={post.id}
-        title={post.frontmatter.title}
-      />
+      <Hr />
+      <h3>Comments</h3>
+      <CreateComment url={location.pathname} />
+      <CommentsByUrl url={location.pathname} />
     </LayoutManager>
   )
 }

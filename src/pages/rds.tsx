@@ -1,31 +1,31 @@
+// Dependencies
 import * as React from "react"
 import { navigate } from "gatsby"
 import moment from "moment"
 import _ from "lodash"
-import { graphql, Link } from "gatsby"
+import { graphql } from "gatsby"
 import { useSpring, animated } from "react-spring"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
-import { useMediaQuery } from "@material-ui/core"
-import { useApolloClient, useMutation } from "@apollo/react-hooks"
-import { gql } from "apollo-boost"
-import Popover from "@material-ui/core/Popover"
+import { useApolloClient } from "@apollo/react-hooks"
 
-import { LayoutManager } from "components/layoutManager"
-import { LoadingIndicator } from "components/LoadingIndicator"
-import SEO from "components/seo"
-import { SubmitButton } from "components/Form"
-// import { switchVariant } from "utils/rds"
+// Hooks
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
 import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
 // import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
-import { POSSIBLE_VARIANTS } from "entities/Reaction"
 
-import * as Colors from "consts/Colors"
+// Components
+import SEO from "components/seo"
+import { LayoutManager } from "components/layoutManager"
+import { LoadingIndicator } from "components/LoadingIndicator"
+import { CreateComment } from "components/Comments/Create"
+import { SubmitButton } from "components/Form"
+import { Avatar } from "components/Avatar"
+import { LikeCommentShare } from "components/LikeCommentShare"
 
-const LEFT_OFFSET = 20
+export const LEFT_OFFSET = 20
 
 const backgroundPosition = theme.variants("mode", "variant", {
   default: { light: "0% 0%", dark: "0% 0%" },
@@ -38,7 +38,7 @@ const backgroundPosition = theme.variants("mode", "variant", {
   None: { light: "0% 0%", dark: "0% 0%" }, // :_: | :_:
 })
 
-const Variant = styled(animated.div)`
+export const Variant = styled(animated.div)`
   transition: background-position 150ms ease-in-out;
   will-change: background;
   background-image: url(https://pf-emoji-service--cdn.us-east-1.prod.public.atl-paas.net/standard/a51a7674-8d5d-4495-a2d2-a67c090f5c3b/32x32/spritesheets/people.png);
@@ -51,11 +51,11 @@ const Variant = styled(animated.div)`
 //   position: "relative",
 // }
 
-const FlexColumn = styled(animated.div)`
+export const FlexColumn = styled(animated.div)`
   display: flex;
   flex-direction: column;
 `
-const FlexRow = styled(animated.div)`
+export const FlexRow = styled(animated.div)`
   display: flex;
   flex-direction: row;
 `
@@ -63,20 +63,7 @@ const Container = styled(animated.div)`
   position: relative;
 `
 
-const Avatar = styled(animated.div)`
-  min-width: 40px;
-  min-height: 40px;
-  width: 40px;
-  height: 40px;
-  border-radius: 100%;
-  background: rebeccapurple /* fallback when there's no props.src url */;
-  background-image: url(${props => props.src});
-  background-position: center;
-  background-size: 100%;
-  margin-right: 10px;
-`
-
-const ReactionsContainer = styled(animated.div)`
+export const ReactionsContainer = styled(animated.div)`
   width: 100%;
   left: 0;
   position: relative;
@@ -89,7 +76,7 @@ const borderColor = theme("mode", {
   light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
   dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
 })
-const CommentRenderer = styled(animated.div)`
+export const CommentRenderer = styled(animated.div)`
   display: flex;
   flex-direction: column;
   /* border: 1px solid lightgrey; */
@@ -102,58 +89,6 @@ const CommentRenderer = styled(animated.div)`
 
   > p {
     margin-bottom: 1rem; /* 16px */
-  }
-`
-const Line = styled(animated.div)`
-  height: 1px;
-  background: ${borderColor};
-`
-
-const popoverBackground = theme("mode", {
-  // light: Colors.LIGHT_GRADIENTS[0],
-  // dark: Colors.DARK_GRADIENTS[0],
-  light: Colors.silverLighter,
-  dark: Colors.blackLighter,
-})
-const VariantButton = styled(animated.button)`
-  background: none;
-  display: flex;
-  justify-content: center;
-  border-radius: 0.2rem;
-  height: ${ITEM_HEIGHT + 10}px;
-  width: ${ITEM_HEIGHT + 10}px;
-  padding: 0px;
-  border: none;
-
-  transition: background 150ms ease-in-out;
-  :hover {
-    background: ${borderColor};
-  }
-`
-
-const FlexBoxButton = styled.div`
-  align-items: center;
-  border-radius: 0.2rem;
-  cursor: pointer;
-  display: flex;
-  flex: 1;
-  height: 3rem;
-  justify-content: center;
-  margin: 5px;
-
-  transition: background 200ms ease-in-out;
-  will-change: background;
-
-  color: ${theme("mode", {
-    light: (props: BaseProps) => props.theme.formInput.color,
-    dark: (props: BaseProps) => props.theme.formInput.color,
-  })};
-
-  :hover {
-    background: ${theme("mode", {
-      light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
-      dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
-    })};
   }
 `
 
@@ -185,97 +120,7 @@ const UploadButton = styled(animated.button)`
   border-radius: 0.25rem;
 `
 
-const PopoverContents = styled(animated.div)`
-  color: ${theme("mode", {
-    light: (props: BaseProps) => props.theme.formInput.color,
-    dark: (props: BaseProps) => props.theme.formInput.color,
-  })};
-  background: ${popoverBackground};
-  display: flex;
-  flex-direction: row;
-  padding: 1rem;
-
-  :first-child > :not(:first-child) {
-    /* border: 1px dotted red; */
-    margin-left: 0.75rem;
-  }
-`
-const REACT_TO_COMMENT = gql`
-  mutation($variant: ReactionVariant!, $commentId: Int!) {
-    reactToComment(variant: $variant, commentId: $commentId) {
-      id
-    }
-  }
-`
-const LikeOrComment = ({ commentId }: { commentId: number }) => {
-  const { currentUserId } = useAuthentication()
-  const windowSm = useMediaQuery("(max-width:480px)")
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const open = Boolean(anchorEl)
-  const id = open ? "simple-popover" : undefined
-
-  const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT)
-  const handleSelectReaction = ({ variant }: { variant: string }) => event => {
-    reactToComment({
-      variables: { variant: variant, commentId },
-    })
-  }
-
-  return (
-    <>
-      <Line />
-      <FlexRow>
-        <FlexBoxButton onClick={handleClick}>Like</FlexBoxButton>
-        <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >
-          <PopoverContents>
-            {currentUserId ? (
-              POSSIBLE_VARIANTS.map((variant, i) => (
-                <VariantButton
-                  key={variant}
-                  onClick={handleSelectReaction({ variant: variant })}
-                >
-                  <Variant variant={variant} />
-                </VariantButton>
-              ))
-            ) : (
-              <>
-                Please&nbsp;
-                <Link to={"/auth/login"}>{"log in"}</Link>
-                &nbsp;to react
-              </>
-            )}
-          </PopoverContents>
-        </Popover>
-        <FlexBoxButton>Comment</FlexBoxButton>
-        {!windowSm && <FlexBoxButton>Share</FlexBoxButton>}
-      </FlexRow>
-    </>
-  )
-}
-
-const RdsPage = props => {
+const RdsPage = ({ location }: { location: Location }) => {
   const { currentUserId } = useAuthentication()
   const client = useApolloClient()
   /**
@@ -329,7 +174,7 @@ const RdsPage = props => {
   // const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
 
   return (
-    <LayoutManager location={props.location}>
+    <LayoutManager location={location}>
       <SEO title="RDS" />
       <h1 {...bind}>Social Network Simulator</h1>
       {/* 
@@ -353,6 +198,7 @@ const RdsPage = props => {
         {currentUserId ? "Logout" : "Login"}
       </SubmitButton>
       <Container className={"comments"}>
+        <CreateComment url={location.pathname} />
         {isCommentQueryLoading && <LoadingIndicator />}
         {commentsTransition.map(({ item: _comment, props, key }) => (
           <CommentRenderer key={key} style={props}>
@@ -453,7 +299,7 @@ const RdsPage = props => {
                 </div>
               </ReactionsContainer>
             </Container>
-            <LikeOrComment commentId={parseInt(_comment.id)} />
+            <LikeCommentShare commentId={_comment.id} />
           </CommentRenderer>
         ))}
       </Container>

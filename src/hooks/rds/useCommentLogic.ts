@@ -61,7 +61,8 @@ function commentsReducer(state: Comment[], action: Action): Comment[] {
 
       let updatedReactions: Reaction[]
       if (match < 0) {
-        updatedReactions = comment.reactions.concat(action.newReaction)
+        // a brand new comment's reactions will be `null`
+        updatedReactions = (comment.reactions ?? []).concat(action.newReaction)
       } else {
         updatedReactions = _.map([...comment.reactions], (reaction, i) => {
           if (reaction.id === action.newReaction.id) {
