@@ -7,8 +7,7 @@ import { graphql } from "gatsby"
 import { useSpring, animated } from "react-spring"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
-import { useApolloClient, useMutation } from "@apollo/react-hooks"
-import { gql } from "apollo-boost"
+import { useApolloClient } from "@apollo/react-hooks"
 
 // Hooks
 import { useCommentLogic } from "hooks/rds/useCommentLogic"
@@ -26,7 +25,7 @@ import { SubmitButton } from "components/Form"
 import { Avatar } from "components/Avatar"
 import { LikeCommentShare } from "components/LikeCommentShare"
 
-const LEFT_OFFSET = 20
+export const LEFT_OFFSET = 20
 
 const backgroundPosition = theme.variants("mode", "variant", {
   default: { light: "0% 0%", dark: "0% 0%" },
@@ -64,7 +63,7 @@ const Container = styled(animated.div)`
   position: relative;
 `
 
-const ReactionsContainer = styled(animated.div)`
+export const ReactionsContainer = styled(animated.div)`
   width: 100%;
   left: 0;
   position: relative;
@@ -300,7 +299,7 @@ const RdsPage = props => {
                 </div>
               </ReactionsContainer>
             </Container>
-            <LikeCommentShare commentId={parseInt(_comment.id)} />
+            <LikeCommentShare commentId={_comment.id} />
           </CommentRenderer>
         ))}
       </Container>
