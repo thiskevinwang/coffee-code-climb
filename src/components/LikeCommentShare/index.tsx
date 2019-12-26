@@ -18,7 +18,7 @@ import { POSSIBLE_VARIANTS } from "entities/Reaction"
 import { FlexRow, Variant } from "../../pages/rds"
 
 const REACT_TO_COMMENT = gql`
-  mutation($variant: ReactionVariant!, $commentId: Int!) {
+  mutation($variant: ReactionVariant!, $commentId: ID!) {
     reactToComment(variant: $variant, commentId: $commentId) {
       id
     }
@@ -102,7 +102,18 @@ const FlexBoxButton = styled.div`
   }
 `
 
-export const LikeCommentShare = ({ commentId }: { commentId: number }) => {
+/**
+ * This accepts a `commentId` prop and sends a `reactToComment` mutation.
+ *
+ * @usage
+ * ```ts
+ * import { LikeCommentShare } from "components/LikeCommentShare"
+ *
+ * // map through comments...
+ * <LikeCommentShare commentId={_comment.id} />
+ * ```
+ */
+export const LikeCommentShare = ({ commentId }) => {
   const { currentUserId } = useAuthentication()
   const windowSm = useMediaQuery("(max-width:480px)")
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
