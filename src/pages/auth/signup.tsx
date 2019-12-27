@@ -1,3 +1,4 @@
+// ^[a-z][a-z0-9_-]*$
 import React, { useState, useEffect } from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
 import { navigate, Link } from "gatsby"
@@ -24,9 +25,21 @@ const Error = styled(animated.div)`
   font-weight: 400;
 `
 
-const LOGIN = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+const SIGN_UP = gql`
+  mutation Signup(
+    $email: String!
+    $password: String!
+    $username: String!
+    $firstName: String!
+    $lastName: String!
+  ) {
+    signup(
+      email: $email
+      password: $password
+      username: $username
+      firstName: $firstName
+      lastName: $lastName
+    ) {
       user {
         id
         email
@@ -43,6 +56,9 @@ const LOGIN = gql`
 type Values = {
   email: string
   password: string
+  username: string
+  firstName: string
+  lastName: string
 }
 const AuthLogin = ({ location }: { location: Location }) => {
   const [errorMessage, setErrorMessage] = useState("")
@@ -59,10 +75,10 @@ const AuthLogin = ({ location }: { location: Location }) => {
     })
   }, [])
 
-  const [login, { data, loading }] = useMutation(LOGIN, {
+  const [signup, { data, loading }] = useMutation(SIGN_UP, {
     onCompleted: data => {
-      const { token } = data.login
-      localStorage.setItem("token", data.login.token)
+      const { token } = data.signup
+      localStorage.setItem("token", data.signup.token)
 
       jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {
         /**
@@ -72,7 +88,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
          */
         const userId = decoded?.userId
         if (userId) {
-          navigate("/rds", {
+          navigate("/auth/login", {
             replace: true,
           })
         }
@@ -86,9 +102,15 @@ const AuthLogin = ({ location }: { location: Location }) => {
   return (
     <LayoutManager location={location}>
       <SEO title="Login" />
-      <h1>Login</h1>
+      <h1>Sign up</h1>
       <Formik
-        initialValues={{ email: "", password: "" }}
+        initialValues={{
+          email: "",
+          password: "",
+          username: "",
+          firstName: "",
+          lastName: "",
+        }}
         isInitialValid={false}
         validate={values => {
           const errors: FormikErrors<Values> = {}
@@ -101,11 +123,17 @@ const AuthLogin = ({ location }: { location: Location }) => {
           }
           if (!values.password) {
             errors.password = "Required"
+          } else if (values.password.length < 8) {
+            errors.password = "Must be 8 or more characters"
           }
+          if (!values.username) errors.username = "Required"
+          if (!values.firstName) errors.firstName = "Required"
+          if (!values.lastName) errors.lastName = "Required"
+
           return errors
         }}
         onSubmit={async (values, actions) => {
-          login({ variables: values })
+          signup({ variables: values })
         }}
       >
         {(props: FormikProps<Values>) => (
@@ -129,18 +157,39 @@ const AuthLogin = ({ location }: { location: Location }) => {
               label="password"
               placeholder="password"
             />
+            <Field
+              id="username"
+              name="username"
+              type="test"
+              label="username"
+              placeholder="username"
+            />
+            <Field
+              id="firstName"
+              name="firstName"
+              type="text"
+              label="first name"
+              placeholder="first name"
+            />
+            <Field
+              id="lastName"
+              name="lastName"
+              type="text"
+              label="last name"
+              placeholder="last name"
+            />
             <SubmitButton
               type="submit"
               disabled={!props.isValid || props.isSubmitting}
             >
-              {loading ? <LoadingIndicator /> : "Login"}
+              {loading ? <LoadingIndicator /> : "Submit"}
             </SubmitButton>
             {errorMessage && <Error>{errorMessage}</Error>}
           </form>
         )}
       </Formik>
       <small>
-        <Link to="/auth/signup">Sign up</Link>
+        <Link to="/auth/login">Login</Link>
         &nbsp;|&nbsp;
         <Link to="/auth/forgot">Forgot your password?</Link>
       </small>

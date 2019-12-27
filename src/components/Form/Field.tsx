@@ -22,6 +22,9 @@ const color = theme("mode", {
 })
 
 const FieldRenderer = styled(animated.div)`
+  --geist-cyan: #79ffe1;
+  --geist-purple: #f81ce5;
+
   display: flex;
   flex-direction: column;
   max-width: 15rem;
@@ -29,6 +32,20 @@ const FieldRenderer = styled(animated.div)`
   position: relative;
 
   > input {
+    ::selection {
+      background: ${theme("mode", {
+        light: "var(--geist-cyan)",
+        dark: "var(--geist-purple)",
+      })}; /* WebKit/Blink Browsers */
+    }
+    ::-moz-selection {
+      background: ${theme("mode", {
+        light: "var(--geist-cyan)",
+        dark: "var(--geist-purple)",
+      })}; /* Gecko Browsers */
+    }
+
+    height: 2.8rem;
     background: ${background};
     border-color: ${theme("mode", {
       light: props => (props.hasError ? "red" : borderColorBase),
@@ -69,18 +86,25 @@ const FieldRenderer = styled(animated.div)`
 
   > input:focus + label,
   > input:not(:placeholder-shown) + label {
-    transform: translateY(-1.3rem);
+    transform: translateY(-1.1rem);
     opacity: 1;
   }
 
   > label {
+    border-radius: 0.25rem;
     font-size: 0.7rem;
     opacity: 0;
-    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
-    will-change: opacity transform;
+    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out,
+      background 150ms ease-in-out;
+    will-change: opacity transform background;
     position: absolute;
-    left: 5px;
+    left: 0.4rem;
     text-transform: uppercase;
+
+    color: ${theme("mode", {
+      light: props => (props.hasError ? "red" : color),
+      dark: props => (props.hasError ? "darkred" : color),
+    })};
   }
 `
 
@@ -90,13 +114,13 @@ FieldRenderer.defaultProps = {
 
 const FieldError = styled(animated.div)`
   font-size: 0.7rem;
-  right: 5px;
+  right: 0.3rem;
   position: absolute;
   color: ${theme("mode", {
     light: "red",
     dark: "darkred",
   })};
-  transform: translateY(2rem);
+  transform: translateY(2.7rem);
 `
 
 interface FieldProps {
