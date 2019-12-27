@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useField } from "formik"
 import styled, { BaseProps } from "styled-components"
 import { animated } from "react-spring"
 import theme from "styled-theming"
@@ -24,12 +25,15 @@ const FieldRenderer = styled(animated.div)`
   display: flex;
   flex-direction: column;
   max-width: 15rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   position: relative;
 
   > input {
     background: ${background};
-    border-color: ${borderColorBase};
+    border-color: ${theme("mode", {
+      light: props => (props.hasError ? "red" : borderColorBase),
+      dark: props => (props.hasError ? "darkred" : borderColorBase),
+    })};
     border-width: 1px;
     border-style: solid;
     border-radius: 0.25rem;
@@ -49,7 +53,10 @@ const FieldRenderer = styled(animated.div)`
   }
 
   > input:focus {
-    border-color: ${borderColorFocus};
+    border-color: ${theme("mode", {
+      light: props => (props.hasError ? "red" : borderColorFocus),
+      dark: props => (props.hasError ? "darkred" : borderColorFocus),
+    })};
   }
 
   > input::placeholder {
@@ -77,20 +84,38 @@ const FieldRenderer = styled(animated.div)`
   }
 `
 
-type FieldName = string
-interface FieldProps {
-  id: FieldName
-  name: FieldName
-  type: FieldName
-  placeholder: FieldName
-  onChange(): void
+FieldRenderer.defaultProps = {
+  hasError: false,
 }
 
-export const Field = (props: FieldProps) => {
+const FieldError = styled(animated.div)`
+  font-size: 0.7rem;
+  right: 5px;
+  position: absolute;
+  color: ${theme("mode", {
+    light: "red",
+    dark: "darkred",
+  })};
+  transform: translateY(2rem);
+`
+
+interface FieldProps {
+  id: string
+  name: string
+  type: string
+  label: string
+  placeholder: string
+}
+
+export const Field = ({ label, ...props }: FieldProps) => {
+  const [field, meta] = useField(props)
   return (
-    <FieldRenderer>
-      <input {...props} />
-      <label for={props.name}>{props.name}</label>
+    <FieldRenderer hasError={meta.touched && meta.error}>
+      <input {...field} {...props} />
+      <label htmlFor={props.id ?? props.name}>{label}</label>
+      {meta.touched && meta.error ? (
+        <FieldError>{meta.error}</FieldError>
+      ) : null}
     </FieldRenderer>
   )
 }

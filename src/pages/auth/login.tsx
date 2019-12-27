@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useReducer } from "react"
+import React, { useState, useEffect } from "react"
+import { Formik, FormikProps, FormikErrors } from "formik"
 import { navigate, Link } from "gatsby"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -39,44 +40,11 @@ const LOGIN = gql`
   }
 `
 
-type AuthState = {
+type Values = {
   email: string
   password: string
 }
-
-const authReducer = (state: AuthState, action: any): AuthState => {
-  return { ...state, ...action }
-}
-
 const AuthLogin = ({ location }: { location: Location }) => {
-  /**
-   * Form state
-   */
-  const [state, dispatch] = useReducer(authReducer, { email: "", password: "" })
-  const assignFormProps = (fieldName: string) => {
-    switch (fieldName) {
-      case "submit":
-        return {
-          type: "submit",
-          onClick: (e: React.SyntheticEvent<HTMLButtonElement>) => {
-            e.preventDefault()
-            login()
-          },
-          disabled: !state.email || !state.password,
-        }
-      default:
-        return {
-          id: fieldName /* need this for <label for=""> */,
-          name: fieldName,
-          type: fieldName,
-          placeholder: fieldName,
-          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-            setErrorMessage("")
-            dispatch({ [fieldName]: e.target.value })
-          },
-        }
-    }
-  }
   const [errorMessage, setErrorMessage] = useState("")
 
   const token = typeof window !== "undefined" && localStorage.getItem("token")
@@ -92,7 +60,6 @@ const AuthLogin = ({ location }: { location: Location }) => {
   }, [])
 
   const [login, { data, loading }] = useMutation(LOGIN, {
-    variables: { ...state },
     onCompleted: data => {
       const { token } = data.login
       localStorage.setItem("token", data.login.token)
@@ -120,14 +87,58 @@ const AuthLogin = ({ location }: { location: Location }) => {
     <LayoutManager location={location}>
       <SEO title="Login" />
       <h1>Login</h1>
-      <form>
-        <Field {...assignFormProps("email")} />
-        <Field {...assignFormProps("password")} />
-        <SubmitButton {...assignFormProps("submit")}>
-          {loading ? <LoadingIndicator /> : "Login"}
-        </SubmitButton>
-        {errorMessage && <Error>{errorMessage}</Error>}
-      </form>
+      <Formik
+        initialValues={{ email: "", password: "" }}
+        isInitialValid={false}
+        validate={values => {
+          const errors: FormikErrors<Values> = {}
+          if (!values.email) {
+            errors.email = "Required"
+          } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+          ) {
+            errors.email = "Invalid email address"
+          }
+          if (!values.password) {
+            errors.password = "Required"
+          }
+          return errors
+        }}
+        onSubmit={async (values, actions) => {
+          login({ variables: values })
+        }}
+      >
+        {(props: FormikProps<Values>) => (
+          <form
+            onSubmit={e => {
+              e.preventDefault()
+              props.handleSubmit(e)
+            }}
+          >
+            <Field
+              id="email"
+              name="email"
+              type="email"
+              label="email"
+              placeholder="email"
+            />
+            <Field
+              id="password"
+              name="password"
+              type="password"
+              label="password"
+              placeholder="password"
+            />
+            <SubmitButton
+              type="submit"
+              disabled={!props.isValid || props.isSubmitting}
+            >
+              {loading ? <LoadingIndicator /> : "Login"}
+            </SubmitButton>
+            {errorMessage && <Error>{errorMessage}</Error>}
+          </form>
+        )}
+      </Formik>
       <small>
         <Link to="/auth/forgot">Forgot your password?</Link>
       </small>
