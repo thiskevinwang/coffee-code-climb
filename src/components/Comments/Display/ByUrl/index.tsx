@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react"
 
 import { useTransition, config } from "react-spring"
 import _ from "lodash"
-import { useLazyQuery, useSubscription } from "@apollo/react-hooks"
+import { useLazyQuery } from "@apollo/react-hooks"
 import moment from "moment"
 
 // Hooks
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
+import { useLazyPolling } from "hooks/apollo/useLazyPolling"
 
 // Components
 import { Avatar } from "components/Avatar"
@@ -16,7 +17,6 @@ import { LoadingIndicator } from "components/LoadingIndicator"
 
 // Other
 import { Comment } from "entities"
-import { NEW_COMMENT_SUBSCRIPTION } from "hooks/rds/useFetchComments"
 
 // Relative
 import { GET_COMMENTS_BY_URL_QUERY, CommentOrderByInput } from "./query"
@@ -29,10 +29,10 @@ import {
   Variant,
 } from "../../../../pages/rds"
 
-interface GetCommentsByUrlData {
+interface IGetCommentsByUrlData {
   getCommentsByUrl: Comment[]
 }
-interface GetCommentsByUrlVars {
+interface IGetCommentsByUrlVars {
   url: string
   filter: CommentOrderByInput
 }
@@ -49,18 +49,27 @@ interface GetCommentsByUrlVars {
  */
 export const CommentsByUrl = ({ url }) => {
   const { currentUserId } = useAuthentication()
-
   const [
     getCommentsByUrl,
-    { data, loading: queryLoading, query: queryError, called },
-  ] = useLazyQuery<GetCommentsByUrlData, GetCommentsByUrlVars>(
+    {
+      data,
+      loading: queryLoading,
+      error: queryError,
+      called,
+      startPolling,
+      stopPolling,
+    },
+  ] = useLazyQuery<IGetCommentsByUrlData, IGetCommentsByUrlVars>(
     GET_COMMENTS_BY_URL_QUERY,
     {
       variables: { url: url, filter: CommentOrderByInput.created_DESC },
     }
   )
-  const newCommentSubscription = useSubscription(NEW_COMMENT_SUBSCRIPTION)
-  console.log(newCommentSubscription)
+
+  /**
+   * When the window has focus, poll for new comments every 5 seconds...
+   */
+  useLazyPolling({ startPolling, stopPolling, called, interval: 2000 })
 
   const didIntersect = useRef(false)
   const [isIntersecting, bind] = useIO({
@@ -74,46 +83,59 @@ export const CommentsByUrl = ({ url }) => {
     }
   }
 
-  const [comments, setComments] = useState<Comment[]>([])
+  const [comments, setComments] = useState<Comment[]>(
+    data?.getCommentsByUrl ?? []
+  )
   useEffect(() => {
-    if (!queryLoading && !queryError && called) {
-      setComments(data.getCommentsByUrl)
-    }
-    return () => {}
-  }, [queryLoading, queryError, called])
-  useEffect(() => {
-    if (!newCommentSubscription.loading && !newCommentSubscription.error) {
-      const newComment: Comment = newCommentSubscription.data.newComment
-      if (newComment && newComment.url === url) {
-        setComments(s => [newComment, ...s])
-      }
-    }
-    return () => {}
-  }, [newCommentSubscription.loading, newCommentSubscription.data?.newComment])
+    setComments([...(data?.getCommentsByUrl ?? [])])
+  }, [data?.getCommentsByUrl])
 
-  const transition = useTransition(comments, e => `${e.id}-${e.created}`, {
-    from: item => ({
-      opacity: 0,
-      transform: `scale(0.8)`,
-      filter: `blur(10px)`,
-      willChange: `opacity, transform, filter`,
-    }),
-    enter: item => ({
-      opacity: 1,
-      transform: `scale(1)`,
-      filter: `blur(0px)`,
-    }),
-    update: item => ({
-      opacity: 1,
-    }),
-    leave: {
-      opacity: 0,
-      transform: `scale(0.8)`,
-      filter: `blur(10px)`,
-    },
-    trail: 100,
-    config: config.wobbly,
-  })
+  /** @TODO serverless subscriptions */
+  // const newCommentSubscription = useSubscription(NEW_COMMENT_SUBSCRIPTION)
+  // const [comments, setComments] = useState<Comment[]>([])
+  // useEffect(() => {
+  //   if (!queryLoading && !queryError && called) {
+  //     setComments(data.getCommentsByUrl)
+  //   }
+  //   return () => {}
+  // }, [queryLoading, queryError, called])
+  // useEffect(() => {
+  //   if (!newCommentSubscription.loading && !newCommentSubscription.error) {
+  //     const newComment: Comment = newCommentSubscription.data.newComment
+  //     if (newComment && newComment.url === url) {
+  //       setComments(s => [newComment, ...s])
+  //     }
+  //   }
+  //   return () => {}
+  // }, [newCommentSubscription.loading, newCommentSubscription.data?.newComment])
+
+  const transition = useTransition(
+    comments,
+    e => `${e.id}-${new Date(e.created).getTime()}-${e.user.id}`,
+    {
+      from: item => ({
+        opacity: 0,
+        transform: `scale(0.8)`,
+        filter: `blur(10px)`,
+        willChange: `opacity, transform, filter`,
+      }),
+      enter: item => ({
+        opacity: 1,
+        transform: `scale(1)`,
+        filter: `blur(0px)`,
+      }),
+      update: item => ({
+        opacity: 1,
+      }),
+      leave: {
+        opacity: 0,
+        transform: `scale(0.8)`,
+        filter: `blur(10px)`,
+      },
+      trail: 100,
+      config: config.wobbly,
+    }
+  )
 
   /**
    * Our loading indicator that mocks the actual create-comment
@@ -127,7 +149,7 @@ export const CommentsByUrl = ({ url }) => {
         </FlexColumn>
       </CommentRenderer>
     )
-  if (data?.getCommentsByUrl.length < 1)
+  if (comments.length < 1)
     return (
       <CommentRenderer {...bind}>
         <FlexRow style={{ marginBottom: `.5rem` }}>
