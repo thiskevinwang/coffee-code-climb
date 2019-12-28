@@ -5,6 +5,7 @@ export const CREATE_COMMENT_MUTATION = gql`
     createComment(body: $body, url: $url) {
       id
       body
+      created
       url
       user {
         id
