@@ -14,6 +14,7 @@ export const CREATE_COMMENT_MUTATION = gql`
         password
         last_name
         first_name
+        avatar_url
       }
       # reactions will be null
       reactions {

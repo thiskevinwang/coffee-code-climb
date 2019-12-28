@@ -19,6 +19,10 @@ import * as Colors from "consts/Colors"
 // Relative
 import { CREATE_COMMENT_MUTATION } from "./mutation"
 import { GET_USER_BY_ID_QUERY } from "./query"
+import {
+  GET_COMMENTS_BY_URL_QUERY,
+  CommentOrderByInput,
+} from "../Display/ByUrl/query"
 
 const borderColor = theme("mode", {
   light: props => props.theme.commentRenderer.borderColor,
@@ -112,6 +116,22 @@ export const CreateComment = ({ url }) => {
       },
       onCompleted: () => {
         dispatch({ body: "" })
+      },
+      /**
+       * Update the local state to match mutated DB state
+       * - this is a workaround/alternative to subscriptions
+       */
+      update: (cache, { data: { createComment } }) => {
+        const { getCommentsByUrl } = cache.readQuery({
+          query: GET_COMMENTS_BY_URL_QUERY,
+          variables: { url, filter: CommentOrderByInput.created_DESC },
+        })
+
+        cache.writeQuery({
+          query: GET_COMMENTS_BY_URL_QUERY,
+          variables: { url, filter: CommentOrderByInput.created_DESC },
+          data: { getCommentsByUrl: [createComment, ...getCommentsByUrl] },
+        })
       },
     }
   )
