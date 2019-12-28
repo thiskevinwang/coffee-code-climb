@@ -1,4 +1,3 @@
-// ^[a-z][a-z0-9_-]*$
 import React, { useState, useEffect } from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
 import { navigate, Link } from "gatsby"
@@ -114,6 +113,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
         isInitialValid={false}
         validate={values => {
           const errors: FormikErrors<Values> = {}
+
           if (!values.email) {
             errors.email = "Required"
           } else if (
@@ -121,12 +121,23 @@ const AuthLogin = ({ location }: { location: Location }) => {
           ) {
             errors.email = "Invalid email address"
           }
+
           if (!values.password) {
             errors.password = "Required"
           } else if (values.password.length < 8) {
             errors.password = "Must be 8 or more characters"
           }
-          if (!values.username) errors.username = "Required"
+
+          if (!values.username) {
+            errors.username = "Required"
+          } else if (!/^[a-z]/i.test(values.username)) {
+            errors.username = "Must begin with a letter"
+          } else if (/\s/.test(values.username)) {
+            errors.username = "No whitespaces allowed"
+          } else if (!/^[a-z][a-z0-9_-]*$/i.test(values.username)) {
+            errors.username = "No special characters, except: _ -"
+          }
+
           if (!values.firstName) errors.firstName = "Required"
           if (!values.lastName) errors.lastName = "Required"
 
@@ -160,7 +171,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
             <Field
               id="username"
               name="username"
-              type="test"
+              type="text"
               label="username"
               placeholder="username"
             />
