@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useReducer } from "react"
+import React, { useState, useEffect } from "react"
+import { Formik, FormikProps, FormikErrors } from "formik"
 import { navigate, Link } from "gatsby"
 import qs from "query-string"
 import _ from "lodash"
@@ -32,12 +33,8 @@ const RESET_PASSWORD = gql`
   }
 `
 
-type AuthState = {
+type Values = {
   password: string
-}
-
-const authReducer = (state: AuthState, action: any): AuthState => {
-  return { ...state, ...action }
 }
 
 function usePasswordResetLink(
@@ -63,37 +60,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
 
   const [errorMessage, setErrorMessage] = useState("")
 
-  /**
-   * Form state
-   */
-  const [state, dispatch] = useReducer(authReducer, { password: "" })
-  const assignFormProps = (fieldName: string) => {
-    switch (fieldName) {
-      case "submit":
-        return {
-          type: "submit",
-          onClick: async (e: React.SyntheticEvent<HTMLButtonElement>) => {
-            e.preventDefault()
-            await resetPassword()
-          },
-          disabled: !state.password,
-        }
-      default:
-        return {
-          id: fieldName /* need this for <label for=""> */,
-          name: fieldName,
-          type: fieldName,
-          placeholder: fieldName,
-          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-            setErrorMessage("")
-            dispatch({ [fieldName]: e.target.value })
-          },
-        }
-    }
-  }
-
   const [resetPassword, { data, loading }] = useMutation(RESET_PASSWORD, {
-    variables: { ...state },
     context: {
       headers: {
         Authorization: token ? `Bearer ${token}` : "",
@@ -125,13 +92,41 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
           </p>
         </>
       ) : (
-        <form>
-          <Field {...assignFormProps("password")} />
-          <SubmitButton {...assignFormProps("submit")}>
-            {loading ? <LoadingIndicator /> : "Reset"}
-          </SubmitButton>
-          {errorMessage && <Error>{errorMessage}</Error>}
-        </form>
+        <Formik
+          initialValues={{ password: "" }}
+          isInitialValid={false}
+          validate={values => {
+            const errors: FormikErrors<Values> = {}
+            if (!values.password) {
+              errors.password = "Required"
+            }
+            return errors
+          }}
+          onSubmit={async (values, actions) => {
+            resetPassword({ variables: values })
+          }}
+        >
+          {(props: FormikProps<Values>) => (
+            <form
+              onSubmit={e => {
+                e.preventDefault()
+                props.handleSubmit(e)
+              }}
+            >
+              <Field
+                id="password"
+                name="password"
+                type="password"
+                label="password"
+                placeholder="password"
+              />
+              <SubmitButton type="submit">
+                {loading ? <LoadingIndicator /> : "Reset"}
+              </SubmitButton>
+              {errorMessage && <Error>{errorMessage}</Error>}
+            </form>
+          )}
+        </Formik>
       )}
     </LayoutManager>
   )

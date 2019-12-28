@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useField } from "formik"
 import styled, { BaseProps } from "styled-components"
 import { animated } from "react-spring"
 import theme from "styled-theming"
@@ -21,15 +22,35 @@ const color = theme("mode", {
 })
 
 const FieldRenderer = styled(animated.div)`
+  --geist-cyan: #79ffe1;
+  --geist-purple: #f81ce5;
+
   display: flex;
   flex-direction: column;
   max-width: 15rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   position: relative;
 
   > input {
+    ::selection {
+      background: ${theme("mode", {
+        light: "var(--geist-cyan)",
+        dark: "var(--geist-purple)",
+      })}; /* WebKit/Blink Browsers */
+    }
+    ::-moz-selection {
+      background: ${theme("mode", {
+        light: "var(--geist-cyan)",
+        dark: "var(--geist-purple)",
+      })}; /* Gecko Browsers */
+    }
+
+    height: 2.8rem;
     background: ${background};
-    border-color: ${borderColorBase};
+    border-color: ${theme("mode", {
+      light: props => (props.hasError ? "red" : borderColorBase),
+      dark: props => (props.hasError ? "darkred" : borderColorBase),
+    })};
     border-width: 1px;
     border-style: solid;
     border-radius: 0.25rem;
@@ -49,7 +70,10 @@ const FieldRenderer = styled(animated.div)`
   }
 
   > input:focus {
-    border-color: ${borderColorFocus};
+    border-color: ${theme("mode", {
+      light: props => (props.hasError ? "red" : borderColorFocus),
+      dark: props => (props.hasError ? "darkred" : borderColorFocus),
+    })};
   }
 
   > input::placeholder {
@@ -62,35 +86,60 @@ const FieldRenderer = styled(animated.div)`
 
   > input:focus + label,
   > input:not(:placeholder-shown) + label {
-    transform: translateY(-1.3rem);
+    transform: translateY(-1.1rem);
     opacity: 1;
   }
 
   > label {
+    border-radius: 0.25rem;
     font-size: 0.7rem;
     opacity: 0;
-    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
-    will-change: opacity transform;
+    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out,
+      background 150ms ease-in-out;
+    will-change: opacity transform background;
     position: absolute;
-    left: 5px;
+    left: 0.4rem;
     text-transform: uppercase;
+
+    color: ${theme("mode", {
+      light: props => (props.hasError ? "red" : color),
+      dark: props => (props.hasError ? "darkred" : color),
+    })};
   }
 `
 
-type FieldName = string
-interface FieldProps {
-  id: FieldName
-  name: FieldName
-  type: FieldName
-  placeholder: FieldName
-  onChange(): void
+FieldRenderer.defaultProps = {
+  hasError: false,
 }
 
-export const Field = (props: FieldProps) => {
+const FieldError = styled(animated.div)`
+  font-size: 0.7rem;
+  right: 0.3rem;
+  position: absolute;
+  color: ${theme("mode", {
+    light: "red",
+    dark: "darkred",
+  })};
+  transform: translateY(2.7rem);
+`
+
+interface FieldProps {
+  id: string
+  name: string
+  type: string
+  label: string
+  placeholder: string
+}
+
+export const Field = ({ label, ...props }: FieldProps) => {
+  const [field, meta] = useField(props)
   return (
-    <FieldRenderer>
-      <input {...props} />
-      <label for={props.name}>{props.name}</label>
+    <FieldRenderer hasError={meta.touched && meta.error}>
+      <input {...field} {...props} />
+      <label htmlFor={props.id ?? props.name}>{label}</label>
+      {meta.touched && meta.error ? (
+        <FieldError>{meta.error}</FieldError>
+      ) : null}
     </FieldRenderer>
   )
 }

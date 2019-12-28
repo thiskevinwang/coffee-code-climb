@@ -1,4 +1,5 @@
-import React, { useState, useReducer } from "react"
+import React, { useState } from "react"
+import { Formik, FormikProps, FormikErrors } from "formik"
 import _ from "lodash"
 import { graphql, Link } from "gatsby"
 import { animated } from "react-spring"
@@ -39,50 +40,17 @@ const REQUEST_PASSWORD_RESET_LINK = gql`
   }
 `
 
-type AuthState = {
+type Values = {
   email: string
 }
 
-const authReducer = (state: AuthState, action: any): AuthState => {
-  return { ...state, ...action }
-}
-
 const AuthForgotPassword = ({ location }: { location: Location }) => {
-  /**
-   * Form state
-   */
-  const [state, dispatch] = useReducer(authReducer, { email: "" })
-  const assignFormProps = (fieldName: string) => {
-    switch (fieldName) {
-      case "submit":
-        return {
-          type: "submit",
-          onClick: async (e: React.SyntheticEvent<HTMLButtonElement>) => {
-            e.preventDefault()
-            await requestPasswordResetLink()
-          },
-          disabled: !state.email,
-        }
-      default:
-        return {
-          id: fieldName /* need this for <label for=""> */,
-          name: fieldName,
-          type: fieldName,
-          placeholder: fieldName,
-          onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-            setErrorMessage("")
-            dispatch({ [fieldName]: e.target.value })
-          },
-        }
-    }
-  }
   const [errorMessage, setErrorMessage] = useState("")
   const [successMessage, setSuccessMessage] = useState("")
 
   const [requestPasswordResetLink, { data, loading }] = useMutation(
     REQUEST_PASSWORD_RESET_LINK,
     {
-      variables: { ...state },
       onCompleted: data => {
         const { message } = data.requestPasswordResetLink
         setSuccessMessage(message)
@@ -97,18 +65,54 @@ const AuthForgotPassword = ({ location }: { location: Location }) => {
     <LayoutManager location={location}>
       <SEO title="Forgot Password" />
       <h1>Forgot Password</h1>
-      <form>
-        <Field {...assignFormProps("email")} />
-        {successMessage ? (
-          <Success>{successMessage}</Success>
-        ) : (
-          <SubmitButton {...assignFormProps("submit")}>
-            {loading ? <LoadingIndicator /> : "Submit"}
-          </SubmitButton>
-        )}
+      <Formik
+        initialValues={{ email: "", password: "" }}
+        isInitialValid={false}
+        validate={values => {
+          const errors: FormikErrors<Values> = {}
+          if (!values.email) {
+            errors.email = "Required"
+          } else if (
+            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+          ) {
+            errors.email = "Invalid email address"
+          }
 
-        {errorMessage && <Error>{errorMessage}</Error>}
-      </form>
+          return errors
+        }}
+        onSubmit={async (values, actions) => {
+          requestPasswordResetLink({ variables: values })
+        }}
+      >
+        {(props: FormikProps<Values>) => (
+          <form
+            onSubmit={e => {
+              e.preventDefault()
+              props.handleSubmit(e)
+            }}
+          >
+            <Field
+              id="email"
+              name="email"
+              type="email"
+              label="email"
+              placeholder="email"
+            />
+            {successMessage ? (
+              <Success>{successMessage}</Success>
+            ) : (
+              <SubmitButton
+                type="submit"
+                disabled={!props.isValid || props.isSubmitting}
+              >
+                {loading ? <LoadingIndicator /> : "Submit"}
+              </SubmitButton>
+            )}
+
+            {errorMessage && <Error>{errorMessage}</Error>}
+          </form>
+        )}
+      </Formik>
       <small>
         <Link to="/auth/login">Login</Link>
       </small>
