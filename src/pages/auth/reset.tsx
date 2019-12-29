@@ -70,7 +70,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
       const { id } = data.resetPassword
 
       if (id) {
-        navigate("/auth/login", {
+        navigate("/auth/login/", {
           replace: true,
         })
       }
@@ -94,7 +94,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
       ) : (
         <Formik
           initialValues={{ password: "" }}
-          isInitialValid={false}
+          validateOnMount={false}
           validate={values => {
             const errors: FormikErrors<Values> = {}
             if (!values.password) {

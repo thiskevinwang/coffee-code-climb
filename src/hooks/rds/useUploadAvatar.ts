@@ -1,4 +1,4 @@
-import { gql } from "apollo-boost"
+import { gql, ApolloError } from "apollo-boost"
 import { useMutation } from "@apollo/react-hooks"
 import axios, { AxiosRequestConfig } from "axios"
 import moment from "moment"
@@ -39,7 +39,10 @@ export function useUploadAvatar({ onSuccess }: { onSuccess: () => void }) {
     S3_GET_SIGNED_PUT_OBJECT_URL,
     {
       onCompleted: data => {},
-      onError: (error: ApolloError) => {},
+      onError: (error: ApolloError) => {
+        console.error(error)
+        throw new Error(error.message)
+      },
     }
   )
 
@@ -48,9 +51,12 @@ export function useUploadAvatar({ onSuccess }: { onSuccess: () => void }) {
     UPDATE_USER_AVATAR,
     {
       onCompleted: data => {
-        onSuccess && onSuccess()
+        onSuccess?.()
       },
-      onError: (error: ApolloError) => {},
+      onError: (error: ApolloError) => {
+        console.error(error)
+        throw new Error(error.message)
+      },
     }
   )
 

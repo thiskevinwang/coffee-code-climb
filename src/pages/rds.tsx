@@ -1,29 +1,24 @@
 // Dependencies
 import * as React from "react"
 import { navigate } from "gatsby"
-import moment from "moment"
 import _ from "lodash"
 import { graphql } from "gatsby"
-import { useSpring, animated } from "react-spring"
+import { animated } from "react-spring"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { useApolloClient } from "@apollo/react-hooks"
 
 // Hooks
-import { useCommentLogic } from "hooks/rds/useCommentLogic"
-import { useReactionLogic, ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
-import { useIO } from "hooks/useIO"
+import { ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { useAuthentication } from "hooks/useAuthentication"
-// import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
+import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
 
 // Components
 import SEO from "components/seo"
 import { LayoutManager } from "components/layoutManager"
-import { LoadingIndicator } from "components/LoadingIndicator"
 import { CreateComment } from "components/Comments/Create"
 import { SubmitButton } from "components/Form"
-import { Avatar } from "components/Avatar"
-import { LikeCommentShare } from "components/LikeCommentShare"
+import { CommentsByUrl } from "components/Comments/Display/ByUrl"
 
 export const LEFT_OFFSET = 20
 
@@ -135,49 +130,30 @@ const RdsPage = ({ location }: { location: Location }) => {
     e.preventDefault()
     localStorage.removeItem("token")
     client.resetStore()
-    navigate("/auth/login", {
+    navigate("/auth/login/", {
       replace: true,
     })
   }
 
-  const [isIntersecting, bind] = useIO({
-    rootMargin: "0px 0px 0px 0px",
-    threshold: 0.25,
-  })
-  const {
-    transition: reactionsTransition,
-    reactions,
-    isQueryLoading: isReactionQueryLoading,
-  } = useReactionLogic()
-  const {
-    transition: commentsTransition,
-    comments,
-    isQueryLoading: isCommentQueryLoading,
-  } = useCommentLogic({ isIntersecting })
+  const [file, setFile] = React.useState(null as File)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
 
-  const reactionContainerProps = useSpring({
-    height: ITEM_HEIGHT,
-  })
+    if (files) {
+      const file = files[0]
+      setFile(file)
+    } else {
+      setFile(null)
+    }
+  }
 
-  // const [file, setFile] = React.useState(null as File)
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const files = e.target.files
-
-  //   if (files) {
-  //     const file = files[0]
-  //     setFile(file)
-  //   } else {
-  //     setFile(null)
-  //   }
-  // }
-
-  // const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
+  const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
 
   return (
     <LayoutManager location={location}>
       <SEO title="RDS" />
-      <h1 {...bind}>Social Network Simulator</h1>
-      {/* 
+      <h1>RDS</h1>
+
       <ChooseFile
         name="file"
         id="file"
@@ -185,123 +161,20 @@ const RdsPage = ({ location }: { location: Location }) => {
         accept={"image/png, image/jpeg"}
         onChange={handleChange}
       />
-      <label for="file">Select an img</label>
+      <label htmlFor="file">Select an img</label>
 
       {file && (
         <UploadButton
           onClick={() => uploadAvatar(file)}
         >{`Upload ${file.name}`}</UploadButton>
       )}
-      */}
 
       <SubmitButton onClick={handleLogout}>
         {currentUserId ? "Logout" : "Login"}
       </SubmitButton>
       <Container className={"comments"}>
         <CreateComment url={location.pathname} />
-        {isCommentQueryLoading && <LoadingIndicator />}
-        {commentsTransition.map(({ item: _comment, props, key }) => (
-          <CommentRenderer key={key} style={props}>
-            <FlexRow style={{ marginBottom: `.5rem` }}>
-              <Avatar src={_comment.user.avatar_url} />
-              <FlexColumn>
-                <small
-                  style={{
-                    // Make name highlighted if it's the currently authenticated user
-                    color: currentUserId == _comment.user.id && "#3978ff",
-                  }}
-                >
-                  <b>
-                    {_comment.user.first_name} {_comment.user.last_name}
-                  </b>
-                </small>
-                <small>
-                  {moment(_comment.created).format("MMMM DD \\at h:mm A")}
-                </small>
-              </FlexColumn>
-            </FlexRow>
-
-            <p>{_comment.body}</p>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <FlexColumn>
-                {_comment.updated && (
-                  <small>
-                    Edited: {timeDifferenceForDate(_comment.updated)}
-                  </small>
-                )}
-              </FlexColumn>
-            </div>
-
-            <Container
-              className={"reactions"}
-              style={{ ...reactionContainerProps, marginBottom: `1rem` }}
-            >
-              <ReactionsContainer>
-                {_.flow(
-                  _.partialRight(_.uniqBy, "variant"),
-                  _.partialRight(_.filter, e => e.variant !== "None")
-                )(_comment.reactions).map((e, i) => {
-                  return (
-                    <Variant
-                      variant={e.variant}
-                      key={`${e.variant}-${i}`}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: `${LEFT_OFFSET * i}px`,
-                        zIndex: `${10 - i}`,
-                      }}
-                    >
-                      {/* ... */}
-                    </Variant>
-                  )
-                })}
-                <div
-                  style={{
-                    top: 0,
-                    position: "absolute",
-                    /**
-                     * offset the reactionCount by # of unique
-                     * reaction variants, + 1
-                     */
-                    left: `${(_.flow(
-                      _.partialRight(_.uniqBy, "variant"),
-                      _.partialRight(_.filter, e => e.variant !== "None")
-                    )(_comment.reactions).length +
-                      1) *
-                      LEFT_OFFSET}px`,
-                  }}
-                >
-                  <small>
-                    {isReactionQueryLoading ? (
-                      <LoadingIndicator />
-                    ) : (
-                      _.intersectionWith(
-                        // _.map(reactions, e => e.id),
-                        _.flow(
-                          _.partialRight(_.filter, e => e.variant !== "None"),
-                          _.partialRight(_.map, e => e.id)
-                        )(reactions),
-                        // _.map(_comment.reactions, e => e.id),
-                        _.flow(
-                          _.partialRight(_.filter, e => e.variant !== "None"),
-                          _.partialRight(_.map, e => e.id)
-                        )(_comment.reactions),
-                        _.isEqual
-                      ).length
-                    )}
-                  </small>
-                </div>
-              </ReactionsContainer>
-            </Container>
-            <LikeCommentShare commentId={_comment.id} />
-          </CommentRenderer>
-        ))}
+        <CommentsByUrl url={location.pathname} />
       </Container>
     </LayoutManager>
   )

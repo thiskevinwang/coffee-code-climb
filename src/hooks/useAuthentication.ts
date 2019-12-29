@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken"
  */
 export function useAuthentication() {
   const token = typeof window !== "undefined" && localStorage.getItem("token")
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<number | null>()
 
   useEffect(() => {
     jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {

@@ -109,7 +109,11 @@ const StickyNumbers = () => {
    * @property {AnimatedValue} props
    */
   const arr: Arr[] = ARRAY_FROM_DIVISIONS.map(e => {
-    const [isIntersecting, bind] = useIO()
+    const [isIntersecting, bind] = useIO({
+      root: null,
+      rootMargin: `-100px 0px 100%`,
+      threshold: 0.99,
+    })
     const [isMouseOver, setIsMouseOver] = React.useState(false)
     const [isDragging, setIsDragging] = React.useState(false)
 

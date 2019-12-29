@@ -4,7 +4,7 @@ import _ from "lodash"
 // TODO: use this / figure out `window` issue during SSR
 // import IntersectionObserver from 'intersection-observer-polyfill';
 
-interface Options {
+interface IOptions extends IntersectionObserverInit {
   /**
    * **root**
    *
@@ -12,7 +12,7 @@ interface Options {
    * Must be the ancestor of the target.
    * - Defaults to the browser viewport if not specified or if null.
    */
-  root?: HTMLElement | null
+  root?: Element | null
   /**
    * **rootMargin**
    *
@@ -51,17 +51,10 @@ interface Options {
  * ```
  */
 function useIO(
-  options: Options
+  options: IOptions
 ): [boolean, { ref: MutableRefObject<undefined> }] {
   const ref = useRef()
   const [isIntersecting, setIsIntersecting] = useState(false)
-
-  const defaultOptions: Options = {
-    root: null,
-    rootMargin: `-100px 0px 100%`,
-    threshold: 0.99,
-  }
-  const mergedOptions: Options = _.merge(defaultOptions, options)
 
   /**
    * Creating an IO is an expensive calculation so by passing a
@@ -77,7 +70,7 @@ function useIO(
         entry.isIntersecting
           ? setIsIntersecting(true)
           : setIsIntersecting(false)
-      }, mergedOptions)
+      }, options)
   )
 
   useEffect(() => {

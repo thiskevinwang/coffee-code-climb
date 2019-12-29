@@ -1,7 +1,7 @@
 import { gql } from "apollo-boost"
 
 export const GET_USER_BY_ID_QUERY = gql`
-  query($id: ID!) {
+  query GetUserById($id: ID!) {
     getUserById(id: $id) {
       id
       username
