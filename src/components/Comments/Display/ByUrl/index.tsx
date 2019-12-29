@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
-
+// import ms from "ms"
 import { useTransition, config } from "react-spring"
 import _ from "lodash"
 import { useLazyQuery } from "@apollo/react-hooks"
@@ -8,7 +8,7 @@ import moment from "moment"
 // Hooks
 import { useIO } from "hooks/useIO"
 import { useAuthentication } from "hooks/useAuthentication"
-import { useLazyPolling } from "hooks/apollo/useLazyPolling"
+// import { useLazyPolling } from "hooks/apollo/useLazyPolling"
 
 // Components
 import { Avatar } from "components/Avatar"
@@ -69,8 +69,20 @@ export const CommentsByUrl = ({ url }) => {
 
   /**
    * When the window has focus, poll for new comments every 5 seconds...
+   *
+   * Each execution is around 500ms. Zeit provides 20 free hours per month,
+   * which ends up as about 144,000 executions.
+   *
+   * Probably will not turn on polling for now.
+   * @see https://zeit.co/docs/v2/platform/limits/
    */
-  useLazyPolling({ startPolling, stopPolling, called, interval: 2000 })
+  // useLazyPolling({
+  //   startPolling,
+  //   stopPolling,
+  //   called,
+  //   interval: ms("2s"),
+  //   stopAfter: ms("3m"),
+  // })
 
   const didIntersect = useRef(false)
   const [isIntersecting, bind] = useIO({
