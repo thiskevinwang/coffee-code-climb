@@ -1,7 +1,7 @@
 import { gql } from "apollo-boost"
 
 export const DELETE_COMMENT_BY_ID = gql`
-  mutation($id: ID!) {
+  mutation DeleteCommentById($id: ID!) {
     deleteCommentById(id: $id) {
       id
     }
