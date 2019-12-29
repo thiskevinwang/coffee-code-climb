@@ -94,7 +94,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
       ) : (
         <Formik
           initialValues={{ password: "" }}
-          isInitialValid={false}
+          validateOnMount={false}
           validate={values => {
             const errors: FormikErrors<Values> = {}
             if (!values.password) {

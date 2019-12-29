@@ -67,7 +67,7 @@ const AuthForgotPassword = ({ location }: { location: Location }) => {
       <h1>Forgot Password</h1>
       <Formik
         initialValues={{ email: "", password: "" }}
-        isInitialValid={false}
+        validateOnMount={false}
         validate={values => {
           const errors: FormikErrors<Values> = {}
           if (!values.email) {

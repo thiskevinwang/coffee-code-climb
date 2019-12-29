@@ -110,7 +110,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
           firstName: "",
           lastName: "",
         }}
-        isInitialValid={false}
+        validateOnMount={false}
         validate={values => {
           const errors: FormikErrors<Values> = {}
 
