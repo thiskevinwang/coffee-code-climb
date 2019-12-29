@@ -154,14 +154,18 @@ const RdsPage = ({ location }: { location: Location }) => {
       <SEO title="RDS" />
       <h1>RDS</h1>
 
-      <ChooseFile
-        name="file"
-        id="file"
-        type="file"
-        accept={"image/png, image/jpeg"}
-        onChange={handleChange}
-      />
-      <label htmlFor="file">Select an img</label>
+      {currentUserId && (
+        <>
+          <ChooseFile
+            name="file"
+            id="file"
+            type="file"
+            accept={"image/png, image/jpeg"}
+            onChange={handleChange}
+          />
+          <label htmlFor="file">Upload avatar</label>
+        </>
+      )}
 
       {file && (
         <UploadButton
