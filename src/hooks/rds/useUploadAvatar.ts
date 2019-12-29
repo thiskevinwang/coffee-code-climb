@@ -3,6 +3,8 @@ import { useMutation } from "@apollo/react-hooks"
 import axios, { AxiosRequestConfig } from "axios"
 import moment from "moment"
 
+import { useAuthentication } from "hooks/useAuthentication"
+
 const S3_GET_SIGNED_PUT_OBJECT_URL = gql`
   mutation($fileName: String!, $fileType: String!) {
     s3GetSignedPutObjectUrl(fileName: $fileName, fileType: $fileType) {
@@ -31,8 +33,12 @@ const UPDATE_USER_AVATAR = gql`
     }
   }
 `
-
-export function useUploadAvatar({ onSuccess }: { onSuccess: () => void }) {
+interface IUploadAvatarArgs {
+  onSuccess: () => void
+}
+export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
+  const { currentUserId } = useAuthentication()
+  if (!currentUserId) throw new Error("User ID needed to upload an avatar")
   // if (!file) throw new Error("Missing a required 'file' argument")
   // These args just come from client state
   const [getSignedUrl, { data: data_1, loading: loading_1 }] = useMutation(
@@ -64,7 +70,10 @@ export function useUploadAvatar({ onSuccess }: { onSuccess: () => void }) {
     try {
       const response: S3 = await getSignedUrl({
         variables: {
-          fileName: formatFilename(file?.name ?? ""),
+          fileName: formatFilename({
+            filename: file?.name ?? "",
+            currentUserId,
+          }),
           fileType: file?.type ?? "",
         },
       })
@@ -90,12 +99,18 @@ export function useUploadAvatar({ onSuccess }: { onSuccess: () => void }) {
   return { uploadAvatar }
 }
 
-const formatFilename = (filename: string) => {
+const formatFilename = ({
+  filename,
+  currentUserId,
+}: {
+  filename: string
+  currentUserId: number
+}) => {
   const date = moment().format("YYYYMMDD")
   const randomString = Math.random()
     .toString(36)
     .substring(2, 7)
   const cleanFileName = filename.toLowerCase().replace(/[^a-z0-9]/g, "-")
-  const newFilename = `images/${date}-${randomString}-${cleanFileName}`
+  const newFilename = `images/${date}-${randomString}-user${currentUserId}-${cleanFileName}`
   return newFilename.substring(0, 60)
 }
