@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { gql, ApolloError } from "apollo-boost"
 import { useMutation } from "@apollo/react-hooks"
 import axios, { AxiosRequestConfig } from "axios"
@@ -38,8 +39,8 @@ interface IUploadAvatarArgs {
 }
 export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
   const { currentUserId } = useAuthentication()
-  if (!currentUserId) throw new Error("User ID needed to upload an avatar")
-  // if (!file) throw new Error("Missing a required 'file' argument")
+  const [isLoading, setIsLoading] = useState(false)
+
   // These args just come from client state
   const [getSignedUrl, { data: data_1, loading: loading_1 }] = useMutation(
     S3_GET_SIGNED_PUT_OBJECT_URL,
@@ -67,7 +68,11 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
   )
 
   const uploadAvatar = async (file: File) => {
+    if (!currentUserId) throw new Error("User ID needed to upload an avatar")
+    if (!file) throw new Error("Missing a required 'file' argument")
+
     try {
+      setIsLoading(true)
       const response: S3 = await getSignedUrl({
         variables: {
           fileName: formatFilename({
@@ -91,12 +96,14 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
       console.log("upload to S3 succeeded")
       await updateUserAvatar({ variables: { avatarUrl } })
       console.log("User avatar update succeeded")
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
       console.error(error)
     }
   }
 
-  return { uploadAvatar }
+  return { uploadAvatar, isLoading }
 }
 
 const formatFilename = ({
