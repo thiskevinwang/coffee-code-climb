@@ -19,6 +19,7 @@ import { LoadingIndicator } from "components/LoadingIndicator"
 import { Comment } from "entities"
 
 // Relative
+import { Overflow } from "../../Overflow"
 import { GET_COMMENTS_BY_URL_QUERY, CommentOrderByInput } from "./query"
 import {
   LEFT_OFFSET,
@@ -168,11 +169,13 @@ export const CommentsByUrl = ({ url }) => {
             <CommentRenderer key={key} style={props}>
               <FlexRow style={{ marginBottom: `.5rem` }}>
                 <Avatar src={_comment.user.avatar_url} />
-                <FlexColumn>
+                <FlexColumn style={{ flex: 1 }}>
                   <small
                     style={{
                       // Make name highlighted if it's the currently authenticated user
-                      color: currentUserId == _comment.user.id && "#3978ff",
+                      color:
+                        parseInt(_comment.user.id) === currentUserId &&
+                        "#3978ff",
                     }}
                   >
                     <b>
@@ -183,6 +186,9 @@ export const CommentsByUrl = ({ url }) => {
                     {moment(_comment.created).format("MMMM DD \\at h:mm A")}
                   </small>
                 </FlexColumn>
+                {parseInt(_comment.user.id) === currentUserId && (
+                  <Overflow commentId={_comment.id} url={url} />
+                )}
               </FlexRow>
 
               <p>{_comment.body}</p>
