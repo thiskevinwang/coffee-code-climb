@@ -1,5 +1,5 @@
 // Dependencies
-import * as React from "react"
+import React, { useState, useRef } from "react"
 import { navigate } from "gatsby"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -87,34 +87,6 @@ export const CommentRenderer = styled(animated.div)`
   }
 `
 
-/**
- * @TODO
- * https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/
- */
-const ChooseFile = styled(animated.input)`
-  /* Hide the actual input */
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-
-  + label {
-    border: 1px solid lightgray;
-    border-radius: 0.25rem;
-    padding: 0.75rem 0.5rem;
-  }
-  :focus + label,
-  + label:hover {
-    cursor: pointer;
-  }
-`
-const UploadButton = styled(animated.button)`
-  border: 1px solid lightgray;
-  border-radius: 0.25rem;
-`
-
 const RdsPage = ({ location }: { location: Location }) => {
   const { currentUserId } = useAuthentication()
   const client = useApolloClient()
@@ -135,7 +107,7 @@ const RdsPage = ({ location }: { location: Location }) => {
     })
   }
 
-  const [file, setFile] = React.useState(null as File)
+  const [file, setFile] = useState<File>(null)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
 
@@ -146,31 +118,56 @@ const RdsPage = ({ location }: { location: Location }) => {
       setFile(null)
     }
   }
+  const inputRef = useRef<HTMLInputElement>()
+  const handleClick = e => {
+    inputRef.current.click()
+  }
 
-  const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
+  const { uploadAvatar, isLoading } = useUploadAvatar({
+    onSuccess: () => setFile(null),
+  })
 
   return (
     <LayoutManager location={location}>
       <SEO title="RDS" />
       <h1>RDS</h1>
 
-      {currentUserId && (
-        <>
-          <ChooseFile
-            name="file"
-            id="file"
-            type="file"
+      {/** @NOTE only display form if user is logged in */
+      currentUserId && (
+        <form
+          onSubmit={e => {
+            e.preventDefault()
+            !isLoading && uploadAvatar(file)
+          }}
+        >
+          <input
+            ref={inputRef}
+            type={"file"}
             accept={"image/png, image/jpeg"}
+            style={{ display: "none" }}
             onChange={handleChange}
           />
-          <label htmlFor="file">Upload avatar</label>
-        </>
-      )}
 
-      {file && (
-        <UploadButton
-          onClick={() => uploadAvatar(file)}
-        >{`Upload ${file.name}`}</UploadButton>
+          <SubmitButton
+            style={{ width: "initial" }}
+            /** type "button" avoids form submission */
+            type={"button"}
+            onClick={handleClick}
+            disabled={isLoading}
+          >
+            Select an image
+          </SubmitButton>
+
+          {file && (
+            <SubmitButton
+              style={{ width: "initial" }}
+              type={"submit"}
+              disabled={isLoading}
+            >
+              {`Upload ${file.name}`}
+            </SubmitButton>
+          )}
+        </form>
       )}
 
       <SubmitButton onClick={handleLogout}>
