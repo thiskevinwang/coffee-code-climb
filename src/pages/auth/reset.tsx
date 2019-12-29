@@ -70,7 +70,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
       const { id } = data.resetPassword
 
       if (id) {
-        navigate("/auth/login", {
+        navigate("/auth/login/", {
           replace: true,
         })
       }

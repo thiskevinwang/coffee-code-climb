@@ -52,7 +52,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
     jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {
       const userId = decoded?.userId
       if (userId) {
-        navigate("/rds", {
+        navigate("/rds/", {
           replace: true,
         })
       }
@@ -72,7 +72,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
          */
         const userId = decoded?.userId
         if (userId) {
-          navigate("/rds", {
+          navigate("/rds/", {
             replace: true,
           })
         }

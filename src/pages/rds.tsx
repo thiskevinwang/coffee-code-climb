@@ -130,7 +130,7 @@ const RdsPage = ({ location }: { location: Location }) => {
     e.preventDefault()
     localStorage.removeItem("token")
     client.resetStore()
-    navigate("/auth/login", {
+    navigate("/auth/login/", {
       replace: true,
     })
   }
