@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import ReactCrop from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
 import styled, { BaseProps } from "styled-components"
@@ -57,14 +57,11 @@ const Img = styled(animated.img)`
 
 export const AvatarUploader = () => {
   const { currentUserId } = useAuthentication()
-  const inputRef = useRef<HTMLInputElement>()
-  const imgRef = useRef<HTMLImageElement>()
   const canvasRef = useRef<HTMLCanvasElement>()
-
+  const inputRef = useRef<HTMLInputElement>()
   const handleClick = e => {
-    inputRef.current.click()
+    inputRef.current?.click()
   }
-
   const { uploadAvatar, isLoading } = useUploadAvatar({
     onSuccess: () => {
       setFile(null)
@@ -73,11 +70,27 @@ export const AvatarUploader = () => {
     },
   })
 
+  /** This is set by the `ReactCrop.onImageLoaded` fn */
+  const [loadedImage, setLoadedImage] = useState<HTMLImageElement>()
   const [crop, setCrop] = useState<ReactCrop.Crop>({
     unit: "%",
     aspect: 1,
     height: 100,
+    width: 100,
   })
+
+  useEffect(() => {
+    if (loadedImage) {
+      const croppedImgSrc = getCroppedImgSrc(crop, loadedImage)
+
+      // Hack for fixing when no crop is selected
+      if (croppedImgSrc === "data:,") {
+        setCroppedImgSrc(null)
+      } else {
+        setCroppedImgSrc(croppedImgSrc)
+      }
+    }
+  }, [loadedImage, crop])
 
   /** file is what gets uploaded to S3 */
   const [file, setFile] = useState<File>(null)
@@ -106,38 +119,33 @@ export const AvatarUploader = () => {
     }
   }
 
-  function getCanvasUrl(_crop: ReactCrop.Crop) {
-    const _img = imgRef.current
-    const _canvas = document.createElement("canvas")
+  function getCroppedImgSrc(_crop: ReactCrop.Crop, image: HTMLImageElement) {
+    const canvas = canvasRef.current
 
-    const scaleX = _img.naturalWidth / _img.width
-    const scaleY = _img.naturalHeight / _img.height
+    const scaleX = image.naturalWidth / image.width
+    const scaleY = image.naturalHeight / image.height
 
-    _canvas.setAttribute("width", _crop.width)
-    _canvas.setAttribute("height", _crop.height)
+    canvas?.setAttribute("width", _crop.width)
+    canvas?.setAttribute("height", _crop.height)
 
-    const ctx = _canvas.getContext("2d")
-    ctx.drawImage(
-      _img,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+    const ctx = canvas?.getContext("2d")
+
+    ctx?.drawImage(
+      image,
+      _crop.x * scaleX,
+      _crop.y * scaleY,
+      _crop.width * scaleX,
+      _crop.height * scaleY,
       0,
       0,
-      crop.width,
-      crop.height
+      _crop.width,
+      _crop.height
     )
 
-    const canvasUrl = _canvas.toDataURL(file.type)
+    const canvasUrl = canvas?.toDataURL(file.type)
     return canvasUrl
   }
 
-  const handleCompleteAndChange = (_crop: ReactCrop.Crop) => {
-    setCrop({ ..._crop, aspect: 1 })
-    const croppedImgSrc = getCanvasUrl(_crop)
-    setCroppedImgSrc(croppedImgSrc)
-  }
   if (!currentUserId) return null
   return (
     <>
@@ -153,20 +161,45 @@ export const AvatarUploader = () => {
             <ImageContainer>
               <ReactCrop
                 src={imgSrc}
-                crop={crop}
+                crop={{ ...crop, aspect: 1 }}
                 ruleOfThirds
                 circularCrop
-                // https://github.com/DominicTobias/react-image-crop/issues/32
-                onImageLoaded={(target: HTMLImageElement) => {
-                  imgRef.current = target
+                onImageLoaded={image => {
+                  setLoadedImage(image)
+
+                  /** @TODO center on load */
+                  // Center a square percent crop.
+                  // const width =
+                  //   image.width > image.height
+                  //     ? (image.height / image.width) * 100
+                  //     : 100
+                  // const height =
+                  //   image.height > image.width
+                  //     ? (image.width / image.height) * 100
+                  //     : 100
+                  // const x = width === 100 ? 0 : (100 - width) / 2
+                  // const y = height === 100 ? 0 : (100 - height) / 2
+
+                  // setCrop({
+                  //   unit: "%",
+                  //   aspect: 1,
+                  //   width,
+                  //   height,
+                  //   x,
+                  //   y,
+                  // })
+
+                  // return false // Return false if you set crop state in here.
                 }}
-                onComplete={handleCompleteAndChange}
-                onChange={handleCompleteAndChange}
+                // onComplete={c => setCrop(c)}
+                onChange={c => setCrop(c)}
               />
             </ImageContainer>
           </>
         )}
         {croppedImgSrc && <Img src={croppedImgSrc}></Img>}
+        {/* this avoids document.createElement("canvas"), inside `getCroppedImgSrc()` */}
+        <canvas ref={canvasRef} style={{ display: "none" }} />
 
         <input
           ref={inputRef}
@@ -214,7 +247,7 @@ export const AvatarUploader = () => {
                   marginBottom: 0,
                 }}
                 type={"submit"}
-                disabled={isLoading}
+                disabled={isLoading || !croppedImgSrc}
               >
                 {"Set Avatar"}
               </SubmitButton>
