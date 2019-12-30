@@ -11,7 +11,6 @@ import { useApolloClient } from "@apollo/react-hooks"
 // Hooks
 import { ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { useAuthentication } from "hooks/useAuthentication"
-import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
 
 // Components
 import SEO from "components/seo"
@@ -19,6 +18,7 @@ import { LayoutManager } from "components/layoutManager"
 import { CreateComment } from "components/Comments/Create"
 import { SubmitButton } from "components/Form"
 import { CommentsByUrl } from "components/Comments/Display/ByUrl"
+import { AvatarUploader } from "components/AvatarUploader"
 
 export const LEFT_OFFSET = 20
 
@@ -87,34 +87,6 @@ export const CommentRenderer = styled(animated.div)`
   }
 `
 
-/**
- * @TODO
- * https://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way/
- */
-const ChooseFile = styled(animated.input)`
-  /* Hide the actual input */
-  width: 0.1px;
-  height: 0.1px;
-  opacity: 0;
-  overflow: hidden;
-  position: absolute;
-  z-index: -1;
-
-  + label {
-    border: 1px solid lightgray;
-    border-radius: 0.25rem;
-    padding: 0.75rem 0.5rem;
-  }
-  :focus + label,
-  + label:hover {
-    cursor: pointer;
-  }
-`
-const UploadButton = styled(animated.button)`
-  border: 1px solid lightgray;
-  border-radius: 0.25rem;
-`
-
 const RdsPage = ({ location }: { location: Location }) => {
   const { currentUserId } = useAuthentication()
   const client = useApolloClient()
@@ -135,39 +107,12 @@ const RdsPage = ({ location }: { location: Location }) => {
     })
   }
 
-  const [file, setFile] = React.useState(null as File)
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-
-    if (files) {
-      const file = files[0]
-      setFile(file)
-    } else {
-      setFile(null)
-    }
-  }
-
-  const { uploadAvatar } = useUploadAvatar({ onSuccess: () => setFile(null) })
-
   return (
     <LayoutManager location={location}>
       <SEO title="RDS" />
       <h1>RDS</h1>
 
-      <ChooseFile
-        name="file"
-        id="file"
-        type="file"
-        accept={"image/png, image/jpeg"}
-        onChange={handleChange}
-      />
-      <label htmlFor="file">Select an img</label>
-
-      {file && (
-        <UploadButton
-          onClick={() => uploadAvatar(file)}
-        >{`Upload ${file.name}`}</UploadButton>
-      )}
+      <AvatarUploader />
 
       <SubmitButton onClick={handleLogout}>
         {currentUserId ? "Logout" : "Login"}
