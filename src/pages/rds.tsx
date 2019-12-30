@@ -1,5 +1,5 @@
 // Dependencies
-import React, { useState, useRef } from "react"
+import * as React from "react"
 import { navigate } from "gatsby"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -11,7 +11,6 @@ import { useApolloClient } from "@apollo/react-hooks"
 // Hooks
 import { ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
 import { useAuthentication } from "hooks/useAuthentication"
-import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
 
 // Components
 import SEO from "components/seo"
@@ -19,6 +18,7 @@ import { LayoutManager } from "components/layoutManager"
 import { CreateComment } from "components/Comments/Create"
 import { SubmitButton } from "components/Form"
 import { CommentsByUrl } from "components/Comments/Display/ByUrl"
+import { AvatarUploader } from "components/AvatarUploader"
 
 export const LEFT_OFFSET = 20
 
@@ -107,68 +107,12 @@ const RdsPage = ({ location }: { location: Location }) => {
     })
   }
 
-  const [file, setFile] = useState<File>(null)
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-
-    if (files) {
-      const file = files[0]
-      setFile(file)
-    } else {
-      setFile(null)
-    }
-  }
-  const inputRef = useRef<HTMLInputElement>()
-  const handleClick = e => {
-    inputRef.current.click()
-  }
-
-  const { uploadAvatar, isLoading } = useUploadAvatar({
-    onSuccess: () => setFile(null),
-  })
-
   return (
     <LayoutManager location={location}>
       <SEO title="RDS" />
       <h1>RDS</h1>
 
-      {/** @NOTE only display form if user is logged in */
-      currentUserId && (
-        <form
-          onSubmit={e => {
-            e.preventDefault()
-            !isLoading && uploadAvatar(file)
-          }}
-        >
-          <input
-            ref={inputRef}
-            type={"file"}
-            accept={"image/png, image/jpeg"}
-            style={{ display: "none" }}
-            onChange={handleChange}
-          />
-
-          <SubmitButton
-            style={{ width: "initial" }}
-            /** type "button" avoids form submission */
-            type={"button"}
-            onClick={handleClick}
-            disabled={isLoading}
-          >
-            Select an image
-          </SubmitButton>
-
-          {file && (
-            <SubmitButton
-              style={{ width: "initial" }}
-              type={"submit"}
-              disabled={isLoading}
-            >
-              {`Upload ${file.name}`}
-            </SubmitButton>
-          )}
-        </form>
-      )}
+      <AvatarUploader />
 
       <SubmitButton onClick={handleLogout}>
         {currentUserId ? "Logout" : "Login"}
