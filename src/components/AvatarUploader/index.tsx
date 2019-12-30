@@ -7,6 +7,7 @@ import { useAuthentication } from "hooks/useAuthentication"
 import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
 
 import { SubmitButton } from "components/Form"
+import { DivTitle } from "components/Comments/Create"
 
 const StyledForm = styled(animated.form)`
   border-width: 1px;
@@ -19,6 +20,22 @@ const StyledForm = styled(animated.form)`
   padding: 1.5rem;
   /* width: 20rem;
   height: 20rem; */
+`
+
+const ImageContainer = styled(animated.div)`
+  display: flex;
+  justify-content: center;
+  border-bottom-color: ${theme("mode", {
+    light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+    dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+  })};
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  margin-bottom: 1rem;
+
+  > img {
+    margin-bottom: 1rem;
+  }
 `
 
 export const AvatarUploader = () => {
@@ -59,45 +76,78 @@ export const AvatarUploader = () => {
     }
   }
 
+  if (!currentUserId) return null
+
   return (
     <>
-      {currentUserId && (
-        <StyledForm
-          onSubmit={e => {
-            e.preventDefault()
-            !isLoading && uploadAvatar(file)
-          }}
-        >
-          {imgSrc && <img src={imgSrc} alt={file.name} />}
-          <input
-            ref={inputRef}
-            type={"file"}
-            accept={"image/png, image/jpeg"}
-            style={{ display: "none" }}
-            onChange={handleChange}
-          />
+      <StyledForm
+        onSubmit={e => {
+          e.preventDefault()
+          !isLoading && uploadAvatar(file)
+        }}
+      >
+        <DivTitle>Upload An Avatar</DivTitle>
 
-          <SubmitButton
-            style={{ width: "initial" }}
-            /** type "button" avoids form submission */
-            type={"button"}
-            onClick={handleClick}
-            disabled={isLoading}
+        {imgSrc && (
+          <ImageContainer>
+            <img src={imgSrc} alt={file.name} />
+          </ImageContainer>
+        )}
+
+        <input
+          ref={inputRef}
+          type={"file"}
+          accept={"image/png, image/jpeg"}
+          style={{ display: "none" }}
+          onChange={handleChange}
+        />
+
+        <div style={{ display: "flex" }}>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            Select an image
-          </SubmitButton>
-
-          {file && (
             <SubmitButton
-              style={{ width: "initial" }}
-              type={"submit"}
+              style={{
+                width: "initial",
+                marginBottom: 0,
+              }}
+              /** type "button" avoids form submission */
+              type={"button"}
+              onClick={handleClick}
               disabled={isLoading}
             >
-              {`Upload ${file.name}`}
+              Select an image
             </SubmitButton>
+          </div>
+
+          {file && (
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <SubmitButton
+                style={{
+                  width: "initial",
+                  marginBottom: 0,
+                }}
+                type={"submit"}
+                disabled={isLoading}
+              >
+                {"Set Avatar"}
+              </SubmitButton>
+            </div>
           )}
-        </StyledForm>
-      )}
+        </div>
+      </StyledForm>
     </>
   )
 }

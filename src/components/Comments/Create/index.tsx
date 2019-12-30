@@ -40,7 +40,7 @@ const Renderer = styled(animated.div)`
   padding: 0.5rem 1.5rem 0;
 `
 
-const DivTitle = styled(animated.div)`
+export const DivTitle = styled(animated.div)`
   border-bottom-color: ${borderColor};
   border-bottom-width: 1px;
   border-bottom-style: solid;
