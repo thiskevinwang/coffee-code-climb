@@ -67,7 +67,7 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
     }
   )
 
-  const uploadAvatar = async (file: File) => {
+  const uploadAvatar = async (file: File, imgSrc: string) => {
     if (!currentUserId) throw new Error("User ID needed to upload an avatar")
     if (!file) throw new Error("Missing a required 'file' argument")
 
@@ -90,9 +90,16 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": file?.type,
+          /** https://github.com/aws/aws-sdk-js/issues/2482 */
+          "Content-Encoding": "base64",
         },
       }
-      await axios.put(signedPutObjectUrl, file, config)
+      // await axios.put(signedPutObjectUrl, file, config)
+      const buffer = Buffer.from(
+        imgSrc.replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      )
+      await axios.put(signedPutObjectUrl, buffer, config)
       console.log("upload to S3 succeeded")
       await updateUserAvatar({ variables: { avatarUrl } })
       console.log("User avatar update succeeded")
