@@ -100,18 +100,18 @@ export const AvatarUploader = () => {
 
   const [croppedImgSrc, setCroppedImgSrc] = useState<string>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-
-    if (files?.[0]) {
+  /** this is called by <input type="file"> */
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
       const reader = new FileReader()
 
-      reader.onload = async (e: ProgressEvent) => {
+      reader.onload = (e: ProgressEvent) => {
         setImgSrc(reader.result ?? e.target.result)
       }
 
-      reader.readAsDataURL(files[0])
-      setFile(files[0])
+      reader.readAsDataURL(file)
+      setFile(file)
     } else {
       setFile(null)
       setImgSrc(null)
@@ -206,7 +206,7 @@ export const AvatarUploader = () => {
           type={"file"}
           accept={"image/png, image/jpeg"}
           style={{ display: "none" }}
-          onChange={handleChange}
+          onChange={handleFileInputChange}
         />
 
         <div style={{ display: "flex" }}>
