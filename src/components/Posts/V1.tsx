@@ -3,8 +3,6 @@ import { useEffect, memo, useRef } from "react"
 import _ from "lodash"
 import { Link } from "gatsby"
 import Image from "gatsby-image"
-import { CommentCount } from "disqus-react"
-import { Grid, Tooltip } from "@material-ui/core"
 import {
   animated,
   useSpring,
@@ -14,6 +12,7 @@ import {
 } from "react-spring"
 import { useGesture, addV } from "react-use-gesture"
 import styled from "styled-components"
+import theme from "styled-theming"
 
 import * as Colors from "consts/Colors"
 import { rhythm } from "utils/typography"
@@ -64,10 +63,24 @@ const MOUSEDOWN_STYLE = {
 }
 
 const Card = styled(animated.div)`
-  border: 1px solid grey;
+  --geist-cyan: #79ffe1;
+  --geist-purple: #f81ce5;
+
+  border-style: solid;
+  border-width: 1px;
+  border-color: ${theme("mode", {
+    light: props => props.theme.commentRenderer.borderColor,
+    dark: props => props.theme.commentRenderer.borderColor,
+  })};
+  transition: border-color 200ms ease-in-out;
+
   :hover {
-    border: 1px dashed white;
+    border-color: ${theme("mode", {
+      light: "var(--geist-cyan)",
+      dark: "var(--geist-purple)",
+    })};
   }
+
   position: absolute;
   border-radius: 5px;
   /* box-shadow: 0px 10px 40px -10px ${Colors.blackDark}; */
@@ -80,6 +93,7 @@ const Card = styled(animated.div)`
   }
   -ms-overflow-style: none;
 `
+
 type BoundingClientRect = {
   bottom: number
   height: number
@@ -122,14 +136,7 @@ const V1 = memo(
     style,
   }: Props) => {
     //_.map + _.kebabCase each tag in frontmatter.tags
-    let kebabTags = _.map(tags, tag => _.kebabCase(tag))
-
-    const disqusShortname = "coffeecodeclimb"
-    const disqusConfig = {
-      url: "https://coffeecodeclimb.com" + linkTo,
-      identifier: id,
-      title: title,
-    }
+    const kebabTags = _.map(tags, tag => _.kebabCase(tag))
 
     /** slowMo instance variable */
     const slowMoRef: React.MutableRefObject<any> = useRef(false)
@@ -362,45 +369,9 @@ const V1 = memo(
             />
           </Link>
           <br />
-          {_.includes(kebabTags, "coffee") && (
-            <Tooltip title={`tagged with "coffee"`}>
-              <Link style={{ boxShadow: `none` }} to={"/tags/coffee/"}>
-                <span role="img" aria-label="tagged with coffee">
-                  ☕️
-                </span>
-              </Link>
-            </Tooltip>
-          )}
-          {_.includes(kebabTags, "code") && (
-            <Tooltip title={`tagged with "code"`}>
-              <Link style={{ boxShadow: `none` }} to={"/tags/code/"}>
-                <span role="img" aria-label="tagged with code">
-                  💻
-                </span>
-              </Link>
-            </Tooltip>
-          )}
-          {_.includes(kebabTags, "climbing") && (
-            <Tooltip title={`tagged with "climbing"`}>
-              <Link style={{ boxShadow: `none` }} to={"/tags/climbing/"}>
-                <span role="img" aria-label="tagged with climbing">
-                  🧗🏻‍♂️
-                </span>
-              </Link>
-            </Tooltip>
-          )}{" "}
-          <code>
-            <small>
-              <Link
-                style={{ color: `inherit`, boxShadow: `none` }}
-                to={`${linkTo}#disqus_thread`}
-              >
-                <CommentCount shortname={disqusShortname} config={disqusConfig}>
-                  ...
-                </CommentCount>
-              </Link>
-            </small>
-          </code>
+          {_.includes(kebabTags, "coffee") && <Tag>coffee</Tag>}
+          {_.includes(kebabTags, "code") && <Tag>code</Tag>}
+          {_.includes(kebabTags, "climbing") && <Tag>climb</Tag>}
         </div>
       </Card>
     )
@@ -408,3 +379,27 @@ const V1 = memo(
 )
 
 export { V1 }
+
+export const Tag = styled(animated.small)`
+  --geist-cyan: #79ffe1;
+  --geist-purple: #f81ce5;
+
+  background: ${theme("mode", {
+    light: "var(--geist-cyan)",
+    dark: "var(--geist-purple)",
+  })};
+  box-shadow: none;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 1rem / 80%;
+  border-color: ${theme("mode", {
+    light: Colors.greyLighter,
+    dark: Colors.greyDarker,
+  })};
+
+  color: ${theme("mode", {
+    light: Colors.greyLighter,
+    dark: Colors.greyDarker,
+  })};
+  padding: 0.05rem 0.5rem 0.1rem;
+`
