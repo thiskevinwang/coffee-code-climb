@@ -8,11 +8,29 @@ import "css/typography.css"
 
 Wordpress2016.headerFontFamily = ["Cereal"]
 Wordpress2016.bodyFontFamily = ["Cereal"]
+// const __geist_cyan = "#79ffe1"
+// const __geist_purple = "#f81ce5"
 
 Wordpress2016.overrideThemeStyles = () => {
   // This is the current state when `injectStyles()` is fired
   const { isDarkMode }: { isDarkMode: boolean } = store.getState()
   return {
+    "::selection": {
+      background: isDarkMode ? "#f81ce5" : "#79ffe1",
+    },
+    s: {
+      textDecorationLine: "line-through",
+      textDecorationColor: isDarkMode ? "#f81ce5" : "#79ffe1",
+      textDecorationStyle: "wavy",
+    },
+    a: {
+      color: isDarkMode ? Colors.silverLight : Colors.blackDark,
+      boxShadow: `${isDarkMode ? "#f81ce5" : "#79ffe1"} 0px -5px 0px inset`,
+      transition: `box-shadow 200ms ease-in-out`,
+    },
+    "a:hover": {
+      boxShadow: `${isDarkMode ? "#f81ce5" : "#79ffe1"} 0px -1.5rem 0px inset`,
+    },
     ".Card": {
       background: isDarkMode ? Colors.blackLight : Colors.silverLight,
     },
@@ -73,7 +91,14 @@ Wordpress2016.overrideThemeStyles = () => {
     "a.anchor": {
       // float: "none",
       // marginLeft: "auto",
-      boxShadow: "none",
+    },
+    "a.anchor > svg": {
+      visibility: "visible !important",
+      fill: isDarkMode ? Colors.greyDarker : Colors.greyLighter,
+      transition: "fill 200ms ease-in-out",
+    },
+    "a.anchor:hover > svg": {
+      fill: isDarkMode ? Colors.silverLight : Colors.blackDark,
     },
     small: {
       color: isDarkMode ? Colors.greyLighter : Colors.grey,
