@@ -1,6 +1,6 @@
 import React, { useState, useReducer, useEffect } from "react"
 import { Link } from "gatsby"
-import styled from "styled-components"
+import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { useSpring, animated } from "react-spring"
 import { useApolloClient, useMutation, useLazyQuery } from "@apollo/react-hooks"
@@ -63,6 +63,14 @@ export const DivTitle = styled(animated.div)`
 `
 
 const Textarea = styled(animated.textarea)`
+  --geist-cyan: #79ffe1;
+  --geist-purple: #f81ce5;
+
+  caret-color: ${theme("mode", {
+    light: "var(--geist-cyan)",
+    dark: "var(--geist-purple)",
+  })} !important;
+
   caret-color: ${theme("mode", {
     light: Colors.greyDarker,
     dark: Colors.greyLighter,
