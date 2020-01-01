@@ -44,6 +44,10 @@ const FieldRenderer = styled(animated.div)`
         dark: "var(--geist-purple)",
       })}; /* Gecko Browsers */
     }
+    caret-color: ${theme("mode", {
+      light: "var(--geist-cyan)",
+      dark: "var(--geist-purple)",
+    })};
 
     height: 2.8rem;
     background: ${background};

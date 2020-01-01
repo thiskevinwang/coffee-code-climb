@@ -1,18 +1,17 @@
-import React from "react"
+import * as React from "react"
 import { rhythm } from "utils/typography"
 
 const GIT = "https://github.com/thiskevinwang/coffee-code-climb"
-const WEB = "https://thekevinwang.com"
 
 const footerStyle = {
   paddingTop: rhythm(2),
   paddingBottom: rhythm(1),
 }
 
-export default function Footer(): JSX.Element {
+export default function Footer() {
   return (
     <footer style={footerStyle}>
-      <a href={GIT}>Github</a> <a href={WEB}>Website</a>
+      <a href={GIT}>Github</a>
       {process.env.NODE_ENV === "development" && (
         <code>{new Date(Date.now() - 1.44e7).toISOString()}</code>
       )}

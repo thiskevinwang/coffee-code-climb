@@ -78,10 +78,11 @@ export const AvatarUploader = () => {
     height: 100,
     width: 100,
   })
-
+  /** file is what gets uploaded to S3 */
+  const [file, setFile] = useState<File>(null)
   useEffect(() => {
     if (loadedImage) {
-      const croppedImgSrc = getCroppedImgSrc(crop, loadedImage)
+      const croppedImgSrc = getCroppedImgSrc(crop, loadedImage, file)
 
       // Hack for fixing when no crop is selected
       if (croppedImgSrc === "data:,") {
@@ -90,28 +91,24 @@ export const AvatarUploader = () => {
         setCroppedImgSrc(croppedImgSrc)
       }
     }
-  }, [loadedImage, crop])
-
-  /** file is what gets uploaded to S3 */
-  const [file, setFile] = useState<File>(null)
+  }, [loadedImage, crop, file])
 
   /** imgSrc is just for locally displaying the selected image */
   const [imgSrc, setImgSrc] = useState<string>(null)
 
   const [croppedImgSrc, setCroppedImgSrc] = useState<string>(null)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-
-    if (files?.[0]) {
+  /** this is called by <input type="file"> */
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
       const reader = new FileReader()
-
-      reader.onload = async (e: ProgressEvent) => {
+      reader.onload = (e: ProgressEvent) => {
         setImgSrc(reader.result ?? e.target.result)
       }
 
-      reader.readAsDataURL(files[0])
-      setFile(files[0])
+      reader.readAsDataURL(file)
+      setFile(file)
     } else {
       setFile(null)
       setImgSrc(null)
@@ -119,11 +116,16 @@ export const AvatarUploader = () => {
     }
   }
 
-  function getCroppedImgSrc(_crop: ReactCrop.Crop, image: HTMLImageElement) {
+  function getCroppedImgSrc(
+    _crop: ReactCrop.Crop,
+    _image: HTMLImageElement,
+    _file: File
+  ) {
+    if (!_file) return
     const canvas = canvasRef.current
 
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
+    const scaleX = _image.naturalWidth / _image.width
+    const scaleY = _image.naturalHeight / _image.height
 
     canvas?.setAttribute("width", _crop.width)
     canvas?.setAttribute("height", _crop.height)
@@ -131,7 +133,7 @@ export const AvatarUploader = () => {
     const ctx = canvas?.getContext("2d")
 
     ctx?.drawImage(
-      image,
+      _image,
       _crop.x * scaleX,
       _crop.y * scaleY,
       _crop.width * scaleX,
@@ -142,7 +144,7 @@ export const AvatarUploader = () => {
       _crop.height
     )
 
-    const canvasUrl = canvas?.toDataURL(file.type)
+    const canvasUrl = canvas?.toDataURL(_file.type)
     return canvasUrl
   }
 
@@ -166,30 +168,6 @@ export const AvatarUploader = () => {
                 circularCrop
                 onImageLoaded={image => {
                   setLoadedImage(image)
-
-                  /** @TODO center on load */
-                  // Center a square percent crop.
-                  // const width =
-                  //   image.width > image.height
-                  //     ? (image.height / image.width) * 100
-                  //     : 100
-                  // const height =
-                  //   image.height > image.width
-                  //     ? (image.width / image.height) * 100
-                  //     : 100
-                  // const x = width === 100 ? 0 : (100 - width) / 2
-                  // const y = height === 100 ? 0 : (100 - height) / 2
-
-                  // setCrop({
-                  //   unit: "%",
-                  //   aspect: 1,
-                  //   width,
-                  //   height,
-                  //   x,
-                  //   y,
-                  // })
-
-                  // return false // Return false if you set crop state in here.
                 }}
                 // onComplete={c => setCrop(c)}
                 onChange={c => setCrop(c)}
@@ -206,7 +184,7 @@ export const AvatarUploader = () => {
           type={"file"}
           accept={"image/png, image/jpeg"}
           style={{ display: "none" }}
-          onChange={handleChange}
+          onChange={handleFileInputChange}
         />
 
         <div style={{ display: "flex" }}>
