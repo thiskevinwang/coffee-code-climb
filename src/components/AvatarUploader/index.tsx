@@ -103,10 +103,7 @@ export const AvatarUploader = () => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      console.log(reader.result)
-
       reader.onload = (e: ProgressEvent) => {
-        console.log(reader.result)
         setImgSrc(reader.result ?? e.target.result)
       }
 
@@ -151,7 +148,7 @@ export const AvatarUploader = () => {
     return canvasUrl
   }
 
-  // if (!currentUserId) return null
+  if (!currentUserId) return null
   return (
     <>
       <StyledForm
@@ -180,10 +177,7 @@ export const AvatarUploader = () => {
         )}
         {croppedImgSrc && <Img src={croppedImgSrc}></Img>}
         {/* this avoids document.createElement("canvas"), inside `getCroppedImgSrc()` */}
-        <canvas
-          ref={canvasRef}
-          // style={{ display: "none" }}
-        />
+        <canvas ref={canvasRef} style={{ display: "none" }} />
 
         <input
           ref={inputRef}
