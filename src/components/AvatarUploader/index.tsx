@@ -4,6 +4,7 @@ import "react-image-crop/dist/ReactCrop.css"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { animated } from "react-spring"
+import exif from "exif-js"
 
 import { useAuthentication } from "hooks/useAuthentication"
 import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
@@ -87,7 +88,7 @@ export const AvatarUploader = () => {
     canvasRef,
   })
 
-  if (!currentUserId) return null
+  // if (!currentUserId) return null
   return (
     <>
       <StyledForm
@@ -116,7 +117,13 @@ export const AvatarUploader = () => {
         )}
         {croppedImgSrc && <Img src={croppedImgSrc}></Img>}
         {/* this avoids document.createElement("canvas"), inside `getCroppedImgSrc()` */}
-        <canvas ref={canvasRef} style={{ display: "none" }} />
+        <canvas
+          ref={canvasRef}
+          style={{
+            border: `2px dotted pink`,
+            // display: "none"
+          }}
+        />
 
         <input
           ref={inputRef}
@@ -188,16 +195,19 @@ function useImg({ crop, canvasRef }: IUseImgArgs) {
   reader.onload = (e: ProgressEvent) => {
     setImgSrc(reader.result ?? e.target.result)
   }
+
   const [image, dispatchSetImage] = useReducer<HTMLImageElement>(
     (state, action) => action,
     null
   )
   const [file, setFile] = useState<File>(null)
+  const { orientation } = useOrientation(file)
+
   // imgSrc gets passed to ReactCrop, and a loadedImage image is returned
   const [imgSrc, setImgSrc] = useState<string>(null)
   const [croppedImgSrc, setCroppedImgSrc] = useState<string>(null)
-  const [canvas, setCanvas] = useState<HTMLCanvasElement>(canvasRef.current)
 
+  const [canvas, setCanvas] = useState<HTMLCanvasElement>(canvasRef.current)
   useEffect(() => setCanvas(canvasRef.current), [canvasRef.current])
 
   useEffect(() => {
@@ -207,6 +217,7 @@ function useImg({ crop, canvasRef }: IUseImgArgs) {
         _image: image,
         _file: file,
         _canvas: canvas,
+        _orientation: orientation,
       })
       if (_croppedImageSrc === "data:,") {
         setCroppedImgSrc(null)
@@ -251,35 +262,112 @@ interface IGetCroppedImgSrcArgs {
   _image: HTMLImageElement
   _file: File
   _canvas: HTMLCanvasElement
+  _orientation: number
 }
 function getCroppedImgSrc({
   _crop,
   _image,
   _file,
   _canvas,
+  _orientation,
 }: IGetCroppedImgSrcArgs) {
   if (!_file) return
 
+  console.log(_image)
+  console.log(
+    JSON.stringify(
+      {
+        natWidth: _image.naturalWidth, // 6000
+        width: _image.width, // 580
+        natHeight: _image.naturalHeight, // 4000
+        height: _image.height, // 387
+        orientation: _orientation,
+      },
+      null,
+      2
+    )
+  )
+  console.log(_crop)
+
   const scaleX = _image.naturalWidth / _image.width
   const scaleY = _image.naturalHeight / _image.height
+
+  // _canvas.setAttribute("width", _crop.width)
+  // _canvas.setAttribute("height", _crop.height)
+
+  const rawWidth = _orientation > 4 ? _image.height : _image.width
+  const rawHeight = _orientation > 4 ? _image.width : _image.height
 
   _canvas.setAttribute("width", _crop.width)
   _canvas.setAttribute("height", _crop.height)
 
   const ctx = _canvas.getContext("2d")
+  // prettier-ignore
+  switch (_orientation) {
+    case  2: ctx?.transform(-1,  0,  0,  1,  rawWidth,  0        ); break;
+    case  3: ctx?.transform(-1,  0,  0, -1,  rawWidth,  rawHeight); break;
+    case  4: ctx?.transform( 1,  0,  0, -1,  0,         rawHeight); break;
+    case  5: ctx?.transform( 0,  1,  1,  0,  0,         0        ); break;
+    case  6: ctx?.transform( 0,  1, -1,  0,  _crop.height, 0        ); break;
+    case  7: ctx?.transform( 0, -1, -1,  0,  rawHeight, rawWidth ); break;
+    case  8: ctx?.transform( 0, -1,  1,  0,  0,         rawWidth ); break;
+    default: break;
+  }
 
-  ctx?.drawImage(
-    _image,
-    _crop.x * scaleX,
-    _crop.y * scaleY,
-    _crop.width * scaleX,
-    _crop.height * scaleY,
-    0,
-    0,
-    _crop.width,
-    _crop.height
-  )
+  if (/* PORTRAIT */ _orientation > 4) {
+    ctx?.drawImage(
+      _image,
+      /**
+       * swapping x & y makes the crop selection and canvas feedback match in scroll behavior.
+       */
+      _crop.y * scaleY,
+      _crop.x * scaleX,
+      _crop.height * scaleY,
+      _crop.width * scaleX,
+      0,
+      0,
+      _crop.width,
+      _crop.height
+    )
+  } /* LANDSCAPE */ else {
+    ctx?.drawImage(
+      _image,
+      _crop.x * scaleX,
+      _crop.y * scaleY,
+      _crop.width * scaleX,
+      _crop.height * scaleY,
+      0,
+      0,
+      _crop.width,
+      _crop.height
+    )
+  }
+  // ctx?.drawImage(
+  //   _image,
+  //   _crop.x * scaleX,
+  //   _crop.y * scaleY,
+  //   _crop.width * scaleX,
+  //   _crop.height * scaleY,
+  //   0,
+  //   0,
+  //   _crop.width,
+  //   _crop.height
+  // )
 
   const croppedImgSrc = _canvas.toDataURL(_file.type)
   return croppedImgSrc
+}
+
+const useOrientation = (file: File) => {
+  const [orientation, setOrientation] = useState<number>()
+
+  useEffect(() => {
+    if (file) {
+      exif.getData(file, function() {
+        setOrientation(exif.getTag(this, "Orientation"))
+      })
+    }
+  }, [file])
+
+  return { orientation }
 }
