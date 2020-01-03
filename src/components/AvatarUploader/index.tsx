@@ -83,12 +83,12 @@ export const AvatarUploader = () => {
     file,
     dispatchSetImage,
     reset,
-  } = useImg({
+  } = useImgHandling({
     crop,
     canvasRef,
   })
 
-  // if (!currentUserId) return null
+  if (!currentUserId) return null
   return (
     <>
       <StyledForm
@@ -97,7 +97,7 @@ export const AvatarUploader = () => {
           !isLoading && uploadAvatar(file, croppedImgSrc)
         }}
       >
-        <DivTitle>Upload An Avatar</DivTitle>
+        <DivTitle>Upload An Avatar (Beta)</DivTitle>
         {imgSrc && (
           <>
             <ImageContainer>
@@ -121,10 +121,9 @@ export const AvatarUploader = () => {
           ref={canvasRef}
           style={{
             border: `2px dotted pink`,
-            // display: "none"
+            display: "none",
           }}
         />
-
         <input
           ref={inputRef}
           type={"file"}
@@ -132,7 +131,6 @@ export const AvatarUploader = () => {
           style={{ display: "none" }}
           onChange={handleFileInputChange}
         />
-
         <div style={{ display: "flex" }}>
           <div
             style={{
@@ -190,7 +188,7 @@ interface IUseImgArgs {
 /**
  * @TODO rename this
  */
-function useImg({ crop, canvasRef }: IUseImgArgs) {
+function useImgHandling({ crop, canvasRef }: IUseImgArgs) {
   const [reader] = useState(() => new FileReader())
   reader.onload = (e: ProgressEvent) => {
     setImgSrc(reader.result ?? e.target.result)
@@ -308,13 +306,14 @@ function getCroppedImgSrc({
     case  3: ctx?.transform(-1,  0,  0, -1,  rawWidth,  rawHeight); break;
     case  4: ctx?.transform( 1,  0,  0, -1,  0,         rawHeight); break;
     case  5: ctx?.transform( 0,  1,  1,  0,  0,         0        ); break;
-    case  6: ctx?.transform( 0,  1, -1,  0,  _crop.height, 0        ); break;
+    case  6: ctx?.transform( 0,  1, -1,  0,  rawHeight, 0        ); break;
     case  7: ctx?.transform( 0, -1, -1,  0,  rawHeight, rawWidth ); break;
     case  8: ctx?.transform( 0, -1,  1,  0,  0,         rawWidth ); break;
     default: break;
   }
 
   if (/* PORTRAIT */ _orientation > 4) {
+    ctx?.rotate(0.05)
     ctx?.drawImage(
       _image,
       /**
@@ -324,8 +323,9 @@ function getCroppedImgSrc({
       _crop.x * scaleX,
       _crop.height * scaleY,
       _crop.width * scaleX,
-      0,
-      0,
+      _image.height - _crop.height,
+      /** this fixes smaller crop sizes creating black space on the preview canvas */
+      _image.width - _crop.width,
       _crop.width,
       _crop.height
     )
