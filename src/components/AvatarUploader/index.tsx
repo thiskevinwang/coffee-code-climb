@@ -192,8 +192,10 @@ function useImgHandling({ crop, canvasRef }: IUseImgArgs) {
   const [reader] = useState(
     () => typeof FileReader !== "undefined" && new FileReader()
   )
-  reader.onload = (e: ProgressEvent) => {
-    setImgSrc(reader.result ?? e.target.result)
+  if (reader) {
+    reader.onload = (e: ProgressEvent) => {
+      setImgSrc(reader.result ?? e.target.result)
+    }
   }
 
   const [image, dispatchSetImage] = useReducer<HTMLImageElement>(
