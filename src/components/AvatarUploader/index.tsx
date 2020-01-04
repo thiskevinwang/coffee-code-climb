@@ -189,7 +189,9 @@ interface IUseImgArgs {
  * @TODO rename this
  */
 function useImgHandling({ crop, canvasRef }: IUseImgArgs) {
-  const [reader] = useState(() => new FileReader())
+  const [reader] = useState(
+    () => typeof FileReader !== "undefined" && new FileReader()
+  )
   reader.onload = (e: ProgressEvent) => {
     setImgSrc(reader.result ?? e.target.result)
   }
@@ -270,22 +272,6 @@ function getCroppedImgSrc({
   _orientation,
 }: IGetCroppedImgSrcArgs) {
   if (!_file) return
-
-  console.log(_image)
-  console.log(
-    JSON.stringify(
-      {
-        natWidth: _image.naturalWidth, // 6000
-        width: _image.width, // 580
-        natHeight: _image.naturalHeight, // 4000
-        height: _image.height, // 387
-        orientation: _orientation,
-      },
-      null,
-      2
-    )
-  )
-  console.log(_crop)
 
   const scaleX = _image.naturalWidth / _image.width
   const scaleY = _image.naturalHeight / _image.height
