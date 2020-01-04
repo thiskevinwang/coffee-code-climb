@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef, useEffect, useReducer } from "react"
 import ReactCrop from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { animated } from "react-spring"
+import exif from "exif-js"
 
 import { useAuthentication } from "hooks/useAuthentication"
 import { useUploadAvatar } from "hooks/rds/useUploadAvatar"
@@ -64,89 +65,28 @@ export const AvatarUploader = () => {
   }
   const { uploadAvatar, isLoading } = useUploadAvatar({
     onSuccess: () => {
-      setFile(null)
-      setImgSrc(null)
-      setCroppedImgSrc(null)
+      reset()
     },
   })
 
-  /** This is set by the `ReactCrop.onImageLoaded` fn */
-  const [loadedImage, setLoadedImage] = useState<HTMLImageElement>()
   const [crop, setCrop] = useState<ReactCrop.Crop>({
     unit: "%",
     aspect: 1,
     height: 100,
     width: 100,
   })
-  /** file is what gets uploaded to S3 */
-  const [file, setFile] = useState<File>(null)
-  useEffect(() => {
-    if (loadedImage) {
-      const croppedImgSrc = getCroppedImgSrc(crop, loadedImage, file)
 
-      // Hack for fixing when no crop is selected
-      if (croppedImgSrc === "data:,") {
-        setCroppedImgSrc(null)
-      } else {
-        setCroppedImgSrc(croppedImgSrc)
-      }
-    }
-  }, [loadedImage, crop, file])
-
-  /** imgSrc is just for locally displaying the selected image */
-  const [imgSrc, setImgSrc] = useState<string>(null)
-
-  const [croppedImgSrc, setCroppedImgSrc] = useState<string>(null)
-
-  /** this is called by <input type="file"> */
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e: ProgressEvent) => {
-        setImgSrc(reader.result ?? e.target.result)
-      }
-
-      reader.readAsDataURL(file)
-      setFile(file)
-    } else {
-      setFile(null)
-      setImgSrc(null)
-      setCroppedImgSrc(null)
-    }
-  }
-
-  function getCroppedImgSrc(
-    _crop: ReactCrop.Crop,
-    _image: HTMLImageElement,
-    _file: File
-  ) {
-    if (!_file) return
-    const canvas = canvasRef.current
-
-    const scaleX = _image.naturalWidth / _image.width
-    const scaleY = _image.naturalHeight / _image.height
-
-    canvas?.setAttribute("width", _crop.width)
-    canvas?.setAttribute("height", _crop.height)
-
-    const ctx = canvas?.getContext("2d")
-
-    ctx?.drawImage(
-      _image,
-      _crop.x * scaleX,
-      _crop.y * scaleY,
-      _crop.width * scaleX,
-      _crop.height * scaleY,
-      0,
-      0,
-      _crop.width,
-      _crop.height
-    )
-
-    const canvasUrl = canvas?.toDataURL(_file.type)
-    return canvasUrl
-  }
+  const {
+    handleFileInputChange,
+    imgSrc,
+    croppedImgSrc,
+    file,
+    dispatchSetImage,
+    reset,
+  } = useImgHandling({
+    crop,
+    canvasRef,
+  })
 
   if (!currentUserId) return null
   return (
@@ -157,7 +97,7 @@ export const AvatarUploader = () => {
           !isLoading && uploadAvatar(file, croppedImgSrc)
         }}
       >
-        <DivTitle>Upload An Avatar</DivTitle>
+        <DivTitle>Upload An Avatar (Beta)</DivTitle>
         {imgSrc && (
           <>
             <ImageContainer>
@@ -167,7 +107,7 @@ export const AvatarUploader = () => {
                 ruleOfThirds
                 circularCrop
                 onImageLoaded={image => {
-                  setLoadedImage(image)
+                  dispatchSetImage(image)
                 }}
                 // onComplete={c => setCrop(c)}
                 onChange={c => setCrop(c)}
@@ -177,8 +117,13 @@ export const AvatarUploader = () => {
         )}
         {croppedImgSrc && <Img src={croppedImgSrc}></Img>}
         {/* this avoids document.createElement("canvas"), inside `getCroppedImgSrc()` */}
-        <canvas ref={canvasRef} style={{ display: "none" }} />
-
+        <canvas
+          ref={canvasRef}
+          style={{
+            border: `2px dotted pink`,
+            display: "none",
+          }}
+        />
         <input
           ref={inputRef}
           type={"file"}
@@ -186,7 +131,6 @@ export const AvatarUploader = () => {
           style={{ display: "none" }}
           onChange={handleFileInputChange}
         />
-
         <div style={{ display: "flex" }}>
           <div
             style={{
@@ -235,4 +179,183 @@ export const AvatarUploader = () => {
       </StyledForm>
     </>
   )
+}
+
+interface IUseImgArgs {
+  crop: ReactCrop.Crop
+  canvasRef: React.Ref<HTMLCanvasElement>
+}
+/**
+ * @TODO rename this
+ */
+function useImgHandling({ crop, canvasRef }: IUseImgArgs) {
+  const [reader] = useState(
+    () => typeof FileReader !== "undefined" && new FileReader()
+  )
+  if (reader) {
+    reader.onload = (e: ProgressEvent) => {
+      setImgSrc(reader.result ?? e.target.result)
+    }
+  }
+
+  const [image, dispatchSetImage] = useReducer<HTMLImageElement>(
+    (state, action) => action,
+    null
+  )
+  const [file, setFile] = useState<File>(null)
+  const { orientation } = useOrientation(file)
+
+  // imgSrc gets passed to ReactCrop, and a loadedImage image is returned
+  const [imgSrc, setImgSrc] = useState<string>(null)
+  const [croppedImgSrc, setCroppedImgSrc] = useState<string>(null)
+
+  const [canvas, setCanvas] = useState<HTMLCanvasElement>(canvasRef.current)
+  useEffect(() => setCanvas(canvasRef.current), [canvasRef.current])
+
+  useEffect(() => {
+    if (image) {
+      const _croppedImageSrc = getCroppedImgSrc({
+        _crop: crop,
+        _image: image,
+        _file: file,
+        _canvas: canvas,
+        _orientation: orientation,
+      })
+      if (_croppedImageSrc === "data:,") {
+        setCroppedImgSrc(null)
+      } else {
+        setCroppedImgSrc(_croppedImageSrc)
+      }
+    }
+  }, [crop, image, file])
+
+  useEffect(() => {
+    if (file) reader.readAsDataURL(file)
+  }, [file])
+
+  const reset = () => {
+    setFile(null)
+    setImgSrc(null)
+    setCroppedImgSrc(null)
+  }
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFile(file)
+      // this will go trigger some side effects
+    } else {
+      reset()
+    }
+  }
+
+  return {
+    handleFileInputChange,
+    imgSrc,
+    croppedImgSrc,
+    file,
+    dispatchSetImage,
+    reset,
+  }
+}
+
+interface IGetCroppedImgSrcArgs {
+  _crop: ReactCrop.Crop
+  _image: HTMLImageElement
+  _file: File
+  _canvas: HTMLCanvasElement
+  _orientation: number
+}
+function getCroppedImgSrc({
+  _crop,
+  _image,
+  _file,
+  _canvas,
+  _orientation,
+}: IGetCroppedImgSrcArgs) {
+  if (!_file) return
+
+  const scaleX = _image.naturalWidth / _image.width
+  const scaleY = _image.naturalHeight / _image.height
+
+  // _canvas.setAttribute("width", _crop.width)
+  // _canvas.setAttribute("height", _crop.height)
+
+  const rawWidth = _orientation > 4 ? _image.height : _image.width
+  const rawHeight = _orientation > 4 ? _image.width : _image.height
+
+  _canvas.setAttribute("width", _crop.width)
+  _canvas.setAttribute("height", _crop.height)
+
+  const ctx = _canvas.getContext("2d")
+  // prettier-ignore
+  switch (_orientation) {
+    case  2: ctx?.transform(-1,  0,  0,  1,  rawWidth,  0        ); break;
+    case  3: ctx?.transform(-1,  0,  0, -1,  rawWidth,  rawHeight); break;
+    case  4: ctx?.transform( 1,  0,  0, -1,  0,         rawHeight); break;
+    case  5: ctx?.transform( 0,  1,  1,  0,  0,         0        ); break;
+    case  6: ctx?.transform( 0,  1, -1,  0,  rawHeight, 0        ); break;
+    case  7: ctx?.transform( 0, -1, -1,  0,  rawHeight, rawWidth ); break;
+    case  8: ctx?.transform( 0, -1,  1,  0,  0,         rawWidth ); break;
+    default: break;
+  }
+
+  if (/* PORTRAIT */ _orientation > 4) {
+    ctx?.rotate(0.05)
+    ctx?.drawImage(
+      _image,
+      /**
+       * swapping x & y makes the crop selection and canvas feedback match in scroll behavior.
+       */
+      _crop.y * scaleY,
+      _crop.x * scaleX,
+      _crop.height * scaleY,
+      _crop.width * scaleX,
+      _image.height - _crop.height,
+      /** this fixes smaller crop sizes creating black space on the preview canvas */
+      _image.width - _crop.width,
+      _crop.width,
+      _crop.height
+    )
+  } /* LANDSCAPE */ else {
+    ctx?.drawImage(
+      _image,
+      _crop.x * scaleX,
+      _crop.y * scaleY,
+      _crop.width * scaleX,
+      _crop.height * scaleY,
+      0,
+      0,
+      _crop.width,
+      _crop.height
+    )
+  }
+  // ctx?.drawImage(
+  //   _image,
+  //   _crop.x * scaleX,
+  //   _crop.y * scaleY,
+  //   _crop.width * scaleX,
+  //   _crop.height * scaleY,
+  //   0,
+  //   0,
+  //   _crop.width,
+  //   _crop.height
+  // )
+
+  const croppedImgSrc = _canvas.toDataURL(_file.type)
+  return croppedImgSrc
+}
+
+const useOrientation = (file: File) => {
+  const [orientation, setOrientation] = useState<number>()
+
+  useEffect(() => {
+    if (file) {
+      exif.getData(file, function() {
+        setOrientation(exif.getTag(this, "Orientation"))
+      })
+    }
+  }, [file])
+
+  return { orientation }
 }
