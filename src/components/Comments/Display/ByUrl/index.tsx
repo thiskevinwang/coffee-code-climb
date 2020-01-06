@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 // import ms from "ms"
+import styled from "styled-components"
+import theme from "styled-theming"
 import { useTransition, config } from "react-spring"
 import _ from "lodash"
 import { useLazyQuery } from "@apollo/react-hooks"
@@ -29,6 +31,17 @@ import {
   ReactionsContainer,
   Variant,
 } from "../../../../pages/rds"
+
+const Sentinel = styled.div`
+  min-height: 5rem;
+  border-color: ${theme("mode", {
+    light: props => props.theme.commentRenderer.borderColor,
+    dark: props => props.theme.commentRenderer.borderColor,
+  })};
+  border-width: 0.05rem;
+  border-style: dashed;
+  border-radius: 0.2rem;
+`
 
 interface IGetCommentsByUrlData {
   getCommentsByUrl: Comment[]
