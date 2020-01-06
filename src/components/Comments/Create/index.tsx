@@ -23,6 +23,7 @@ import {
   GET_COMMENTS_BY_URL_QUERY,
   CommentOrderByInput,
 } from "../Display/ByUrl/query"
+import { CHUNK } from "../Display/ByUrl"
 
 const borderColor = theme("mode", {
   light: props => props.theme.commentRenderer.borderColor,
@@ -132,12 +133,22 @@ export const CreateComment = ({ url }) => {
       update: (cache, { data: { createComment } }) => {
         const { getCommentsByUrl } = cache.readQuery({
           query: GET_COMMENTS_BY_URL_QUERY,
-          variables: { url, filter: CommentOrderByInput.created_DESC },
+          variables: {
+            url,
+            filter: CommentOrderByInput.created_DESC,
+            skip: 0,
+            take: CHUNK,
+          },
         })
 
         cache.writeQuery({
           query: GET_COMMENTS_BY_URL_QUERY,
-          variables: { url, filter: CommentOrderByInput.created_DESC },
+          variables: {
+            url,
+            filter: CommentOrderByInput.created_DESC,
+            skip: 0,
+            take: CHUNK,
+          },
           data: { getCommentsByUrl: [createComment, ...getCommentsByUrl] },
         })
       },

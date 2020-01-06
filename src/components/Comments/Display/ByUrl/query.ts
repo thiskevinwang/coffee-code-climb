@@ -6,8 +6,13 @@ export enum CommentOrderByInput {
 }
 
 export const GET_COMMENTS_BY_URL_QUERY = gql`
-  query GetCommentsByURL($url: String!, $filter: CommentOrderByInput) {
-    getCommentsByUrl(url: $url, filter: $filter) {
+  query GetCommentsByURL(
+    $url: String!
+    $filter: CommentOrderByInput
+    $skip: Int
+    $take: Int
+  ) {
+    getCommentsByUrl(url: $url, filter: $filter, skip: $skip, take: $take) {
       body
       created
       id
