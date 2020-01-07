@@ -7,13 +7,7 @@ import { ThemeProvider } from "styled-components"
 // import { useSpring, animated } from "react-spring"
 
 import { store, setIsDarkMode } from "_reduxState"
-import {
-  ApolloProvider,
-  client,
-  CREATE_PAGE,
-  INCREMENT_VIEWS,
-  TRACK_IP_VISITS,
-} from "./src/apollo"
+import { ApolloProvider, client } from "./src/apollo"
 import DARK_THEME from "./src/Themes/dark"
 import LIGHT_THEME from "./src/Themes/light"
 
@@ -26,7 +20,7 @@ const ColorSchemeProvider = ({ children }) => {
   const dispatch = useDispatch()
   React.useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
-  }, [prefersDark])
+  }, [prefersDark, dispatch])
   const isDarkMode = useSelector(state => state.isDarkMode)
 
   return (
@@ -75,49 +69,6 @@ export const onClientEntry = async (_, plugins) => {
 }
 
 // fires when arriving and leaving...
-
-/**
- * @deprecated 12-15-2019
- * - This code for an old apollo server -> DynamoDB, before I knew any DB logic.
- * - Moving to a new apollo server -> RDS
- */
-// export const onRouteUpdate = async (
-//   { location, prevLocation, ...rest },
-//   plugins
-// ) => {
-//   /**
-//    * shared vars for client mutations
-//    */
-//   const variables = { id: 1, location: location.href }
-
-//   try {
-//     await client
-//       .mutate({
-//         mutation: CREATE_PAGE,
-//         variables: variables,
-//       })
-//       .then(result => {})
-//   } catch (err) {
-//     console.error("I think this page was already created:", err)
-//   }
-
-//   try {
-//     await client
-//       .mutate({
-//         mutation: INCREMENT_VIEWS,
-//         variables: variables,
-//       })
-//       .then(result => {
-//         console.log(
-//           "INCREMENT_VIEWS",
-//           location.href,
-//           result.data.incrementViews.views
-//         )
-//       })
-//   } catch (error) {
-//     console.error("INCREMENT_VIEWS:", error)
-//   }
-// }
 
 /**
  * CONCURRENT MODE!!!
