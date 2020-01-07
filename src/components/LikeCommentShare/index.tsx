@@ -129,7 +129,11 @@ export const LikeCommentShare = ({ commentId }) => {
   const open = Boolean(anchorEl)
   const id = open ? "simple-popover" : undefined
 
-  const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT)
+  const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT, {
+    update: (cache, mutationResult) => {
+      console.log(cache, mutationResult)
+    },
+  })
   const handleSelectReaction = ({ variant }) => event => {
     reactToComment({
       variables: { variant: variant, commentId },
