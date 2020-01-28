@@ -8,7 +8,7 @@ import { SubmitButton } from "components/Form"
 import * as Colors from "consts/Colors"
 
 const XIcon = ({ fill }: { fill: AnimatedValue<any> }) => (
-  <animated.svg viewBox="0 0 24 24" s>
+  <animated.svg viewBox="0 0 24 24">
     <animated.g>
       <animated.path
         fill={fill}
