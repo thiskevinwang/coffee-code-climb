@@ -25,6 +25,7 @@ const darkTheme = {
   formInput,
   formButton,
   commentRenderer,
+  background: Colors.blackDarker,
 }
 
 export default darkTheme
