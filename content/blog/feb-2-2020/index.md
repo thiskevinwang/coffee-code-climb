@@ -12,7 +12,13 @@ tags:
     "practice",
     "training",
   ]
+image: unival.png
 ---
+
+<figure style="text-align: center">
+  <img src="./unival.png"/ alt="yuck">
+  <small style="color: grey">yuck</small>
+</figure>
 
 Last night, in the mildewy smelling basemeent of some KBBQ restaurant near Flushing (NY), a few friends and I were talking about snowboarding, and how it took one of us 5 years to get comfortable with it. Why so long? _"Well I only go once a year!"_, was the response. And that makes total sense.
 
