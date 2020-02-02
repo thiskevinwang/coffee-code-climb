@@ -1,18 +1,16 @@
 import * as React from "react"
-import { Link } from "gatsby"
-import styled, { css } from "styled-components"
-import { rhythm, scale } from "utils/typography"
+import styled from "styled-components"
+import { rhythm } from "utils/typography"
 import { navbarZ } from "consts"
 import { ThemeSlider } from "components/ThemeSlider"
 
 const Bar = styled.div`
-  padding: ${rhythm(1)};
+  padding: ${rhythm(0.5)};
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
   height: ${rhythm(2)};
-  position: fixed;
   top: 0px;
   width: 100%;
   z-index: ${navbarZ};
