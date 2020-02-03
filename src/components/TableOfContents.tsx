@@ -1,8 +1,9 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback, useState } from "react"
 import styled from "styled-components"
 import { useSpring, animated } from "react-spring"
 import { useScroll } from "react-use-gesture"
 import { Link } from "gatsby"
+import { parse } from "html-parse-stringify"
 
 import { rhythm } from "utils/typography"
 
@@ -25,36 +26,24 @@ const Container = styled(animated.div)`
   }
 `
 
-/**
- * @TODO figure out how to handle styling of individual elements inside
- * props.__html (aka tableOfContents)
- *
- * - use regex to manually add `class`, then inject styles via  `typography/index.js`
- *
- * @TODO smooth/spring scroll when clicking anchor links
- */
-const TableOfContents = ({
-  title,
-  __html,
-}: {
+interface LeafNode {
+  type: "text"
+  content: "↵"
+}
+interface ASTNode {
+  type: string
+  name: string
+  voidElement: boolean
+  attrs: any
+  children: (LeafNode | ASTNode)[]
+}
+
+interface TableOfContentsProps {
   title: string
   __html: string
-}) => {
-  const [{ top }, set] = useSpring(() => ({ top: 50 }))
-
-  /**
-   * some ideas
-   */
-  // const HTML = __html.replace(
-  //   new RegExp(`${window.location.pathname}`, "g"),
-  //   ``
-  // )
-  // const HTML = __html
-
-  // console.log(HTML)
-  // console.log(window.location.pathname)
-
-  const HTML = __html.replace(/<a/g, `<a class="TOC__link"`)
+}
+const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
+  const [{ top }, set] = useSpring(() => ({ top: 0 }))
 
   const bindScrollGesture = useScroll(
     state => {
@@ -62,60 +51,129 @@ const TableOfContents = ({
 
       set({
         top: scrollTop + 50,
-        // onFrame: props => window.scroll(0, props.top),
+        // onFrame: props => {
+        //   window.scroll(0, scrollTop)
+        // },
       })
     },
     { domTarget: typeof window !== "undefined" && window }
   )
   useEffect(bindScrollGesture, [bindScrollGesture])
 
-  /**
-   * @TODO onFrame window.scroll doesn't seem to cooperate with bindScrollGesture...
-   *
-   * https://codesandbox.io/s/interesting-waterfall-pgo0y?from-embed
-   */
-  // useEffect(() => {
-  //   const handleHashChange = e => {
-  //     /**
-  //      * @TODO need to intercept default jump-behavior
-  //      * on hash change
-  //      */
-  //     set({
-  //       top: e.target.scrollY,
-  //       // from: { top: window.scrollY },
-  //       // reset: true,
-  //       onFrame: props => window.scroll(0, props.top),
-  //     })
-  //   }
+  // console.time()
+  const ast: [ASTNode] = useCallback(parse(__html), [])
 
-  //   typeof window !== undefined &&
-  //     window.addEventListener("hashchange", handleHashChange)
-  //   return () => {
-  //     window.removeEventListener("hashchange", handleHashChange)
-  //   }
-  // }, [])
+  const helper = useCallback(
+    (nodes: (ASTNode | LeafNode)[], depth = 0): React.ReactNode => {
+      return nodes.map(node => {
+        if (!node.children) return node.content
+        // console.log(node)s
+
+        // intercept "<a>" nodes, and create a gatsby Link instead
+        if (node.name === "a") {
+          const hash = node.attrs.href
+            .replace(window.location.pathname, "")
+            .replace("#", "")
+          // this needs run after useEffect, aka after the browser
+          // gets a chance to paint
+          const anchor = document.getElementById(hash)
+          return React.createElement(
+            /** React.createElement(TYPE, _, _) */
+            Link,
+            /** React.createElement(_, PROPS, _) */
+            {
+              /**
+               * node.attrs.href: "/feb-2-2020/#reminders-to-myself"
+               * window.location.pathname: "/feb-2-2020/"
+               * window.location.hash: "#reminders-to-myself"
+               */
+              to: node.attrs.href,
+              activeStyle: { color: "red" },
+              /**
+               * style will only be instantiated, and not dynamically updated
+               */
+              // style: {
+              //   fontSize:
+              //     window.location.pathname + window.location.hash ===
+              //     node.attrs.href
+              //       ? "20px"
+              //       : "",
+              // },
+              onClick: e => {
+                // prevent jumping
+                // but also prevents updating window hash
+                e.preventDefault()
+
+                // update the hash...
+                const hash = e.target.href
+                  ?.replace(window.location.origin, "")
+                  .replace(window.location.pathname, "")
+                  .replace("#", "")
+                // https://stackoverflow.com/questions/3870057/how-can-i-update-window-location-hash-without-jumping-the-document
+                if (history.pushState) {
+                  // IE10, Firefox, Chrome, etc.
+                  window.history.pushState(null, null, "#" + hash)
+                } else {
+                  // IE9, IE8, etc
+                  window.location.hash = hash
+                }
+
+                // find the anchor element that corresponds to the hash
+                const anchor = document.getElementById(hash)
+                const offset = anchor?.offsetTop
+
+                // scroll to that element
+                window.scrollTo({
+                  top: offset,
+                  behavior: "smooth",
+                })
+              },
+            },
+            /** React.createElement(_, _, CHILDREN) */
+            helper(node.children, depth + 1)
+          )
+        }
+
+        return React.createElement(
+          node.name,
+          node.attrs,
+          helper(node.children, depth + 1)
+        )
+      })
+    },
+    []
+  )
+
+  const [generated, setGenerated] = useState()
+  useEffect(() => {
+    /**
+     * call `helper()` from within useEffect, so that the browser has a
+     * chance to paint. This way we can do trickery like 'window.getDocumentById(hash)'
+     * from within the `helper` function.
+     */
+    setGenerated(helper(ast))
+  }, [])
+  // const generated = helper(ast)
 
   return (
-    <Container style={{ top }}>
+    <Container style={{ top, zIndex: 10 }}>
       <p
         style={{
-          textAlign: "center",
+          fontWeight: 700,
           marginTop: 20,
           marginBottom: 20,
+          letterSpacing: 1.5,
           fontSize: 16,
         }}
       >
         TABLE OF CONTENTS
       </p>
       <li>
-        <Link
-          className={"TOC__link"}
-          to={typeof window !== "undefined" && window.location.pathname}
-        >
+        <Link to={typeof window !== "undefined" && window.location.pathname}>
           {title}
         </Link>
+        {generated}
       </li>
-      <div dangerouslySetInnerHTML={{ __html: HTML }} />
     </Container>
   )
 }
