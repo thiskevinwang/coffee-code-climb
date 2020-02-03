@@ -84,11 +84,38 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
           const anchorEl = document.getElementById(hash)
           const offset = anchorEl?.offsetTop
 
+          // create a ref to attach to each TOC <a> tag
+          const ref = React.createRef()
+          let options = {
+            root: null,
+            rootMargin: "0px 0px -70%",
+            threshold: 1.0,
+          }
+
+          // create intersectionObservers to watch if the Header tags
+          // are intersection with a specified area
+          const observer = new IntersectionObserver(([entry], observer) => {
+            if (entry.isIntersecting) {
+              ref.current.className = "TOC TOC__FOCUS"
+              entry.target.className = "HEADER HEADER__FOCUS"
+              history.replaceState
+                ? // IE10, Firefox, Chrome, etc
+                  window.history.replaceState?.(null, null, `#${hash}`)
+                : // IE9, IE8, etc
+                  (window.location.hash = hash)
+            } else {
+              ref.current.className = "TOC"
+              entry.target.className = "HEADER"
+            }
+          }, options)
+          observer.observe(anchorEl)
+
           return React.createElement(
             /** React.createElement(TYPE, _, _) */
             animated.a,
             /** React.createElement(_, PROPS, _) */
             {
+              ref,
               ...node.attrs,
               /**
                * @TODO style will only apply initially, and will not be dynamically updated
