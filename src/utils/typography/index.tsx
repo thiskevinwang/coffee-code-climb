@@ -131,6 +131,22 @@ Wordpress2016.overrideThemeStyles = () => {
     '.gatsby-highlight pre[class*="language-"] > code .comment': {
       fontStyle: `italic`,
     },
+    ".TOC": {
+      transitionProperty: "font-size, box-shadow",
+      transitionDuration: "200ms",
+      transitionTiminFunction: "ease-in-out",
+    },
+    ".TOC.TOC__FOCUS": {
+      fontSize: `24px !important`,
+      willChange: "font-size",
+    },
+    ".HEADER": {
+      transition: "color 200ms ease-in-out",
+      willChange: "color",
+    },
+    ".HEADER.HEADER__FOCUS": {
+      color: isDarkMode ? "#f81ce5" : "#79ffe1",
+    },
   }
 }
 Wordpress2016.plugins = [new CodePlugin()]
