@@ -115,7 +115,10 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
             animated.a,
             /** React.createElement(_, PROPS, _) */
             {
+<<<<<<< HEAD
               ref,
+=======
+>>>>>>> master
               ...node.attrs,
               /**
                * @TODO style will only apply initially, and will not be dynamically updated
