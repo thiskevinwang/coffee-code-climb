@@ -131,23 +131,6 @@ Wordpress2016.overrideThemeStyles = () => {
     '.gatsby-highlight pre[class*="language-"] > code .comment': {
       fontStyle: `italic`,
     },
-    /**
-     * Markdown Table of Contents
-     */
-    ".TOC__link": {
-      transition: `all 200ms ease-in-out`,
-      color: isDarkMode ? Colors.greyLighter : Colors.grey,
-      boxShadow: `none`,
-    },
-    ".TOC__link:hover": {
-      color: isDarkMode ? Colors.silverLighter : Colors.blackDarker,
-      boxShadow: `0 1px 0 0 ${
-        isDarkMode ? Colors.silverLighter : Colors.blackDarker
-      }`,
-    },
-    ".TOC__link:active": {
-      color: "green",
-    },
   }
 }
 Wordpress2016.plugins = [new CodePlugin()]

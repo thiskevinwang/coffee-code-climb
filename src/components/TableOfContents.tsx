@@ -1,8 +1,9 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback, useState } from "react"
 import styled from "styled-components"
 import { useSpring, animated } from "react-spring"
 import { useScroll } from "react-use-gesture"
 import { Link } from "gatsby"
+import { parse } from "html-parse-stringify"
 
 import { rhythm } from "utils/typography"
 
@@ -25,36 +26,24 @@ const Container = styled(animated.div)`
   }
 `
 
-/**
- * @TODO figure out how to handle styling of individual elements inside
- * props.__html (aka tableOfContents)
- *
- * - use regex to manually add `class`, then inject styles via  `typography/index.js`
- *
- * @TODO smooth/spring scroll when clicking anchor links
- */
-const TableOfContents = ({
-  title,
-  __html,
-}: {
+interface LeafNode {
+  type: "text"
+  content: "↵"
+}
+interface ASTNode {
+  type: string
+  name: string
+  voidElement: boolean
+  attrs: any
+  children: (LeafNode | ASTNode)[]
+}
+
+interface TableOfContentsProps {
   title: string
   __html: string
-}) => {
-  const [{ top }, set] = useSpring(() => ({ top: 50 }))
-
-  /**
-   * some ideas
-   */
-  // const HTML = __html.replace(
-  //   new RegExp(`${window.location.pathname}`, "g"),
-  //   ``
-  // )
-  // const HTML = __html
-
-  // console.log(HTML)
-  // console.log(window.location.pathname)
-
-  const HTML = __html.replace(/<a/g, `<a class="TOC__link"`)
+}
+const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
+  const [{ top }, set] = useSpring(() => ({ top: 0 }))
 
   const bindScrollGesture = useScroll(
     state => {
@@ -62,60 +51,114 @@ const TableOfContents = ({
 
       set({
         top: scrollTop + 50,
-        // onFrame: props => window.scroll(0, props.top),
       })
     },
     { domTarget: typeof window !== "undefined" && window }
   )
   useEffect(bindScrollGesture, [bindScrollGesture])
 
-  /**
-   * @TODO onFrame window.scroll doesn't seem to cooperate with bindScrollGesture...
-   *
-   * https://codesandbox.io/s/interesting-waterfall-pgo0y?from-embed
-   */
-  // useEffect(() => {
-  //   const handleHashChange = e => {
-  //     /**
-  //      * @TODO need to intercept default jump-behavior
-  //      * on hash change
-  //      */
-  //     set({
-  //       top: e.target.scrollY,
-  //       // from: { top: window.scrollY },
-  //       // reset: true,
-  //       onFrame: props => window.scroll(0, props.top),
-  //     })
-  //   }
+  const ast: [ASTNode] = useCallback(parse(__html), [])
 
-  //   typeof window !== undefined &&
-  //     window.addEventListener("hashchange", handleHashChange)
-  //   return () => {
-  //     window.removeEventListener("hashchange", handleHashChange)
-  //   }
-  // }, [])
+  /**
+   * # generateTree
+   * Recursive helper function, used to traverse the Abstract Syntax Tree returned by
+   * { parse } from "html-parse-stringify", and then generate
+   * a React Tree.
+   *
+   * @param nodes the ast returned by `html-parse-stringify`
+   * @param depth just for fun
+   */
+  const generateTree = useCallback(
+    (nodes: (ASTNode | LeafNode)[], depth: number = 0): React.ReactNode => {
+      return nodes.map(node => {
+        if (!node.children) return node.content
+
+        // intercept "<a>" nodes, and create a gatsby Link instead
+        if (node.name === "a") {
+          const hash = node.attrs.href
+            .replace(window.location.pathname, "")
+            .replace("#", "")
+
+          // this needs run after useEffect, aka after the browser
+          // gets a chance to paint
+          const anchorEl = document.getElementById(hash)
+          const offset = anchorEl?.offsetTop
+
+          return React.createElement(
+            /** React.createElement(TYPE, _, _) */
+            animated.a,
+            /** React.createElement(_, PROPS, _) */
+            {
+              ...node.attrs,
+              /**
+               * @TODO style will only apply initially, and will not be dynamically updated
+               */
+              // style: {
+              //   fontSize:
+              //     window.location.pathname + window.location.hash ===
+              //     node.attrs.href
+              //       ? "20px"
+              //       : "",
+              // },
+              onClick: e => {
+                // prevent jumping - but also prevents updating window hash
+                e.preventDefault()
+                // https://stackoverflow.com/questions/3870057/how-can-i-update-window-location-hash-without-jumping-the-document
+                history.replaceState
+                  ? // IE10, Firefox, Chrome, etc
+                    window.history.replaceState(null, null, "#" + hash)
+                  : // IE9, IE8, etc
+                    (window.location.hash = hash)
+                window.scrollTo({
+                  top: offset,
+                  behavior: "smooth",
+                })
+              },
+            },
+            /** React.createElement(_, _, CHILDREN) */
+            generateTree(node.children, depth + 1)
+          )
+        }
+
+        return React.createElement(
+          node.name,
+          node.attrs,
+          generateTree(node.children, depth + 1)
+        )
+      })
+    },
+    []
+  )
+
+  const [generated, setGenerated] = useState()
+  useEffect(() => {
+    /**
+     * call `helper()` from within useEffect, so that the browser has a
+     * chance to paint. This way we can do trickery like 'window.getDocumentById(hash)'
+     * from within the `helper` function.
+     */
+    setGenerated(generateTree(ast))
+  }, [])
 
   return (
-    <Container style={{ top }}>
+    <Container style={{ top, zIndex: 10 }}>
       <p
         style={{
-          textAlign: "center",
+          fontWeight: 700,
           marginTop: 20,
           marginBottom: 20,
+          letterSpacing: 1.5,
           fontSize: 16,
         }}
       >
         TABLE OF CONTENTS
       </p>
       <li>
-        <Link
-          className={"TOC__link"}
-          to={typeof window !== "undefined" && window.location.pathname}
-        >
+        <Link to={typeof window !== "undefined" && window.location.pathname}>
           {title}
         </Link>
+        {generated}
       </li>
-      <div dangerouslySetInnerHTML={{ __html: HTML }} />
     </Container>
   )
 }
