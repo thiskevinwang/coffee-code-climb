@@ -86,10 +86,19 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
 
           // create a ref to attach to each TOC <a> tag
           const ref = React.createRef()
-          let options = {
+          const options = {
             root: null,
             rootMargin: "0px 0px -70%",
             threshold: 1.0,
+          }
+
+          // https://stackoverflow.com/questions/3870057/how-can-i-update-window-location-hash-without-jumping-the-document
+          const updateHashTo = (hash: string) => {
+            history.replaceState
+              ? // IE10, Firefox, Chrome, etc
+                window.history.replaceState?.(null, null, `#${hash}`)
+              : // IE9, IE8, etc
+                (window.location.hash = hash)
           }
 
           // create intersectionObservers to watch if the Header tags
@@ -98,11 +107,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
             if (entry.isIntersecting) {
               ref.current.className = "TOC TOC__FOCUS"
               entry.target.className = "HEADER HEADER__FOCUS"
-              history.replaceState
-                ? // IE10, Firefox, Chrome, etc
-                  window.history.replaceState?.(null, null, `#${hash}`)
-                : // IE9, IE8, etc
-                  (window.location.hash = hash)
+              updateHashTo(hash)
             } else {
               ref.current.className = "TOC"
               entry.target.className = "HEADER"
@@ -112,7 +117,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
 
           return React.createElement(
             /** React.createElement(TYPE, _, _) */
-            animated.a,
+            node.name,
             /** React.createElement(_, PROPS, _) */
             {
               ref,
@@ -131,11 +136,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
                 // prevent jumping - but also prevents updating window hash
                 e.preventDefault()
                 // https://stackoverflow.com/questions/3870057/how-can-i-update-window-location-hash-without-jumping-the-document
-                history.replaceState
-                  ? // IE10, Firefox, Chrome, etc
-                    window.history.replaceState(null, null, "#" + hash)
-                  : // IE9, IE8, etc
-                    (window.location.hash = hash)
+                updateHashTo(hash)
                 window.scrollTo({
                   top: offset,
                   behavior: "smooth",

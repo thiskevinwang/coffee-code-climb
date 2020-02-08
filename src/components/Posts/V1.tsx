@@ -268,16 +268,7 @@ const V1 = memo(
           rotateXY: [0, 0],
         })
 
-      /**
-       * This function is dedicated to
-       * [@kengz](https://github.com/kengz)
-       * - When I was a receptionist, he introduced me to rock climbing.
-       * - We later became roommates.
-       * - We ate tasty foods errday.
-       *   - So many banhmis. RIP BBM
-       * - Then he moved away, and I did a cri.
-       */
-      const fuckMyShitUpFam = () =>
+      const randomize = () =>
         set({
           // randomize up/left/right, but not down
           xy: [_.random(-500, 500), _.random(-100, -1000)],
@@ -300,7 +291,7 @@ const V1 = memo(
             case 82 /** "r" */:
               return setTimeout(resetPos, index * 50)
             case 70 /** "f" */:
-              return setTimeout(fuckMyShitUpFam, index * 50)
+              return setTimeout(randomize, index * 50)
             default:
               return
           }
@@ -360,8 +351,9 @@ const V1 = memo(
             >
               {title}
             </h3>
-            <small>{date}</small>
-            <br />
+            <div style={{ display: "flex" }}>
+              <small>{date}</small>
+            </div>
             <small
               dangerouslySetInnerHTML={{
                 __html: description || excerpt,
@@ -369,9 +361,9 @@ const V1 = memo(
             />
           </Link>
           <br />
-          {_.includes(kebabTags, "coffee") && <Tag>coffee</Tag>}
-          {_.includes(kebabTags, "code") && <Tag>code</Tag>}
-          {_.includes(kebabTags, "climbing") && <Tag>climb</Tag>}
+          {_.map(kebabTags, e => (
+            <Badge key={e}>{e} </Badge>
+          ))}
         </div>
       </Card>
     )
@@ -380,7 +372,7 @@ const V1 = memo(
 
 export { V1 }
 
-export const Tag = styled(animated.small)`
+export const Badge = styled(animated.small)`
   --geist-cyan: #79ffe1;
   --geist-purple: #f81ce5;
 
@@ -401,5 +393,6 @@ export const Tag = styled(animated.small)`
     light: Colors.greyLighter,
     dark: Colors.greyDarker,
   })};
+  display: inline-block;
   padding: 0.05rem 0.5rem 0.1rem;
 `
