@@ -73,7 +73,7 @@ export interface RootState {
  */
 const initialState: RootState = {
   isDarkMode: false,
-  showTrail: false,
+  showTrail: true,
   slowMo: false,
   layoutVersion: 2,
   postsVersion: 1,

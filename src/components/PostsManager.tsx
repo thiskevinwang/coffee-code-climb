@@ -113,10 +113,14 @@ const PostsManager = ({ allPosts, location }) => {
     height: `${cardHeight * Math.ceil(items.length / columnCount)}px`,
   })
 
-  const resize = (_columnCount: number, _cardHeight: number = 250) => () => {
-    setColumnCount(_columnCount)
-    setCardHeight(_cardHeight)
-  }
+  const resize = React.useCallback(
+    (_columnCount: number, _cardHeight: number = 250) => () => {
+      setColumnCount(_columnCount)
+      setCardHeight(_cardHeight)
+    },
+    [setColumnCount, setCardHeight]
+  )
+
   if (postsVersion === 1) {
     return (
       <Manager>

@@ -38,7 +38,7 @@ const translate2d = (x, y) =>
 const Wrapper = ({ children }) => {
   /** instance variables */
   const slowMoRef = useRef(false)
-  const showTrailRef = useRef(false)
+  const showTrailRef = useRef(true)
 
   // Redux hooks
   const isDarkMode = useSelector(state => state.isDarkMode)
