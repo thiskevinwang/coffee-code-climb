@@ -1,113 +1,245 @@
 ---
-title: "Recursion in React?"
+title: "Animated Table of Contents"
 date: "2020-02-08T13:59:56.109Z"
 description: "Ironically, right after doing some binary tree leetcode questions, I found a case where I could apply recursion in React."
-tags: ["code", "recursion", "gatsby", "react"]
-image: unival.png
+tags:
+  [
+    "code",
+    "recursion",
+    "gatsby",
+    "react",
+    "html-parse-stringify",
+    "gatsby-transformer-remark",
+    "intersection-observer",
+  ]
+# image: toc.gif
 ---
 
-<figure style="text-align: center">
-  <img src="./unival.png"/ alt="yuck">
-  <small style="color: grey">yuck</small>
-</figure>
+![gif](./toc.gif)
 
-Last night, in the mildewy smelling basemeent of some KBBQ restaurant near Flushing (NY), a few friends and I were talking about snowboarding, and how it took one of us 5 years to get comfortable with it. Why so long? _"Well I only go once a year!"_, was the response. And that makes total sense.
+Here's a ~~hopefully quick~~ post about _that one time I used recursion in React_.
 
-A quick pivot to this morning - I'm staring at a **leetcode** question, **[Univalued Binary Tree](https://leetcode.com/problems/univalued-binary-tree/)**, scanning the past year for anything useful I've learned, and wondering why I still feel so dumbfounded, like a deer in headlights. My response to myself? _"Well I only practice once every few months. (And I don't even like it!)"_
+## Creating a TOC
 
-## Reminders to myself...
+[4 Months Ago](https://github.com/thiskevinwang/coffee-code-climb/commit/2196e395dfba7ae20f361b83d0f7d2d564425a80), I tried to recreate those cool dynamic table of contents side bars that you see on some documentation sites, like [Docker](https://docs.docker.com/storage/).
 
-### What's the movtivation behind practing coding questions?
+### Inflexible html string
 
-[You suck, try harder](https://www.kyracondie.com/press/2018/8/10/interview-with-mountain-hardwear) - _Ok!_
+I used [`gatsby-transformer-remark`](https://www.gatsbyjs.org/packages/gatsby-transformer-remark/)'s built-in "tableOfContents" option, which parses your markdown for `h1` to `h6` tags, and returns an html-string, like:
 
-How do you expect to pass the next job interview? - _Luck?_
-
-Is not knowing common algorithm patterns / problem solving stunting my growth as a "budding" software engineer? - _Yes_
-
-### Don't be lazy
-
-I'm not going to magically understand how to solve coding questions. I just have to do it more.
-
-_Ugh..._
-
-### Use any helpful tools
-
-Haters will probably hate, but I find Joma & TechLead's coding website immensely useful, given the limited amount of free time that I have in a day. (Commuting, working, staying late after work, climbing, doing life chores...)
-
-## The question
-
-Link: https://leetcode.com/problems/univalued-binary-tree/
-
-> A binary tree is univalued if every node in the tree has the same value.
->
-> Return true if and only if the given tree is univalued.
-
-### My answer
-
-```python
-# Definition for a binary tree node.
-# class TreeNode:
-#     def __init__(self, x):
-#         self.val = x
-#         self.left = None
-#         self.right = None
-
-class Solution:
-    def isUnivalTree(self, root: TreeNode) -> bool:
-        def helper(node: TreeNode, unival) -> bool:
-            if not node:
-                return True
-            if node.val != unival:
-                return False
-            if not helper(node.left, unival):
-                return False
-            if not helper(node.right, unival):
-                return False
-            return True
-
-        if not root:
-            return True
-        return helper(root, root.val)
+```
+"<ul>↵<li>↵<p><a href="/2020/02/02/#reminders-to-myself">Reminders to myself…</a></p>↵<ul>↵<li><a href="/2020/02/02/#whats-the-movtivation-behind-pract..."
 ```
 
-### Approach
+And if you console-log it and indent it correctly, it looks like:
 
-Recursion is an easy way to traverse a tree. I took this approach from Joma and TechLead's answer to this other [binary tree question](https://www.techseries.dev/products/coderpro/categories/1831147/posts/6231427), and modified it to take a `unival` param.
-
-```python
-def helper(node: TreeNode, unival) -> bool:
-# ...
+```html
+<ul>
+  <li>
+    <p><a href="/2020/02/02/#reminders-to-myself">Reminders to myself…</a></p>
+    <ul>
+      <li>
+        <a
+          href="/2020/02/02/#whats-the-movtivation-behind-practing-coding-questions"
+          >What’s the movtivation behind practing coding questions?</a
+        >
+      </li>
+      <li><a href="/2020/02/02/#dont-be-lazy">Don’t be lazy</a></li>
+      <li>
+        <a href="/2020/02/02/#use-any-helpful-tools">Use any helpful tools</a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><a href="/2020/02/02/#the-question">The question</a></p>
+    <ul>
+      <li><a href="/2020/02/02/#my-answer">My answer</a></li>
+      <li><a href="/2020/02/02/#approach">Approach</a></li>
+      <li><a href="/2020/02/02/#time-complexity">Time Complexity</a></li>
+      <li><a href="/2020/02/02/#space-complexity">Space Complexity</a></li>
+    </ul>
+  </li>
+  <li><a href="/2020/02/02/#next-steps">Next Steps</a></li>
+</ul>
 ```
 
-Each recursive call will be given the `unival` for a node's key/val to be checked against.
+Initially, the only way I could see how to use this was via React's `dangerouslySetInnerHTML`
 
-...But since `unival` will be a constant, starting from the root node, maybe this can be a global value rather passed down as "state" in each recursive `helper` call, right?...
+```tsx
+const { tableOfContents } = pageContext
 
-- TODO: read this [stackoverflow thread](https://stackoverflow.com/questions/10057443/explain-the-concept-of-a-stack-frame-in-a-nutshell) for better fundamental understanding of how the _"callstack"_ works.
+return <div dangerouslySetInnerHTML={{ __html: tableOfContents }} />
+```
 
-### Time Complexity
+But this was extremely unflexible. I couldn't figure out how to attach event handlers or styles to the html string.
 
-1. Visit the root node - aka call `helper` on the root node
-2. Traverse the left subtree - aka, the internal `helper` call on `node.left`
-3. Traverse the right subtree - aka, the internal `helper` call on `node.right`
+### html-parse-stringify
 
-Each node will be visited once, so: **`O(n)`**, where **`n`** is the total number of nodes.
+3 months later, one of my co-workers turned me onto an npm package called "html-parse-stringify", which takes an html string, and returns an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) containing the different dom tags. I didn't make any connection that this would be useful until after I did some leetcode binary tree coding questions, where recursion was very handy.
 
-### Space Complexity
+I studied the output of `parse`, and I manually created interfaces for two distinct node-types that I noticed: `LeafNode` & `ASTNode`.
 
-This is something I still don't fully understand.
+```tsx
+import { useCallback } from "react"
+import { parse } from "html-parse-stringify"
 
-- TODO: read this [stackoverflow thread](https://stackoverflow.com/questions/43298938/space-complexity-of-recursive-function) to understand space complexity of recursive functions.
+interface LeafNode {
+  type: "text"
+  content: "↵"
+}
+interface ASTNode {
+  type: string
+  name: string
+  voidElement: boolean
+  attrs: any
+  children: (LeafNode | ASTNode)[]
+}
 
-Space complexity depends on how fast the callstack grows. The callstack grows with each recursive call, and recursive calls stop when a "leaf node" or base-cases are reached.
+// props.__html contains the passed-down html string
+// generated by gatsby-transformer-remark
+const ast: [ASTNode] = useCallback(parse(__html), [])
+```
 
-Space complexity will be **`O(h)`**, where **`h`** is the greatest depth of a subtree.
-(This needs confirmation. Someone save me.)
+### Recursive Helper
+
+I wrote a recursive helper function to traverse the output of of `parse`, which initially had two cases:
+
+- Base Case: If the node has no children, return `node.content`, which was just `"↵"`
+
+- Default Case: Return `React.createElement` with the node's name, attributes, and recursively call itself to generate the element's 'children'
+
+```tsx
+const generateTree = useCallback(
+  (nodes: (ASTNode | LeafNode)[]): React.ReactNode => {
+    return nodes.map(node => {
+      if (!node.children) return node.content
+
+      return React.createElement(
+        node.name,
+        node.attrs,
+        generateTree(node.children)
+      )
+    })
+  },
+  []
+)
+
+const tree = generateTree(ast)
+
+return <Container>{tree}</Container>
+```
+
+This allowed me to render the same TOC as before (basically some `ul`, `li`, and `a` tags), but without resorting to `dangerouslySetInnerHTML`.
+
+I think this was **the first time** I actually successfully used recursion, outside of random coding questions.
+
+## Animating the TOC
+
+Here's where stuff got messy.
+
+In order to animate the TOC, I had to add one more case to my recursive function. I needed to intercept nodes when they were `a` tags.
+
+This case does a lot:
+
+- attach a `ref` to each `a` tag
+- for each `a` tag, find the associated `h#` tag
+- create an `IntersectionObserver` to observe each `h#` tag
+- mutate each `a` tag's `className` based on if the associated `h#` tag 'intersecting'. CSS will apply styles/animations to the updating `className`s
+- mutate each `h#` tag's `className` based on if it iself is 'intersecting'
+- update the `window`'s `hash`, based on the 'intersecting' `h#` tag
+- attach custom `onClick` handler, to prevent the window from "jumping" when clicking links
+
+```ts
+if (node.name === "a") {
+  const hash = node.attrs.href
+    .replace(window.location.pathname, "")
+    .replace("#", "")
+
+  // this needs run after useEffect, aka after the browser
+  // gets a chance to paint
+  const anchorEl = document.getElementById(hash)
+  const offset = anchorEl?.offsetTop
+
+  // create a ref to attach to each TOC <a> tag
+  const ref = React.createRef()
+
+  // IO options
+  const options = {
+    root: null,
+    rootMargin: "0px 0px -70%",
+    threshold: 1.0,
+  }
+
+  const updateHashTo = (hash: string) => {
+    history.replaceState
+      ? // IE10, Firefox, Chrome, etc
+        window.history.replaceState?.(null, null, `#${hash}`)
+      : // IE9, IE8, etc
+        (window.location.hash = hash)
+  }
+
+  // create intersectionObservers to watch if the Header tags
+  // are intersecting with a specified area
+  const observer = new IntersectionObserver(([entry], observer) => {
+    if (entry.isIntersecting) {
+      ref.current.className = "TOC TOC__FOCUS"
+      entry.target.className = "HEADER HEADER__FOCUS"
+      updateHashTo(hash)
+    } else {
+      ref.current.className = "TOC"
+      entry.target.className = "HEADER"
+    }
+  }, options)
+  observer.observe(anchorEl)
+
+  return React.createElement(
+    node.name,
+    {
+      ref,
+      ...node.attrs,
+      onClick: e => {
+        // prevent jumping - but also prevents updating window hash
+        e.preventDefault()
+        updateHashTo(hash)
+        window.scrollTo({
+          top: offset,
+          behavior: "smooth",
+        })
+      },
+    },
+    generateTree(node.children)
+  )
+}
+```
+
+### Gotchas
+
+Look at this chunk from the code snippet above:
+
+```ts
+// this needs run after useEffect, aka after the browser
+// gets a chance to paint
+const anchorEl = document.getElementById(hash)
+const offset = anchorEl?.offsetTop
+```
+
+Like the comment says, for `document.getElementById` to be able to find the corresponding `h#` tags, the entire recursive function needs to be run **after** the browser has a chance to paint.
+
+`React.useEffect` - [docs](https://reactjs.org/docs/hooks-effect.html#tip-optimizing-performance-by-skipping-effects)
+
+> Also, don’t forget that React defers running useEffect until after the browser has painted, so doing extra work is less of a problem.
+
+So, let the browser paint.
+
+```tsx
+const [generated, setGenerated] = useState()
+useEffect(() => {
+  setGenerated(generateTree(ast))
+}, [])
+```
+
+That's about it.
 
 ## Next Steps
 
-- [ ] Take a break.
-- [ ] Learn some more RESTful api basics, as well as Express.
-- [ ] Take a break from Apollo + GraphQL, as amazing as they are.
-- [ ] Do some more database stuff - learn some SQL. I revived my RDS instance, so I should probably make use of that \$20+/month that I'm paying.
+I’m trying to pick up `Rust` as a second, lower level language, and in hopes to better understand `deno` (the node remake, built with Rust & TypeScript).
