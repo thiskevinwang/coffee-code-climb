@@ -20,7 +20,7 @@ After a pretty stressful day at work - getting assigned a _drop everything and s
 
 On the 9:48PM LIRR ride back to Bayside, I went through my usual twitter browsing (99% developer stuff) and came across one post that seriously got my heart racing & anxiety sky rocketing...
 
-## Did some code
+## Did some coding
 
 Got home. Beat 1 run of "The Binding of Isaac" and went straight to Leetcode. I clicked [one anonymous post](https://leetcode.com/discuss/interview-experience/511534/microsoft-sde-redmond-feb-2020), and went to the Round 1 Question that was posted
 
