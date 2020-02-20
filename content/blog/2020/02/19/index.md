@@ -32,7 +32,7 @@ Wait.
 
 What?
 
-🥳🥳🥳 !!!
+🥳🥳🥳 As someone who mostly derps around with web stuff, it was cool to see progress here.
 
 ## Thought process
 
@@ -189,3 +189,4 @@ We're traversing the tree, and visting each node **once**, so `O(n)` is the Time
 
 - (High Priority) Redo this problem in **Rust**! Leetcode offers Rust as a language.
 - (Med Priority) Analyze space complexity.
+- ## (Med Priority) Do the other 3 questions from the original post
