@@ -1,9 +1,15 @@
-import * as React from "react"
+import React, { memo, useState, useEffect, useCallback, useMemo } from "react"
 import { useSelector } from "react-redux"
 import _ from "lodash"
 import moment from "moment"
 import styled from "styled-components"
-import { animated, useTransition, useSpring, config } from "react-spring"
+import {
+  animated,
+  useTransition,
+  useSpring,
+  config,
+  interpolate,
+} from "react-spring"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 import { Button } from "components/Button"
@@ -24,14 +30,14 @@ const checkIsMarkdownRemark = node => node.internal.type === `MarkdownRemark`
 const checkIsContentfulBlogPost = node =>
   node.internal.type === `ContentfulBlogPost`
 
-const PostsManager = ({ allPosts, location }) => {
+const PostsManager = memo(({ allPosts, location }) => {
   const postsVersion = useSelector(state => state.postsVersion)
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
    *
    * This is our source of truth that should never be mutated
    */
-  const posts = React.useMemo(() => {
+  const posts = useMemo(() => {
     const dateSorted = _.sortBy(allPosts, ({ node }) => {
       let date = moment(
         node.internal.type === `MarkdownRemark`
@@ -45,15 +51,16 @@ const PostsManager = ({ allPosts, location }) => {
 
   // contentful nodes don't have `.id`
 
-  const [items, setItems] = React.useState(posts)
-  const [columnCount, setColumnCount] = React.useState(4)
-  const [cardHeight, setCardHeight] = React.useState(200)
+  const [items, setItems] = useState(posts)
+  const [columnCount, setColumnCount] = useState(4)
+  const [cardHeight, setCardHeight] = useState(200)
+  const [isRandom, setIsRandom] = useState(false)
 
   const windowLg = useMediaQuery("(max-width:768px)")
   const windowMd = useMediaQuery("(max-width:672px)")
   const windowSm = useMediaQuery("(max-width:480px)")
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (windowSm) {
       setColumnCount(1)
     } else if (windowMd) {
@@ -65,14 +72,13 @@ const PostsManager = ({ allPosts, location }) => {
     }
   }, [windowSm, windowMd, windowLg])
 
-  const handleAnimation = React.useCallback(
+  const handleAnimation = useCallback(
     item => {
       const index = items.indexOf(item)
       const row = _.floor(index / columnCount)
       const offset = Math.log(columnCount + 1) * row * 5
       return {
         height: `${cardHeight}px`,
-        opacity: 1,
         left: `${(index % columnCount) * (100 / columnCount)}%`,
         top: `${row * cardHeight + offset}px`,
         width: `${(100 - columnCount) / columnCount}%`,
@@ -80,21 +86,65 @@ const PostsManager = ({ allPosts, location }) => {
     },
     [columnCount, cardHeight, items, windowSm, windowMd, windowLg]
   )
+
   const transitions = useTransition(
     items,
-    ({ node }) => {
-      return node.internal.type === `MarkdownRemark`
-        ? `${node.frontmatter.title}`
-        : `${node.title}`
-    },
+    ({ node }) => node.id ?? node.title,
     {
-      from: { opacity: 0 },
-      enter: handleAnimation,
-      update: handleAnimation,
-      leave: {
-        opacity: 0,
+      from: item => {
+        return {
+          opacity: 0,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: [0, 0],
+          deg: 0,
+          rotateXY: [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
+      },
+      enter: item => {
+        return {
+          opacity: 1,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: isRandom ? [_.random(-500, 500), _.random(-100, -1000)] : [0, 0],
+          deg: isRandom ? _.random(-360, 360) : 0,
+          rotateXY: isRandom
+            ? [_.random(-500, 500), _.random(-1000, 1000)]
+            : [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
+      },
+      update: item => {
+        return {
+          opacity: 1,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: isRandom ? [_.random(-500, 500), _.random(-100, -1000)] : [0, 0],
+          deg: isRandom ? _.random(-360, 360) : 0,
+          rotateXY: isRandom
+            ? [_.random(-500, 500), _.random(-1000, 1000)]
+            : [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
+      },
+      leave: item => {
+        return {
+          opacity: 0,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: [0, 0],
+          deg: 0,
+          rotateXY: [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
       },
       config: config.default,
+      trail: 80,
     }
   )
 
@@ -113,7 +163,7 @@ const PostsManager = ({ allPosts, location }) => {
     height: `${cardHeight * Math.ceil(items.length / columnCount)}px`,
   })
 
-  const resize = React.useCallback(
+  const resize = useCallback(
     (_columnCount: number, _cardHeight: number = 250) => () => {
       setColumnCount(_columnCount)
       setCardHeight(_cardHeight)
@@ -121,47 +171,71 @@ const PostsManager = ({ allPosts, location }) => {
     [setColumnCount, setCardHeight]
   )
 
+  useEffect(() => {
+    /** resets the Cards' position / orientation */
+    const resetPos = () => {
+      setIsRandom(false)
+    }
+
+    const handleKeyUp = (e: React.KeyboardEvent) => {
+      if (e.ctrlKey) {
+        switch (e.keyCode) {
+          case 82 /** "r" */:
+            return resetPos()
+          case 70 /** "f" */:
+            return setIsRandom(true)
+          default:
+            return
+        }
+      }
+    }
+
+    /** add event listener */
+    typeof window !== undefined && window.addEventListener("keyup", handleKeyUp)
+    /** clean up event listener*/
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp)
+    }
+  }, [])
+
+  // button handlers
+  const handleDeleteFirst = () => setItems(arr => arr.filter((_, i) => i !== 0))
+  const handleDeleteAll = () => setItems([])
+  const handleReset = () => {
+    setIsRandom(false)
+    setItems(posts)
+  }
+  const handleSortByNewest = () =>
+    setItems(arr =>
+      _.sortBy(arr, ({ node }) => {
+        let date = moment(
+          node.internal?.type === `MarkdownRemark`
+            ? node.frontmatter.date
+            : node.date
+        )
+        return -date
+      })
+    )
+  const handleSortByOldest = () =>
+    setItems(arr =>
+      _.sortBy(arr, ({ node }) => {
+        let date = moment(
+          node.internal?.type === `MarkdownRemark`
+            ? node.frontmatter.date
+            : node.date
+        )
+        return date
+      })
+    )
   if (postsVersion === 1) {
     return (
       <Manager>
-        <Button onClick={() => setItems(arr => arr.filter((_, i) => i !== 0))}>
-          delete first
-        </Button>
-        <Button onClick={() => setItems([])}>delete all</Button>
-        <Button onClick={() => setItems(posts)}>reset</Button>
-        <Button
-          onClick={() =>
-            setItems(arr =>
-              _.sortBy(arr, ({ node }) => {
-                let date = moment(
-                  node.internal?.type === `MarkdownRemark`
-                    ? node.frontmatter.date
-                    : node.date
-                )
-                return -date
-              })
-            )
-          }
-        >
-          newest
-        </Button>
-        <Button
-          onClick={() =>
-            setItems(arr =>
-              _.sortBy(arr, ({ node }) => {
-                let date = moment(
-                  node.internal?.type === `MarkdownRemark`
-                    ? node.frontmatter.date
-                    : node.date
-                )
-                return date
-              })
-            )
-          }
-        >
-          oldest
-        </Button>
-        <Button onClick={resize(1)}>1</Button>
+        <Button onClick={handleDeleteFirst}>delete first</Button>
+        <Button onClick={handleDeleteAll}>delete all</Button>
+        <Button onClick={handleReset}>reset</Button>
+        <Button onClick={handleSortByNewest}>newest</Button>
+        <Button onClick={handleSortByOldest}>oldest</Button>
+        <Button onClick={() => setIsRandom(s => !s)}>randomize</Button>
         <Button onClick={resize(2)}>2</Button>
         <Button onClick={resize(3)}>3</Button>
         <Button onClick={resize(4)}>4</Button>
@@ -179,7 +253,14 @@ const PostsManager = ({ allPosts, location }) => {
 
             return (
               <Posts.V1
-                style={props}
+                style={{
+                  ...props,
+                  transform: interpolate(
+                    [props.xy, props.scale, props.deg, props.rotateXY],
+                    ([x, y], scale, deg, [rX, rY]) =>
+                      `perspective(500px) scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg) rotateX(${rX}deg) rotateY(${rY}deg)`
+                  ),
+                }}
                 // key={isMarkdownRemark ? node.fields.slug : node.slug}
                 key={key}
                 linkTo={isMarkdownRemark ? node.fields.slug : node.slug}
@@ -233,6 +314,6 @@ const PostsManager = ({ allPosts, location }) => {
       )
     })
   return null
-}
+})
 
 export { PostsManager }

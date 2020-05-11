@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import _ from "lodash"
 import { graphql } from "gatsby"
 
@@ -42,7 +42,7 @@ const BlogIndex = ({ data, location }) => {
   )
 }
 
-export default BlogIndex
+export default memo(BlogIndex)
 
 export const pageQuery = graphql`
   query {

@@ -55,8 +55,9 @@ export const ThemeSlider = () => {
     })
   }, [isDarkMode])
 
+  const toggleDarkMode = () => dispatch(setIsDarkMode(!isDarkMode))
   return (
-    <Container onClick={() => dispatch(setIsDarkMode(!isDarkMode))}>
+    <Container onClick={toggleDarkMode}>
       <Moon style={moonProps} />
       <Sun style={sunProps} />
     </Container>
