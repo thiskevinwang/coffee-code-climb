@@ -3,7 +3,13 @@ import { useSelector } from "react-redux"
 import _ from "lodash"
 import moment from "moment"
 import styled from "styled-components"
-import { animated, useTransition, useSpring, config } from "react-spring"
+import {
+  animated,
+  useTransition,
+  useSpring,
+  config,
+  interpolate,
+} from "react-spring"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 import { Button } from "components/Button"
@@ -48,6 +54,7 @@ const PostsManager = memo(({ allPosts, location }) => {
   const [items, setItems] = useState(posts)
   const [columnCount, setColumnCount] = useState(4)
   const [cardHeight, setCardHeight] = useState(200)
+  const [isRandom, setIsRandom] = useState(false)
 
   const windowLg = useMediaQuery("(max-width:768px)")
   const windowMd = useMediaQuery("(max-width:672px)")
@@ -72,7 +79,6 @@ const PostsManager = memo(({ allPosts, location }) => {
       const offset = Math.log(columnCount + 1) * row * 5
       return {
         height: `${cardHeight}px`,
-        opacity: 1,
         left: `${(index % columnCount) * (100 / columnCount)}%`,
         top: `${row * cardHeight + offset}px`,
         width: `${(100 - columnCount) / columnCount}%`,
@@ -80,21 +86,65 @@ const PostsManager = memo(({ allPosts, location }) => {
     },
     [columnCount, cardHeight, items, windowSm, windowMd, windowLg]
   )
+
   const transitions = useTransition(
     items,
-    ({ node }) => {
-      return node.internal.type === `MarkdownRemark`
-        ? `${node.frontmatter.title}`
-        : `${node.title}`
-    },
+    ({ node }) => node.id ?? node.title,
     {
-      from: { opacity: 0 },
-      enter: handleAnimation,
-      update: handleAnimation,
-      leave: {
-        opacity: 0,
+      from: item => {
+        return {
+          opacity: 0,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: [0, 0],
+          deg: 0,
+          rotateXY: [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
+      },
+      enter: item => {
+        return {
+          opacity: 1,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: isRandom ? [_.random(-500, 500), _.random(-100, -1000)] : [0, 0],
+          deg: isRandom ? _.random(-360, 360) : 0,
+          rotateXY: isRandom
+            ? [_.random(-500, 500), _.random(-1000, 1000)]
+            : [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
+      },
+      update: item => {
+        return {
+          opacity: 1,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: isRandom ? [_.random(-500, 500), _.random(-100, -1000)] : [0, 0],
+          deg: isRandom ? _.random(-360, 360) : 0,
+          rotateXY: isRandom
+            ? [_.random(-500, 500), _.random(-1000, 1000)]
+            : [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
+      },
+      leave: item => {
+        return {
+          opacity: 0,
+          ...handleAnimation(item),
+          scale: 1,
+          xy: [0, 0],
+          deg: 0,
+          rotateXY: [0, 0],
+          transformOrigin: `50% 50% 0px`,
+          center: [69, 69],
+        }
       },
       config: config.default,
+      trail: 80,
     }
   )
 
@@ -121,10 +171,40 @@ const PostsManager = memo(({ allPosts, location }) => {
     [setColumnCount, setCardHeight]
   )
 
+  useEffect(() => {
+    /** resets the Cards' position / orientation */
+    const resetPos = () => {
+      setIsRandom(false)
+    }
+
+    const handleKeyUp = (e: React.KeyboardEvent) => {
+      if (e.ctrlKey) {
+        switch (e.keyCode) {
+          case 82 /** "r" */:
+            return resetPos()
+          case 70 /** "f" */:
+            return setIsRandom(true)
+          default:
+            return
+        }
+      }
+    }
+
+    /** add event listener */
+    typeof window !== undefined && window.addEventListener("keyup", handleKeyUp)
+    /** clean up event listener*/
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp)
+    }
+  }, [])
+
   // button handlers
   const handleDeleteFirst = () => setItems(arr => arr.filter((_, i) => i !== 0))
   const handleDeleteAll = () => setItems([])
-  const handleReset = () => setItems(posts)
+  const handleReset = () => {
+    setIsRandom(false)
+    setItems(posts)
+  }
   const handleSortByNewest = () =>
     setItems(arr =>
       _.sortBy(arr, ({ node }) => {
@@ -155,7 +235,7 @@ const PostsManager = memo(({ allPosts, location }) => {
         <Button onClick={handleReset}>reset</Button>
         <Button onClick={handleSortByNewest}>newest</Button>
         <Button onClick={handleSortByOldest}>oldest</Button>
-        <Button onClick={resize(1)}>1</Button>
+        <Button onClick={() => setIsRandom(s => !s)}>randomize</Button>
         <Button onClick={resize(2)}>2</Button>
         <Button onClick={resize(3)}>3</Button>
         <Button onClick={resize(4)}>4</Button>
@@ -173,7 +253,14 @@ const PostsManager = memo(({ allPosts, location }) => {
 
             return (
               <Posts.V1
-                style={props}
+                style={{
+                  ...props,
+                  transform: interpolate(
+                    [props.xy, props.scale, props.deg, props.rotateXY],
+                    ([x, y], scale, deg, [rX, rY]) =>
+                      `perspective(500px) scale(${scale}) translate3D(${x}px, ${y}px, 0) rotate(${deg}deg) rotateX(${rX}deg) rotateY(${rY}deg)`
+                  ),
+                }}
                 // key={isMarkdownRemark ? node.fields.slug : node.slug}
                 key={key}
                 linkTo={isMarkdownRemark ? node.fields.slug : node.slug}
