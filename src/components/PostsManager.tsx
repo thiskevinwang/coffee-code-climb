@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { memo, useState, useEffect, useCallback, useMemo } from "react"
 import { useSelector } from "react-redux"
 import _ from "lodash"
 import moment from "moment"
@@ -24,14 +24,14 @@ const checkIsMarkdownRemark = node => node.internal.type === `MarkdownRemark`
 const checkIsContentfulBlogPost = node =>
   node.internal.type === `ContentfulBlogPost`
 
-const PostsManager = ({ allPosts, location }) => {
+const PostsManager = memo(({ allPosts, location }) => {
   const postsVersion = useSelector(state => state.postsVersion)
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
    *
    * This is our source of truth that should never be mutated
    */
-  const posts = React.useMemo(() => {
+  const posts = useMemo(() => {
     const dateSorted = _.sortBy(allPosts, ({ node }) => {
       let date = moment(
         node.internal.type === `MarkdownRemark`
@@ -45,15 +45,15 @@ const PostsManager = ({ allPosts, location }) => {
 
   // contentful nodes don't have `.id`
 
-  const [items, setItems] = React.useState(posts)
-  const [columnCount, setColumnCount] = React.useState(4)
-  const [cardHeight, setCardHeight] = React.useState(200)
+  const [items, setItems] = useState(posts)
+  const [columnCount, setColumnCount] = useState(4)
+  const [cardHeight, setCardHeight] = useState(200)
 
   const windowLg = useMediaQuery("(max-width:768px)")
   const windowMd = useMediaQuery("(max-width:672px)")
   const windowSm = useMediaQuery("(max-width:480px)")
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (windowSm) {
       setColumnCount(1)
     } else if (windowMd) {
@@ -65,7 +65,7 @@ const PostsManager = ({ allPosts, location }) => {
     }
   }, [windowSm, windowMd, windowLg])
 
-  const handleAnimation = React.useCallback(
+  const handleAnimation = useCallback(
     item => {
       const index = items.indexOf(item)
       const row = _.floor(index / columnCount)
@@ -113,7 +113,7 @@ const PostsManager = ({ allPosts, location }) => {
     height: `${cardHeight * Math.ceil(items.length / columnCount)}px`,
   })
 
-  const resize = React.useCallback(
+  const resize = useCallback(
     (_columnCount: number, _cardHeight: number = 250) => () => {
       setColumnCount(_columnCount)
       setCardHeight(_cardHeight)
@@ -121,46 +121,40 @@ const PostsManager = ({ allPosts, location }) => {
     [setColumnCount, setCardHeight]
   )
 
+  // button handlers
+  const handleDeleteFirst = () => setItems(arr => arr.filter((_, i) => i !== 0))
+  const handleDeleteAll = () => setItems([])
+  const handleReset = () => setItems(posts)
+  const handleSortByNewest = () =>
+    setItems(arr =>
+      _.sortBy(arr, ({ node }) => {
+        let date = moment(
+          node.internal?.type === `MarkdownRemark`
+            ? node.frontmatter.date
+            : node.date
+        )
+        return -date
+      })
+    )
+  const handleSortByOldest = () =>
+    setItems(arr =>
+      _.sortBy(arr, ({ node }) => {
+        let date = moment(
+          node.internal?.type === `MarkdownRemark`
+            ? node.frontmatter.date
+            : node.date
+        )
+        return date
+      })
+    )
   if (postsVersion === 1) {
     return (
       <Manager>
-        <Button onClick={() => setItems(arr => arr.filter((_, i) => i !== 0))}>
-          delete first
-        </Button>
-        <Button onClick={() => setItems([])}>delete all</Button>
-        <Button onClick={() => setItems(posts)}>reset</Button>
-        <Button
-          onClick={() =>
-            setItems(arr =>
-              _.sortBy(arr, ({ node }) => {
-                let date = moment(
-                  node.internal?.type === `MarkdownRemark`
-                    ? node.frontmatter.date
-                    : node.date
-                )
-                return -date
-              })
-            )
-          }
-        >
-          newest
-        </Button>
-        <Button
-          onClick={() =>
-            setItems(arr =>
-              _.sortBy(arr, ({ node }) => {
-                let date = moment(
-                  node.internal?.type === `MarkdownRemark`
-                    ? node.frontmatter.date
-                    : node.date
-                )
-                return date
-              })
-            )
-          }
-        >
-          oldest
-        </Button>
+        <Button onClick={handleDeleteFirst}>delete first</Button>
+        <Button onClick={handleDeleteAll}>delete all</Button>
+        <Button onClick={handleReset}>reset</Button>
+        <Button onClick={handleSortByNewest}>newest</Button>
+        <Button onClick={handleSortByOldest}>oldest</Button>
         <Button onClick={resize(1)}>1</Button>
         <Button onClick={resize(2)}>2</Button>
         <Button onClick={resize(3)}>3</Button>
@@ -233,6 +227,6 @@ const PostsManager = ({ allPosts, location }) => {
       )
     })
   return null
-}
+})
 
 export { PostsManager }
