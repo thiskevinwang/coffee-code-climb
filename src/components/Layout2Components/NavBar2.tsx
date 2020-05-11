@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Link } from "gatsby"
 import styled from "styled-components"
 import { rhythm } from "utils/typography"
 import { navbarZ } from "consts"
@@ -9,7 +10,7 @@ const Bar = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   height: ${rhythm(2)};
   top: 0px;
   width: 100%;
@@ -26,6 +27,7 @@ const NavBar2 = () => {
 
   return (
     <Bar>
+      <Link to={"/rds"}>Comments (experimental ⚗️)</Link>
       <ThemeSlider />
     </Bar>
   )
