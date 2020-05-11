@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useEffect, memo, useRef } from "react"
+import { useEffect, memo, useRef, useMemo } from "react"
 import _ from "lodash"
 import { Link } from "gatsby"
 import Image from "gatsby-image"
@@ -136,8 +136,7 @@ const V1 = memo(
     style,
   }: Props) => {
     //_.map + _.kebabCase each tag in frontmatter.tags
-    const kebabTags = _.map(tags, tag => _.kebabCase(tag))
-
+    const kebabTags = useMemo(() => _.map(tags, tag => _.kebabCase(tag)), [])
     /** slowMo instance variable */
     const slowMoRef: React.MutableRefObject<any> = useRef(false)
 
@@ -268,6 +267,10 @@ const V1 = memo(
           rotateXY: [0, 0],
         })
 
+      /**
+       * @TODO 2020-05-10 This needs to be lifted up 1 level
+       * - use useTransition instead of n-number of useSpring().
+       */
       const randomize = () =>
         set({
           // randomize up/left/right, but not down
@@ -305,7 +308,7 @@ const V1 = memo(
       return () => {
         window.removeEventListener("keyup", handleKeyUp)
       }
-    }, [])
+    }, [set])
 
     return (
       <Card
