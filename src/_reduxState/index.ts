@@ -16,19 +16,19 @@ export const setIsDarkMode = (isDarkMode: boolean) => async (
   getState
 ) => {
   return dispatch({
-    type: TOGGLE_DARKMODE,
+    type: ActionTypes.TOGGLE_DARKMODE,
     isDarkMode,
   })
 }
 export const setShowTrail = (showTrail: boolean) => {
   return {
-    type: TOGGLE_TRAIL,
+    type: ActionTypes.TOGGLE_TRAIL,
     showTrail,
   }
 }
 export const setSlowMo = (slowMo: boolean) => {
   return {
-    type: TOGGLE_SLOWMO,
+    type: ActionTypes.TOGGLE_SLOWMO,
     slowMo,
   }
 }
@@ -36,30 +36,32 @@ export const setLayoutVersion = (layoutVersion: number) => async (
   dispatch,
   getState
 ) => {
-  return dispatch({ type: SET_LAYOUT_VERSION, layoutVersion })
+  return dispatch({ type: ActionTypes.SET_LAYOUT_VERSION, layoutVersion })
 }
 export const setPostsVersion = (postsVersion: number) => async (
   dispatch,
   getState
 ) => {
-  return dispatch({ type: SET_POSTS_VERSION, postsVersion })
+  return dispatch({ type: ActionTypes.SET_POSTS_VERSION, postsVersion })
 }
 export const setShowMobileMenu = (showMobileMenu: boolean) => async (
   dispatch,
   getState
 ) => {
-  return dispatch({ type: SET_SHOW_MOBILE_MENU, showMobileMenu })
+  return dispatch({ type: ActionTypes.SET_SHOW_MOBILE_MENU, showMobileMenu })
 }
 
 /**
  * actionTypes
  */
-const TOGGLE_DARKMODE = "TOGGLE_DARKMODE"
-const TOGGLE_TRAIL = "TOGGLE_TRAIL"
-const TOGGLE_SLOWMO = "TOGGLE_SLOWMO"
-const SET_LAYOUT_VERSION = "SET_LAYOUT_VERSION"
-const SET_POSTS_VERSION = "SET_POSTS_VERSION"
-const SET_SHOW_MOBILE_MENU = "SET_SHOW_MOBILE_MENU"
+enum ActionTypes {
+  TOGGLE_DARKMODE = "TOGGLE_DARKMODE",
+  TOGGLE_TRAIL = "TOGGLE_TRAIL",
+  TOGGLE_SLOWMO = "TOGGLE_SLOWMO",
+  SET_LAYOUT_VERSION = "SET_LAYOUT_VERSION",
+  SET_POSTS_VERSION = "SET_POSTS_VERSION",
+  SET_SHOW_MOBILE_MENU = "SET_SHOW_MOBILE_MENU",
+}
 
 export interface RootState {
   isDarkMode: boolean
@@ -84,17 +86,17 @@ const initialState: RootState = {
  */
 const reducer = (state = initialState, action: any) => {
   switch (action.type) {
-    case TOGGLE_DARKMODE:
+    case ActionTypes.TOGGLE_DARKMODE:
       return { ...state, isDarkMode: action.isDarkMode }
-    case TOGGLE_TRAIL:
+    case ActionTypes.TOGGLE_TRAIL:
       return { ...state, showTrail: action.showTrail }
-    case TOGGLE_SLOWMO:
+    case ActionTypes.TOGGLE_SLOWMO:
       return { ...state, slowMo: action.slowMo }
-    case SET_LAYOUT_VERSION:
+    case ActionTypes.SET_LAYOUT_VERSION:
       return { ...state, layoutVersion: action.layoutVersion }
-    case SET_POSTS_VERSION:
+    case ActionTypes.SET_POSTS_VERSION:
       return { ...state, postsVersion: action.postsVersion }
-    case SET_SHOW_MOBILE_MENU:
+    case ActionTypes.SET_SHOW_MOBILE_MENU:
       return { ...state, showMobileMenu: action.showMobileMenu }
     default:
       return state
