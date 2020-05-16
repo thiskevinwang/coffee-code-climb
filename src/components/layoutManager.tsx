@@ -1,4 +1,10 @@
-import React, { useState, useReducer, useEffect, useRef } from "react"
+import React, {
+  useState,
+  useReducer,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react"
 import { useSelector, useDispatch } from "react-redux"
 import styled from "styled-components"
 import { useSpring, useChain, animated, AnimatedValue } from "react-spring"
@@ -71,6 +77,16 @@ const LayoutManager = (props) => {
     })
   }, [isDarkMode])
 
+  const renderLayout = useCallback(() => {
+    switch (layoutVersion) {
+      case 1:
+        return <Layout {...props} />
+      case 2:
+        return <Layout2 {...props} />
+      default:
+        return <Layout {...props} />
+    }
+  }, [layoutVersion, props])
   return (
     <>
       {showModal && (
@@ -87,16 +103,7 @@ const LayoutManager = (props) => {
           toggleNeverShowModalChecked={toggleNeverShowModalChecked}
         />
       )}
-      {(() => {
-        switch (layoutVersion) {
-          case 1:
-            return <Layout {...props} />
-          case 2:
-            return <Layout2 {...props} />
-          default:
-            return <Layout {...props} />
-        }
-      })()}
+      {renderLayout()}
     </>
   )
 }
