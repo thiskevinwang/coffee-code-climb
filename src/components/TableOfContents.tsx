@@ -113,7 +113,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
               entry.target.className = "HEADER"
             }
           }, options)
-          observer.observe(anchorEl)
+          if (anchorEl) observer.observe(anchorEl)
 
           return React.createElement(
             /** React.createElement(TYPE, _, _) */
