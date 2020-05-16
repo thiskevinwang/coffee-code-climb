@@ -32,7 +32,7 @@ import * as Colors from "consts/Colors"
 
 const AnimatedPre = a(styled.pre`
   transition: color 200ms ease-in-out;
-  color: ${props =>
+  color: ${(props) =>
     props.isDarkMode ? Colors.silverLight : Colors.blackLight};
 `)
 const AnimatedBar = memo(
@@ -60,7 +60,7 @@ const AttackCounter = styled.div`
   top: 50%;
   left: 50%;
   transform(-50%, -50%);
-  ${props =>
+  ${(props) =>
     props.value &&
     css`
       font-size: ${36 + props.value}px;
@@ -100,7 +100,7 @@ const Damage = memo(
         <StyledDescription>
           <>Damage</>
           <AnimatedPre isDarkMode={isDarkMode}>
-            {totalDamage.number.interpolate(x => x.toFixed(0))}
+            {totalDamage.number.interpolate((x) => x.toFixed(0))}
           </AnimatedPre>
           <AnimatedBar
             style={{
@@ -147,7 +147,7 @@ const Stamina = memo(
           <>Stamina</>
           <AnimatedPre isDarkMode={isDarkMode}>
             {/* interpolate on the anivated value to return a string */}
-            {totalStamina.number.interpolate(x => x.toFixed(0))}
+            {totalStamina.number.interpolate((x) => x.toFixed(0))}
           </AnimatedPre>
           <AnimatedBar
             style={{
@@ -178,7 +178,7 @@ function AttackAnimationSimulator(props) {
   const { data } = props
   const siteTitle = data.site.siteMetadata.title
 
-  const isDarkMode = useSelector(state => state.isDarkMode)
+  const isDarkMode = useSelector((state) => state.isDarkMode)
 
   // list of attacks
   const [items, setItems] = useState([])
@@ -251,7 +251,7 @@ function AttackAnimationSimulator(props) {
     const dmg = random(5, 50)
 
     // Add attack to array of attacks
-    setItems(items => [...items, { id: uuid(), text: dmg }])
+    setItems((items) => [...items, { id: uuid(), text: dmg }])
     // CSSTransition.onEntered() will remove the attack when finisehd animating
 
     setTotalDamage({ number: totalDamage.number.getValue() + dmg })
@@ -299,7 +299,7 @@ function AttackAnimationSimulator(props) {
    * `config:` can be a callback, with the specific `{item}` and `state`
    * as 1st and 2nd args, respectively.
    */
-  const transitions = useTransition(items, item => item.id, {
+  const transitions = useTransition(items, (item) => item.id, {
     from: ({ text }) => {
       return { opacity: 0, transform: `translate3d(0%,0%,0)` }
     },
@@ -335,7 +335,7 @@ function AttackAnimationSimulator(props) {
    * Attach event listeners
    */
   useEffect(() => {
-    const handleKeyPress = throttle(e => {
+    const handleKeyPress = throttle((e) => {
       e.key === "a" ? attack() : e.key === "r" ? reset() : null
     }, 100)
 
@@ -376,7 +376,7 @@ function AttackAnimationSimulator(props) {
               timeout={600 + item.text * 10}
               classNames="item"
               onEntered={() =>
-                setItems(items => items.filter(e => e.id !== item.id))
+                setItems((items) => items.filter((e) => e.id !== item.id))
               }
             >
               <AnimatedAttackCounter

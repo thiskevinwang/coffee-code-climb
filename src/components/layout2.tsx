@@ -36,9 +36,9 @@ const Dots = styled(animated.div)`
 
   background-image: -webkit-repeating-radial-gradient(
     center center,
-    ${props =>
+    ${(props) =>
       !props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`},
-    ${props =>
+    ${(props) =>
         !props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`}
       1px,
     transparent 1px,

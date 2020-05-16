@@ -46,7 +46,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
   const [{ top }, set] = useSpring(() => ({ top: 0 }))
 
   const bindScrollGesture = useScroll(
-    state => {
+    (state) => {
       const scrollTop = state.values[1]
 
       set({
@@ -70,7 +70,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
    */
   const generateTree = useCallback(
     (nodes: (ASTNode | LeafNode)[], depth: number = 0): React.ReactNode => {
-      return nodes.map(node => {
+      return nodes.map((node) => {
         if (!node.children) return node.content
 
         // intercept "<a>" nodes, and create a gatsby Link instead
@@ -132,7 +132,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
               //       ? "20px"
               //       : "",
               // },
-              onClick: e => {
+              onClick: (e) => {
                 // prevent jumping - but also prevents updating window hash
                 e.preventDefault()
                 // https://stackoverflow.com/questions/3870057/how-can-i-update-window-location-hash-without-jumping-the-document

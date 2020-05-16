@@ -24,7 +24,7 @@ const QUERY = gql`
     }
   }
 `
-const GitHubPage = props => {
+const GitHubPage = (props) => {
   const { loading, error, data } = useFetchGithub(QUERY)
 
   if (loading) return "loading..."

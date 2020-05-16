@@ -24,33 +24,33 @@ const MOCK_DATA = [
 ];
 
 const Canvas = styled.div`
-  background: ${props =>
+  background: ${(props) =>
     props.isDarkMode ? Colors.blackLighter : Colors.blackLight};
   border-radius: 10px;
   padding: ${rhythm(2)} ${rhythm(2)} ${rhythm(2)};
 `
 
-const FileTree = props => {
+const FileTree = (props) => {
   const { data } = props
   const siteTitle = data.site.siteMetadata.title
 
   const [mockData, setMockData] = useState(MOCK_DATA)
-  const isDarkMode = useSelector(state => state.isDarkMode)
+  const isDarkMode = useSelector((state) => state.isDarkMode)
   const [date, setDate] = useState(moment())
 
   const [value, setValue] = useState("")
-  const _handleChange = e => {
+  const _handleChange = (e) => {
     setValue(e.target.value)
   }
-  const addToData = e => {
+  const addToData = (e) => {
     e.preventDefault()
     let foo = { moment: moment(), name: value }
-    setMockData(prev => prev.concat(foo))
+    setMockData((prev) => prev.concat(foo))
     setValue("")
   }
 
-  const _handleDelete = e => {
-    setMockData(items => items.filter(e => e.id !== item.id))
+  const _handleDelete = (e) => {
+    setMockData((items) => items.filter((e) => e.id !== item.id))
   }
 
   // TODO: simulate device shake, and toggle `isDarkMode`
@@ -91,8 +91,10 @@ const FileTree = props => {
                     <Tree
                       name={name}
                       editable
-                      onClick={e => {
-                        setMockData(data => data.filter(each => each.id !== id))
+                      onClick={(e) => {
+                        setMockData((data) =>
+                          data.filter((each) => each.id !== id)
+                        )
                       }}
                     />
                   </Tree>

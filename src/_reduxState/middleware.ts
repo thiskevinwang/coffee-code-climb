@@ -2,7 +2,7 @@
  * Logger middleware doesn't add any extra types to dispatch, just logs actions
  * and state.
  */
-export const logger = store => next => action => {
+export const logger = (store) => (next) => (action) => {
   console.group(action.type)
   console.info("dispatching", action)
   let result = next(action)
@@ -15,7 +15,7 @@ export const logger = store => next => action => {
  * Schedules actions with { meta: { delay: N } } to be delayed by N milliseconds.
  * Makes `dispatch` return a function to cancel the timeout in this case.
  */
-export const timeoutScheduler = store => next => action => {
+export const timeoutScheduler = (store) => (next) => (action) => {
   if (!action.meta || !action.meta.delay) {
     return next(action)
   }
@@ -32,7 +32,7 @@ export const timeoutScheduler = store => next => action => {
  * If the promise is resolved, its result will be dispatched as an action.
  * The promise is returned from `dispatch` so the caller may handle rejection.
  */
-export const vanillaPromise = store => next => action => {
+export const vanillaPromise = (store) => (next) => (action) => {
   if (typeof action.then !== "function") {
     return next(action)
   }
@@ -48,7 +48,7 @@ export const vanillaPromise = store => next => action => {
  *
  * For convenience, `dispatch` will return the promise so the caller can wait.
  */
-export const readyStatePromise = store => next => action => {
+export const readyStatePromise = (store) => (next) => (action) => {
   if (!action.promise) {
     return next(action)
   }
@@ -61,8 +61,8 @@ export const readyStatePromise = store => next => action => {
 
   next(makeAction(false))
   return action.promise.then(
-    result => next(makeAction(true, { result })),
-    error => next(makeAction(true, { error }))
+    (result) => next(makeAction(true, { result })),
+    (error) => next(makeAction(true, { error }))
   )
 }
 
@@ -75,7 +75,7 @@ export const readyStatePromise = store => next => action => {
  *
  * `dispatch` will return the return value of the dispatched function.
  */
-export const thunk = store => next => action =>
+export const thunk = (store) => (next) => (action) =>
   typeof action === "function"
     ? action(store.dispatch, store.getState)
     : next(action)

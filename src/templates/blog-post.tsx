@@ -39,10 +39,12 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         description={post.frontmatter.description || post.excerpt}
       />
 
-      {/** only Markdown pages have tableOfContents*/
-      tableOfContents && (
-        <TableOfContents title={postTitle} __html={tableOfContents} />
-      )}
+      {
+        /** only Markdown pages have tableOfContents*/
+        tableOfContents && (
+          <TableOfContents title={postTitle} __html={tableOfContents} />
+        )
+      }
       <h1>{post.frontmatter.title}</h1>
       <p
         style={{

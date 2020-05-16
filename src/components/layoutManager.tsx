@@ -11,7 +11,7 @@ import { FunButtonsModal } from "components/FunButtonsModal"
 
 import * as Colors from "consts/Colors"
 
-const LayoutManager = props => {
+const LayoutManager = (props) => {
   const [showModal, toggleModal] = useReducer((s: boolean) => !s, false)
   const [shouldExit, setShouldExit] = useState(false)
   const [neverShowModalChecked, toggleNeverShowModalChecked] = useReducer(
