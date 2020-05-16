@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { memo } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
@@ -143,4 +143,4 @@ function Layout({ location, title, children }: Props) {
   )
 }
 
-export default compose(withSVGTrail)(Layout)
+export default compose(withSVGTrail, memo)(Layout)
