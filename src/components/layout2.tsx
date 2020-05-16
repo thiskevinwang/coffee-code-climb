@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { memo } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
@@ -36,9 +36,9 @@ const Dots = styled(animated.div)`
 
   background-image: -webkit-repeating-radial-gradient(
     center center,
-    ${props =>
+    ${(props) =>
       !props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`},
-    ${props =>
+    ${(props) =>
         !props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`}
       1px,
     transparent 1px,
@@ -105,4 +105,4 @@ function Layout({ location, title, children }) {
   )
 }
 
-export default compose(withSVGTrail)(Layout)
+export default compose(withSVGTrail, memo)(Layout)

@@ -74,7 +74,7 @@ function useIO(
   )
 
   useEffect(() => {
-    if (io) io.observe(ref.current)
+    if (io && ref.current) io.observe(ref.current)
 
     return () => {
       if (io) io.disconnect()

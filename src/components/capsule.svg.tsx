@@ -35,7 +35,7 @@ const PATHS = [
 const CapsuleSvg = () => {
   const [trail] = useTrail(PATHS.length, () => ({
     from: { opacity: 0 },
-    to: async next => {
+    to: async (next) => {
       while (1) {
         await next({ opacity: 1 })
         await next({ opacity: 0.2 })

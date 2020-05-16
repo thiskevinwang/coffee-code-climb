@@ -14,7 +14,7 @@ export const useWindowScrollPercent = (): OpaqueInterpolation<number>[] => {
   }))
 
   const bindScrollGesture: React.EffectCallback = useScroll(
-    state => {
+    (state) => {
       // These two are the same
       // console.log("state", state.values[1])
       // console.log("window", window.document.scrollingElement.scrollTop)

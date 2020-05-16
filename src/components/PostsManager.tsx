@@ -26,12 +26,12 @@ const CardHolder = styled(animated.div)`
   position: relative;
 `
 
-const checkIsMarkdownRemark = node => node.internal.type === `MarkdownRemark`
-const checkIsContentfulBlogPost = node =>
+const checkIsMarkdownRemark = (node) => node.internal.type === `MarkdownRemark`
+const checkIsContentfulBlogPost = (node) =>
   node.internal.type === `ContentfulBlogPost`
 
 const PostsManager = memo(({ allPosts, location }) => {
-  const postsVersion = useSelector(state => state.postsVersion)
+  const postsVersion = useSelector((state) => state.postsVersion)
   /**
    * Combine Markdown & Contentful posts. Sort by newest Date.
    *
@@ -73,7 +73,7 @@ const PostsManager = memo(({ allPosts, location }) => {
   }, [windowSm, windowMd, windowLg])
 
   const handleAnimation = useCallback(
-    item => {
+    (item) => {
       const index = items.indexOf(item)
       const row = _.floor(index / columnCount)
       const offset = Math.log(columnCount + 1) * row * 5
@@ -91,7 +91,7 @@ const PostsManager = memo(({ allPosts, location }) => {
     items,
     ({ node }) => node.id ?? node.title,
     {
-      from: item => {
+      from: (item) => {
         return {
           opacity: 0,
           ...handleAnimation(item),
@@ -103,7 +103,7 @@ const PostsManager = memo(({ allPosts, location }) => {
           center: [69, 69],
         }
       },
-      enter: item => {
+      enter: (item) => {
         return {
           opacity: 1,
           ...handleAnimation(item),
@@ -117,7 +117,7 @@ const PostsManager = memo(({ allPosts, location }) => {
           center: [69, 69],
         }
       },
-      update: item => {
+      update: (item) => {
         return {
           opacity: 1,
           ...handleAnimation(item),
@@ -131,7 +131,7 @@ const PostsManager = memo(({ allPosts, location }) => {
           center: [69, 69],
         }
       },
-      leave: item => {
+      leave: (item) => {
         return {
           opacity: 0,
           ...handleAnimation(item),
@@ -199,14 +199,15 @@ const PostsManager = memo(({ allPosts, location }) => {
   }, [])
 
   // button handlers
-  const handleDeleteFirst = () => setItems(arr => arr.filter((_, i) => i !== 0))
+  const handleDeleteFirst = () =>
+    setItems((arr) => arr.filter((_, i) => i !== 0))
   const handleDeleteAll = () => setItems([])
   const handleReset = () => {
     setIsRandom(false)
     setItems(posts)
   }
   const handleSortByNewest = () =>
-    setItems(arr =>
+    setItems((arr) =>
       _.sortBy(arr, ({ node }) => {
         let date = moment(
           node.internal?.type === `MarkdownRemark`
@@ -217,7 +218,7 @@ const PostsManager = memo(({ allPosts, location }) => {
       })
     )
   const handleSortByOldest = () =>
-    setItems(arr =>
+    setItems((arr) =>
       _.sortBy(arr, ({ node }) => {
         let date = moment(
           node.internal?.type === `MarkdownRemark`
@@ -235,7 +236,7 @@ const PostsManager = memo(({ allPosts, location }) => {
         <Button onClick={handleReset}>reset</Button>
         <Button onClick={handleSortByNewest}>newest</Button>
         <Button onClick={handleSortByOldest}>oldest</Button>
-        <Button onClick={() => setIsRandom(s => !s)}>randomize</Button>
+        <Button onClick={() => setIsRandom((s) => !s)}>randomize</Button>
         <Button onClick={resize(2)}>2</Button>
         <Button onClick={resize(3)}>3</Button>
         <Button onClick={resize(4)}>4</Button>

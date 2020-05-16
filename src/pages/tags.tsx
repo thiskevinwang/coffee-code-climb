@@ -16,12 +16,12 @@ const black = `rgba(20,20,20,0.8)`
 const StyledLi = styled.li`
   display: flex;
   align-items: center;
-  background: ${props => (props.isDarkMode ? black : "white")};
-  border: ${props =>
+  background: ${(props) => (props.isDarkMode ? black : "white")};
+  border: ${(props) =>
     props.isDarkMode ? `1px solid white` : `1px solid ${black}`};
   border-radius: 3px;
   a {
-    color: ${props => (props.isDarkMode ? "white" : black)};
+    color: ${(props) => (props.isDarkMode ? "white" : black)};
     box-shadow: none;
   }
   padding: ${rhythm(0.3)} ${rhythm(1)};
@@ -57,7 +57,7 @@ const TagsPage = ({
   location,
 }) => {
   let group = combineTagGroups(group1, group2)
-  const isDarkMode = useSelector(state => state.isDarkMode)
+  const isDarkMode = useSelector((state) => state.isDarkMode)
 
   return (
     <Layout location={location} title={title}>
@@ -67,7 +67,7 @@ const TagsPage = ({
       <hr />
 
       <StyledUl>
-        {group.map(tag => {
+        {group.map((tag) => {
           const { fieldValue, totalCount } = tag
           const firstLetter = fieldValue.charAt(0).toLowerCase()
           const buildTag = (

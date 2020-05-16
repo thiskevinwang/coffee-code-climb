@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { memo } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
@@ -43,17 +43,19 @@ const LayoutFrame = styled(animated.div)`
   /* border: ${process.env.NODE_ENV === "development" && `1px dotted red`}; */
 `
 const Main = styled(animated.main)`
-  /* border: ${process.env.NODE_ENV === "development" &&
-    `1px dotted orange`}; */
+  /* border: ${
+    process.env.NODE_ENV === "development" && `1px dotted orange`
+  }; */
 `
 const Inner = styled(animated.div)`
-  /* border: ${process.env.NODE_ENV === "development" &&
-    `1px dotted yellow`}; */
+  /* border: ${
+    process.env.NODE_ENV === "development" && `1px dotted yellow`
+  }; */
 `
 
 function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const isDarkMode = useSelector(state => state.isDarkMode)
+  const isDarkMode = useSelector((state) => state.isDarkMode)
   const themedBackgroundProps = useSpring({
     background: isDarkMode ? Colors.black : Colors.silver,
   })
@@ -97,7 +99,7 @@ function Layout({ location, title, children }: Props) {
                 range: [0, 1],
                 output: [25, 50],
               })
-              .interpolate(n => `${n}px ${n}px`),
+              .interpolate((n) => `${n}px ${n}px`),
           }}
         />
       </>
@@ -120,13 +122,13 @@ function Layout({ location, title, children }: Props) {
                   range: [0, 1, 2],
                   output: [1, 100, 3],
                 })
-                .interpolate(x => `translateY(${2 * x}vh)`),
+                .interpolate((x) => `translateY(${2 * x}vh)`),
               opacity: scrollYPercent
                 .interpolate({
                   range: [0, 0.25, 1, 2],
                   output: [1, 0, 0, 0],
                 })
-                .interpolate(x => x),
+                .interpolate((x) => x),
             }}
           >
             <Header location={location} title={title} />
@@ -141,4 +143,4 @@ function Layout({ location, title, children }: Props) {
   )
 }
 
-export default compose(withSVGTrail)(Layout)
+export default compose(withSVGTrail, memo)(Layout)
