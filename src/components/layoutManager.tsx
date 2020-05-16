@@ -17,7 +17,11 @@ import { FunButtonsModal } from "components/FunButtonsModal"
 
 import * as Colors from "consts/Colors"
 
+/**
+ * ⚠️ Don't destructure props!
+ */
 const LayoutManager = (props) => {
+  const { pathname } = props.location
   const [showModal, toggleModal] = useReducer((s: boolean) => !s, false)
   const [shouldExit, setShouldExit] = useState(false)
   const [neverShowModalChecked, toggleNeverShowModalChecked] = useReducer(
@@ -40,12 +44,13 @@ const LayoutManager = (props) => {
    * 2. increase opacity to 1
    */
   useEffect(() => {
-    !neverModalShowAgain &&
+    if (!neverModalShowAgain && pathname === "/") {
       setTimeout(() => {
         toggleModal(true)
         setModalProps({ opacity: 1 })
       }, 2000)
-  }, [])
+    }
+  }, [neverModalShowAgain, pathname])
 
   const [{ opacity, modalBackground, fill }, setModalProps] = useSpring(() => ({
     opacity: showModal ? 1 : 0,
