@@ -14,7 +14,7 @@ const ColorSchemeProvider = ({ children }) => {
 
   useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
-  }, [prefersDark])
+  }, [prefersDark, dispatch])
 
   const isDarkMode = useSelector((state) => state.isDarkMode)
 
