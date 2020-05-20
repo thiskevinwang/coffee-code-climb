@@ -1,7 +1,6 @@
 import React, { memo, useState, useEffect, useCallback, useMemo } from "react"
 import { useSelector } from "react-redux"
 import _ from "lodash"
-import moment from "moment"
 import styled from "styled-components"
 import {
   animated,
@@ -39,7 +38,7 @@ const PostsManager = memo(({ allPosts, location }) => {
    */
   const posts = useMemo(() => {
     const dateSorted = _.sortBy(allPosts, ({ node }) => {
-      let date = moment(
+      let date = new Date(
         node.internal.type === `MarkdownRemark`
           ? node.frontmatter.date
           : node.date
@@ -209,7 +208,7 @@ const PostsManager = memo(({ allPosts, location }) => {
   const handleSortByNewest = () =>
     setItems((arr) =>
       _.sortBy(arr, ({ node }) => {
-        let date = moment(
+        let date = new Date(
           node.internal?.type === `MarkdownRemark`
             ? node.frontmatter.date
             : node.date
@@ -220,7 +219,7 @@ const PostsManager = memo(({ allPosts, location }) => {
   const handleSortByOldest = () =>
     setItems((arr) =>
       _.sortBy(arr, ({ node }) => {
-        let date = moment(
+        let date = new Date(
           node.internal?.type === `MarkdownRemark`
             ? node.frontmatter.date
             : node.date
