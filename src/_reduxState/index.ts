@@ -1,24 +1,13 @@
-import { createStore, applyMiddleware, compose } from "redux"
-
-import {
-  logger,
-  thunk,
-  timeoutScheduler,
-  readyStatePromise,
-  vanillaPromise,
-} from "./middleware"
+import { createStore, compose } from "redux"
 
 /**
  * action
  */
-export const setIsDarkMode = (isDarkMode: boolean) => async (
-  dispatch,
-  getState
-) => {
-  return dispatch({
+export const setIsDarkMode = (isDarkMode: boolean) => {
+  return {
     type: ActionTypes.TOGGLE_DARKMODE,
     isDarkMode,
-  })
+  }
 }
 export const setShowTrail = (showTrail: boolean) => {
   return {
@@ -32,23 +21,14 @@ export const setSlowMo = (slowMo: boolean) => {
     slowMo,
   }
 }
-export const setLayoutVersion = (layoutVersion: number) => async (
-  dispatch,
-  getState
-) => {
-  return dispatch({ type: ActionTypes.SET_LAYOUT_VERSION, layoutVersion })
+export const setLayoutVersion = (layoutVersion: number) => {
+  return { type: ActionTypes.SET_LAYOUT_VERSION, layoutVersion }
 }
-export const setPostsVersion = (postsVersion: number) => async (
-  dispatch,
-  getState
-) => {
-  return dispatch({ type: ActionTypes.SET_POSTS_VERSION, postsVersion })
+export const setPostsVersion = (postsVersion: number) => {
+  return { type: ActionTypes.SET_POSTS_VERSION, postsVersion }
 }
-export const setShowMobileMenu = (showMobileMenu: boolean) => async (
-  dispatch,
-  getState
-) => {
-  return dispatch({ type: ActionTypes.SET_SHOW_MOBILE_MENU, showMobileMenu })
+export const setShowMobileMenu = (showMobileMenu: boolean) => {
+  return { type: ActionTypes.SET_SHOW_MOBILE_MENU, showMobileMenu }
 }
 
 /**
@@ -75,7 +55,7 @@ export interface RootState {
  */
 const initialState: RootState = {
   isDarkMode: false,
-  showTrail: true,
+  showTrail: false,
   slowMo: false,
   layoutVersion: 2,
   postsVersion: 1,
@@ -111,15 +91,7 @@ const composeEnhancers =
       })
     : compose
 
-const enhancer = composeEnhancers(
-  applyMiddleware(
-    // logger,
-    thunk,
-    timeoutScheduler,
-    readyStatePromise,
-    vanillaPromise
-  )
-)
+const enhancer = composeEnhancers()
 
 /**
  * store
