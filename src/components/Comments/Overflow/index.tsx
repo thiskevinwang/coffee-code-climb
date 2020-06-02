@@ -13,6 +13,7 @@ import {
   CommentOrderByInput,
 } from "../Display/ByUrl/query"
 import { DELETE_COMMENT_BY_ID } from "./deleteCommentById"
+import { CHUNK } from "../Display/ByUrl"
 
 const PopoverContents = styled(animated.div)`
   color: ${theme("mode", {
@@ -91,12 +92,22 @@ export const Overflow = ({
        */
       const { getCommentsByUrl } = cache.readQuery({
         query: GET_COMMENTS_BY_URL_QUERY,
-        variables: { url, filter: CommentOrderByInput.created_DESC },
+        variables: {
+          url,
+          filter: CommentOrderByInput.created_DESC,
+          skip: 0,
+          take: CHUNK,
+        },
       })
 
       cache.writeQuery({
         query: GET_COMMENTS_BY_URL_QUERY,
-        variables: { url, filter: CommentOrderByInput.created_DESC },
+        variables: {
+          url,
+          filter: CommentOrderByInput.created_DESC,
+          skip: 0,
+          take: CHUNK,
+        },
         data: {
           getCommentsByUrl: _.filter(
             getCommentsByUrl,

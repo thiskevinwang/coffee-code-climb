@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 // import ms from "ms"
+import styled from "styled-components"
+import theme from "styled-theming"
 import { useTransition, config } from "react-spring"
 import _ from "lodash"
 import { useLazyQuery } from "@apollo/react-hooks"
@@ -30,13 +32,42 @@ import {
   Variant,
 } from "../../../../pages/rds"
 
+const Sentinel = styled.div`
+  min-height: 5rem;
+  border-color: ${theme("mode", {
+    light: props => props.theme.commentRenderer.borderColor,
+    dark: props => props.theme.commentRenderer.borderColor,
+  })};
+  border-width: 0.05rem;
+  border-style: dashed;
+  border-radius: 0.2rem;
+`
+
 interface IGetCommentsByUrlData {
   getCommentsByUrl: Comment[]
 }
 interface IGetCommentsByUrlVars {
   url: string
   filter: CommentOrderByInput
+  skip: number
+  take: number
 }
+
+/**
+ * The value that is passed to graphql query's `take` parameter.
+ *
+ * The `update` fn in src/components/Comments/Create needs to match this initial
+ * `getCommentsByUrl` query, EXACTLY, so that apollo can update local state
+ * correctly.
+ *
+ * The pain point is that the `skip` and `take` parameters need to match exactly
+ * as well. If updating local state is this tedious, websockets may be simpler
+ * in the long run.
+ * - Client updates the server & is simultaneously subscribed to the event that
+ *   it itself is responsible for triggering.
+ */
+export const CHUNK = 3
+
 /**
  * This component takes `url` prop, and fetches all comments by this
  * url.
@@ -50,21 +81,20 @@ interface IGetCommentsByUrlVars {
  */
 export const CommentsByUrl = ({ url }) => {
   const { currentUserId } = useAuthentication()
+  const [reachedEnd, setReachedEnd] = useState(false)
   const [
     getCommentsByUrl,
     {
       data,
       loading: queryLoading,
-      error: queryError,
+      // error: queryError,
       called,
-      startPolling,
-      stopPolling,
+      // startPolling,
+      // stopPolling,
+      fetchMore,
     },
   ] = useLazyQuery<IGetCommentsByUrlData, IGetCommentsByUrlVars>(
-    GET_COMMENTS_BY_URL_QUERY,
-    {
-      variables: { url: url, filter: CommentOrderByInput.created_DESC },
-    }
+    GET_COMMENTS_BY_URL_QUERY
   )
 
   /**
@@ -84,17 +114,10 @@ export const CommentsByUrl = ({ url }) => {
   //   stopAfter: ms("3m"),
   // })
 
-  const didIntersect = useRef(false)
   const [isIntersecting, bind] = useIO({
     rootMargin: "0px 0px 0px 0px",
-    threshold: 0.25,
+    threshold: 0.5,
   })
-  if (isIntersecting) {
-    if (didIntersect.current === false) {
-      getCommentsByUrl()
-      didIntersect.current = true
-    }
-  }
 
   const [comments, setComments] = useState<Comment[]>(
     data?.getCommentsByUrl ?? []
@@ -102,6 +125,55 @@ export const CommentsByUrl = ({ url }) => {
   useEffect(() => {
     setComments([...(data?.getCommentsByUrl ?? [])])
   }, [data?.getCommentsByUrl])
+
+  /** initial fetch */
+  useEffect(() => {
+    if (isIntersecting && comments.length === 0) {
+      console.log("inital")
+      getCommentsByUrl({
+        variables: {
+          url: url,
+          filter: CommentOrderByInput.created_DESC,
+          skip: comments.length,
+          take: CHUNK,
+        },
+      })
+    }
+  }, [isIntersecting, comments.length])
+  /**
+   * subsequent fetches
+   *  ⚠️ I'm not sure about why some of these values, which are
+   * omitted from the dependencies array, cause the end behavior
+   * to be what I'm looking for.
+   */
+  useEffect(() => {
+    if (reachedEnd) return
+
+    if (isIntersecting && called) {
+      console.log("subsequent" + comments.length)
+      fetchMore({
+        variables: {
+          url: url,
+          filter: CommentOrderByInput.created_DESC,
+          skip: comments.length,
+          take: CHUNK,
+        },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          /** notify state that we've reached the end of the db table */
+          if (fetchMoreResult.getCommentsByUrl.length === 0) {
+            setReachedEnd(true)
+          }
+
+          return _.assign({}, prev, {
+            getCommentsByUrl: [
+              ...prev.getCommentsByUrl,
+              ...fetchMoreResult.getCommentsByUrl,
+            ],
+          })
+        },
+      })
+    }
+  }, [isIntersecting, reachedEnd])
 
   /** @TODO serverless subscriptions */
   // const newCommentSubscription = useSubscription(NEW_COMMENT_SUBSCRIPTION)
@@ -145,7 +217,8 @@ export const CommentsByUrl = ({ url }) => {
         transform: `scale(0.8)`,
         filter: `blur(10px)`,
       },
-      trail: 100,
+      /** This doesn't really work as planned when fetching chunks of more than 1 entity. */
+      // trail: 100,
       config: config.wobbly,
     }
   )
@@ -156,26 +229,21 @@ export const CommentsByUrl = ({ url }) => {
    */
   if (queryLoading)
     return (
-      <CommentRenderer {...bind}>
-        <FlexColumn style={{ textAlign: `center`, marginBottom: `.5rem` }}>
-          <LoadingIndicator />
-        </FlexColumn>
-      </CommentRenderer>
-    )
-  if (comments.length < 1)
-    return (
-      <CommentRenderer {...bind}>
-        <FlexRow style={{ marginBottom: `.5rem` }}>
-          <p>Be the first to comment!</p>
-        </FlexRow>
-      </CommentRenderer>
+      <>
+        <CommentRenderer>
+          <FlexColumn style={{ textAlign: `center`, marginBottom: `.5rem` }}>
+            <LoadingIndicator />
+          </FlexColumn>
+        </CommentRenderer>
+        <Sentinel {...bind}></Sentinel>
+      </>
     )
   /**
    * @TODO still need to display reactions
    */
   return (
-    (
-      <div {...bind}>
+    <>
+      <div>
         {transition.map(({ item: _comment, props, key }) => {
           return (
             <CommentRenderer key={key} style={props}>
@@ -254,6 +322,15 @@ export const CommentsByUrl = ({ url }) => {
           )
         })}
       </div>
-    ) ?? <p {...bind}>👀👀👀</p>
+      <Sentinel {...bind}>
+        {comments.length < 1 && (
+          <CommentRenderer {...bind}>
+            <FlexRow style={{ marginBottom: `.5rem` }}>
+              <p>Be the first to comment!</p>
+            </FlexRow>
+          </CommentRenderer>
+        )}{" "}
+      </Sentinel>
+    </>
   )
 }
