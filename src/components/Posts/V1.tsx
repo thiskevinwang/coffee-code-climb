@@ -17,8 +17,8 @@ const Card = styled(animated.div)`
   border-style: solid;
   border-width: 1px;
   border-color: ${theme("mode", {
-    light: props => props.theme.commentRenderer.borderColor,
-    dark: props => props.theme.commentRenderer.borderColor,
+    light: (props) => props.theme.commentRenderer.borderColor,
+    dark: (props) => props.theme.commentRenderer.borderColor,
   })};
   transition: border-color 200ms ease-in-out;
 
@@ -72,7 +72,7 @@ const V1 = memo(
     style,
   }: Props) => {
     //_.map + _.kebabCase each tag in frontmatter.tags
-    const kebabTags = useMemo(() => _.map(tags, tag => _.kebabCase(tag)), [])
+    const kebabTags = useMemo(() => _.map(tags, (tag) => _.kebabCase(tag)), [])
 
     return (
       <Card
@@ -120,8 +120,8 @@ const V1 = memo(
             />
           </Link>
           <br />
-          {_.map(kebabTags, e => (
-            <Badge key={e}>{e} </Badge>
+          {_.map(kebabTags, (e) => (
+            <Tag key={e}>{e} </Tag>
           ))}
         </div>
       </Card>
@@ -131,7 +131,7 @@ const V1 = memo(
 
 export { V1 }
 
-export const Badge = styled(animated.small)`
+export const Tag = styled(animated.small)`
   --geist-cyan: #79ffe1;
   --geist-purple: #f81ce5;
 
