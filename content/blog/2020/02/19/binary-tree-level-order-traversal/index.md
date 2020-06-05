@@ -75,7 +75,7 @@ I'd need to keep track of depth and I can do so by passing it down as 'state', o
 (Don't worry about `var`, `let`, `const`.)
 
 ```js
-var levelOrder = function(root) {
+var levelOrder = function (root) {
   let traversed = []
   var helper = (node, depth) => {
     if (!node) return
@@ -106,7 +106,7 @@ I simply didn't return the `traversed` array value that I wanted to return.
 ## Second run
 
 ```javascript
-var levelOrder = function(root) {
+var levelOrder = function (root) {
   let traversed = []
   var helper = (node, depth) => {
     if (!node) return
@@ -149,7 +149,7 @@ console.log(typeof ["blubber"])
 ## Third run and solution
 
 ```js
-var levelOrder = function(root) {
+var levelOrder = function (root) {
   let traversed = []
   var helper = (node, depth) => {
     if (!node) return
