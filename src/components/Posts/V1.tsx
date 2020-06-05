@@ -7,8 +7,7 @@ import { animated, AnimatedValue } from "react-spring"
 import styled from "styled-components"
 import theme from "styled-theming"
 
-import * as Colors from "consts/Colors"
-import { rhythm } from "utils/typography"
+import { getContrast } from "utils"
 
 const Card = styled(animated.div)`
   --geist-cyan: #79ffe1;
@@ -113,7 +112,7 @@ const V1 = memo(
             <div style={{ display: "flex" }}>
               <small>{date}</small>
             </div>
-            <small
+            <P
               dangerouslySetInnerHTML={{
                 __html: description || excerpt,
               }}
@@ -131,6 +130,11 @@ const V1 = memo(
 
 export { V1 }
 
+const P = styled.p`
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+`
 export const Tag = styled(animated.small)`
   --geist-cyan: #79ffe1;
   --geist-purple: #f81ce5;
@@ -142,16 +146,13 @@ export const Tag = styled(animated.small)`
   box-shadow: none;
   border-width: 1px;
   border-style: solid;
-  border-radius: 1rem / 80%;
-  border-color: ${theme("mode", {
-    light: Colors.greyLighter,
-    dark: Colors.greyDarker,
-  })};
+  border-radius: 1rem;
 
   color: ${theme("mode", {
-    light: Colors.greyLighter,
-    dark: Colors.greyDarker,
+    light: getContrast("#79ffe1"),
+    dark: getContrast("#f81ce5"),
   })};
   display: inline-block;
-  padding: 0.05rem 0.5rem 0.1rem;
+  padding: 0.05rem 0.75rem 0.1rem;
+  margin-right: 0.2rem;
 `
