@@ -7,6 +7,7 @@ import { animated, AnimatedValue } from "react-spring"
 import styled from "styled-components"
 import theme from "styled-theming"
 
+import { rhythm } from "utils/typography"
 import { getContrast } from "utils"
 
 const Card = styled(animated.div)`
