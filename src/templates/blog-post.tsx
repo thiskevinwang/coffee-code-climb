@@ -123,7 +123,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const { data: res, error } = useFetch<GetClapsResponse, any>(
     `${URI}?slug=${location.pathname}`
   )
-  const isLoading = !res || !error
+  const isLoading = !res && !error
 
   const [claps, setClaps] = useState(0)
   const [clapLimitReached, setClapLimitReached] = useState(false)
@@ -146,7 +146,6 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     [clapLimitReached, setClapLimitReached]
   )
   const handleClick = () => {
-    console.log("click")
     upTick()
   }
 
@@ -188,7 +187,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       </div>
       <ClapsLayoutContainer>
         <Claps>
-          {!isLoading ? (
+          {isLoading ? (
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
@@ -206,7 +205,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       </ClapsLayoutContainer>
       <ClapsFixedContainer>
         <Claps>
-          {!isLoading ? (
+          {isLoading ? (
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
