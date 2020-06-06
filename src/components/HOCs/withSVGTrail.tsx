@@ -38,10 +38,10 @@ const translate2d = (x, y) =>
 const Wrapper = ({ children }) => {
   /** instance variables */
   const slowMoRef = useRef(false)
-  const showTrailRef = useRef(true)
+  const showTrailRef = useRef(false)
 
   // Redux hooks
-  const isDarkMode = useSelector(state => state.isDarkMode)
+  const isDarkMode = useSelector((state) => state.isDarkMode)
   const dispatch = useDispatch()
   const dispatchSetIsDarkMode = useCallback(
     (state: boolean) => dispatch(setIsDarkMode(state)),
@@ -63,7 +63,7 @@ const Wrapper = ({ children }) => {
      *   - If the component rerenders (ex. subscriptions to redux store), this hook
      * is re-evaluated, and falls back to `config.default` if not specified.
      */
-    config: i => (slowMoRef.current ? config.molasses : configs[i]),
+    config: (i) => (slowMoRef.current ? config.molasses : configs[i]),
   }))
 
   useEffect(() => {
@@ -119,7 +119,7 @@ const Wrapper = ({ children }) => {
              * in-progress/lingering, but the `useMove` gesture has finished.
              */
             setTrail({
-              config: i => (slowMoRef.current ? config.molasses : configs[i]),
+              config: (i) => (slowMoRef.current ? config.molasses : configs[i]),
             })
             return
           case 84 /** "t" */:
@@ -170,7 +170,7 @@ const Wrapper = ({ children }) => {
 }
 
 function withSVGTrail(BaseComponent) {
-  return props => (
+  return (props) => (
     <Wrapper>
       <BaseComponent {...props} />
     </Wrapper>
