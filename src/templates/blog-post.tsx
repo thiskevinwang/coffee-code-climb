@@ -1,10 +1,11 @@
-import * as React from "react"
+import React, { useCallback, useState } from "react"
 import { Link, graphql } from "gatsby"
 import _ from "lodash"
 import styled from "styled-components"
 import theme from "styled-theming"
 import { animated } from "react-spring"
 import { Skeleton } from "@material-ui/lab"
+import axios from "axios"
 
 // Components
 import Bio from "components/bio"
@@ -30,6 +31,7 @@ export const Hr = styled(animated.div)`
   })};
 `
 
+const Claps = styled(animated.div)``
 const ClapsFixedContainer = styled(animated.div)`
   --blog-width: 42rem;
   --blog-padding-x: 1.3125rem;
@@ -49,14 +51,16 @@ const ClapsFixedContainer = styled(animated.div)`
   width: 100vw;
   max-width: var(--max-width);
 
-  > div {
+  ${Claps} {
     /* capture clicks */
     pointer-events: all;
     span {
       user-select: none;
       margin-right: 1rem;
     }
-    > p {
+    > p,
+    > small {
+      user-select: none;
       display: flex;
       justify-content: center;
       margin: 0;
@@ -84,12 +88,14 @@ const ClapsFixedContainer = styled(animated.div)`
 `
 
 const ClapsLayoutContainer = styled(animated.div)`
-  > div {
+  ${Claps} {
     span {
       user-select: none;
       margin-right: 1rem;
     }
-    > p {
+    > p,
+    > small {
+      user-select: none;
       display: flex;
       margin: 0;
     }
@@ -107,16 +113,42 @@ const ClapsLayoutContainer = styled(animated.div)`
   }
 `
 
+const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps`
+
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
   const { title: siteTitle } = data.site.siteMetadata
   const { previous, next, postTitle, tableOfContents } = pageContext
 
-  const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps?slug=${location.pathname}`
-  const { data: res, error } = useFetch<GetClapsResponse, any>(URI)
+  const { data: res, error } = useFetch<GetClapsResponse, any>(
+    `${URI}?slug=${location.pathname}`
+  )
   const isLoading = !res || !error
 
-  const handleClick = () => {}
+  const [claps, setClaps] = useState(0)
+  const [clapLimitReached, setClapLimitReached] = useState(false)
+  const upTick = useCallback(
+    _.debounce(async () => {
+      if (clapLimitReached) return
+      try {
+        const res = await axios.post(`${URI}?slug=${location.pathname}`)
+        setClaps((c) => c + 1)
+        // console.log("RESPONSE", res)
+      } catch (err) {
+        // Object.getOwnPropertyNames(err)
+        // ["stack", "message", "config", "request", "response", "isAxiosError", "toJSON"]
+        // console.log("ERROR", err.response?.status)
+        if (err.response?.status === 500) {
+          setClapLimitReached(true)
+        }
+      }
+    }, 500),
+    [clapLimitReached, setClapLimitReached]
+  )
+  const handleClick = () => {
+    console.log("click")
+    upTick()
+  }
 
   return (
     <LayoutManager location={location} title={siteTitle}>
@@ -155,32 +187,40 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         ))}
       </div>
       <ClapsLayoutContainer>
-        <div>
+        <Claps>
           {!isLoading ? (
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
               <p>
-                <span>{res?.Item?.claps.N ?? 0}</span>
-                <ThumsUp onClick={handleClick} />
+                <span>{parseInt(res?.Item?.claps.N ?? "0") + claps}</span>
+                <div onClick={handleClick}>
+                  <ThumsUp />
+                </div>
               </p>
+
+              <small>{clapLimitReached && "Limit Reached"}</small>
             </>
           )}
-        </div>
+        </Claps>
       </ClapsLayoutContainer>
       <ClapsFixedContainer>
-        <div>
+        <Claps>
           {!isLoading ? (
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
               <p>
-                <span>{res?.Item?.claps.N ?? 0}</span>
-                <ThumsUp onClick={handleClick} />
+                <span>{parseInt(res?.Item?.claps.N ?? "0") + claps}</span>
+                <div onClick={handleClick}>
+                  <ThumsUp />
+                </div>
               </p>
+
+              <small>{clapLimitReached && "Limit Reached"}</small>
             </>
           )}
-        </div>
+        </Claps>
       </ClapsFixedContainer>
       <Hr
         style={{
