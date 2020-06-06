@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from "react"
-import styled from "styled-components"
+import styled, { BaseProps } from "styled-components"
+import theme from "styled-theming"
 import { useSpring, animated } from "react-spring"
 import { useScroll } from "react-use-gesture"
 import { Link } from "gatsby"
@@ -7,22 +8,36 @@ import { parse } from "html-parse-stringify"
 
 import { rhythm } from "utils/typography"
 
+const borderColor = theme("mode", {
+  light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+  dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+})
+const background = theme("mode", {
+  light: "rgba(0,0,0,0.1)",
+  dark: "rgba(255,255,255,0.1)",
+})
 const Container = styled(animated.div)`
   position: absolute;
   right: 0;
   margin-right: 20px;
   max-width: ${rhythm(12)};
+  background: ${background};
+
+  border-width: 1px;
+  border-color: ${borderColor};
+  border-style: solid;
+  border-radius: 0.2rem;
+  /* margin-bottom: 1.25rem; */
+  padding: 1.5rem;
 
   @media (max-width: 1200px) {
+    max-width: unset;
     position: relative;
     top: 0 !important;
   }
 
   li {
     list-style: none;
-  }
-  * {
-    font-size: 12px;
   }
 `
 
@@ -70,7 +85,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
    */
   const generateTree = useCallback(
     (nodes: (ASTNode | LeafNode)[], depth: number = 0): React.ReactNode => {
-      return nodes.map((node) => {
+      return nodes.map((node, i) => {
         if (!node.children) return node.content
 
         // intercept "<a>" nodes, and create a gatsby Link instead
@@ -105,11 +120,11 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
           // are intersection with a specified area
           const observer = new IntersectionObserver(([entry], observer) => {
             if (entry.isIntersecting) {
-              ref.current.className = "TOC TOC__FOCUS"
+              if (ref.current) ref.current.className = "TOC TOC__FOCUS"
               entry.target.className = "HEADER HEADER__FOCUS"
               updateHashTo(hash)
             } else {
-              ref.current.className = "TOC"
+              if (ref.current) ref.current.className = "TOC"
               entry.target.className = "HEADER"
             }
           }, options)
@@ -120,6 +135,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
             node.name,
             /** React.createElement(_, PROPS, _) */
             {
+              key: `${node.name}#${i}`,
               ref,
               ...node.attrs,
               /**
@@ -150,7 +166,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
 
         return React.createElement(
           node.name,
-          node.attrs,
+          { key: `${node.name}#${i}`, ...node.attrs },
           generateTree(node.children, depth + 1)
         )
       })
