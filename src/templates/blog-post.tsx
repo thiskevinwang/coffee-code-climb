@@ -146,7 +146,6 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     [clapLimitReached, setClapLimitReached]
   )
   const handleClick = () => {
-    console.log("click")
     upTick()
   }
 
