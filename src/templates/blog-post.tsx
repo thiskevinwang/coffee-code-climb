@@ -1,3 +1,4 @@
+
 import React, { useState, memo, useEffect, useLayoutEffect } from "react"
 import { Link, graphql } from "gatsby"
 import _ from "lodash"
@@ -6,6 +7,7 @@ import theme from "styled-theming"
 import { animated, useTransition } from "react-spring"
 import { Skeleton } from "@material-ui/lab"
 import uuid from "uuid"
+
 
 // Components
 import Bio from "components/bio"
