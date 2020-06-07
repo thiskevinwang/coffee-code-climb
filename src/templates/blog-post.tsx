@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from "react"
+import React from "react"
 import { Link, graphql } from "gatsby"
 import _ from "lodash"
 import styled from "styled-components"
 import theme from "styled-theming"
 import { animated } from "react-spring"
 import { Skeleton } from "@material-ui/lab"
-import axios from "axios"
 
 // Components
 import Bio from "components/bio"
@@ -21,6 +20,7 @@ import { Tag } from "components/Posts/V1"
 import { rhythm, scale } from "utils/typography"
 import * as Colors from "consts/Colors"
 import { useFetch } from "hooks/useFetch"
+import { useOptimisticClaps } from "hooks/useOptimisticClaps"
 
 export const Hr = styled(animated.div)`
   min-height: 1px;
@@ -125,29 +125,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   )
   const isLoading = !res && !error
 
-  const [claps, setClaps] = useState(0)
-  const [clapLimitReached, setClapLimitReached] = useState(false)
-  const upTick = useCallback(
-    _.debounce(async () => {
-      if (clapLimitReached) return
-      try {
-        const res = await axios.post(`${URI}?slug=${location.pathname}`)
-        setClaps((c) => c + 1)
-        // console.log("RESPONSE", res)
-      } catch (err) {
-        // Object.getOwnPropertyNames(err)
-        // ["stack", "message", "config", "request", "response", "isAxiosError", "toJSON"]
-        // console.log("ERROR", err.response?.status)
-        if (err.response?.status === 500) {
-          setClapLimitReached(true)
-        }
-      }
-    }, 500),
-    [clapLimitReached, setClapLimitReached]
+  const { incrementClaps, clapsCount, clapLimitReached } = useOptimisticClaps(
+    URI
   )
-  const handleClick = () => {
-    upTick()
-  }
 
   return (
     <LayoutManager location={location} title={siteTitle}>
@@ -192,8 +172,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
           ) : (
             <>
               <p>
-                <span>{parseInt(res?.Item?.claps.N ?? "0") + claps}</span>
-                <div onClick={handleClick}>
+                <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
+                <div onClick={incrementClaps}>
                   <ThumsUp />
                 </div>
               </p>
@@ -210,8 +190,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
           ) : (
             <>
               <p>
-                <span>{parseInt(res?.Item?.claps.N ?? "0") + claps}</span>
-                <div onClick={handleClick}>
+                <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
+                <div onClick={incrementClaps}>
                   <ThumsUp />
                 </div>
               </p>
