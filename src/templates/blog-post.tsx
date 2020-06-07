@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useState, memo, useEffect, useLayoutEffect } from "react"
 import { Link, graphql } from "gatsby"
 import _ from "lodash"
 import styled from "styled-components"
 import theme from "styled-theming"
-import { animated } from "react-spring"
+import { animated, useTransition } from "react-spring"
 import { Skeleton } from "@material-ui/lab"
+import uuid from "uuid"
 
 // Components
 import Bio from "components/bio"
@@ -31,7 +32,9 @@ export const Hr = styled(animated.div)`
   })};
 `
 
-const Claps = styled(animated.div)``
+const Claps = styled(animated.div)`
+  position: relative;
+`
 const ClapsFixedContainer = styled(animated.div)`
   --blog-width: 42rem;
   --blog-padding-x: 1.3125rem;
@@ -129,6 +132,26 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     URI
   )
 
+  const [items, setItems] = useState<{ id: string }[]>([])
+  const transitions = useTransition(items, (item) => item.id, {
+    from: () => {
+      return { opacity: 0, transform: `translate3d(0%,0%,0)` }
+    },
+    enter: () => ({
+      opacity: 1,
+      transform: `translate3d(${_.random(-50, 50)}%,-${_.random(50, 250)}%,0)`,
+    }),
+    leave: {
+      opacity: 0,
+      transform: `translate3d(0%,-30%,0)`,
+    },
+  })
+
+  const handleClick = () => {
+    setItems((items) => [...items, { id: uuid() }])
+    incrementClaps()
+  }
+
   return (
     <LayoutManager location={location} title={siteTitle}>
       <SEO
@@ -173,7 +196,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             <>
               <p>
                 <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
-                <div onClick={incrementClaps}>
+                <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
               </p>
@@ -185,13 +208,20 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       </ClapsLayoutContainer>
       <ClapsFixedContainer>
         <Claps>
+          {transitions.map(({ item, props, key }) => (
+            <Remover item={item} setItems={setItems}>
+              <PlusCounter key={key} style={props}>
+                +1
+              </PlusCounter>
+            </Remover>
+          ))}
           {isLoading ? (
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
               <p>
                 <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
-                <div onClick={incrementClaps}>
+                <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
               </p>
@@ -246,10 +276,10 @@ interface GetClapsResponse {
 interface Item {
   PK: Key
   SK: Key
-  claps: Claps
+  claps: _Claps
 }
 
-interface Claps {
+interface _Claps {
   N: string
 }
 
@@ -257,7 +287,10 @@ interface Key {
   S: string
 }
 
-const Svg = styled.svg`
+const Svg = styled(animated.svg)`
+  --geist-cyan: #79ffe1;
+  --geist-purple: #f81ce5;
+
   cursor: pointer;
   transition: color 50ms ease-in-out, transform 100ms ease-in-out;
   will-change: color;
@@ -269,14 +302,14 @@ const Svg = styled.svg`
   }
   :active {
     color: ${theme("mode", {
-      light: Colors.greyDarker,
-      dark: Colors.greyLighter,
+      light: "var(--geist-cyan)",
+      dark: "var(--geist-purple)",
     })};
     transform: scale(1.2);
   }
 `
 
-const ThumsUp = () => {
+const ThumsUp = memo(() => {
   return (
     <Svg
       viewBox="0 0 24 24"
@@ -288,9 +321,37 @@ const ThumsUp = () => {
       strokeLinejoin="round"
       fill="none"
       shapeRendering="geometricPrecision"
+      // style={{ transform: radians.interpolate(interp(0)) }}
       // style="color:var(--geist-foreground)"
     >
       <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3" />
     </Svg>
   )
-}
+})
+
+const PlusCounter = styled(animated.div)`
+  --geist-cyan: #79ffe1;
+  --geist-purple: #f81ce5;
+
+  pointer-events: none;
+
+  color: ${theme("mode", {
+    light: "var(--geist-cyan)",
+    dark: "var(--geist-purple)",
+  })};
+  width: 100%;
+  text-align: center;
+  position: absolute;
+`
+
+const Remover = memo(({ children, setItems, item }) => {
+  // useLayoutEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     setItems((items) => items.filter((e) => e.id !== item.id))
+  //   }, 1000)
+  //   return () => {
+  //     clearTimeout(timeout)
+  //   }
+  // }, [item])
+  return <>{children}</>
+})
