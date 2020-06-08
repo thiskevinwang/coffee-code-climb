@@ -131,6 +131,18 @@ Wordpress2016.overrideThemeStyles = () => {
     '.gatsby-highlight pre[class*="language-"] > code .comment': {
       fontStyle: `italic`,
     },
+    // markdown quotes
+    blockquote: {
+      fontStyle: `unset`,
+      background: isDarkMode ? Colors.BLACK : Colors.SILVER,
+      borderLeftColor: isDarkMode ? Colors.BLACK_LIGHTER : Colors.SILVER_DARKER,
+      fontSize: `1rem`,
+      marginLeft: 0,
+      marginRight: 0,
+    },
+    "blockquote p": {
+      color: isDarkMode ? Colors.GREY_LIGHT : Colors.GREY_DARK,
+    },
   }
 }
 Wordpress2016.plugins = [new CodePlugin()]
