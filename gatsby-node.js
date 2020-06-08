@@ -31,6 +31,9 @@ exports.createPages = ({ graphql, actions }) => {
                 title
                 tags
                 date
+                image {
+                  publicURL
+                }
               }
             }
           }
@@ -53,7 +56,7 @@ exports.createPages = ({ graphql, actions }) => {
         }
       }
     `
-  ).then(result => {
+  ).then((result) => {
     if (result.errors) {
       throw result.errors
     }
@@ -97,6 +100,7 @@ exports.createPages = ({ graphql, actions }) => {
             next,
             postTitle: post.node.frontmatter.title,
             tableOfContents: post.node.tableOfContents,
+            imagePublicURL: post.node.frontmatter.image.publicURL,
           },
         })
       } else if (type === `ContentfulBlogPost`) {
@@ -115,14 +119,14 @@ exports.createPages = ({ graphql, actions }) => {
     // Tag pages:
     let tags = []
     // Iterate through each post, putting all found tags into `tags`
-    _.each(posts, edge => {
+    _.each(posts, (edge) => {
       if (_.get(edge, "node.frontmatter.tags")) {
         tags = tags.concat(edge.node.frontmatter.tags)
       }
     })
 
     // Contentful tags:
-    _.each(contentfulPosts, edge => {
+    _.each(contentfulPosts, (edge) => {
       if (_.get(edge, "node.tags")) {
         tags = tags.concat(edge.node.tags)
       }
@@ -132,7 +136,7 @@ exports.createPages = ({ graphql, actions }) => {
     tags = _.uniq(tags)
 
     // Make tag pages
-    tags.forEach(tag => {
+    tags.forEach((tag) => {
       createPage({
         path: `/tags/${_.kebabCase(tag)}/`,
         component: tagTemplate,
