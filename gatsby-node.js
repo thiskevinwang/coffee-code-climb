@@ -91,6 +91,10 @@ exports.createPages = ({ graphql, actions }) => {
       const { type } = post.node.internal
 
       if (type === `MarkdownRemark`) {
+        // Some posts are missing `image` frontmatter
+        const image = post.node.frontmatter.image
+        const imagePublicURL = image ? image.publicURL : null
+
         createPage({
           path: post.node.fields.slug,
           component: blogPost,
@@ -100,7 +104,7 @@ exports.createPages = ({ graphql, actions }) => {
             next,
             postTitle: post.node.frontmatter.title,
             tableOfContents: post.node.tableOfContents,
-            imagePublicURL: post.node.frontmatter.image.publicURL,
+            imagePublicURL,
           },
         })
       } else if (type === `ContentfulBlogPost`) {
