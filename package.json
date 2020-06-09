@@ -98,7 +98,8 @@
     "gatsby-plugin-tslint": "0.0.2",
     "prettier": "^2.0.5",
     "resize-observer-polyfill": "^1.5.1",
-    "tslint": "^5.20.1",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
     "tslint-loader": "^3.5.4",
     "typescript": "^3.7.2"
   },
