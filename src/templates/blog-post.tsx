@@ -75,11 +75,15 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             ? [
                 {
                   property: `og:image`,
-                  content: `https://coffeecodeclimb.com${imagePublicURL}`,
+                  content: imagePublicURL,
                 },
                 {
-                  name: `twitter:image`,
-                  content: `https://coffeecodeclimb.com${imagePublicURL}`,
+                  property: `og:image:secure_url`,
+                  content: imagePublicURL,
+                },
+                {
+                  name: `twitter:image:src`,
+                  content: imagePublicURL,
                 },
               ]
             : []

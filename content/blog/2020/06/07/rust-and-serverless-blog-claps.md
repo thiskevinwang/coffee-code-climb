@@ -1,7 +1,7 @@
 ---
 title: "Rust and Serverless Blog Claps"
 date: "2020-06-07T17:08:36.453Z"
-description: ""
+description: "Recreating Medium's claps feature. Powered by serverless Rust AWS Lambda functions."
 tags: ["serverless", "rust", "aws", "lambda", "dynamodb"]
 image: Serverless-Blog-Post-Claps.png
 ---
