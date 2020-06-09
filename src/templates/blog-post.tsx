@@ -75,15 +75,15 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             ? [
                 {
                   property: `og:image`,
-                  content: imagePublicURL,
+                  content: location.origin + imagePublicURL,
                 },
                 {
                   property: `og:image:secure_url`,
-                  content: imagePublicURL,
+                  content: location.origin + imagePublicURL,
                 },
                 {
-                  name: `twitter:image:src`,
-                  content: imagePublicURL,
+                  name: `twitter:image`,
+                  content: location.origin + imagePublicURL,
                 },
               ]
             : []
