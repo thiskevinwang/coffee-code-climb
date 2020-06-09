@@ -14,7 +14,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { Button } from "components/Button"
 import * as Posts from "components/Posts"
 
-const Manager = styled(animated.div)`
+const Manager = styled(animated.section)`
   ::-webkit-scrollbar {
     display: none;
   }
@@ -230,18 +230,19 @@ const PostsManager = memo(({ allPosts, location }) => {
   if (postsVersion === 1) {
     return (
       <Manager>
-        <Button onClick={handleDeleteFirst}>delete first</Button>
-        <Button onClick={handleDeleteAll}>delete all</Button>
-        <Button onClick={handleReset}>reset</Button>
-        <Button onClick={handleSortByNewest}>newest</Button>
-        <Button onClick={handleSortByOldest}>oldest</Button>
-        <Button onClick={() => setIsRandom((s) => !s)}>randomize</Button>
-        <Button onClick={resize(2)}>2</Button>
-        <Button onClick={resize(3)}>3</Button>
-        <Button onClick={resize(4)}>4</Button>
-        <Button onClick={resize(5)}>5</Button>
-        <Button onClick={resize(6)}>6</Button>
-
+        <div>
+          <Button onClick={handleDeleteFirst}>delete first</Button>
+          <Button onClick={handleDeleteAll}>delete all</Button>
+          <Button onClick={handleReset}>reset</Button>
+          <Button onClick={handleSortByNewest}>newest</Button>
+          <Button onClick={handleSortByOldest}>oldest</Button>
+          <Button onClick={() => setIsRandom((s) => !s)}>randomize</Button>
+          <Button onClick={resize(2)}>2</Button>
+          <Button onClick={resize(3)}>3</Button>
+          <Button onClick={resize(4)}>4</Button>
+          <Button onClick={resize(5)}>5</Button>
+          <Button onClick={resize(6)}>6</Button>
+        </div>
         <CardHolder style={cardHolderProps}>
           {transitions.map(({ item: { node }, key, props }, index) => {
             const isMarkdownRemark = checkIsMarkdownRemark(node)
@@ -255,6 +256,8 @@ const PostsManager = memo(({ allPosts, location }) => {
               <Posts.V1
                 style={{
                   ...props,
+                  // prevent overwrite by `.google-auto-placed`
+                  textAlign: "left !important",
                   transform: interpolate(
                     [props.xy, props.scale, props.deg, props.rotateXY],
                     ([x, y], scale, deg, [rX, rY]) =>
