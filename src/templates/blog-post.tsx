@@ -78,6 +78,10 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
                   content: imagePublicURL,
                 },
                 {
+                  property: `og:image:secure_url`,
+                  content: imagePublicURL,
+                },
+                {
                   name: `twitter:image:src`,
                   content: imagePublicURL,
                 },
