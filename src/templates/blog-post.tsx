@@ -71,16 +71,18 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
         meta={
-          imagePublicURL && [
-            {
-              property: `og:image`,
-              content: `https://coffeecodeclimb.com${imagePublicURL}`,
-            },
-            {
-              name: `twitter:image`,
-              content: `https://coffeecodeclimb.com${imagePublicURL}`,
-            },
-          ]
+          imagePublicURL
+            ? [
+                {
+                  property: `og:image`,
+                  content: `https://coffeecodeclimb.com${imagePublicURL}`,
+                },
+                {
+                  name: `twitter:image`,
+                  content: `https://coffeecodeclimb.com${imagePublicURL}`,
+                },
+              ]
+            : []
         }
       />
 
