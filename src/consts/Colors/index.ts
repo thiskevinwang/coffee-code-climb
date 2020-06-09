@@ -37,3 +37,25 @@ export const DARK_GRADIENTS = [
   `linear-gradient(0deg, #9890e3 0%, #b1f4cf 100%)`,
   `linear-gradient(0deg, #5ee7df 0%, #b490ca 100%)`,
 ]
+
+export enum Colors {
+  BLACK_DARKER = "#12151A",
+  BLACK_DARK = "#14171C",
+  BLACK = "#191C23", // DEFAULT TYPE COLOR
+  BLACK_LIGHT = "#22262E",
+  BLACK_LIGHTER = "#2F353F",
+  GREY_DARKER = "#424855",
+  GREY_DARK = "#5A6270",
+  GREY = "#777F8E",
+  GREY_LIGHT = "#959DAA",
+  GREY_LIGHTER = "#B2B9C3",
+  SILVER_DARKER = "#CAD0D8",
+  SILVER_DARK = "#DEE2E7", // DEFAULT BORDER COLOR
+  SILVER = "#EBEEF0",
+  SILVER_LIGHT = "#F4F6F8", // DEFAULT BG COLOR
+  SILVER_LIGHTER = "#FCFDFF",
+  ALERT = "#FF0080",
+  PURPLE = "#f81ce5",
+  VIOLET = "#7928CA",
+  CYAN = "#79ffe1",
+}

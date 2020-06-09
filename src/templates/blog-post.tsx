@@ -28,7 +28,13 @@ const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps`
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
   const { title: siteTitle } = data.site.siteMetadata
-  const { previous, next, postTitle, tableOfContents } = pageContext
+  const {
+    previous,
+    next,
+    postTitle,
+    tableOfContents,
+    imagePublicURL,
+  } = pageContext
 
   const { data: res, error } = useFetch<GetClapsResponse, any>(
     `${URI}?slug=${location.pathname}`
@@ -64,6 +70,20 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <SEO
         title={post.frontmatter.title}
         description={post.frontmatter.description || post.excerpt}
+        meta={
+          imagePublicURL
+            ? [
+                {
+                  property: `og:image`,
+                  content: `https://coffeecodeclimb.com${imagePublicURL}`,
+                },
+                {
+                  name: `twitter:image`,
+                  content: `https://coffeecodeclimb.com${imagePublicURL}`,
+                },
+              ]
+            : []
+        }
       />
 
       {
