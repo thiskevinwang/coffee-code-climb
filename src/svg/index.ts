@@ -1,5 +1,7 @@
 export * from "./apollo.svg"
 export * from "./graphql.svg"
+export * from "./lambda.svg"
 export * from "./node.svg"
 export * from "./prisma.svg"
 export * from "./react.svg"
+export * from "./rust.svg"
