@@ -5,13 +5,13 @@ import { compose } from "redux"
 import { Link } from "gatsby"
 import styled from "styled-components"
 
-import { withSVGTrail, Footer } from "components"
 import { NavBar2 } from "components/Layout2Components/NavBar2"
 
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
 
 import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
+import Footer from "./Footer"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 
@@ -105,4 +105,4 @@ function Layout({ location, title, children }) {
   )
 }
 
-export default compose(withSVGTrail, memo)(Layout)
+export default compose(memo)(Layout)

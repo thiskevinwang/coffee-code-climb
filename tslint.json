@@ -1,0 +1,12 @@
+{
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "rules": {
+    "no-console": {
+      "severity": "warn",
+      "options": ["log"]
+    },
+    "variable-name": {
+      "severity": "warn"
+    }
+  }
+}

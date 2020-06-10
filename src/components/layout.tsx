@@ -4,13 +4,7 @@ import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
 import styled from "styled-components"
 
-import {
-  ButtonAndDrawer,
-  Footer,
-  Header,
-  withSVGTrail,
-  NavBar,
-} from "components"
+import { ButtonAndDrawer, Footer, Header, NavBar } from "components"
 import { StickyNumbers } from "components/StickyNumbers"
 import { rhythm } from "utils/typography"
 import * as Colors from "consts/Colors"
@@ -143,4 +137,4 @@ function Layout({ location, title, children }: Props) {
   )
 }
 
-export default compose(withSVGTrail, memo)(Layout)
+export default compose(memo)(Layout)

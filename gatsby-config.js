@@ -14,7 +14,13 @@ module.exports = {
   },
   plugins: [
     `gatsby-plugin-typescript`,
-    "gatsby-plugin-tslint",
+    {
+      resolve: "gatsby-plugin-tslint",
+      options: {
+        test: /\.ts$|\.tsx$/,
+        exclude: /(node_modules|cache|public)/,
+      },
+    },
     /**
      * https://www.gatsbyjs.org/packages/gatsby-plugin-styled-components/
      */
