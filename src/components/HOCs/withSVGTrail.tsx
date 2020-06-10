@@ -35,7 +35,7 @@ const AnimatedSVG = styled(animated.div)`
 const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
-const Wrapper = ({ children }) => {
+export const SvgTrail = ({ children }) => {
   /** instance variables */
   const slowMoRef = useRef(false)
   const showTrailRef = useRef(false)
@@ -168,13 +168,3 @@ const Wrapper = ({ children }) => {
     </div>
   )
 }
-
-function withSVGTrail(BaseComponent) {
-  return (props) => (
-    <Wrapper>
-      <BaseComponent {...props} />
-    </Wrapper>
-  )
-}
-
-export default withSVGTrail

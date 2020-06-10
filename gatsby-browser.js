@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, memo } from "react"
 import { Provider, useDispatch, useSelector } from "react-redux"
 import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle, css } from "styled-components"
@@ -7,6 +7,8 @@ import { store, setIsDarkMode } from "_reduxState"
 import { ApolloProvider, client } from "./src/apollo"
 import DARK_THEME from "./src/Themes/dark"
 import LIGHT_THEME from "./src/Themes/light"
+
+import { SvgTrail } from "./src/components/HOCs/withSVGTrail"
 
 const GlobalStyle = createGlobalStyle`
   .TOC {
@@ -46,7 +48,7 @@ const GlobalStyle = createGlobalStyle`
     `}
 `
 
-const ColorSchemeProvider = ({ children }) => {
+const ColorSchemeProvider = memo(({ children }) => {
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
   const dispatch = useDispatch()
 
@@ -68,13 +70,14 @@ const ColorSchemeProvider = ({ children }) => {
       {children}
     </ThemeProvider>
   )
-}
+})
 
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (
     <ApolloProvider client={client}>
       <Provider store={store}>
+        <SvgTrail />
         <ColorSchemeProvider>{element}</ColorSchemeProvider>
       </Provider>
     </ApolloProvider>
