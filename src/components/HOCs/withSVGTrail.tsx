@@ -144,7 +144,7 @@ export const SvgTrail = ({ children }) => {
    * @see dispatchSetIsDarkMode
    */
   return (
-    <div className="withSVGTrail--HOC" style={{ overflow: "hidden" }}>
+    <div style={{ overflow: "hidden", maxHeight: 0 }}>
       {trail.map((props, index) => (
         <AnimatedSVG
           key={index}
