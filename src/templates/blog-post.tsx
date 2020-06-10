@@ -19,7 +19,7 @@ import { Tag } from "components/Posts/V1"
 
 // Other
 import { rhythm, scale } from "utils/typography"
-import * as Colors from "consts/Colors"
+import { Colors } from "consts/Colors"
 import { useFetch } from "hooks/useFetch"
 import { useOptimisticClaps } from "hooks/useOptimisticClaps"
 
@@ -121,7 +121,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       </div>
       <ClapsLayoutContainer>
         <Claps>
-          {transitions.map(({ item, props, key }) => (
+          {transitions.map(({ item, props, key }, i) => (
             <Remover>
               <PlusCounter key={key} style={props} widthPx={100}>
                 +1
@@ -226,16 +226,13 @@ interface Key {
 }
 
 const Svg = styled(animated.svg)`
-  --geist-cyan: #79ffe1;
-  --geist-purple: #f81ce5;
-
   cursor: pointer;
   transition: color 50ms ease-in-out, transform 100ms ease-in-out;
   will-change: color;
   :hover&:not(:active) {
     color: ${theme("mode", {
-      light: Colors.greyLighter,
-      dark: Colors.greyDarker,
+      light: Colors.GREY_LIGHTER,
+      dark: Colors.GREY_DARKER,
     })};
   }
   :active {
@@ -267,14 +264,11 @@ const ThumsUp = memo(() => {
 })
 
 const PlusCounter = styled(animated.div)`
-  --geist-cyan: #79ffe1;
-  --geist-purple: #f81ce5;
-
   pointer-events: none;
 
   color: ${theme("mode", {
-    light: "var(--geist-cyan)",
-    dark: "var(--geist-purple)",
+    light: Colors.CYAN,
+    dark: Colors.PURPLE,
   })};
   width: ${(p) => (p.widthPx ? `${p.widthPx}px` : `100%`)};
   text-align: center;
@@ -297,8 +291,8 @@ export const Hr = styled(animated.div)`
   min-height: 1px;
   margin-bottom: 2px;
   background: ${theme("mode", {
-    light: Colors.greyLighter,
-    dark: Colors.greyDarker,
+    light: Colors.GREY_LIGHTER,
+    dark: Colors.GREY_DARKER,
   })};
 `
 
@@ -345,14 +339,14 @@ const ClapsFixedContainer = styled(animated.div)`
     border-width: 1px;
     border-radius: 5px;
     border-color: ${theme("mode", {
-      light: Colors.greyLighter,
-      dark: Colors.greyDarker,
+      light: Colors.GREY_LIGHTER,
+      dark: Colors.GREY_DARKER,
     })};
   }
 
   color: ${theme("mode", {
-    light: Colors.black,
-    dark: Colors.silver,
+    light: Colors.BLACK,
+    dark: Colors.SILVER,
   })};
 
   @media (max-width: 1200px) {
@@ -378,8 +372,8 @@ const ClapsLayoutContainer = styled(animated.div)`
     border-width: 1px;
     border-radius: 5px;
     border-color: ${theme("mode", {
-      light: Colors.greyLighter,
-      dark: Colors.greyDarker,
+      light: Colors.GREY_LIGHTER,
+      dark: Colors.GREY_DARKER,
     })};
 
     margin-bottom: 1rem;
