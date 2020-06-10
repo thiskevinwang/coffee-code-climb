@@ -9,7 +9,7 @@ import { svgZ } from "consts"
 import { setIsDarkMode } from "_reduxState"
 import * as SVG from "svg"
 
-const SVGS = [SVG.REACT, SVG.APOLLO, SVG.PRISMA, SVG.GRAPHQL, SVG.NODE]
+const SVGS = [SVG.REACT, SVG.APOLLO, SVG.Lambda, SVG.GRAPHQL, SVG.Rust]
 // SVG animation trail configs
 const configs = [
   { mass: 2, tension: 500, friction: 30 },
@@ -144,7 +144,7 @@ const Wrapper = ({ children }) => {
    * @see dispatchSetIsDarkMode
    */
   return (
-    <div className="withSVGTrail--HOC">
+    <div className="withSVGTrail--HOC" style={{ overflow: "hidden" }}>
       {trail.map((props, index) => (
         <AnimatedSVG
           key={index}
