@@ -105,7 +105,7 @@ const days = [0, 1, 2, 3, 4, 5, 6]
 That means Monday === 1. But what I was missing was that Monday could also equal 8, 71, 106, and (n \* 7) + 1. All I needed to do was add 365 to my reference point and "modulo" by 7 to get the day-of-week of my starting point.
 
 ```ts
-// Monday - Dec 31, 1899
+// Sunday - Dec 31, 1899
 const clue = 0
 
 // Monday - Jan 1, 1900
