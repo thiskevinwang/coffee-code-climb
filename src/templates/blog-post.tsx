@@ -64,7 +64,6 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     setItems((items) => [...items, { id: uuid() }])
     incrementClaps()
   }
-  console.log("location.origin", location.origin)
   return (
     <LayoutManager location={location} title={siteTitle}>
       <SEO
