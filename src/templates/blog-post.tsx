@@ -64,7 +64,6 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     setItems((items) => [...items, { id: uuid() }])
     incrementClaps()
   }
-
   return (
     <LayoutManager location={location} title={siteTitle}>
       <SEO
@@ -75,15 +74,15 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             ? [
                 {
                   property: `og:image`,
-                  content: location.origin + imagePublicURL,
+                  content: "https://coffeecodeclimb.com" + imagePublicURL,
                 },
                 {
                   property: `og:image:secure_url`,
-                  content: location.origin + imagePublicURL,
+                  content: "https://coffeecodeclimb.com" + imagePublicURL,
                 },
                 {
                   name: `twitter:image`,
-                  content: location.origin + imagePublicURL,
+                  content: "https://coffeecodeclimb.com" + imagePublicURL,
                 },
               ]
             : []
