@@ -8,7 +8,7 @@ import { useScroll } from "react-use-gesture"
  *
  * @returns a `react-spring` "animated value", between 0-1.
  */
-export const useWindowScrollPercent = (): OpaqueInterpolation<number>[] => {
+export const useWindowScrollPercent = (): [OpaqueInterpolation<number>] => {
   const [{ scrollPercent }, setScrollProps] = useSpring(() => ({
     scrollPercent: 0,
   }))
