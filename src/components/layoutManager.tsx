@@ -22,7 +22,7 @@ import * as Colors from "consts/Colors"
  */
 const LayoutManager = (props) => {
   const { pathname } = props.location
-  const [showModal, toggleModal] = useReducer((s: boolean) => !s, false)
+  const [showModal, setShowModal] = useState(false)
   const [shouldExit, setShouldExit] = useState(false)
   const [neverShowModalChecked, toggleNeverShowModalChecked] = useReducer(
     (s: boolean) => !s,
@@ -46,7 +46,7 @@ const LayoutManager = (props) => {
   useEffect(() => {
     if (!neverModalShowAgain && pathname === "/") {
       setTimeout(() => {
-        toggleModal(true)
+        setShowModal(true)
         setModalProps({ opacity: 1 })
       }, 2000)
     }
@@ -69,7 +69,7 @@ const LayoutManager = (props) => {
       setModalProps({
         opacity: 0,
         onRest: () => {
-          toggleModal()
+          setShowModal(false)
         },
       })
     }
