@@ -9,7 +9,8 @@ Wordpress2016.bodyFontFamily = ["Cereal"]
 // const __geist_cyan = "#79ffe1"
 // const __geist_purple = "#f81ce5"
 
-Wordpress2016.overrideThemeStyles = () => {
+Wordpress2016.overrideThemeStyles = (a, b) => {
+  // console.log("a", a, "b", b)
   return {
     "a.gatsby-resp-image-link": {
       boxShadow: `none`,
@@ -39,6 +40,11 @@ Wordpress2016.overrideThemeStyles = () => {
     "h1, h2, h3, h4, h5, h6, p, label, span, li, td, th, summary": {
       color: "var(--text)",
     },
+    "h1 > code, h2 > code, h3 > code, h4 > code, h5 > code, h6 > code": {
+      // This allows `<code>` tags to inherit header font-sizes
+      fontSize: "unset",
+    },
+    code: {},
     "th, td": {
       borderBottomColor: "var(--table-border)",
     },

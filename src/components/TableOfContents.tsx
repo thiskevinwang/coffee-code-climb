@@ -36,8 +36,20 @@ const Container = styled(animated.div)`
     top: 0 !important;
   }
 
+  ul {
+    margin-top: 0;
+  }
   li {
     list-style: none;
+    margin-bottom: 0;
+
+    /* Truncate and prevent line break */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  p {
+    margin-bottom: 0;
   }
 `
 
