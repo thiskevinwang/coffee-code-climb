@@ -263,7 +263,10 @@ const ThumsUp = memo(() => {
   )
 })
 
-const PlusCounter = styled(animated.div)`
+interface PlusCounterProps {
+  widthPx?: number
+}
+const PlusCounter = styled(animated.div)<PlusCounterProps>`
   pointer-events: none;
 
   color: ${theme("mode", {
