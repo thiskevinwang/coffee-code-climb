@@ -114,10 +114,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
 
       <div style={{ marginBottom: `2rem` }}>
         {post.frontmatter.tags.map((tag, index) => (
-          <Tag>
-            <Link to={`/tags/${_.kebabCase(tag)}/`} key={index}>
-              {tag}
-            </Link>
+          <Tag key={index}>
+            <Link to={`/tags/${_.kebabCase(tag)}/`}>{tag}</Link>
           </Tag>
         ))}
       </div>
