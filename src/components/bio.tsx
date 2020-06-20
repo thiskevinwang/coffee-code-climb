@@ -35,6 +35,7 @@ function Bio() {
         const { author, social } = data.site.siteMetadata
         return (
           <div
+            className={"bio"}
             style={{
               display: `flex`,
               marginBottom: rhythm(2.5),
