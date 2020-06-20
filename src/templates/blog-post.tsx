@@ -107,12 +107,13 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         {post.frontmatter.date}
       </p>
 
-      <div
+      <article
+        style={{ clear: "both" }}
         className={"blog-content"}
         dangerouslySetInnerHTML={{ __html: post.html }}
       />
 
-      <div style={{ marginBottom: `2rem` }}>
+      <div className={"blog-tags"} style={{ marginBottom: `2rem` }}>
         {post.frontmatter.tags.map((tag, index) => (
           <Tag key={index}>
             <Link to={`/tags/${_.kebabCase(tag)}/`}>{tag}</Link>
@@ -132,12 +133,12 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
-              <p>
+              <div style={{ display: "flex" }}>
                 <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
                 <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
-              </p>
+              </div>
 
               <small>{clapLimitReached && "Limit Reached"}</small>
             </>
@@ -157,12 +158,12 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
-              <p>
+              <div style={{ display: "flex", justifyContent: `center` }}>
                 <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
                 <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
-              </p>
+              </div>
 
               <small>{clapLimitReached && "Limit Reached"}</small>
             </>
