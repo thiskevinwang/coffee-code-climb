@@ -20,9 +20,6 @@ const Manager = styled(animated.section)`
   }
   -ms-overflow-style: none;
 `
-const CardHolder = styled.div`
-  position: relative !important;
-`
 
 const checkIsMarkdownRemark = (node) => node.internal.type === `MarkdownRemark`
 const checkIsContentfulBlogPost = (node) =>
@@ -242,7 +239,7 @@ const PostsManager = memo(({ allPosts, location }) => {
           <Button onClick={resize(5)}>5</Button>
           <Button onClick={resize(6)}>6</Button>
         </div>
-        <CardHolder style={cardHolderProps}>
+        <animated.div style={{ position: `relative`, ...cardHolderProps }}>
           {transitions.map(({ item: { node }, key, props }, index) => {
             const isMarkdownRemark = checkIsMarkdownRemark(node)
             const isContentfulBlogPost = checkIsContentfulBlogPost(node)
@@ -283,7 +280,7 @@ const PostsManager = memo(({ allPosts, location }) => {
               />
             )
           })}
-        </CardHolder>
+        </animated.div>
       </Manager>
     )
   }
