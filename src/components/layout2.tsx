@@ -39,9 +39,6 @@ function Layout({ location, title, children }) {
 
   return (
     <>
-      <BlobHolder>
-        <Blob y={scrollYPercent} />
-      </BlobHolder>
       <ThemedBackground style={{ background }} />
       <NavBar2 />
 
@@ -68,6 +65,9 @@ function Layout({ location, title, children }) {
         <main>{children}</main>
         <Footer />
       </animated.div>
+      <BlobHolder>
+        <Blob y={scrollYPercent} />
+      </BlobHolder>
     </>
   )
 }

@@ -107,7 +107,10 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         {post.frontmatter.date}
       </p>
 
-      <div dangerouslySetInnerHTML={{ __html: post.html }} />
+      <div
+        className={"blog-content"}
+        dangerouslySetInnerHTML={{ __html: post.html }}
+      />
 
       <div style={{ marginBottom: `2rem` }}>
         {post.frontmatter.tags.map((tag, index) => (
