@@ -20,9 +20,8 @@ const Manager = styled(animated.section)`
   }
   -ms-overflow-style: none;
 `
-const CardHolder = styled(animated.div)`
-  /* border: ${process.env.NODE_ENV === "development" && `1px dotted green`}; */
-  position: relative;
+const CardHolder = styled.div`
+  position: relative !important;
 `
 
 const checkIsMarkdownRemark = (node) => node.internal.type === `MarkdownRemark`
