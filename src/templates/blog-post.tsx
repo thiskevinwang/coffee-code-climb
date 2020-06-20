@@ -229,6 +229,10 @@ const Svg = styled(animated.svg)`
   cursor: pointer;
   transition: color 50ms ease-in-out, transform 100ms ease-in-out;
   will-change: color;
+  color: ${theme("mode", {
+    light: Colors.BLACK_DARKER,
+    dark: Colors.SILVER_LIGHTER,
+  })};
   :hover&:not(:active) {
     color: ${theme("mode", {
       light: Colors.GREY_LIGHTER,
@@ -237,8 +241,8 @@ const Svg = styled(animated.svg)`
   }
   :active {
     color: ${theme("mode", {
-      light: "var(--geist-cyan)",
-      dark: "var(--geist-purple)",
+      light: Colors.CYAN,
+      dark: Colors.PURPLE,
     })};
     transform: scale(1.2);
   }
