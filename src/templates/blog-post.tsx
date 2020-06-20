@@ -107,17 +107,16 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         {post.frontmatter.date}
       </p>
 
-      <div
+      <article
+        style={{ clear: "both" }}
         className={"blog-content"}
         dangerouslySetInnerHTML={{ __html: post.html }}
       />
 
-      <div style={{ marginBottom: `2rem` }}>
+      <div className={"blog-tags"} style={{ marginBottom: `2rem` }}>
         {post.frontmatter.tags.map((tag, index) => (
-          <Tag>
-            <Link to={`/tags/${_.kebabCase(tag)}/`} key={index}>
-              {tag}
-            </Link>
+          <Tag key={index}>
+            <Link to={`/tags/${_.kebabCase(tag)}/`}>{tag}</Link>
           </Tag>
         ))}
       </div>
@@ -134,12 +133,12 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
-              <p>
+              <div style={{ display: "flex" }}>
                 <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
                 <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
-              </p>
+              </div>
 
               <small>{clapLimitReached && "Limit Reached"}</small>
             </>
@@ -159,12 +158,12 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
             <Skeleton animation="wave"></Skeleton>
           ) : (
             <>
-              <p>
+              <div style={{ display: "flex", justifyContent: `center` }}>
                 <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
                 <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
-              </p>
+              </div>
 
               <small>{clapLimitReached && "Limit Reached"}</small>
             </>
@@ -231,6 +230,10 @@ const Svg = styled(animated.svg)`
   cursor: pointer;
   transition: color 50ms ease-in-out, transform 100ms ease-in-out;
   will-change: color;
+  color: ${theme("mode", {
+    light: Colors.BLACK_DARKER,
+    dark: Colors.SILVER_LIGHTER,
+  })};
   :hover&:not(:active) {
     color: ${theme("mode", {
       light: Colors.GREY_LIGHTER,
@@ -239,8 +242,8 @@ const Svg = styled(animated.svg)`
   }
   :active {
     color: ${theme("mode", {
-      light: "var(--geist-cyan)",
-      dark: "var(--geist-purple)",
+      light: Colors.CYAN,
+      dark: Colors.PURPLE,
     })};
     transform: scale(1.2);
   }
@@ -265,7 +268,10 @@ const ThumsUp = memo(() => {
   )
 })
 
-const PlusCounter = styled(animated.div)`
+interface PlusCounterProps {
+  widthPx?: number
+}
+const PlusCounter = styled(animated.div)<PlusCounterProps>`
   pointer-events: none;
 
   color: ${theme("mode", {
