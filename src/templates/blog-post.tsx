@@ -269,7 +269,19 @@ const ThumsUp = memo(() => {
 interface PlusCounterProps {
   widthPx?: number
 }
-const PlusCounter = styled(animated.div)<PlusCounterProps>`
+
+/**
+ * @see https://styled-components.com/releases#v5.1.0
+ *
+ * Fix ERROR:
+ * > Warning: React does not recognize the `widthPx` prop on a DOM element.
+ * > If you intentionally want it to appear in the DOM as a custom attribute,
+ * > spell it as lowercase `widthpx` instead. If you accidentally passed it
+ * > from a parent component, remove it from the DOM element.
+ */
+const PlusCounter = styled(animated.div).withConfig({
+  shouldForwardProp: (prop, defaultValidatorFn) => !["widthPx"].includes(prop),
+})<PlusCounterProps>`
   pointer-events: none;
 
   color: ${theme("mode", {
