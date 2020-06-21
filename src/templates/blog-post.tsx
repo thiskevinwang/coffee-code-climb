@@ -227,9 +227,15 @@ interface QueryClapsResponse {
   voterCount: number
 }
 
-const Svg = styled(animated.svg)`
+interface SvgProps {
+  viewerHasClapped?: boolean
+}
+const Svg = styled(animated.svg).withConfig({
+  shouldForwardProp: (prop, defaultValidatorFn) =>
+    !["viewerHasClapped"].includes(prop),
+})<SvgProps>`
   cursor: pointer;
-  transition: color 50ms ease-in-out, transform 100ms ease-in-out;
+  transition: color 100ms ease-in-out, transform 100ms ease-in-out;
   will-change: color;
   color: ${theme("mode", {
     light: Colors.BLACK_DARKER,
@@ -242,17 +248,22 @@ const Svg = styled(animated.svg)`
     })};
   }
   :active {
-    color: ${theme("mode", {
-      light: Colors.CYAN,
-      dark: Colors.PURPLE,
-    })};
     transform: scale(1.2);
   }
+  ${(p) =>
+    p.viewerHasClapped &&
+    css`
+      fill: ${theme("mode", {
+        light: Colors.CYAN,
+        dark: Colors.PURPLE,
+      })};
+    `}
 `
 
-const ThumsUp = memo(() => {
+const ThumsUp = memo(({ viewerHasClapped }: { viewerHasClapped?: boolean }) => {
   return (
     <Svg
+      viewerHasClapped={viewerHasClapped}
       viewBox="0 0 24 24"
       width="24"
       height="24"
