@@ -45,6 +45,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     URI
   )
 
+  const clapsToDisplay: number = parseInt(res?.total ?? "0") + clapsCount
+
   const [items, setItems] = useState<{ id: string }[]>([])
   const transitions = useTransition(items, (item) => item.id, {
     from: () => {
@@ -134,7 +136,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
           ) : (
             <>
               <div style={{ display: "flex" }}>
-                <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
+                <span>{clapsToDisplay}</span>
                 <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
@@ -157,7 +159,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
           ) : (
             <>
               <div style={{ display: "flex", justifyContent: `center` }}>
-                <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
+                <span>{clapsToDisplay}</span>
                 <div onClick={handleClick}>
                   <ThumsUp />
                 </div>
