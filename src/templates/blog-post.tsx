@@ -123,8 +123,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <ClapsLayoutContainer>
         <Claps>
           {transitions.map(({ item, props, key }, i) => (
-            <Remover>
-              <PlusCounter key={key} style={props} widthPx={100}>
+            <Remover key={key}>
+              <PlusCounter style={props} widthPx={100}>
                 +1
               </PlusCounter>
             </Remover>
@@ -148,10 +148,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <ClapsFixedContainer>
         <Claps>
           {transitions.map(({ item, props, key }) => (
-            <Remover>
-              <PlusCounter key={key} style={props}>
-                +1
-              </PlusCounter>
+            <Remover key={key}>
+              <PlusCounter style={props}>+1</PlusCounter>
             </Remover>
           ))}
           {isLoading ? (
