@@ -36,8 +36,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     imagePublicURL,
   } = pageContext
 
-  const { data: res, error } = useFetch<GetClapsResponse, any>(
-    `${URI}?slug=${location.pathname}`
+  const { data: res, error } = useFetch<QueryClapsResponse, any>(
+    `${URI}/query?slug=${location.pathname}`
   )
   const isLoading = !res && !error
 
@@ -206,22 +206,23 @@ export const pageQuery = graphql`
   }
 `
 
-interface GetClapsResponse {
-  Item: Item
-}
-
-interface Item {
-  PK: Key
-  SK: Key
-  claps: _Claps
-}
-
-interface _Claps {
-  N: string
-}
-
-interface Key {
-  S: string
+interface QueryClapsResponse {
+  /**
+   * The current slug
+   */
+  slug: string
+  /**
+   * The total number of of claps for a given slug
+   */
+  total: number
+  /**
+   * The number of claps that the current user has committed
+   */
+  viewerClapCount: number
+  /**
+   * The total number of unique voters
+   */
+  voterCount: number
 }
 
 const Svg = styled(animated.svg)`
