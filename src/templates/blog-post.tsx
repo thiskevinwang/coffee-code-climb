@@ -25,6 +25,11 @@ import { useOptimisticClaps } from "hooks/useOptimisticClaps"
 
 const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps`
 
+/**
+ * An arbitrary limit on the number of times a viewer can 'clap'
+ */
+const CLAP_LIMIT = 20
+
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
   const { title: siteTitle } = data.site.siteMetadata
@@ -36,14 +41,23 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     imagePublicURL,
   } = pageContext
 
-  const { data: res, error } = useFetch<GetClapsResponse, any>(
-    `${URI}?slug=${location.pathname}`
+  const { data: res, error } = useFetch<QueryClapsResponse, any>(
+    `${URI}/query?slug=${location.pathname}`
   )
   const isLoading = !res && !error
 
-  const { incrementClaps, clapsCount, clapLimitReached } = useOptimisticClaps(
-    URI
-  )
+  // The remaining number of claps that the viewer can commit.
+  const remainingClaps = CLAP_LIMIT - res?.viewerClapCount
+
+  const {
+    incrementClaps,
+    clapsCount,
+    clapLimitReached,
+  } = useOptimisticClaps(URI, { remainingClaps })
+
+  const viewerHasClapped: boolean = res?.viewerClapCount >= 1 || clapsCount >= 1
+
+  const clapsToDisplay: number = res?.total + clapsCount
 
   const [items, setItems] = useState<{ id: string }[]>([])
   const transitions = useTransition(items, (item) => item.id, {
@@ -61,8 +75,14 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   })
 
   const handleClick = () => {
-    setItems((items) => [...items, { id: uuid() }])
-    incrementClaps()
+    /**
+     * when incrementClaps executes successfully, this
+     * callback will get called
+     */
+    const cb = () => {
+      setItems((items) => [...items, { id: uuid() }])
+    }
+    incrementClaps(cb)
   }
   return (
     <LayoutManager location={location} title={siteTitle}>
@@ -123,8 +143,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <ClapsLayoutContainer>
         <Claps>
           {transitions.map(({ item, props, key }, i) => (
-            <Remover>
-              <PlusCounter key={key} style={props} widthPx={100}>
+            <Remover key={key}>
+              <PlusCounter style={props} widthPx={100}>
                 +1
               </PlusCounter>
             </Remover>
@@ -134,9 +154,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
           ) : (
             <>
               <div style={{ display: "flex" }}>
-                <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
+                <span>{clapsToDisplay}</span>
                 <div onClick={handleClick}>
-                  <ThumsUp />
+                  <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
 
@@ -148,10 +168,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <ClapsFixedContainer>
         <Claps>
           {transitions.map(({ item, props, key }) => (
-            <Remover>
-              <PlusCounter key={key} style={props}>
-                +1
-              </PlusCounter>
+            <Remover key={key}>
+              <PlusCounter style={props}>+1</PlusCounter>
             </Remover>
           ))}
           {isLoading ? (
@@ -159,9 +177,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
           ) : (
             <>
               <div style={{ display: "flex", justifyContent: `center` }}>
-                <span>{parseInt(res?.Item?.claps.N ?? "0") + clapsCount}</span>
+                <span>{clapsToDisplay}</span>
                 <div onClick={handleClick}>
-                  <ThumsUp />
+                  <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
 
@@ -208,27 +226,34 @@ export const pageQuery = graphql`
   }
 `
 
-interface GetClapsResponse {
-  Item: Item
+interface QueryClapsResponse {
+  /**
+   * The current slug
+   */
+  slug: string
+  /**
+   * The total number of of claps for a given slug
+   */
+  total: number
+  /**
+   * The number of claps that the current user has committed
+   */
+  viewerClapCount: number
+  /**
+   * The total number of unique voters
+   */
+  voterCount: number
 }
 
-interface Item {
-  PK: Key
-  SK: Key
-  claps: _Claps
+interface SvgProps {
+  viewerHasClapped?: boolean
 }
-
-interface _Claps {
-  N: string
-}
-
-interface Key {
-  S: string
-}
-
-const Svg = styled(animated.svg)`
+const Svg = styled(animated.svg).withConfig({
+  shouldForwardProp: (prop, defaultValidatorFn) =>
+    !["viewerHasClapped"].includes(prop),
+})<SvgProps>`
   cursor: pointer;
-  transition: color 50ms ease-in-out, transform 100ms ease-in-out;
+  transition: color 100ms ease-in-out, transform 100ms ease-in-out;
   will-change: color;
   color: ${theme("mode", {
     light: Colors.BLACK_DARKER,
@@ -241,17 +266,22 @@ const Svg = styled(animated.svg)`
     })};
   }
   :active {
-    color: ${theme("mode", {
-      light: Colors.CYAN,
-      dark: Colors.PURPLE,
-    })};
     transform: scale(1.2);
   }
+  ${(p) =>
+    p.viewerHasClapped &&
+    css`
+      fill: ${theme("mode", {
+        light: Colors.CYAN,
+        dark: Colors.PURPLE,
+      })};
+    `}
 `
 
-const ThumsUp = memo(() => {
+const ThumsUp = memo(({ viewerHasClapped }: { viewerHasClapped?: boolean }) => {
   return (
     <Svg
+      viewerHasClapped={viewerHasClapped}
       viewBox="0 0 24 24"
       width="24"
       height="24"
@@ -271,7 +301,19 @@ const ThumsUp = memo(() => {
 interface PlusCounterProps {
   widthPx?: number
 }
-const PlusCounter = styled(animated.div)<PlusCounterProps>`
+
+/**
+ * @see https://styled-components.com/releases#v5.1.0
+ *
+ * Fix ERROR:
+ * > Warning: React does not recognize the `widthPx` prop on a DOM element.
+ * > If you intentionally want it to appear in the DOM as a custom attribute,
+ * > spell it as lowercase `widthpx` instead. If you accidentally passed it
+ * > from a parent component, remove it from the DOM element.
+ */
+const PlusCounter = styled(animated.div).withConfig({
+  shouldForwardProp: (prop, defaultValidatorFn) => !["widthPx"].includes(prop),
+})<PlusCounterProps>`
   pointer-events: none;
 
   color: ${theme("mode", {
