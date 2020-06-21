@@ -41,7 +41,7 @@ export const useOptimisticClaps = (
         setMergedClaps((m) => m + claps)
         setQueuedClaps(0)
       } catch (err) {
-        setQueuedClaps(0)
+        // setQueuedClaps(0)
         // Object.getOwnPropertyNames(err)
         // ["stack", "message", "config", "request", "response", "isAxiosError", "toJSON"]
         // console.log("ERROR", err.response?.status)
