@@ -25,6 +25,11 @@ import { useOptimisticClaps } from "hooks/useOptimisticClaps"
 
 const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps`
 
+/**
+ * An arbitrary limit on the number of times a viewer can 'clap'
+ */
+const CLAP_LIMIT = 20
+
 export default function BlogPostTemplate({ data, pageContext, location }) {
   const post = data.markdownRemark
   const { title: siteTitle } = data.site.siteMetadata
@@ -41,11 +46,18 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   )
   const isLoading = !res && !error
 
-  const { incrementClaps, clapsCount, clapLimitReached } = useOptimisticClaps(
-    URI
-  )
+  // The remaining number of claps that the viewer can commit.
+  const remainingClaps = CLAP_LIMIT - res?.viewerClapCount
 
-  const clapsToDisplay: number = parseInt(res?.total ?? "0") + clapsCount
+  const {
+    incrementClaps,
+    clapsCount,
+    clapLimitReached,
+  } = useOptimisticClaps(URI, { remainingClaps })
+
+  const viewerHasClapped: boolean = res?.viewerClapCount >= 1 || clapsCount >= 1
+
+  const clapsToDisplay: number = res?.total + clapsCount
 
   const [items, setItems] = useState<{ id: string }[]>([])
   const transitions = useTransition(items, (item) => item.id, {
@@ -63,8 +75,14 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   })
 
   const handleClick = () => {
-    setItems((items) => [...items, { id: uuid() }])
-    incrementClaps()
+    /**
+     * when incrementClaps executes successfully, this
+     * callback will get called
+     */
+    const cb = () => {
+      setItems((items) => [...items, { id: uuid() }])
+    }
+    incrementClaps(cb)
   }
   return (
     <LayoutManager location={location} title={siteTitle}>
@@ -138,7 +156,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
               <div style={{ display: "flex" }}>
                 <span>{clapsToDisplay}</span>
                 <div onClick={handleClick}>
-                  <ThumsUp />
+                  <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
 
@@ -161,7 +179,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
               <div style={{ display: "flex", justifyContent: `center` }}>
                 <span>{clapsToDisplay}</span>
                 <div onClick={handleClick}>
-                  <ThumsUp />
+                  <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
 
