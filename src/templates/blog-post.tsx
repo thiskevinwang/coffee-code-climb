@@ -383,7 +383,8 @@ const ClapsFixedContainer = styled(animated.div)`
       margin: 0;
     }
     width: 145px;
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 
     border-style: solid;
     border-width: 1px;
@@ -409,6 +410,7 @@ const ClapsLayoutContainer = styled(animated.div)`
     span {
       user-select: none;
       margin-right: 1rem;
+      margin-left: 1rem;
     }
     > p,
     > small {
@@ -416,7 +418,8 @@ const ClapsLayoutContainer = styled(animated.div)`
       display: flex;
       margin: 0;
     }
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 
     border-style: solid;
     border-width: 1px;
