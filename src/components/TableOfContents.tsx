@@ -28,7 +28,7 @@ const Container = styled(animated.div)`
   border-width: 1px;
   border-color: ${borderColor};
   border-style: solid;
-  border-radius: 0.2rem;
+  border-radius: 5px;
   /* margin-bottom: 1.25rem; */
   padding: 1.5rem;
 
@@ -56,9 +56,10 @@ const Container = styled(animated.div)`
       top: 14px;
       right: calc(100% + 5px);
       width: 100%;
-      /* height: 1px; */
-      border-bottom: 1px dashed ${background};
-      /* background: grey; */
+
+      border-bottom-width: 1px;
+      border-bottom-style: dashed;
+      border-bottom-color: ${background};
     }
   }
   p {
