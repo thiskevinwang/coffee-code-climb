@@ -48,7 +48,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const isLoading = !res && !error
 
   // The remaining number of claps that the viewer can commit.
-  const remainingClaps = CLAP_LIMIT - (res?.viewerClapCount ?? 0)
+  const viewerClapCount = res?.viewerClapCount ?? 0
+  const remainingClaps = CLAP_LIMIT - viewerClapCount
   // console.log("remainingClaps:", remainingClaps)
 
   const {
@@ -57,17 +58,19 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     clapLimitReached,
   } = useOptimisticClaps(URI, { remainingClaps })
 
+  const percent = (clapsCount + viewerClapCount) / CLAP_LIMIT
+
   // for animating the claps / CLAP_LIMIT percentage
   const [bindFixed, { width: widthFixed }] = useMeasure()
   const [bindLayout, { width: widthLayout }] = useMeasure()
 
   // style of fixed-position-claps
   const fixedClapsBgProps = useSpring({
-    width: widthFixed * (clapsCount / remainingClaps),
+    width: widthFixed * percent,
   })
   // style of in-layout-claps
   const layoutClapsBgProps = useSpring({
-    width: widthLayout * (clapsCount / remainingClaps),
+    width: widthLayout * percent,
   })
 
   const viewerHasClapped: boolean = res?.viewerClapCount >= 1 || clapsCount >= 1
