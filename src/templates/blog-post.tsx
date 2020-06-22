@@ -161,11 +161,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <ClapsLayoutContainer>
         <Claps {...bindLayout}>
           {transitions.map(({ item, props, key }, i) => (
-            <Remover key={key}>
-              <PlusCounter style={props} widthPx={100}>
-                +1
-              </PlusCounter>
-            </Remover>
+            <PlusCounter key={key} style={props} widthPx={100}>
+              +1
+            </PlusCounter>
           ))}
           {isLoading ? (
             <Skeleton animation="wave"></Skeleton>
@@ -185,9 +183,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
       <ClapsFixedContainer>
         <Claps {...bindFixed}>
           {transitions.map(({ item, props, key }) => (
-            <Remover key={key}>
-              <PlusCounter style={props}>+1</PlusCounter>
-            </Remover>
+            <PlusCounter key={key} style={props}>
+              +1
+            </PlusCounter>
           ))}
           {isLoading ? (
             <Skeleton animation="wave"></Skeleton>
@@ -287,10 +285,7 @@ const Svg = styled(animated.svg).withConfig({
   ${(p) =>
     p.viewerHasClapped &&
     css`
-      fill: ${theme("mode", {
-        light: Colors.CYAN,
-        dark: Colors.PURPLE,
-      })};
+      fill: var(--purple-or-cyan);
     `}
 `
 
@@ -363,7 +358,30 @@ const background = theme("mode", {
 })
 const Claps = styled(animated.div)`
   position: relative;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+
   background: ${background};
+`
+
+/**
+ * style for span children of
+ */
+const clapsSpanStyle = css`
+  span {
+    user-select: none;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+`
+const clapsBorderStyle = css`
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  border-color: ${theme("mode", {
+    light: Colors.GREY_LIGHTER,
+    dark: Colors.GREY_DARKER,
+  })};
 `
 const ClapsFixedContainer = styled(animated.div)`
   --blog-width: 42rem;
@@ -385,30 +403,12 @@ const ClapsFixedContainer = styled(animated.div)`
   max-width: var(--max-width);
 
   ${Claps} {
+    ${clapsSpanStyle};
+    ${clapsBorderStyle};
+
     /* capture clicks */
     pointer-events: all;
-    span {
-      user-select: none;
-      margin-right: 1rem;
-    }
-    > p,
-    > small {
-      user-select: none;
-      display: flex;
-      justify-content: center;
-      margin: 0;
-    }
     width: 145px;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 5px;
-    border-color: ${theme("mode", {
-      light: Colors.GREY_LIGHTER,
-      dark: Colors.GREY_DARKER,
-    })};
   }
 
   @media (max-width: 1200px) {
@@ -418,27 +418,8 @@ const ClapsFixedContainer = styled(animated.div)`
 
 const ClapsLayoutContainer = styled(animated.div)`
   ${Claps} {
-    span {
-      user-select: none;
-      margin-right: 1rem;
-      margin-left: 1rem;
-    }
-    > p,
-    > small {
-      user-select: none;
-      display: flex;
-      margin: 0;
-    }
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 5px;
-    border-color: ${theme("mode", {
-      light: Colors.GREY_LIGHTER,
-      dark: Colors.GREY_DARKER,
-    })};
+    ${clapsSpanStyle};
+    ${clapsBorderStyle};
 
     margin-bottom: 1rem;
   }
