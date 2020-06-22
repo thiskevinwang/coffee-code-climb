@@ -326,14 +326,6 @@ const PlusCounter = styled(animated.div).withConfig({
 `
 
 const Remover = memo(({ children }) => {
-  // useLayoutEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     setItems((items) => items.filter((e) => e.id !== item.id))
-  //   }, 1000)
-  //   return () => {
-  //     clearTimeout(timeout)
-  //   }
-  // }, [item])
   return <>{children}</>
 })
 
