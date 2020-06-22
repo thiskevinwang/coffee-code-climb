@@ -323,6 +323,8 @@ const PlusCounter = styled(animated.div).withConfig({
   width: ${(p) => (p.widthPx ? `${p.widthPx}px` : `100%`)};
   text-align: center;
   position: absolute;
+
+  text-shadow: 1px 1px 0px var(--table-border);
 `
 
 const Remover = memo(({ children }) => {
