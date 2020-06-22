@@ -411,11 +411,6 @@ const ClapsFixedContainer = styled(animated.div)`
     })};
   }
 
-  color: ${theme("mode", {
-    light: Colors.BLACK,
-    dark: Colors.SILVER,
-  })};
-
   @media (max-width: 1200px) {
     display: none;
   }
