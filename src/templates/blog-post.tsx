@@ -3,7 +3,7 @@ import { Link, graphql } from "gatsby"
 import _ from "lodash"
 import styled, { css } from "styled-components"
 import theme from "styled-theming"
-import { animated, useTransition } from "react-spring"
+import { animated, useTransition, useSpring } from "react-spring"
 import { Skeleton } from "@material-ui/lab"
 import uuid from "uuid"
 
@@ -22,6 +22,7 @@ import { rhythm, scale } from "utils/typography"
 import { Colors } from "consts/Colors"
 import { useFetch } from "hooks/useFetch"
 import { useOptimisticClaps } from "hooks/useOptimisticClaps"
+import { useMeasure } from "hooks/useMeasure"
 
 const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps`
 
@@ -47,7 +48,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const isLoading = !res && !error
 
   // The remaining number of claps that the viewer can commit.
-  const remainingClaps = CLAP_LIMIT - res?.viewerClapCount
+  const remainingClaps = CLAP_LIMIT - (res?.viewerClapCount ?? 0)
+  // console.log("remainingClaps:", remainingClaps)
 
   const {
     incrementClaps,
@@ -55,9 +57,22 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     clapLimitReached,
   } = useOptimisticClaps(URI, { remainingClaps })
 
+  // for animating the claps / CLAP_LIMIT percentage
+  const [bindFixed, { width: widthFixed }] = useMeasure()
+  const [bindLayout, { width: widthLayout }] = useMeasure()
+
+  // style of fixed-position-claps
+  const fixedClapsBgProps = useSpring({
+    width: widthFixed * (clapsCount / remainingClaps),
+  })
+  // style of in-layout-claps
+  const layoutClapsBgProps = useSpring({
+    width: widthLayout * (clapsCount / remainingClaps),
+  })
+
   const viewerHasClapped: boolean = res?.viewerClapCount >= 1 || clapsCount >= 1
 
-  const clapsToDisplay: number = res?.total + clapsCount
+  const clapsToDisplay: number = (res?.total ?? 0) + clapsCount
 
   const [items, setItems] = useState<{ id: string }[]>([])
   const transitions = useTransition(items, (item) => item.id, {
@@ -141,7 +156,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         ))}
       </div>
       <ClapsLayoutContainer>
-        <Claps>
+        <Claps {...bindLayout}>
           {transitions.map(({ item, props, key }, i) => (
             <Remover key={key}>
               <PlusCounter style={props} widthPx={100}>
@@ -159,14 +174,13 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
                   <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
-
-              <small>{clapLimitReached && "Limit Reached"}</small>
             </>
           )}
+          <Fill style={layoutClapsBgProps} />
         </Claps>
       </ClapsLayoutContainer>
       <ClapsFixedContainer>
-        <Claps>
+        <Claps {...bindFixed}>
           {transitions.map(({ item, props, key }) => (
             <Remover key={key}>
               <PlusCounter style={props}>+1</PlusCounter>
@@ -182,10 +196,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
                   <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
-
-              <small>{clapLimitReached && "Limit Reached"}</small>
             </>
           )}
+          <Fill style={fixedClapsBgProps} />
         </Claps>
       </ClapsFixedContainer>
       <Hr
@@ -323,17 +336,11 @@ const PlusCounter = styled(animated.div).withConfig({
   width: ${(p) => (p.widthPx ? `${p.widthPx}px` : `100%`)};
   text-align: center;
   position: absolute;
+
+  text-shadow: 1px 1px 0px var(--table-border);
 `
 
 const Remover = memo(({ children }) => {
-  // useLayoutEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     setItems((items) => items.filter((e) => e.id !== item.id))
-  //   }, 1000)
-  //   return () => {
-  //     clearTimeout(timeout)
-  //   }
-  // }, [item])
   return <>{children}</>
 })
 
@@ -346,8 +353,14 @@ export const Hr = styled(animated.div)`
   })};
 `
 
+// Match TableOfContents.tsx
+const background = theme("mode", {
+  light: "rgba(0,0,0,0.1)",
+  dark: "rgba(255,255,255,0.1)",
+})
 const Claps = styled(animated.div)`
   position: relative;
+  background: ${background};
 `
 const ClapsFixedContainer = styled(animated.div)`
   --blog-width: 42rem;
@@ -383,7 +396,8 @@ const ClapsFixedContainer = styled(animated.div)`
       margin: 0;
     }
     width: 145px;
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 
     border-style: solid;
     border-width: 1px;
@@ -409,6 +423,7 @@ const ClapsLayoutContainer = styled(animated.div)`
     span {
       user-select: none;
       margin-right: 1rem;
+      margin-left: 1rem;
     }
     > p,
     > small {
@@ -416,7 +431,8 @@ const ClapsLayoutContainer = styled(animated.div)`
       display: flex;
       margin: 0;
     }
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 
     border-style: solid;
     border-width: 1px;
@@ -428,4 +444,14 @@ const ClapsLayoutContainer = styled(animated.div)`
 
     margin-bottom: 1rem;
   }
+`
+const Fill = styled(animated.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--purple-or-cyan);
+  opacity: 0.75;
+  z-index: -1;
 `

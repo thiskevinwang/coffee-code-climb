@@ -3,14 +3,26 @@ import { Colors } from "consts/Colors"
 
 export const GlobalStyles = createGlobalStyle`
   .TOC {
-    transition-property: font-size, box-shadow;
-    transition-duration: "200ms";
-    transition-timing-function: "ease-in-out";
+    transition-property: color, font-weight, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+    font-weight: 300;
+    
+    /* override built in <a> styling */
+    box-shadow: none;
+    :hover {
+      box-shadow: var(--purple-or-cyan) 0px -1px 0px inset;
+    }
   }
     
   .TOC.TOC__FOCUS {
-    font-size: 24px !important;
-    will-change: font-size;
+    color: var(--purple-or-cyan);
+    font-weight: 700;
+    box-shadow: var(--purple-or-cyan) 0px -1px 0px inset;
+
+    > code {
+      color: var(--purple-or-cyan);;
+    }
   }
   
   .HEADER {
@@ -19,7 +31,11 @@ export const GlobalStyles = createGlobalStyle`
   }
     
   .HEADER.HEADER__FOCUS {
-    color: ${(props) => (props.isDarkMode ? Colors.PURPLE : Colors.CYAN)};
+    color: var(--purple-or-cyan);
+
+    > code {
+      color: var(--purple-or-cyan);
+    }
   }
 
   .Card {

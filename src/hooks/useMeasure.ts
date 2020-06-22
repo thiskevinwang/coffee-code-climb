@@ -1,5 +1,12 @@
-import React, { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, RefObject } from "react"
 import ResizeObserver from "resize-observer-polyfill"
+
+interface Bounds {
+  left: number
+  top: number
+  width: number
+  height: number
+}
 
 /**
  * useMeasure
@@ -13,7 +20,7 @@ import ResizeObserver from "resize-observer-polyfill"
  * </animated.div>
  * ```
  */
-export function useMeasure() {
+export function useMeasure(): [{ ref: RefObject<any> }, Bounds] {
   const ref = useRef()
 
   const [bounds, set] = useState({ left: 0, top: 0, width: 0, height: 0 })
