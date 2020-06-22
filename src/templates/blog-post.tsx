@@ -340,8 +340,14 @@ export const Hr = styled(animated.div)`
   })};
 `
 
+// Match TableOfContents.tsx
+const background = theme("mode", {
+  light: "rgba(0,0,0,0.1)",
+  dark: "rgba(255,255,255,0.1)",
+})
 const Claps = styled(animated.div)`
   position: relative;
+  background: ${background};
 `
 const ClapsFixedContainer = styled(animated.div)`
   --blog-width: 42rem;
