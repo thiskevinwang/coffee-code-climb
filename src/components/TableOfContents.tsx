@@ -7,10 +7,12 @@ import { Link } from "gatsby"
 import { parse } from "html-parse-stringify"
 
 import { rhythm } from "utils/typography"
+import { Tree } from "components/Tree"
+import { Colors } from "consts/Colors"
 
 const borderColor = theme("mode", {
-  light: (props: BaseProps) => props.theme.commentRenderer.borderColor,
-  dark: (props: BaseProps) => props.theme.commentRenderer.borderColor,
+  light: Colors.GREY_LIGHTER,
+  dark: Colors.GREY_DARKER,
 })
 const background = theme("mode", {
   light: "rgba(0,0,0,0.1)",
@@ -40,13 +42,24 @@ const Container = styled(animated.div)`
     margin-top: 0;
   }
   li {
+    position: relative;
     list-style: none;
     margin-bottom: 0;
 
     /* Truncate and prevent line break */
     white-space: nowrap;
-    overflow: hidden;
+    /* overflow: hidden; */
     text-overflow: ellipsis;
+    ::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      right: calc(100% + 5px);
+      width: 100%;
+      /* height: 1px; */
+      border-bottom: 1px dashed ${background};
+      /* background: grey; */
+    }
   }
   p {
     margin-bottom: 0;
@@ -198,7 +211,9 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
 
   return (
     <Container style={{ top, zIndex: 10 }}>
-      <p
+      <Tree
+        defaultOpen={true}
+        name={"TABLE OF CONTENTS"}
         style={{
           fontWeight: 700,
           marginTop: 20,
@@ -207,14 +222,16 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ title, __html }) => {
           fontSize: 16,
         }}
       >
-        TABLE OF CONTENTS
-      </p>
-      <li>
-        <Link to={typeof window !== "undefined" && window.location.pathname}>
-          {title}
-        </Link>
-        {generated}
-      </li>
+        <li>
+          <Link
+            className={`TOC`}
+            to={typeof window !== "undefined" && window.location.pathname}
+          >
+            {title}
+          </Link>
+          {generated}
+        </li>
+      </Tree>
     </Container>
   )
 }
