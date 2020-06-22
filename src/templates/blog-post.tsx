@@ -3,7 +3,7 @@ import { Link, graphql } from "gatsby"
 import _ from "lodash"
 import styled, { css } from "styled-components"
 import theme from "styled-theming"
-import { animated, useTransition } from "react-spring"
+import { animated, useTransition, useSpring } from "react-spring"
 import { Skeleton } from "@material-ui/lab"
 import uuid from "uuid"
 
@@ -22,6 +22,7 @@ import { rhythm, scale } from "utils/typography"
 import { Colors } from "consts/Colors"
 import { useFetch } from "hooks/useFetch"
 import { useOptimisticClaps } from "hooks/useOptimisticClaps"
+import { useMeasure } from "hooks/useMeasure"
 
 const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps`
 
@@ -47,7 +48,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const isLoading = !res && !error
 
   // The remaining number of claps that the viewer can commit.
-  const remainingClaps = CLAP_LIMIT - res?.viewerClapCount
+  const remainingClaps = CLAP_LIMIT - (res?.viewerClapCount ?? 0)
+  // console.log("remainingClaps:", remainingClaps)
 
   const {
     incrementClaps,
@@ -55,9 +57,22 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     clapLimitReached,
   } = useOptimisticClaps(URI, { remainingClaps })
 
+  // for animating the claps / CLAP_LIMIT percentage
+  const [bindFixed, { width: widthFixed }] = useMeasure()
+  const [bindLayout, { width: widthLayout }] = useMeasure()
+
+  // style of fixed-position-claps
+  const fixedClapsBgProps = useSpring({
+    width: widthFixed * (clapsCount / remainingClaps),
+  })
+  // style of in-layout-claps
+  const layoutClapsBgProps = useSpring({
+    width: widthLayout * (clapsCount / remainingClaps),
+  })
+
   const viewerHasClapped: boolean = res?.viewerClapCount >= 1 || clapsCount >= 1
 
-  const clapsToDisplay: number = res?.total + clapsCount
+  const clapsToDisplay: number = (res?.total ?? 0) + clapsCount
 
   const [items, setItems] = useState<{ id: string }[]>([])
   const transitions = useTransition(items, (item) => item.id, {
@@ -141,7 +156,7 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
         ))}
       </div>
       <ClapsLayoutContainer>
-        <Claps>
+        <Claps {...bindLayout}>
           {transitions.map(({ item, props, key }, i) => (
             <Remover key={key}>
               <PlusCounter style={props} widthPx={100}>
@@ -159,14 +174,13 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
                   <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
-
-              <small>{clapLimitReached && "Limit Reached"}</small>
             </>
           )}
+          <Fill style={layoutClapsBgProps} />
         </Claps>
       </ClapsLayoutContainer>
       <ClapsFixedContainer>
-        <Claps>
+        <Claps {...bindFixed}>
           {transitions.map(({ item, props, key }) => (
             <Remover key={key}>
               <PlusCounter style={props}>+1</PlusCounter>
@@ -182,10 +196,9 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
                   <ThumsUp viewerHasClapped={viewerHasClapped} />
                 </div>
               </div>
-
-              <small>{clapLimitReached && "Limit Reached"}</small>
             </>
           )}
+          <Fill style={fixedClapsBgProps} />
         </Claps>
       </ClapsFixedContainer>
       <Hr
