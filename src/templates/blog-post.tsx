@@ -432,3 +432,13 @@ const ClapsLayoutContainer = styled(animated.div)`
     margin-bottom: 1rem;
   }
 `
+const Fill = styled(animated.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--purple-or-cyan);
+  opacity: 0.75;
+  z-index: -1;
+`
