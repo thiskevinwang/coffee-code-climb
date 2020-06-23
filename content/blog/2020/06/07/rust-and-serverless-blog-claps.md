@@ -136,7 +136,7 @@ At around Sunday morning at 2am, I got all my backend code to work (wow, a whole
 
 I spent the next morning hooking up the client, or this blog (so meta!) to my **_Serverless, Rust Lambda Function powered API Gateway_**.
 
-![Gif of "claps" feature](./claps-in-action.gif)
+![Gif of "claps" feature](./new-claps.gif)
 
 ... and getting carried away with CSS.
 
