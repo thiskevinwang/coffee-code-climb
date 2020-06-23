@@ -64,13 +64,14 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
   const [bindFixed, { width: widthFixed }] = useMeasure()
   const [bindLayout, { width: widthLayout }] = useMeasure()
 
+  // clamp will mitigate UI bugs caused by # claps exceeding CLAP_LIMIT
   // style of fixed-position-claps
   const fixedClapsBgProps = useSpring({
-    width: widthFixed * percent,
+    width: widthFixed * _.clamp(percent, 1),
   })
   // style of in-layout-claps
   const layoutClapsBgProps = useSpring({
-    width: widthLayout * percent,
+    width: widthLayout * _.clamp(percent, 1),
   })
 
   const viewerHasClapped: boolean = res?.viewerClapCount >= 1 || clapsCount >= 1
@@ -337,10 +338,6 @@ const PlusCounter = styled(animated.div).withConfig({
 
   text-shadow: 1px 1px 0px var(--table-border);
 `
-
-const Remover = memo(({ children }) => {
-  return <>{children}</>
-})
 
 export const Hr = styled(animated.div)`
   min-height: 1px;
