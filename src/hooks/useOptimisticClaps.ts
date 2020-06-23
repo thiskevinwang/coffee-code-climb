@@ -11,6 +11,12 @@ interface Options {
 }
 
 /**
+ * Response shape from: APIGateway ←→ Lambda ←→ DynamoDb
+ */
+interface PostClapsResponse {
+  claps: number
+}
+/**
  * This is a custom hook to handle debouncing API calls to API Gateway.
  * It will queue up claps, then merge them upon success.
  *
@@ -29,22 +35,21 @@ export const useOptimisticClaps = (
     _.debounce(async (claps: number) => {
       if (clapLimitReached) return
       try {
-        await axios.post(
+        // Local state needs to be updated before the API call
+        // This is considered "optimistic"
+        setMergedClaps((m) => m + claps)
+        setQueuedClaps(0)
+
+        await axios.post<PostClapsResponse>(
           uri,
           JSON.stringify({
             claps: claps,
             slug: location.pathname,
           })
         )
-
-        // TODO, instead of merging local state, merge the response instead
-        setMergedClaps((m) => m + claps)
-        setQueuedClaps(0)
       } catch (err) {
-        // setQueuedClaps(0)
         // Object.getOwnPropertyNames(err)
         // ["stack", "message", "config", "request", "response", "isAxiosError", "toJSON"]
-        // console.log("ERROR", err.response?.status)
         if (err.response?.status === 500) {
           setClapLimitReached(true)
         }
