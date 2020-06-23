@@ -338,10 +338,6 @@ const PlusCounter = styled(animated.div).withConfig({
   text-shadow: 1px 1px 0px var(--table-border);
 `
 
-const Remover = memo(({ children }) => {
-  return <>{children}</>
-})
-
 export const Hr = styled(animated.div)`
   min-height: 1px;
   margin-bottom: 2px;
