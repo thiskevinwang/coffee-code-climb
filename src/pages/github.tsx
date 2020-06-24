@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react"
 import { graphql } from "gatsby"
 import { gql } from "apollo-boost"
 
-import Layout from "../components/layout"
+import { LayoutManager } from "components/layoutManager"
 import SEO from "../components/seo"
 
 import { useFetchGithub } from "hooks/useFetchGithub"
@@ -31,7 +31,7 @@ const GitHubPage = (props) => {
   if (error) return "error..."
 
   return (
-    <Layout location={props.location}>
+    <LayoutManager location={props.location}>
       <SEO title="Stargazers" />
       <h1>Stargazers</h1>
 
@@ -47,7 +47,7 @@ const GitHubPage = (props) => {
           )
         )}
       </>
-    </Layout>
+    </LayoutManager>
   )
 }
 
