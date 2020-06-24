@@ -1,5 +1,4 @@
 import { createGlobalStyle, css } from "styled-components"
-import { Colors } from "consts/Colors"
 
 export const GlobalStyles = createGlobalStyle`
   .TOC {
@@ -36,11 +35,6 @@ export const GlobalStyles = createGlobalStyle`
     > code {
       color: var(--purple-or-cyan);
     }
-  }
-
-  .Card {
-    background: ${(props) =>
-      props.isDarkMode ? Colors.BLACK_LIGHT : Colors.SILVER_LIGHT};
   }
 
   ${(props) =>
