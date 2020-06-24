@@ -11,10 +11,24 @@
   Coffee Code Climb
 </h1>
 
-Mostly blog posts about code. So far I've written random things about...
+Some blog posts about code, but mostly distrating animations.
+
+### Medium's Claps
+
+![](./content/blog/2020/06/07/new-claps.gif)
+
+### Icon Trail
+
+- [ ] Add gif
+
+### Card Shuffling
+
+- [ ] Add gif
+
+So far I've written random things about...
 
 - 🟦 TypeScript
 - 🤦🏻‍♂️ Coding Questions
-- 🦀Rust
+- 🦀 Rust
 - 🐳 Docker
 - ⚛️ React
