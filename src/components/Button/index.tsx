@@ -1,33 +1,19 @@
 import React from "react"
-import { useSelector } from "react-redux"
-import styled, { css } from "styled-components"
+import styled from "styled-components"
 import { animated, useSpring, config } from "react-spring"
 import { useGesture } from "react-use-gesture"
 
-import { rhythm, scale } from "utils/typography"
-import * as Colors from "consts/Colors"
+import { rhythm } from "utils/typography"
 
-/**
- * # FROM_STYLE
- * - starting animated-style
- */
 const FROM_STYLE = {
-  boxShadow: `0px 15px 30px -15px ${Colors.blackDark}`,
   transform: `scale(1)`,
 }
-/**
- * # MOUSEOVER_STYLE
- * - target animated-style
- */
+
 const MOUSEOVER_STYLE = {
-  boxShadow: `0px 17px 40px -13px ${Colors.blackDarker}`,
   transform: `scale(1.1)`,
 }
-/**
- * # MOUSEDOWN_STYLE
- */
+
 const MOUSEDOWN_STYLE = {
-  boxShadow: `0px 15px 20px -17px ${Colors.blackDarker}`,
   transform: `scale(0.98)`,
 }
 interface Props {
@@ -37,25 +23,27 @@ interface Props {
 }
 
 const Renderer = styled(animated.button)`
-  background: ${Colors.silverLighter};
+  background: var(--background);
+  color: var(--text);
+
   border-radius: 5px;
-  font-size: ${props => props.textSm && `12px`};
+  border-style: solid;
+  border-width: 0;
+  box-shadow: var(--shadow);
+
+  font-size: ${(props) => props.textSm && `12px`};
+  font-weight: lighter;
+
   line-height: 1.2;
   display: inline-block;
   text-align: center;
   padding: ${rhythm(0.5)};
-  margin: 5px;
 
-  ${(props: Props) =>
-    props.isDarkMode &&
-    css`
-      background: ${Colors.blackLight};
-      color: ${Colors.silverLight};
-    `};
+  margin-right: 10px;
+  margin-bottom: 10px;
 
   > label {
-    background: ${props =>
-      props.isDarkMode ? Colors.greyDarker : Colors.greyLighter};
+    background: var(--background);
     padding: 5px 10px;
     margin-left: 5px;
   }
@@ -76,7 +64,6 @@ const Renderer = styled(animated.button)`
  * ```
  */
 export const Button = (props: Props) => {
-  const isDarkMode = useSelector(state => state.isDarkMode)
   const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
     config: config.stiff,
@@ -92,7 +79,6 @@ export const Button = (props: Props) => {
 
   return (
     <Renderer
-      isDarkMode={isDarkMode}
       {...props}
       style={{ ...springProps, width: `${props.widthRem}rem` }}
       {...bind()}
