@@ -123,6 +123,7 @@ const P = styled.p`
   margin-top: 0.5rem;
   margin-bottom: 0;
 `
+
 export const Tag = styled(animated.small)`
   --geist-cyan: #79ffe1;
   --geist-purple: #f81ce5;
@@ -131,9 +132,7 @@ export const Tag = styled(animated.small)`
     light: "var(--geist-cyan)",
     dark: "var(--geist-purple)",
   })};
-  box-shadow: none;
-  border-width: 1px;
-  border-style: solid;
+  box-shadow: var(--shadow);
   border-radius: 1rem;
 
   color: ${theme("mode", {
@@ -141,6 +140,10 @@ export const Tag = styled(animated.small)`
     dark: getContrast("#f81ce5"),
   })};
   display: inline-block;
-  padding: 0.05rem 0.75rem 0.1rem;
+
+  font-weight: 500;
+
+  padding: 0.1rem 0.75rem 0.1rem;
   margin-right: 0.2rem;
+  margin-bottom: 0.2rem;
 `
