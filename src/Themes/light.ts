@@ -25,7 +25,6 @@ const lightTheme = {
   formInput,
   formButton,
   commentRenderer,
-  background: Colors.silverLighter,
 }
 
 export default lightTheme
