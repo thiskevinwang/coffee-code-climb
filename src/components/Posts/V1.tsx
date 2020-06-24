@@ -14,20 +14,8 @@ const Card = styled(animated.div)`
   --geist-cyan: #79ffe1;
   --geist-purple: #f81ce5;
 
-  border-style: solid;
-  border-width: 1px;
-  border-color: ${theme("mode", {
-    light: (props) => props.theme.commentRenderer.borderColor,
-    dark: (props) => props.theme.commentRenderer.borderColor,
-  })};
-  transition: border-color 200ms ease-in-out;
-
-  :hover {
-    border-color: ${theme("mode", {
-      light: "var(--geist-cyan)",
-      dark: "var(--geist-purple)",
-    })};
-  }
+  background: var(--background);
+  box-shadow: var(--shadow);
 
   position: absolute;
   border-radius: 5px;
@@ -77,7 +65,6 @@ const V1 = memo(
     return (
       <Card
         index={index}
-        className={"Card"}
         style={{
           ...style,
         }}
