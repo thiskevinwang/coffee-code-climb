@@ -32,7 +32,7 @@ function Layout({ location, title, children }) {
   const isDarkMode = useSelector((state: any) => state.isDarkMode)
 
   const { background } = useSpring({
-    background: isDarkMode ? Colors.BLACK_DARKER : Colors.SILVER_LIGHTER,
+    background: isDarkMode ? Colors.BLACK_DARKER : Colors.SILVER_LIGHT,
   })
 
   const [scrollYPercent] = useWindowScrollPercent()
