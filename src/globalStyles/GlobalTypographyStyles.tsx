@@ -1,24 +1,30 @@
 import { createGlobalStyle, css } from "styled-components"
 import { Colors } from "consts/Colors"
 
+// github boxshadow - figure out inset... later
+// 0 1px 0 rgba(27,31,35,.1), inset 0 1px 0 hsla(0,0%,100%,.03);
+
 export const GlobalTypographyStyles = createGlobalStyle`
   :root {
-    --purple-or-cyan: ${(props) =>
-      props.isDarkMode ? Colors.PURPLE : Colors.CYAN};
-    --text: ${(props) =>
-      props.isDarkMode ? Colors.SILVER_LIGHT : Colors.BLACK_DARK};
-    --table-border: ${(props) =>
-      props.isDarkMode ? Colors.GREY_DARKER : Colors.GREY_LIGHTER};
-    --details-border: ${(props) =>
-      props.isDarkMode ? Colors.GREY_LIGHTER : Colors.GREY};
-    --blockquote-text: ${(props) =>
-      props.isDarkMode ? Colors.GREY_LIGHT : Colors.GREY_DARK};
-    --blockquote-background: ${(props) =>
-      props.isDarkMode ? Colors.BLACK : Colors.SILVER};
-    --blockquote-border-left: ${(props) =>
-      props.isDarkMode ? Colors.BLACK_LIGHTER : Colors.SILVER_DARKER};
-    --gatsby-highlight-background-color: ${(props) =>
-      props.isDarkMode ? Colors.BLACK_LIGHTER : Colors.GREY_DARK};
+    --purple-or-cyan: ${(p) => (p.isDarkMode ? Colors.PURPLE : Colors.CYAN)};
+    /* var(--text) */
+    --text: ${(p) => (p.isDarkMode ? Colors.SILVER_LIGHT : Colors.BLACK_DARK)};
+    --background: ${(p) =>
+      p.isDarkMode ? Colors.BLACK_LIGHTER : Colors.SILVER_LIGHTER};
+    --shadow: ${(p) =>
+      p.isDarkMode ? "0 1px 0 rgba(27,31,35,.9)" : "0 1px 0 rgba(27,31,35,.1)"};
+    --table-border: ${(p) =>
+      p.isDarkMode ? Colors.GREY_DARKER : Colors.GREY_LIGHTER};
+    --details-border: ${(p) =>
+      p.isDarkMode ? Colors.GREY_LIGHTER : Colors.GREY};
+    --blockquote-text: ${(p) =>
+      p.isDarkMode ? Colors.GREY_LIGHT : Colors.GREY_DARK};
+    --blockquote-background: ${(p) =>
+      p.isDarkMode ? Colors.BLACK : Colors.SILVER};
+    --blockquote-border-left: ${(p) =>
+      p.isDarkMode ? Colors.BLACK_LIGHTER : Colors.SILVER_DARKER};
+    --gatsby-highlight-background-color: ${(p) =>
+      p.isDarkMode ? Colors.BLACK_LIGHTER : Colors.GREY_DARK};
   }
 
   ::selection {

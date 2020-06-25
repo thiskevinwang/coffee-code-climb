@@ -7,7 +7,7 @@ import styled from "styled-components"
 import { ButtonAndDrawer, Footer, Header, NavBar } from "components"
 import { StickyNumbers } from "components/StickyNumbers"
 import { rhythm } from "utils/typography"
-import * as Colors from "consts/Colors"
+import { Colors } from "consts/Colors"
 import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
 
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
@@ -51,7 +51,7 @@ function Layout({ location, title, children }: Props) {
   const rootPath: string = `${__PATH_PREFIX__}/`
   const isDarkMode = useSelector((state) => state.isDarkMode)
   const themedBackgroundProps = useSpring({
-    background: isDarkMode ? Colors.black : Colors.silver,
+    background: isDarkMode ? Colors.BLACK : Colors.SILVER,
   })
 
   const [scrollYPercent] = useWindowScrollPercent()

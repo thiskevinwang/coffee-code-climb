@@ -3,7 +3,6 @@ import { Link as _ } from "gatsby"
 import styled, { css } from "styled-components"
 
 import { rhythm, scale } from "src/utils/typography"
-import { MUIBoxShadow, MUIBoxShadowHover } from "consts"
 
 /**
  * Describes the shape of the data passed to the PrevNextNavigation component's
@@ -44,37 +43,27 @@ interface Props {
   next?: MarkdownRemarkNode | ContentfulBlogPostNode
 }
 
-/**
- * Styled Link component
- * @const Link
- * @param {} props.next for styling the label
- **/
-const Link = styled(_)`
-  border: 1px solid grey;
-  border-radius: 5px;
-  box-shadow: ${MUIBoxShadow};
-  color: grey;
-  padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
-  transition: all 200ms ease-in-out;
-
-  label {
-    display: flex;
-    ${props =>
-      props.next &&
-      css`
-        justify-content: flex-end;
-      `}
-    width: 100%;
-    ${scale(-0.5)}
+const getSlugFromNode = (node): string => {
+  switch (node.internal.type) {
+    case `MarkdownRemark`:
+      return node.fields.slug
+    case `ContentfulBlogPost`:
+      return node.slug
+    default:
+      return ""
   }
+}
 
-  :hover {
-    border: 1px solid black;
-    box-shadow: ${MUIBoxShadowHover};
-    color: black;
-    transform: translate(0px, -5px) scale(1.05);
+const getTitleFromNode = (node): string => {
+  switch (node.internal.type) {
+    case `MarkdownRemark`:
+      return node.frontmatter.title
+    case `ContentfulBlogPost`:
+      return node.title
+    default:
+      return ""
   }
-`
+}
 
 /**
  * React function component for navigating between blog posts.
@@ -82,49 +71,70 @@ const Link = styled(_)`
  * @function PrevNextNavigation
  */
 export default function PrevNextNavigation({ previous, next }: Props) {
-  const getSlugFromNode = (node): string => {
-    switch (node.internal.type) {
-      case `MarkdownRemark`:
-        return node.fields.slug
-      case `ContentfulBlogPost`:
-        return node.slug
-      default:
-        return ""
-    }
-  }
-
-  const getTitleFromNode = (node): string => {
-    switch (node.internal.type) {
-      case `MarkdownRemark`:
-        return node.frontmatter.title
-      case `ContentfulBlogPost`:
-        return node.title
-      default:
-        return ""
-    }
-  }
-
   return (
-    <ul
+    <div
       style={{
         display: `flex`,
-        flexWrap: `wrap`,
         justifyContent: `space-between`,
-        listStyle: `none`,
+        marginBottom: rhythm(1),
       }}
     >
       {previous && (
-        <Link to={getSlugFromNode(previous)} rel="prev" label="foo" prev>
-          <label>older</label>← {getTitleFromNode(previous)}
+        <Link to={getSlugFromNode(previous)} rel="prev" prev>
+          <label>← older</label>
+          <>{getTitleFromNode(previous)}</>
         </Link>
       )}
 
       {next && (
         <Link to={getSlugFromNode(next)} rel="next" next>
-          <label>newer</label>
-          {getTitleFromNode(next)} →
+          <label>newer →</label>
+          <>{getTitleFromNode(next)}</>
         </Link>
       )}
-    </ul>
+    </div>
   )
 }
+
+interface LinkProps {
+  next?: boolean
+  prev?: boolean
+}
+/**
+ * Styled Link component
+ * @const Link
+ * @param {} props.next for styling the label
+ **/
+const Link = styled(_)<LinkProps>`
+  /* rely on flex to set the "in-between-margin" */
+  flex-basis: 48%;
+  border-radius: 5px;
+  box-shadow: var(--shadow) !important;
+  background: var(--background);
+  color: var(--text);
+  padding: 0 ${rhythm(0.5)} ${rhythm(0.5)};
+  transition: all 200ms ease-in-out;
+
+  label {
+    display: flex;
+    width: 100%;
+
+    ${(props) =>
+      props.next &&
+      css`
+        justify-content: flex-end;
+      `}
+
+    ${scale(-0.5)}
+  }
+
+  ${(props) =>
+    props.next &&
+    css`
+      text-align: right;
+    `}
+
+  :hover {
+    transform: translate(0px, -5px) scale(1.05);
+  }
+`

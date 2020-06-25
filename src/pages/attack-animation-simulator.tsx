@@ -24,7 +24,7 @@ import debounce from "lodash/debounce"
 import throttle from "lodash/throttle"
 import uuid from "uuid"
 
-import Layout from "components/layout"
+import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { rhythm, scale } from "utils/typography"
 import { Button } from "components/Button"
@@ -348,7 +348,7 @@ function AttackAnimationSimulator(props) {
   }, [])
 
   return (
-    <Layout location={props.location} title={siteTitle}>
+    <LayoutManager location={props.location} title={siteTitle}>
       <SEO title="Attack Animation Simulator" />
       <h1>Attack Animation Simulator</h1>
       <div className="container" style={{ height: `100vh` }}>
@@ -391,7 +391,7 @@ function AttackAnimationSimulator(props) {
           ))}
         </TransitionGroup>
       </div>
-    </Layout>
+    </LayoutManager>
   )
 }
 
