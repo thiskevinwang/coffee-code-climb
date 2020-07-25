@@ -1,4 +1,4 @@
-import * as React from "react"
+import React, { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { Link } from "gatsby"
 import styled, { css } from "styled-components"
@@ -41,6 +41,28 @@ const BarItem = styled.div`
 const NavBar2 = () => {
   const postsVersion = useSelector((state) => state.postsVersion)
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    const handleKeyUp = (e: React.KeyboardEvent) => {
+      if (e.ctrlKey) {
+        switch (e.keyCode) {
+          case 49 /** 1 */:
+            return dispatch(setPostsVersion(1))
+          case 50 /** 2 */:
+            return dispatch(setPostsVersion(2))
+          default:
+            return
+        }
+      }
+    }
+
+    /** add event listener */
+    typeof window !== undefined && window.addEventListener("keyup", handleKeyUp)
+    /** clean up event listener*/
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp)
+    }
+  }, [])
 
   return (
     <Bar>
