@@ -1,4 +1,5 @@
-import React, { memo, useState, useEffect, useCallback, useMemo } from "react"
+import React, { useState, useEffect, useCallback, useMemo } from "react"
+import { PageProps } from "gatsby"
 import { useSelector } from "react-redux"
 import _ from "lodash"
 import styled from "styled-components"
@@ -14,6 +15,12 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { Button } from "components/Button"
 import * as Posts from "components/Posts"
 
+import {
+  checkIsContentfulBlogPost,
+  checkIsMarkdownRemark,
+  generatePosts,
+} from "./postsManagerUtils"
+
 const Manager = styled(animated.section)`
   ::-webkit-scrollbar {
     display: none;
@@ -21,32 +28,17 @@ const Manager = styled(animated.section)`
   -ms-overflow-style: none;
 `
 
-const checkIsMarkdownRemark = (node) => node.internal.type === `MarkdownRemark`
-const checkIsContentfulBlogPost = (node) =>
-  node.internal.type === `ContentfulBlogPost`
+interface PostsManagerProps {
+  location: PageProps["location"]
+  allPosts: any[]
+}
 
-const PostsManager = memo(({ allPosts, location }) => {
+const PostsManager = ({ allPosts, location }: PostsManagerProps) => {
   const postsVersion = useSelector((state) => state.postsVersion)
-  /**
-   * Combine Markdown & Contentful posts. Sort by newest Date.
-   *
-   * This is our source of truth that should never be mutated
-   */
-  const posts = useMemo(() => {
-    const dateSorted = _.sortBy(allPosts, ({ node }) => {
-      let date = new Date(
-        node.internal.type === `MarkdownRemark`
-          ? node.frontmatter.date
-          : node.date
-      )
-      return -date
-    })
-    return dateSorted
-  }, [allPosts])
 
-  // contentful nodes don't have `.id`
+  const posts = useMemo(() => generatePosts(allPosts), [allPosts])
 
-  const [items, setItems] = useState(posts)
+  const [items, setItems] = useState(() => posts)
   const [columnCount, setColumnCount] = useState(4)
   const [cardHeight, setCardHeight] = useState(200)
   const [isRandom, setIsRandom] = useState(false)
@@ -313,6 +305,6 @@ const PostsManager = memo(({ allPosts, location }) => {
       )
     })
   return null
-})
+}
 
 export { PostsManager }
