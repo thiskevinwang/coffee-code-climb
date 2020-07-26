@@ -1,4 +1,4 @@
-import React, { useEffect, memo, useRef, useState } from "react"
+import React, { useEffect, memo, useMemo, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import _ from "lodash"
 import { Link } from "gatsby"
@@ -9,6 +9,8 @@ import styled from "styled-components"
 import { useIO } from "hooks/useIO"
 import { Colors } from "consts/Colors"
 import { rhythm } from "utils/typography"
+
+import { Tag } from "./V1"
 
 const Sentinel = styled(animated.div)`
   /* border: 1px dotted red; */
@@ -84,6 +86,8 @@ const V2Unmemoized: React.FC<Props> = ({
   index,
   nodeType,
 }) => {
+  const kebabTags = useMemo(() => _.map(tags, (tag) => _.kebabCase(tag)), [])
+
   const isDarkMode = useSelector((state) => state.isDarkMode)
   const [isIntersecting, bind] = useIO({
     root: null,
@@ -144,7 +148,7 @@ const V2Unmemoized: React.FC<Props> = ({
             </GridImage>
           )}
           <GridDescription>
-            <Link to={linkTo}>
+            <Link to={linkTo} style={{ boxShadow: `none` }}>
               <h3>{title}</h3>
 
               <DescriptionText
@@ -153,6 +157,7 @@ const V2Unmemoized: React.FC<Props> = ({
                   boxShadow: `0px 15px 30px -15px ${
                     isDarkMode ? Colors.SILVER_DARKER : Colors.BLACK_DARK
                   }`,
+                  marginBottom: 10,
                 }}
               >
                 <small
@@ -161,6 +166,10 @@ const V2Unmemoized: React.FC<Props> = ({
                   }}
                 />
               </DescriptionText>
+              <br />
+              {_.map(kebabTags, (e) => (
+                <Tag key={e}>{e} </Tag>
+              ))}
             </Link>
           </GridDescription>
         </Grid>
