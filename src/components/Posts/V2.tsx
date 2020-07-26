@@ -9,6 +9,7 @@ import styled from "styled-components"
 import { useIO } from "hooks/useIO"
 import { Colors } from "consts/Colors"
 import { rhythm } from "utils/typography"
+import { QuestionCircle } from "icons"
 
 import { Tag } from "./V1"
 
@@ -131,8 +132,13 @@ const V2Unmemoized: React.FC<Props> = ({
                     : image.fluid
                 }
                 alt={linkTo}
-                style={{ borderRadius: `5px` }}
+                style={{
+                  background: backgroundDark,
+                  borderRadius: `5px`,
+                  minHeight: `200px`,
+                }}
                 imgStyle={{}}
+                loading={"lazy"}
               />
             </GridImage>
           ) : (
@@ -143,8 +149,13 @@ const V2Unmemoized: React.FC<Props> = ({
                   background: backgroundDark,
                   borderRadius: `5px`,
                   height: `200px`,
+                  display: `flex`,
+                  justifyContent: `center`,
+                  alignItems: `center`,
                 }}
-              ></animated.div>
+              >
+                <QuestionCircle />
+              </animated.div>
             </GridImage>
           )}
           <GridDescription>

@@ -80,6 +80,7 @@ const V1 = memo(
               alt={linkTo}
               style={{}}
               imgStyle={{}}
+              loading={"lazy"}
             />
           )}
         </Link>
