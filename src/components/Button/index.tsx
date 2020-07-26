@@ -20,6 +20,7 @@ interface Props {
   isDarkMode: boolean
   textSm: boolean
   widthRem?: number
+  style?: React.CSSProperties
 }
 
 const Renderer = styled(animated.button)`
@@ -80,7 +81,7 @@ export const Button = (props: Props) => {
   return (
     <Renderer
       {...props}
-      style={{ ...springProps, width: `${props.widthRem}rem` }}
+      style={{ ...springProps, width: `${props.widthRem}rem`, ...props.style }}
       {...bind()}
     />
   )

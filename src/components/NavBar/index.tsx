@@ -12,7 +12,7 @@ import {
 import { rhythm } from "utils/typography"
 import { Button } from "components/Button"
 import * as Colors from "consts/Colors"
-import { navbarZ, MUIBoxShadow } from "consts"
+import { navbarZ } from "consts"
 
 interface BarProps {
   isDarkMode: boolean
@@ -25,7 +25,7 @@ interface BarProps {
 const Bar = styled.div`
   background: ${(props: BarProps) =>
     props.isDarkMode ? Colors.blackDarker : Colors.silverLight};
-  box-shadow: ${MUIBoxShadow};
+  box-shadow: var(--shadow);
   color: white;
   display: flex;
   flex-direction: row;
@@ -55,24 +55,26 @@ const NavBar = () => {
   const { isDarkMode, layoutVersion } = useSelector<
     RootState,
     { isDarkMode: boolean; layoutVersion: number }
-  >(state => ({
+  >((state) => ({
     isDarkMode: state.isDarkMode,
     layoutVersion: state.layoutVersion,
   }))
 
-  const postsVersion = useSelector<RootState, any>(state => state.postsVersion)
+  const postsVersion = useSelector<RootState, any>(
+    (state) => state.postsVersion
+  )
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
-    (value: boolean) => e => dispatch(setIsDarkMode(value)),
+    (value: boolean) => (e) => dispatch(setIsDarkMode(value)),
     []
   )
   const dispatchSetLayoutVersion = useCallback(
-    (value: number) => e => dispatch(setLayoutVersion(value)),
+    (value: number) => (e) => dispatch(setLayoutVersion(value)),
     []
   )
   const dispatchSetPostsVersion = useCallback(
-    (value: number) => e => dispatch(setPostsVersion(value)),
+    (value: number) => (e) => dispatch(setPostsVersion(value)),
     []
   )
 
@@ -84,7 +86,8 @@ const NavBar = () => {
         isDarkMode={isDarkMode}
         onClick={dispatchSetIsDarkMode(!isDarkMode)}
       >
-        <span>{`Dark Mode`}</span> <label>{isDarkMode ? "on" : "off"}</label>
+        <span>{`Dark Mode`}</span>
+        <label>{isDarkMode ? "on" : "off"}</label>
       </Button>
       <Button
         sm
@@ -92,7 +95,8 @@ const NavBar = () => {
         isDarkMode={isDarkMode}
         onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}
       >
-        <span>{`Layout Version`}</span> <label>V{layoutVersion}</label>
+        <span>{`Layout Version`}</span>
+        <label>V{layoutVersion}</label>
       </Button>
       <Button
         sm
@@ -100,7 +104,8 @@ const NavBar = () => {
         isDarkMode={isDarkMode}
         onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}
       >
-        <span>{`Posts Version`}</span> <label>V{postsVersion}</label>
+        <span>{`Posts Version`}</span>
+        <label>V{postsVersion}</label>
       </Button>
     </Bar>
   )

@@ -1,6 +1,6 @@
 import React, { memo } from "react"
 import _ from "lodash"
-import { graphql } from "gatsby"
+import { graphql, PageProps } from "gatsby"
 
 import Bio from "components/bio"
 import { LayoutManager } from "components/layoutManager"
@@ -12,7 +12,7 @@ import { KEYWORDS } from "consts"
  * BlogIndex
  * Our landing page component!
  */
-const BlogIndex = ({ data, location }) => {
+const BlogIndex = ({ data, location }: PageProps<any>) => {
   const siteTitle = data.site.siteMetadata.title
   const markdownPosts = data.allMarkdownRemark.edges
   const contentfulPosts = data.allContentfulBlogPost.edges
@@ -25,19 +25,7 @@ const BlogIndex = ({ data, location }) => {
     <LayoutManager location={location} title={siteTitle}>
       <SEO title="All posts" keywords={KEYWORDS} />
       <Bio />
-
-      <PostsManager
-        allPosts={allPosts}
-        /**
-         * **props.location** is only available in the `/pages` directory
-         * @TODO
-         * see if there's a way to create & hook into context, or some
-         * alternative to props-juggling this down to <PostsManager>
-         * - maybe react-router v5?
-         */
-        location={location}
-        title={siteTitle}
-      />
+      <PostsManager allPosts={allPosts} location={location} title={siteTitle} />
     </LayoutManager>
   )
 }
@@ -68,7 +56,7 @@ export const pageQuery = graphql`
             tags
             image {
               childImageSharp {
-                fluid(maxWidth: 2000, maxHeight: 800) {
+                fluid(maxWidth: 2000, maxHeight: 1200) {
                   ...GatsbyImageSharpFluid
                 }
               }

@@ -64,6 +64,7 @@ module.exports = {
           consts: "src/consts",
           css: "src/css",
           fonts: "src/fonts",
+          icons: "src/icons",
           globalStyles: "src/globalStyles",
           hooks: "src/hooks",
           pages: "src/pages",

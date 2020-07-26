@@ -151,8 +151,8 @@ const FunButtonsModal = ({
         style={{
           opacity: animatedOpacity,
           background: animatedModalBackground,
-          width: modalWidth.interpolate(val => `${val}%`),
-          height: modalHeight.interpolate(val => `${val}%`),
+          width: modalWidth.interpolate((val) => `${val}%`),
+          height: modalHeight.interpolate((val) => `${val}%`),
         }}
       >
         <animated.div style={{ opacity: contentOpacity }}>
