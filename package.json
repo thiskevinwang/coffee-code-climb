@@ -2,7 +2,7 @@
   "name": "coffee-code-climb",
   "private": true,
   "description": "A blog by Kevin Wang",
-  "version": "0.14.6",
+  "version": "0.15.16",
   "author": "Kevin Wang <kwangsan@gmail.com>",
   "bugs": {
     "url": "https://github.com/thiskevinwang/coffee-code-climb/issues"

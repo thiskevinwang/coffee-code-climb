@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.15.16] - 2020-07-26
+
+### Added
+
+- Rework UI for `<Posts.V2>`
+- Fix Lodash security issue
+- Add keypress listeners to change **Post** version
+  - Attached via `<NavBar2>`
+  - <kbd>Ctrl</kbd> + <kbd>1</kbd> selects V1
+  - <kbd>Ctrl</kbd> + <kbd>2</kbd> selects V2
+- Add `/src/icons` directory
+  - Add `QuestionCircle` (https://vercel.com/design/icons)
+
+### Changed
+
+Old:
+![image](https://user-images.githubusercontent.com/26389321/88480118-0fd9ef80-cf22-11ea-9a18-3004ac2df095.png)
+
+New:
+![image](https://user-images.githubusercontent.com/26389321/88480049-a528b400-cf21-11ea-9ca0-f0b351902e95.png)
+
 ## [v0.15.15] - TODO
 
 ## [v0.15.14] - TODO
@@ -35,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+[v0.15.16]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.15...v0.15.16
 [v0.15.15]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.14...v0.15.15
 [v0.15.14]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.13...v0.15.14
 [v0.15.13]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.12...v0.15.13
