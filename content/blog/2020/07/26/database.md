@@ -1,5 +1,5 @@
 ---
-title: "PostgreSQL Atomicity and Idempotency For Dummies"
+title: "Atomicity and Idempotency For Dummies"
 date: "2020-07-26T13:07:20.934Z"
 description: "Some notes, observations, and SQL snippets in PostgreSQL"
 tags: ["database", "postgres", "sql", "atomicity", "idempotence"]
@@ -22,9 +22,9 @@ The first week consisted of technical spec writing, presenting, and getting aske
 
 ### SQL + Database Goals
 
-I've previously relied on an ORM, like [TypeORM](https://typeorm.io/#/), to do my relational data bidding on personal projects so I never actually picked up SQL. ORM usage was not approved for this service so I needed to get up to speed in SQL, fast.
+I've previously relied on an ORM, like [TypeORM](https://typeorm.io/#/), to do my relational data bidding on personal projects so I never actually picked up SQL—it's like I've been riding a bicycle with training wheels. However, ORM usage was not approved for this service so I needed to get up to speed in SQL, from basically nothing—never wrote production level SQL, barely even wrote any hobby level SQL—and **fast**.
 
-With all that said, I wanted to write about the SQL and database parts chunks of knowledge I picked up—mostly so I don't forget, and so that I have an embarassing blog post to look back on in the future. 🤣
+With all that said, I wanted to write about the SQL and database parts chunks of knowledge I picked up, mostly so I don't forget, and so that I have an embarassing blog post to look back on in the future. 🤣
 
 ## Idempotence
 
@@ -36,11 +36,11 @@ Idempotence is a property of an operation such that running it 1000 times will h
 
 Here's my real-life analogy/scenario of idempotence:
 
-> _Given a volume knob that goes from 0 [up to 11](https://en.wikipedia.org/wiki/Up_to_eleven)_
+> _Given a volume knob that goes from 0 up to 11_
 >
-> _Turning the volume up by one—is not idempotent_
+> _Turning the volume up by one is not idempotent_
 >
-> _Turning the volume up to max—is idempotent_
+> _Turning the volume up to max is idempotent_
 
 ### Code
 
@@ -61,6 +61,8 @@ Assuming you're operating on a single database, this will work the very first ti
 | 3    | Error  | extension "pgcrypto" already exists |
 | n... | Error  | extension "pgcrypto" already exists |
 
+There are **two different** outcomes—Ok and Error—so this is not idempotent.
+
 #### ✅ Idempotent
 
 One way to make the previous operation idempotent is to check for previous existence of your extension, row, constraint, or anything, and do nothing if it already exists.
@@ -69,7 +71,7 @@ One way to make the previous operation idempotent is to check for previous exist
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 ```
 
-This is considered idempotent because no matter how many times you run this operation beyond the first successful run, it always produces the same successful state.
+This is idempotent because no matter how many times you run this operation beyond the first successful run, it always produces the same outcome—Ok.
 
 | Run  | Result | Stdout                                        |
 | :--- | :----- | :-------------------------------------------- |
@@ -80,7 +82,7 @@ This is considered idempotent because no matter how many times you run this oper
 
 ## Atomicity
 
-Yet another term that isn't part of the typical frontend repertoire.
+Another term that isn't part of the typical frontend repertoire.
 
 What is [atomicity](<https://en.wikipedia.org/wiki/Atomicity_(database_systems)>)?
 
@@ -90,87 +92,61 @@ The best way I can describe an **atomic** [database transaction](https://en.wiki
 
 And yet another analogy 🙃:
 
-> You have 4 quarters to put into a [Raiden](<https://en.wikipedia.org/wiki/Raiden_(video_game)>) arcade machine, at your local [Round Table Pizza](https://www.roundtablepizza.com/) shop.
+> _You're looking for a match in Dota 2_
 >
-> You insert 1...
-> → _3 more required_
+> _All 10 players are required to confirm readiness in order for a match to begin_
 >
-> You insert 1...
-> → _2 more required_
+> _9 players confirm_
 >
-> You insert 1...
-> → _1 more required_
+> _1 player is AFK, doesn't confirm, and the match times out_
 >
-> You insert your last quarter...
-> → _the machine rejects it_
->
-> You want your money back so you push the "reject" button...
-> → _quarters are returned_
-> → _no session was started_
+> _You're all sent back to the matchmaking queue, and no match was recorded_
 
 ### Code
 
-Here is an example of an **atomic** SQL migration.
+Here's an exapmle using real SQL. Take this table, **"friends"**, for example...
+
+| column_name | data_type  |
+| ----------- | ---------- |
+| username    | varchar(8) |
+
+#### ❌ Not atomic
+
+The following SQL is not atomic. It will insert `'peas'`, `'in'`, and `'a'`, committing each to the database. It will fail to insert `'poooooooooood'` due to character length, and your "friends" table will be sad 😢.
+
+```sql
+INSERT INTO friends (username) VALUES('peas');
+INSERT INTO friends (username) VALUES('in');
+INSERT INTO friends (username) VALUES('a');
+INSERT INTO friends (username) VALUES('poooooooooood');
+-- ERROR:  value too long for type character varying(8)
+
+```
+
+#### ✅ Atomic
+
+The standard approach to making this atomic is to use a **transaction**. The [BEGIN](https://www.postgresql.org/docs/9.0/sql-begin.html) keyword starts a transaction block and [COMMIT](https://www.postgresql.org/docs/9.0/sql-commit.html) commits the current transaction. If any operations inside the transaction fail, nothing gets committed.
+
+The following SQL **is** atomic.
 
 ```sql
 BEGIN;
-
--- #1
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
--- #2
--- Depends on #1 for uuid_generate_v4()
-CREATE TABLE IF NOT EXISTS "users" (
-  "id" uuid DEFAULT gen_random_uuid(),
-  "username" character varying (25) NOT NULL,
-  CONSTRAINT "uq_users_username" UNIQUE ("username"),
-  CONSTRAINT "pk_users_id" PRIMARY KEY ("id")
-);
-
--- #3
--- Depends on #1 for uuid_generate_v4()
-CREATE TABLE IF NOT EXISTS "comments" (
-  "id" uuid DEFAULT gen_random_uuid(),
-  "body" character varying (25) NOT NULL,
-  "user_id" uuid NOT NULL,
-  CONSTRAINT "pk_comments_id" PRIMARY KEY ("id")
-);
-
--- #4
--- Depends on #3 for creating the "comments" table
-ALTER TABLE "comments"
-  DROP CONSTRAINT IF EXISTS "fk_comments_user_id";
-
--- #5
--- Depends on #3 for creating the "comments" table
--- Depends on #4 for removing an existing constraint
-ALTER TABLE "comments"
-  ADD CONSTRAINT "fk_comments_user_id"
-  FOREIGN KEY ("user_id")
-  REFERENCES "users" (id);
-
+INSERT INTO friends (username) VALUES('peas');
+INSERT INTO friends (username) VALUES('in');
+INSERT INTO friends (username) VALUES('a');
+INSERT INTO friends (username) VALUES('poooooooooood');
 COMMIT;
 ```
 
-There are 5 operations happening here.
+`'peas'`, `'in'` and `'a'` are all inserted, but not committed yet. `'poooooooooood'` eventually causes an exception to be raised and the entire transaction gets rolled back, resulting in nothing getting committed to the database.
 
-1. Create "uuid-ossp" extension
-2. Create "users" table
-3. Create "comments" table
-4. Drop "fk_comments_user_id" constraint
-5. Add "fk_comments_user_id" constraint
-
-Everything is encapsulated in a transaction. [`BEGIN`](https://www.postgresql.org/docs/9.0/sql-begin.html) starts a transaction block and [`COMMIT`](https://www.postgresql.org/docs/9.0/sql-commit.html) commits the current transaction. If any operations fail, nothing gets committed, so this is **atomic**.
-
-Additionally, given the order that the operations execute, the entire transaction is also **idempotent**. Running it for the 100th time will produce the same result as it did the 1st time around.
-
-## Applying these concepts and examples
+## Applying Concepts
 
 For me, reading typically gets me nowhere. I absolutely have to move things around, and make mistakes to better understand and ingrain concepts.
 
-### Project
+### My Sandbox
 
-Here's a distilled layout of what I used to go about tinkering.
+Here's a distilled layout of the application code that I used to go about tinkering.
 
 ```
 .
@@ -185,6 +161,32 @@ Here's a distilled layout of what I used to go about tinkering.
 ├── tsconfig.json
 └── yarn.lock
 ```
+
+<details>
+<summary>Dependencies</summary>
+
+```bash
+yarn add @pgtyped/cli @pgtyped/query pg postgres-migrations ts-node typescript
+yarn add -D @types/pg
+```
+
+</details>
+
+<details>
+<summary>tsconfig.json</summary>
+
+```json
+{
+  "compilerOptions": {
+    "target": "ESNEXT",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true
+  }
+}
+```
+
+</details>
 
 ### Docker Postgres Container
 
@@ -242,7 +244,45 @@ psql -U postgres
 
 I used a small library called [postgres-migrations](https://github.com/ThomWright/postgres-migrations) to simplify running migrations for me, in-code.
 
-The migration file I used is the same as [above](#code-1).
+```sql
+BEGIN;
+
+-- #1
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- #2
+-- Depends on #1 for uuid_generate_v4()
+CREATE TABLE IF NOT EXISTS "users" (
+  "id" uuid DEFAULT gen_random_uuid(),
+  "username" character varying (25) NOT NULL,
+  CONSTRAINT "uq_users_username" UNIQUE ("username"),
+  CONSTRAINT "pk_users_id" PRIMARY KEY ("id")
+);
+
+-- #3
+-- Depends on #1 for uuid_generate_v4()
+CREATE TABLE IF NOT EXISTS "comments" (
+  "id" uuid DEFAULT gen_random_uuid(),
+  "body" character varying (25) NOT NULL,
+  "user_id" uuid NOT NULL,
+  CONSTRAINT "pk_comments_id" PRIMARY KEY ("id")
+);
+
+-- #4
+-- Depends on #3 for creating the "comments" table
+ALTER TABLE "comments"
+  DROP CONSTRAINT IF EXISTS "fk_comments_user_id";
+
+-- #5
+-- Depends on #3 for creating the "comments" table
+-- Depends on #4 for removing an existing constraint
+ALTER TABLE "comments"
+  ADD CONSTRAINT "fk_comments_user_id"
+  FOREIGN KEY ("user_id")
+  REFERENCES "users" (id);
+
+COMMIT;
+```
 
 ### PgTyped
 
@@ -251,7 +291,7 @@ This library has been pretty interesting in terms of writing raw SQL. You can ru
 `./sql/example.sql`
 
 ```SQL
-/* @name getUser */
+/* @name getOrCreateUser */
 WITH temp AS (
   INSERT INTO users (id, username)
   SELECT :id, :username
@@ -260,8 +300,7 @@ WITH temp AS (
     WHERE id = :id)
   RETURNING *
 )
-SELECT *
-FROM temp
+SELECT * FROM temp
 UNION
 SELECT * FROM users
 WHERE id = :id;
@@ -273,9 +312,9 @@ VALUES (:body, :userId);
 
 Running `npx pgtyped -w -c config.json` generates an adjacent file, `./sql/example.queries.ts`
 
-### The Sauce
+### Tinkering
 
-Here's a chunk of code. In a nutshell, it creates a `user`, and inserts 50 x 50 `comments` into the database.
+Here's a chunk of code. In a nutshell, it creates a `user`, and iterates over a 50 x 50 matrix, inserting 2500 `comments` into the database.
 
 `./index.ts`
 
@@ -362,9 +401,13 @@ $ ts-node .
 ✨  Done in 7.25s.
 ```
 
-You can see that this script takes a good amount of time to execute–it's inserting 2,500 rows.
+### Isolation
 
-I wanted to see what could happen
+The SQL in this script takes roughly 6 seconds to finish.
+
+While the script is still running, if you go into a database GUI and try to run a query on the tables being operated on, Postgres waits:
+
+![](./db-lock.png)
 
 ## Reading Material
 
