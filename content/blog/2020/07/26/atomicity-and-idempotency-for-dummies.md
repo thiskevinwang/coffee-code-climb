@@ -351,7 +351,7 @@ But TablePlus waited a bit for the TypeScript/Node script to finish before final
 
 ![](./db-lock.png)
 
-This happens because the long-running application code implicitly tells Postgres to acquire a either a [table-level lock](https://www.postgresql.org/docs/9.4/explicit-locking.html#LOCKING-TABLES) or a [row-level lock](https://www.postgresql.org/docs/9.4/explicit-locking.html#LOCKING-ROWS) on the `users` and `comments` tables... I need to clarify this for myself.
+This happens because the long-running application code implicitly tells Postgres to acquire either a [table-level lock](https://www.postgresql.org/docs/9.4/explicit-locking.html#LOCKING-TABLES) or a [row-level lock](https://www.postgresql.org/docs/9.4/explicit-locking.html#LOCKING-ROWS) on the `users` and `comments` tables... I need to clarify this for myself.
 
 ## Final Thoughts
 
