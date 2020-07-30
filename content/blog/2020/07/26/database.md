@@ -1,7 +1,7 @@
 ---
 title: "Atomicity and Idempotency For Dummies"
 date: "2020-07-26T13:07:20.934Z"
-description: "Some notes, observations, and SQL snippets in PostgreSQL"
+description: "I spent the past few weeks writing raw SQL and doing and understanding databases. Here's a basic rundown of atomicity, idempotency, and isolation."
 tags: ["database", "postgres", "sql", "atomicity", "idempotence"]
 image: db-image.png
 ---
@@ -142,107 +142,17 @@ COMMIT;
 
 ## Applying Concepts
 
-For me, reading typically gets me nowhere. I absolutely have to move things around, and make mistakes to better understand and ingrain concepts.
+![](./db-image.png)
 
-### My Sandbox
+For me, reading typically gets me nowhere. I need to move things around, and make mistakes to better understand and ingrain concepts.
 
-Here's a distilled layout of the application code that I used to go about tinkering.
-
-```
-.
-├── config.json (for `@pgtyped/cli`)
-├── index.ts
-├── migrations
-│   └── 00001-Example.sql
-├── package.json
-├── sql
-│   ├── example.queries.ts (auto-generated)
-│   └── example.sql
-├── tsconfig.json
-└── yarn.lock
-```
-
-<details>
-<summary>Dependencies</summary>
-
-```bash
-yarn add @pgtyped/cli @pgtyped/query pg postgres-migrations ts-node typescript
-yarn add -D @types/pg
-```
-
-</details>
-
-<details>
-<summary>tsconfig.json</summary>
-
-```json
-{
-  "compilerOptions": {
-    "target": "ESNEXT",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true
-  }
-}
-```
-
-</details>
-
-### Docker Postgres Container
-
-I chose to run a [Docker Postgres container](https://hub.docker.com/_/postgres), as opposed to installing and running [PostgreSQL](https://www.postgresql.org/download/) directly on my computer. Why? I believe this is a more isolated and reproducible way of going about development.
-
-```bash
-docker run \
-  --rm \
-  --name my-postgres-container \
-  -e POSTGRES_PASSWORD=mypassword \
-  -d \
-  -p 8080:5432 postgres:13-alpine
-```
-
-<details>
-<summary>Flags explained...</summary>
-
-- `--rm`: Tells Docker to remove the container when it is stopped.
-- `--name my-postgres`: Names your container.
-- `-e POSTGRES_PASSWORD=mysecretpassword`: Sets an environment variable for your container. You can specify multiple `-e` flags.
-- `-d`: Starts the container in "detached" mode. This prevents your current terminal window from being _eaten up_.
-- `-p 8080:5432`: Publishes a port. This specific command maps the container's `port 5432` to the host's (likely your computer) `port 8080`.
-- `postgres:13-alpine` This is the Docker image and tag to use. Docker first checks if you have the `postgres:13-alpine` image locally, and pulls it from [Docker hub](https://hub.docker.com/_/postgres) if you don't.
-
-</details>
-
-#### Psql inside Docker
-
-I didn't have a need for this, but if for any reason you need to modify users, privileges, or do anything with `psql`, you can `exec` into the Docker container directly.
-
-```bash
-docker exec -it my-postgres-container bash
-
-# Inside the docker container
-# bash-5.0#
-
-# Verify the `psql` CLI tool is installed
-which psql
-# /usr/local/bin/psql
-
-# Use `psql` with the default user
-psql -U postgres
-
-# Connected to Postgres
-# psql (13beta2)
-# Type "help" for help.
-
-# postgres=#
-
-# Quit Postgres
-\q
-```
+I made this [repository](https://github.com/thiskevinwang/sql-tinkering), as a distilled version of things I've been learning/applying in my actual project, like migrations and SQL queries with PgTyped.
 
 ### Migrations
 
-I used a small library called [postgres-migrations](https://github.com/ThomWright/postgres-migrations) to simplify running migrations for me, in-code.
+This is both an **idempotent** and **atomic** transaction. The entire file can be run multiple times and each time will produce the same result, and if any individual operation fails, nothing would be committed.
+
+I commented, in code, that some individual operations rely on previous operations to have completed.
 
 ```sql
 BEGIN;
@@ -251,7 +161,7 @@ BEGIN;
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- #2
--- Depends on #1 for uuid_generate_v4()
+-- Depends on #1 for gen_random_uuid()
 CREATE TABLE IF NOT EXISTS "users" (
   "id" uuid DEFAULT gen_random_uuid(),
   "username" character varying (25) NOT NULL,
@@ -260,7 +170,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 );
 
 -- #3
--- Depends on #1 for uuid_generate_v4()
+-- Depends on #1 for gen_random_uuid()
 CREATE TABLE IF NOT EXISTS "comments" (
   "id" uuid DEFAULT gen_random_uuid(),
   "body" character varying (25) NOT NULL,
@@ -284,11 +194,11 @@ ALTER TABLE "comments"
 COMMIT;
 ```
 
-### PgTyped
+### Using PgTyped
 
-This library has been pretty interesting in terms of writing raw SQL. You can run `pgtyped` in "watch mode", and it will connect to your database, and validate your SQL queries and auto generate TypeScript types and functions.
+This library has been pretty interesting to use. You write raw SQL and PgTyped will generate TypeScript type definitions as well as callable functions from it. PgTyped connects to your database and verifies if your queries adhere to or violate your schema, which is pretty awesome.
 
-`./sql/example.sql`
+[./sql/example.sql](https://github.com/thiskevinwang/sql-tinkering/blob/master/sql/example.sql)
 
 ```SQL
 /* @name getOrCreateUser */
@@ -300,7 +210,8 @@ WITH temp AS (
     WHERE id = :id)
   RETURNING *
 )
-SELECT * FROM temp
+SELECT *
+FROM temp
 UNION
 SELECT * FROM users
 WHERE id = :id;
@@ -310,11 +221,27 @@ INSERT INTO comments (body, user_id)
 VALUES (:body, :userId);
 ```
 
-Running `npx pgtyped -w -c config.json` generates an adjacent file, `./sql/example.queries.ts`
+Running `npx pgtyped -w -c config.json` generates an adjacent file, [./sql/example.queries.ts](https://github.com/thiskevinwang/sql-tinkering/blob/master/sql/example.queries.ts). This is where you can import your types and functions from.
+
+#### Limitation
+
+I opened this [issue (#142)](https://github.com/adelsz/pgtyped/issues/142), when I was struggling to get PgTyped to work with `BEGIN;` & `COMMIT;`. It turns out:
+
+> pgTyped only supports single statement queries because type inference can only be done at single statement level in postgres.
+
+The suggested way to handle this was to use the [pg](https://node-postgres.com/) client instance, and eplicity run individual single `BEGIN;` and `COMMIT;` statements,
+
+```ts
+function queryInTrx() {
+  await client.query("BEGIN")
+  await testQuery.run({ id: 123 }, client)
+  await client.query("COMMIT")
+}
+```
 
 ### Tinkering
 
-Here's a chunk of code. In a nutshell, it creates a `user`, and iterates over a 50 x 50 matrix, inserting 2500 `comments` into the database.
+This is the code from [./index.ts](https://github.com/thiskevinwang/sql-tinkering/blob/master/index.ts). In a nutshell, it creates a `user`, and iterates over a 50 x 50 matrix, inserting 2500 `comments` into the database.
 
 `./index.ts`
 
@@ -343,9 +270,10 @@ const client = new Client({
   database,
 })
 
-const outerFifty = Array(50)
+const WIDTH = 50
+const MATRIX = Array(WIDTH)
   .fill(null)
-  .map(() => Array(50).fill(null))
+  .map(() => Array(WIDTH).fill(null))
 
 async function main() {
   await client.connect()
@@ -364,12 +292,14 @@ async function main() {
     console.log("📝 Generating comments...")
 
     console.time("⏰ Generating comments took")
-    const outerPromises = outerFifty.map((innerFity, outerIndex) => {
-      const innerPromises = innerFity.map((_, innerIndex) => {
+
+    const outerPromises = MATRIX.map((matrixRow, outerIndex) => {
+      const innerPromises = matrixRow.map((_, innerIndex) => {
         let params = {
           body: `${outerIndex}__${innerIndex}`,
           userId: user.id,
         } as IInsertCommentParams
+
         return insertComment.run(params, client)
       })
       return Promise.allSettled(innerPromises)
@@ -389,7 +319,7 @@ async function main() {
 main()
 ```
 
-`yarn start`
+Running `yarn start`, outputs:
 
 ```
 λ yarn start
@@ -403,13 +333,34 @@ $ ts-node .
 
 ### Isolation
 
-The SQL in this script takes roughly 6 seconds to finish.
+The **"I"** in [ACID](https://en.wikipedia.org/wiki/ACID#Isolation).
 
-While the script is still running, if you go into a database GUI and try to run a query on the tables being operated on, Postgres waits:
+The previous SQL transaction from above takes roughly 6 seconds to finish, but it could take longer if you modify the the `WIDTH` value to something larger than `50`.
+
+While the script is still running, if you go into a database GUI and run a query, you'll now have two **concurrent** transactions running.
+
+#### Locks
+
+I tried this in TablePlus—clearing the `users` table and clearing all related rows in the `comments` table.
+
+```sql
+TRUNCATE TABLE users CASCADE;
+```
+
+But TablePlus waited a bit for the TypeScript/Node script to finish before finally executing.
 
 ![](./db-lock.png)
 
-## Reading Material
+This happens because the long-running application code implicitly tells Postgres to acquire a either a [table-level lock](https://www.postgresql.org/docs/9.4/explicit-locking.html#LOCKING-TABLES) or a [row-level lock](https://www.postgresql.org/docs/9.4/explicit-locking.html#LOCKING-ROWS) on the `users` and `comments` tables... I need to clarify this for myself.
 
+## Final Thoughts
+
+I explained idempotency, and touched upon the **A** and **I** in **ACID**—atomicity and isolation. I still have yet to understand consistency and durability. I'd also like to understand "event sourcing", "PRG", "eventual consistency".
+
+I didn't really talk about specific SQL how-tos, but most of my hours felt like they were spent on figuring out some data aggregation patterns. In a separate post, I should explain what a CTE is, and show some common queries that I figured out.
+
+Reading material...
+
+- https://medium.com/airbnb-engineering/avoiding-double-payments-in-a-distributed-payments-system-2981f6b070bb
 - https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/
 - https://stackoverflow.com/questions/37247231/using-aggregate-version-numbers-to-be-idempotent-when-using-event-sourcing
