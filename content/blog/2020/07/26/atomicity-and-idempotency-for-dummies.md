@@ -1,7 +1,7 @@
 ---
 title: "Atomicity and Idempotency For Dummies"
 date: "2020-07-26T13:07:20.934Z"
-description: "I spent the past few weeks writing raw SQL and doing and understanding databases. Here's a basic rundown of atomicity, idempotency, and isolation."
+description: "A semi overview of ACID, databases and SQL, from the perspective of someone who never really wrote raw SQL before."
 tags: ["database", "postgres", "sql", "atomicity", "idempotence"]
 image: db-image.png
 ---
