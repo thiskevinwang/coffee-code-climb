@@ -28,20 +28,6 @@ interface Data {
 }
 
 function Bio() {
-  const handleClick = () => {
-    const shareDialogParams: fb.ShareDialogParams = {
-      method: "share",
-      href: "https://coffeecodeclimb.com",
-      hashtag: "coffee",
-      quote: "WTF MATE",
-      display: 'popup',
-    }
-    
-    FB.ui(shareDialogParams, (response) =>  {
-      console.log({response })
-    });
-  }
-
   return (
     <StaticQuery
       query={bioQuery}
@@ -83,7 +69,7 @@ function Bio() {
                 </Tooltip>
               </span>
               <br />
-              This is my ever growing sandbox of sorts. <span onClick={handleClick}>🐰</span>
+              This is my ever growing sandbox of sorts. 🐰
             </p>
           </div>
         )
