@@ -8,7 +8,7 @@ import { ApolloProvider, client } from "./src/apollo"
 
 import DARK_THEME from "./src/Themes/dark"
 import LIGHT_THEME from "./src/Themes/light"
-import { SvgTrail, withSVGTrail } from "./src/components/HOCs/withSVGTrail"
+import { SvgTrail } from "./src/components/SvgTrail"
 import { GlobalStyles, GlobalTypographyStyles } from "./src/globalStyles"
 
 const ColorSchemeProvider = memo(({ children }) => {
