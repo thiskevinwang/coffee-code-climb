@@ -35,10 +35,49 @@ const ColorSchemeProvider = memo(({ children }) => {
   )
 })
 
+const Facebook = memo(() => {
+  useEffect(() => {
+    const script = document.createElement("script")
+    const appId = "1234150196787151"
+    script.innerHTML = `
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId            : '${appId}',
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : 'v8.0'
+        });
+      };
+    `
+    document.body.appendChild(script)
+
+    return () => {
+      document.body.removeChild(script)
+    }
+  }, [])
+
+  useEffect(() => {
+    // <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+    const script = document.createElement("script")
+    script.src = "https://connect.facebook.net/en_US/sdk.js"
+    script.async = true
+    script.crossOrigin = "anonymous"
+
+    document.body.appendChild(script)
+
+    return () => {
+      document.body.removeChild(script)
+    }
+  }, [])
+
+  return null
+})
+
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (
     <ApolloProvider client={client}>
+      <Facebook />
       <Provider store={store}>
         <ColorSchemeProvider>
           <SvgTrail />
