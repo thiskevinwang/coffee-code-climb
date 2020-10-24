@@ -1,6 +1,61 @@
 import { createGlobalStyle, css } from "styled-components"
 
-export const GlobalStyles = createGlobalStyle`
+import { Colors } from "consts/Colors"
+
+/**
+ * Classname for text selection preview
+ */
+export const SELECTION_PREVIEW_CLASS = "SELECTION_PREVIEW_CLASS"
+
+interface GlobalStylesProps {
+  isDarkMode: boolean
+}
+
+/**
+ *
+ */
+export const GlobalStyles = createGlobalStyle<GlobalStylesProps>`
+  .${SELECTION_PREVIEW_CLASS} {
+    /* opacity: 0; */
+    position: absolute;
+    
+    backdrop-filter: blur(5px);
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 1px;
+    padding: 10px;
+    padding-left: 30px;
+
+    transition: all 200ms ease-in-out;
+    box-shadow: var(--shadow);
+    
+    ::before {
+      content: '“';
+      position: absolute;
+      left: 5px;
+      top: 0;
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    ${(props) =>
+      props.isDarkMode
+        ? css`
+            /* DARK */
+            background-color: rgba(50, 50, 50, 0.5);
+            border-color: ${Colors.PURPLE};
+
+            ::before {
+              color: white;
+            }
+          `
+        : css`
+            /* LIGHT */
+            background-color: rgba(255, 255, 255, 0.5);
+            border-color: ${Colors.CYAN};
+          `}
+  }
+
   .TOC {
     transition-property: color, font-weight, box-shadow;
     transition-duration: 200ms;

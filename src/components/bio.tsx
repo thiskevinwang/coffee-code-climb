@@ -69,7 +69,7 @@ function Bio() {
                 </Tooltip>
               </span>
               <br />
-              This is my ever growing sandbox of sorts⛱.
+              This is my ever growing sandbox of sorts. 🐰
             </p>
           </div>
         )

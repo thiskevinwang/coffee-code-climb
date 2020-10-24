@@ -23,6 +23,7 @@ import { Colors } from "consts/Colors"
 import { useFetch } from "hooks/useFetch"
 import { useOptimisticClaps } from "hooks/useOptimisticClaps"
 import { useMeasure } from "hooks/useMeasure"
+import { useWindowSelection } from "hooks/useWindowSelection"
 
 const URI = `${process.env.GATSBY_LAMBDA_ENDPOINT}/sandbox/claps`
 
@@ -41,6 +42,8 @@ export default function BlogPostTemplate({ data, pageContext, location }) {
     tableOfContents,
     imagePublicURL,
   } = pageContext
+
+  useWindowSelection()
 
   const { data: res, error } = useFetch<QueryClapsResponse, any>(
     `${URI}/query?slug=${location.pathname}`
