@@ -1,4 +1,5 @@
 import * as Colors from "consts/Colors"
+import type { ThemeType } from "./type"
 
 const formInput = {
   background: Colors.silverLighter,
@@ -21,10 +22,9 @@ const commentRenderer = {
   borderColor: Colors.greyLighter,
 }
 
-const lightTheme = {
+export const lightTheme: ThemeType = {
+  mode: "light",
   formInput,
   formButton,
   commentRenderer,
 }
-
-export default lightTheme
