@@ -18,7 +18,7 @@
     "declarationMap": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["node"],
+    "types": ["node", "@types/facebook-js-sdk"],
     "typeRoots": ["./node_modules/@types"],
     "esModuleInterop": true
   },
