@@ -71,7 +71,6 @@ module.exports = {
           _reduxState: "src/_reduxState",
           svg: "src/svg",
           templates: "src/templates",
-          Themes: "src/Themes",
           utils: "src/utils",
         },
         extensions: [],
