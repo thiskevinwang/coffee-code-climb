@@ -6,12 +6,15 @@ import { ApolloProvider, client } from "apollo"
 import { SvgTrail } from "components/SvgTrail"
 import { ColorSchemeProvider } from "components/ColorSchemeProvider"
 
+import { Facebook } from "components/Facebook"
+
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (
     <ApolloProvider client={client}>
       <Provider store={store}>
         <ColorSchemeProvider>
+          <Facebook />
           <SvgTrail />
           {element}
         </ColorSchemeProvider>
