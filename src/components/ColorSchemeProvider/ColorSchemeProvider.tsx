@@ -4,8 +4,8 @@ import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider } from "styled-components"
 
 import { setIsDarkMode } from "_reduxState"
-import DARK_THEME from "components/ColorSchemeProvider/Themes/dark"
-import LIGHT_THEME from "components/ColorSchemeProvider/Themes/light"
+import darkTheme from "./Themes/dark"
+import lightTheme from "./Themes/light"
 import { GlobalStyles, GlobalTypographyStyles } from "globalStyles"
 
 /**
@@ -34,8 +34,8 @@ export const ColorSchemeProvider = memo(({ children }) => {
     <ThemeProvider
       theme={
         isDarkMode
-          ? { ...DARK_THEME, mode: "dark" }
-          : { ...LIGHT_THEME, mode: "light" }
+          ? { ...darkTheme, mode: "dark" }
+          : { ...lightTheme, mode: "light" }
       }
     >
       <GlobalStyles isDarkMode={isDarkMode} />
