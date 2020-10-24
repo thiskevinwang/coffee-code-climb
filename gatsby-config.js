@@ -65,7 +65,6 @@ module.exports = {
           css: "src/css",
           fonts: "src/fonts",
           icons: "src/icons",
-          globalStyles: "src/globalStyles",
           hooks: "src/hooks",
           pages: "src/pages",
           _reduxState: "src/_reduxState",

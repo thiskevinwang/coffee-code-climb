@@ -6,7 +6,10 @@ import { ThemeProvider } from "styled-components"
 import { setIsDarkMode } from "_reduxState"
 import { darkTheme } from "./Themes/dark"
 import { lightTheme } from "./Themes/light"
-import { GlobalStyles, GlobalTypographyStyles } from "globalStyles"
+import {
+  GlobalStyles,
+  GlobalTypographyStyles,
+} from "components/ColorSchemeProvider/globalStyles"
 
 /**
  * # ColorSchemeProvider
