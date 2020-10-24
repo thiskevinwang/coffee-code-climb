@@ -6,10 +6,8 @@ import { ThemeProvider } from "styled-components"
 import { setIsDarkMode } from "_reduxState"
 import { darkTheme } from "./Themes/dark"
 import { lightTheme } from "./Themes/light"
-import {
-  GlobalStyles,
-  GlobalTypographyStyles,
-} from "components/ColorSchemeProvider/globalStyles"
+import { GlobalStyles } from "./GlobalStyles"
+import { GlobalTypographyStyles } from "./GlobalTypographyStyles"
 
 /**
  * # ColorSchemeProvider
@@ -17,7 +15,9 @@ import {
  * A helper to detect `prefers-color-scheme` and update
  * redux `isDarkMode`
  *
- * Also provides `styled-components` theme context
+ * Also provides `styled-components` theme context and injects
+ * global styles
+ *
  *
  * @note This is only to be used from
  * - `gatsby-browser.js`
