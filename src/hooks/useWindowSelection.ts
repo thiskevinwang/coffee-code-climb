@@ -13,9 +13,6 @@ import { SELECTION_PREVIEW_CLASS } from "globalStyles"
  * This needs SSR checks.
  */
 export const useWindowSelection = () => {
-  const [sel, setSel] = useState("")
-  const [url, setUrl] = useState("")
-
   const [ele] = useState(() => {
     if (typeof window !== "undefined") {
       return document.createElement("div")
@@ -47,12 +44,10 @@ export const useWindowSelection = () => {
         } catch (err) {}
 
         const selectedText = selObj?.toString() || ""
-        setSel(selectedText)
         ele.style.opacity = !!selectedText ? "1" : "0"
 
         const baseURI =
           selObj?.anchorNode?.baseURI || "https://coffeecodeclimb.com"
-        setUrl(baseURI)
 
         const r = window
           ?.getSelection()
@@ -69,7 +64,7 @@ export const useWindowSelection = () => {
         const handleLinkClick = () => {
           const shareDialogParams: fb.ShareDialogParams = {
             method: "share",
-            href: url,
+            href: baseURI,
             quote: selectedText,
             display: "popup",
           }
@@ -95,5 +90,5 @@ export const useWindowSelection = () => {
     }
   }, [ele, linkEle])
 
-  return sel
+  return null
 }
