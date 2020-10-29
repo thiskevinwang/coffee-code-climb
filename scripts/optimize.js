@@ -6,6 +6,9 @@ const matches = glob.sync(`content/**/*.{png,jpg,jpeg}`)
 const MAX_WIDTH = 800
 const QUALITY = 50
 
+/**
+ * @see https://www.gatsbyjs.com/docs/preoptimizing-images/
+ */
 Promise.all(
   matches.map(async (match) => {
     const stream = sharp(match)
