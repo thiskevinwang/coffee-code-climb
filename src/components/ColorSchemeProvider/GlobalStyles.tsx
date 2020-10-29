@@ -1,6 +1,7 @@
 import { createGlobalStyle, css } from "styled-components"
 
-export const GlobalStyles = createGlobalStyle`
+type Props = { isDarkMode: boolean }
+export const GlobalStyles = createGlobalStyle<Props>`
   .TOC {
     transition-property: color, font-weight, box-shadow;
     transition-duration: 200ms;

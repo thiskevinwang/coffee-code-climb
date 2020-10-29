@@ -14,22 +14,10 @@ module.exports = {
   },
   plugins: [
     `gatsby-plugin-typescript`,
-    {
-      resolve: "gatsby-plugin-tslint",
-      options: {
-        test: /\.ts$|\.tsx$/,
-        exclude: /(node_modules|cache|public)/,
-      },
-    },
     /**
      * https://www.gatsbyjs.org/packages/gatsby-plugin-styled-components/
      */
-    {
-      resolve: `gatsby-plugin-styled-components`,
-      options: {
-        // plugins: ["babel-plugin-styled-components"],
-      },
-    },
+    `gatsby-plugin-styled-components`,
     {
       resolve: `gatsby-plugin-amazon-onetag`,
       options: {
@@ -65,7 +53,6 @@ module.exports = {
           css: "src/css",
           fonts: "src/fonts",
           icons: "src/icons",
-          globalStyles: "src/globalStyles",
           hooks: "src/hooks",
           pages: "src/pages",
           _reduxState: "src/_reduxState",

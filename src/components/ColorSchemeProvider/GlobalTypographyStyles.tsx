@@ -4,7 +4,8 @@ import { Colors } from "consts/Colors"
 // github boxshadow - figure out inset... later
 // 0 1px 0 rgba(27,31,35,.1), inset 0 1px 0 hsla(0,0%,100%,.03);
 
-export const GlobalTypographyStyles = createGlobalStyle`
+type Props = { isDarkMode: boolean }
+export const GlobalTypographyStyles = createGlobalStyle<Props>`
   :root {
     --purple-or-cyan: ${(p) => (p.isDarkMode ? Colors.PURPLE : Colors.CYAN)};
     /* var(--text) */

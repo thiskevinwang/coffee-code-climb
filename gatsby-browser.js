@@ -1,39 +1,12 @@
-import React, { useEffect, memo } from "react"
-import { Provider, useDispatch, useSelector } from "react-redux"
-import { useMediaQuery } from "@material-ui/core"
-import { ThemeProvider } from "styled-components"
+import React from "react"
+import { Provider } from "react-redux"
 
-import { store, setIsDarkMode } from "_reduxState"
-import { ApolloProvider, client } from "./src/apollo"
-import DARK_THEME from "./src/Themes/dark"
-import LIGHT_THEME from "./src/Themes/light"
-import { SvgTrail } from "./src/components/HOCs/withSVGTrail"
-import { GlobalStyles, GlobalTypographyStyles } from "./src/globalStyles"
+import { store } from "_reduxState"
+import { ApolloProvider, client } from "apollo"
+import { SvgTrail } from "components/SvgTrail"
+import { ColorSchemeProvider } from "components/ColorSchemeProvider"
 
-const ColorSchemeProvider = memo(({ children }) => {
-  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    dispatch(setIsDarkMode(prefersDark))
-  }, [prefersDark, dispatch])
-
-  const isDarkMode = useSelector((state) => state.isDarkMode)
-
-  return (
-    <ThemeProvider
-      theme={
-        isDarkMode
-          ? { ...DARK_THEME, mode: "dark" }
-          : { ...LIGHT_THEME, mode: "light" }
-      }
-    >
-      <GlobalStyles isDarkMode={isDarkMode} />
-      <GlobalTypographyStyles isDarkMode={isDarkMode} />
-      {children}
-    </ThemeProvider>
-  )
-})
+import { Facebook } from "components/Facebook"
 
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
@@ -41,6 +14,7 @@ export const wrapRootElement = ({ element }) => {
     <ApolloProvider client={client}>
       <Provider store={store}>
         <ColorSchemeProvider>
+          <Facebook />
           <SvgTrail />
           {element}
         </ColorSchemeProvider>
