@@ -8,6 +8,8 @@ const QUALITY = 50
 
 /**
  * @see https://www.gatsbyjs.com/docs/preoptimizing-images/
+ *
+ * @warn THIS IS NOT IDEMPOTENT AND WILL CONTINUOUSLY MODIFY IMAGES
  */
 Promise.all(
   matches.map(async (match) => {
