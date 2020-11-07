@@ -1,15 +1,16 @@
 import React, { useState, useReducer } from "react"
+import { useSelector } from "react-redux"
 import { graphql } from "gatsby"
 import styled from "styled-components"
 import Snackbar, { SnackbarCloseReason } from "@material-ui/core/Snackbar"
 import MuiAlert from "@material-ui/lab/Alert"
 
-import { InitiateAuthResponse } from "aws-sdk/clients/cognitoidentityserviceprovider"
-
 import SEO from "components/seo"
 import { LayoutManager } from "components/layoutManager"
 
 import { useCognito } from "utils/Playground/useCognito"
+import { useNewAuthentication } from "hooks/useAuthentication"
+import { RootState } from "_reduxState"
 
 const Styles = styled.div`
   width: 100%;
@@ -30,9 +31,14 @@ const Styles = styled.div`
   fieldset {
     padding: 10px;
     min-width: 0;
+    /* border-color: var(--text); */
   }
   legend {
     color: var(--text);
+  }
+  hr {
+    /* silver is the default border-color for fieldset, so match it */
+    background-color: silver;
   }
 `
 
@@ -56,39 +62,25 @@ function reducer(state: typeof initialState, action: Action) {
 }
 
 const Playground = ({ location }: { location: Location }) => {
+  const { decodedAccessToken, decodedIdToken } = useNewAuthentication()
+
   const cognito = useCognito()
   const [{ code, email, password }, dispatch] = useReducer(
     reducer,
     initialState
   )
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.name)
     dispatch({
       name: e.target.name as FormNames,
       value: e.target.value,
     })
   }
 
-  const [accessToken, setAccessToken] = useState("")
-  const [refreshToken, setRefreshToken] = useState("")
-  const [idToken, setIdToken] = useState("")
-
-  const getCognitoFromLocalStorage = () => {
-    const cognitoResponse = JSON.parse(
-      localStorage.getItem("cognito") ?? "{}"
-    ) as InitiateAuthResponse
-    setAccessToken(
-      cognitoResponse?.AuthenticationResult?.AccessToken ??
-        "no access token found"
-    )
-    setRefreshToken(
-      cognitoResponse?.AuthenticationResult?.RefreshToken ??
-        "no refresh token found"
-    )
-    setIdToken(
-      cognitoResponse?.AuthenticationResult?.IdToken ?? "no id token found"
-    )
-  }
+  const cog = useSelector((state: RootState) => state.cognito)
+  const cogErr = cog.error
+  const accessToken = cog?.data?.AuthenticationResult?.AccessToken
+  const refreshToken = cog?.data?.AuthenticationResult?.RefreshToken
+  const idToken = cog?.data?.AuthenticationResult?.IdToken
 
   // MUI Helpers
   const [open, setOpen] = useState(false)
@@ -111,6 +103,17 @@ const Playground = ({ location }: { location: Location }) => {
       <SEO title="Playground" />
       <h1>Playground</h1>
 
+      <p>
+        <b>Username: </b>
+        {decodedAccessToken?.username ??
+          decodedAccessToken?.sub ??
+          decodedAccessToken?.name}
+      </p>
+      <p>
+        <b>Email: </b>
+        {decodedIdToken?.email ?? "_"}
+      </p>
+
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <MuiAlert
           onClose={(e) => handleClose(e, undefined)}
@@ -125,23 +128,35 @@ const Playground = ({ location }: { location: Location }) => {
       <Styles>
         <fieldset>
           <legend>Local Storage:</legend>
-          <button onClick={getCognitoFromLocalStorage}>
+          {/* <button onClick={getCognitoFromLocalStorage}>
             COGNITO LOCAL STORAGE
           </button>
-          <br />
+          <br /> */}
           <span>AccessToken</span>
           <pre onClick={saveToClipboard}>{accessToken}</pre>
           <span>RefreshToken</span>
           <pre onClick={saveToClipboard}>{refreshToken}</pre>
           <span>IdToken</span>
           <pre onClick={saveToClipboard}>{idToken}</pre>
+          <hr />
+
+          <div>
+            <div>
+              <span>Data</span>
+              <pre>{JSON.stringify(cog.data, null, 2)}</pre>
+            </div>
+            <div>
+              <span>Error</span>
+              <pre>{JSON.stringify(cogErr, null, 2)}</pre>
+            </div>
+          </div>
         </fieldset>
 
         {/* ----------------------------
                     COGNITO
            ----------------------------*/}
         <fieldset>
-          <legend>Cognito Only:</legend>
+          <legend>Cognito Operations:</legend>
           <input
             name={FormNames.EMAIL}
             placeholder={`${FormNames.EMAIL}/username`}
@@ -156,63 +171,43 @@ const Playground = ({ location }: { location: Location }) => {
           />
           <input
             name={FormNames.CODE}
-            placeholder={FormNames.CODE}
+            placeholder={`verification ${FormNames.CODE}`}
             onChange={handleInputChange}
             value={code}
           />
           <br />
 
           <button onClick={() => cognito.signUpWithEmail(email, password)}>
-            COG SIGN UP
+            SIGN UP
           </button>
-          <br />
-          <pre>
-            {cognito.ops.signUpWithEmail.data
-              ? JSON.stringify(cognito.ops.signUpWithEmail.data, null, 2)
-              : cognito.ops.signUpWithEmail.error}
-          </pre>
-          <br />
 
           <button onClick={() => cognito.confirmSignUp(email, code)}>
-            COG CONFIRM SIGN UP
+            CONFIRM SIGN UP
           </button>
           <br />
-          <pre>
-            {cognito.ops.confirmSignUp.data
-              ? JSON.stringify(cognito.ops.confirmSignUp.data, null, 2)
-              : cognito.ops.confirmSignUp.error}
-          </pre>
+
+          <button onClick={() => cognito.forgotPassword(email)}>
+            FORGOT PASSWORD
+          </button>
+          <button
+            onClick={() => cognito.confirmForgotPassword(email, password, code)}
+          >
+            CONFIRM FORGOT PASSWORD
+          </button>
           <br />
 
           <button onClick={() => cognito.initiateAuth(email, password)}>
-            COG INITIATE AUTH (USER_PASSWORD_AUTH)
+            INITIATE AUTH (USER_PASSWORD_AUTH)
           </button>
-          <br />
-          <pre>
-            {cognito.ops.initiateAuth.data
-              ? JSON.stringify(cognito.ops.initiateAuth.data, null, 2)
-              : cognito.ops.initiateAuth.error}
-          </pre>
-
           <br />
 
           <button
             onClick={() =>
-              cognito.initiateAuthForRefreshToken(email, refreshToken)
+              cognito.initiateAuthForRefreshToken(email, refreshToken ?? "")
             }
           >
-            COG INITIATE AUTH (REFRESH_TOKEN)
+            INITIATE AUTH (REFRESH_TOKEN)
           </button>
-          <br />
-          <pre>
-            {cognito.ops.initiateAuthForRefreshToken.data
-              ? JSON.stringify(
-                  cognito.ops.initiateAuthForRefreshToken.data,
-                  null,
-                  2
-                )
-              : cognito.ops.initiateAuthForRefreshToken.error}
-          </pre>
         </fieldset>
 
         {/* ----------------------------
@@ -220,34 +215,13 @@ const Playground = ({ location }: { location: Location }) => {
            ----------------------------*/}
         <fieldset>
           <legend>Verify Tokens</legend>
-          <button
-            onClick={() =>
-              cognito.verifyToken(
-                JSON.parse(localStorage.getItem("cognito") ?? "{}")
-                  ?.AuthenticationResult?.AccessToken
-              )
-            }
-          >
+          <button onClick={() => cognito.verifyToken(accessToken)}>
             Verify AccessToken
           </button>
-          <button
-            onClick={() =>
-              cognito.verifyToken(
-                JSON.parse(localStorage.getItem("cognito") ?? "{}")
-                  ?.AuthenticationResult?.RefreshToken
-              )
-            }
-          >
+          <button onClick={() => cognito.verifyToken(refreshToken)}>
             Verify RefreshToken
           </button>
-          <button
-            onClick={() =>
-              cognito.verifyToken(
-                JSON.parse(localStorage.getItem("cognito") ?? "{}")
-                  ?.AuthenticationResult?.IdToken
-              )
-            }
-          >
+          <button onClick={() => cognito.verifyToken(idToken)}>
             Verify IdToken
           </button>
           <pre>{JSON.stringify(cognito.decodedToken, null, 2)}</pre>

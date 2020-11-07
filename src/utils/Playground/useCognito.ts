@@ -1,48 +1,18 @@
-import { CognitoIdentityServiceProvider } from "aws-sdk"
-import { useReducer, useState } from "react"
+import { useCallback, useState } from "react"
+import { useDispatch } from "react-redux"
+import _ from "lodash"
+import type { CognitoIdentityServiceProvider } from "aws-sdk"
+import type { Dispatch } from "redux"
+
+import { setCognito } from "_reduxState"
 
 import { cognito } from "./AWS"
 import { verifyTokenAsync } from "./jwt"
 
-enum OpNames {
-  SIGN_UP_WITH_EMAIL = "signUpWithEmail",
-  CONFIRM_SIGN_UP = "confirmSignUp",
-  INITIATE_AUTH = "initiateAuth",
-  INITIATE_AUTH_FOR_REFRESH_TOKEN = "initiateAuthForRefreshToken",
-}
-
-const BLANK_STATE = { error: null, data: null }
-const INITIAL_STATE = {
-  [OpNames.SIGN_UP_WITH_EMAIL]: BLANK_STATE,
-  [OpNames.CONFIRM_SIGN_UP]: BLANK_STATE,
-  [OpNames.INITIATE_AUTH]: BLANK_STATE,
-  [OpNames.INITIATE_AUTH_FOR_REFRESH_TOKEN]: BLANK_STATE,
-}
-
-type Action = {
-  name: OpNames
-  value: any
-  type: ActionTypes
-}
-
-enum ActionTypes {
-  SUCCESS = "success",
-  ERROR = "error",
-}
-
-function reducer(state: typeof INITIAL_STATE, action: Action) {
-  if (action.type === ActionTypes.ERROR) {
-    return { ...state, [action.name]: { error: action.value, data: null } }
-  } else if (action.type === ActionTypes.SUCCESS) {
-    return { ...state, [action.name]: { error: null, data: action.value } }
-  }
-  throw new Error(`action.type must be one of ${Object.values(ActionTypes)}`)
-}
-
-const makeSignUpWithEmail = (
-  dispatch: React.Dispatch<Action>,
-  opName: OpNames
-) => async (email: string, password: string) => {
+const makeSignUpWithEmail = (rdxDispatch: Dispatch) => async (
+  email: string,
+  password: string
+) => {
   console.group("cogSignUpWithEmail")
 
   const params: CognitoIdentityServiceProvider.SignUpRequest = {
@@ -59,26 +29,17 @@ const makeSignUpWithEmail = (
 
   try {
     const data = await cognito.signUp(params).promise()
-    dispatch({
-      type: ActionTypes.SUCCESS,
-      name: opName,
-      value: data,
-    })
   } catch (err) {
-    dispatch({
-      type: ActionTypes.ERROR,
-      name: opName,
-      value: err.toString(),
-    })
+    rdxDispatch(setCognito(null, err))
   }
 
   console.groupEnd()
 }
 
-const makeConfirmSignUp = (
-  dispatch: React.Dispatch<Action>,
-  opName: OpNames
-) => async (email: string, confirmationCode: string) => {
+const makeConfirmSignUp = (rdxDispatch: Dispatch) => async (
+  email: string,
+  confirmationCode: string
+) => {
   console.group("cogConfirmSignUp")
 
   const params: CognitoIdentityServiceProvider.ConfirmSignUpRequest = {
@@ -89,26 +50,17 @@ const makeConfirmSignUp = (
 
   try {
     const data = await cognito.confirmSignUp(params).promise()
-    dispatch({
-      type: ActionTypes.SUCCESS,
-      name: opName,
-      value: data,
-    })
   } catch (err) {
-    dispatch({
-      type: ActionTypes.ERROR,
-      name: opName,
-      value: err.toString(),
-    })
+    rdxDispatch(setCognito(null, err))
   }
 
   console.groupEnd()
 }
 
-const makeInitateAuth = (
-  dispatch: React.Dispatch<Action>,
-  opName: OpNames
-) => async (email: string, password: string) => {
+const makeInitateAuth = (rdxDispatch: Dispatch) => async (
+  email: string,
+  password: string
+) => {
   console.group("cogInitateAuth")
 
   const params: CognitoIdentityServiceProvider.InitiateAuthRequest = {
@@ -122,29 +74,17 @@ const makeInitateAuth = (
 
   try {
     const data = await cognito.initiateAuth(params).promise()
-    dispatch({
-      type: ActionTypes.SUCCESS,
-      name: opName,
-      value: data,
-    })
-    localStorage.setItem("cognito", JSON.stringify(data))
+    rdxDispatch(setCognito(data, null))
   } catch (err) {
-    dispatch({
-      type: ActionTypes.ERROR,
-      name: opName,
-      value: err.toString(),
-    })
+    rdxDispatch(setCognito(null, err))
   }
   console.groupEnd()
 }
 
-/**
- * A higher order function.
- */
-const makeInitateAuthForRefreshToken = (
-  dispatch: React.Dispatch<Action>,
-  opName: OpNames
-) => async (email: string, refreshToken: string) => {
+const makeInitateAuthForRefreshToken = (rdxDispatch: Dispatch) => async (
+  email: string,
+  refreshToken: string
+) => {
   console.group("cogInitateAuth-RefreshToken")
 
   const params: CognitoIdentityServiceProvider.InitiateAuthRequest = {
@@ -158,24 +98,55 @@ const makeInitateAuthForRefreshToken = (
 
   try {
     const data = await cognito.initiateAuth(params).promise()
-    dispatch({
-      type: ActionTypes.SUCCESS,
-      name: opName,
-      value: data,
-    })
-    localStorage.setItem("cognito", JSON.stringify(data))
+    rdxDispatch(setCognito(data, null))
   } catch (err) {
-    dispatch({
-      type: ActionTypes.ERROR,
-      name: opName,
-      value: err.toString(),
-    })
+    rdxDispatch(setCognito(null, err))
   }
   console.groupEnd()
 }
 
-const useVerify = () => {
-  const [decodedToken, setDecodedToken] = useState("")
+const makeForgotPassword = (rdxDispatch: Dispatch) => async (email: string) => {
+  const params: CognitoIdentityServiceProvider.ForgotPasswordRequest = {
+    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    Username: email,
+  }
+
+  try {
+    const data = await cognito.forgotPassword(params).promise()
+    rdxDispatch(setCognito(data, null))
+  } catch (err) {
+    rdxDispatch(setCognito(null, err))
+  }
+}
+
+const makeConfirmForgotPassword = (rdxDispatch: Dispatch) => async (
+  email: string,
+  password: string,
+  code: string
+) => {
+  const params: CognitoIdentityServiceProvider.ConfirmForgotPasswordRequest = {
+    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    Username: email,
+    Password: password,
+    ConfirmationCode: code,
+  }
+
+  try {
+    const data = await cognito.confirmForgotPassword(params).promise()
+    rdxDispatch(setCognito(data, null))
+  } catch (err) {
+    rdxDispatch(setCognito(null, err))
+  }
+}
+
+/**
+ * A utility hook that returns a method to verify a token token
+ * with JWKS URI.
+ *
+ * Also returns the decoded value
+ */
+export const useVerify = (): [any, (token: string) => Promise<void>] => {
+  const [decodedToken, setDecodedToken] = useState(undefined)
   /**
    * The `token` argument for this method is expected to be a string,
    * from local storage
@@ -184,25 +155,48 @@ const useVerify = () => {
     const decoded = await verifyTokenAsync(token)
     setDecodedToken(decoded)
   }
-  return { decodedToken, verify }
+  return [decodedToken, verify]
+}
+
+const THROTTLE_INTERVAL = 1500
+
+/**
+ * A wrapper hook to
+ */
+const useThrottle = <T extends (...args: any) => any>(
+  func: T
+): T & _.Cancelable => {
+  return useCallback(_.throttle(func, THROTTLE_INTERVAL), [])
 }
 
 /**
  * React hook for various Cognito API methods
  */
 export const useCognito = () => {
-  const [ops, dispatch] = useReducer(reducer, INITIAL_STATE)
-  const { decodedToken, verify } = useVerify()
+  const [decodedToken, verify] = useVerify()
+  const rdxDispatch = useDispatch()
+
+  // Throttle cognito-calling methods
+  const signUpWithEmail = useThrottle(makeSignUpWithEmail(rdxDispatch))
+  const confirmSignUp = useThrottle(makeConfirmSignUp(rdxDispatch))
+  const initiateAuth = useThrottle(makeInitateAuth(rdxDispatch))
+  const initiateAuthForRefreshToken = useThrottle(
+    makeInitateAuthForRefreshToken(rdxDispatch)
+  )
+  const forgotPassword = useThrottle(makeForgotPassword(rdxDispatch))
+  const confirmForgotPassword = useThrottle(
+    makeConfirmForgotPassword(rdxDispatch)
+  )
 
   return {
-    ops,
-    signUpWithEmail: makeSignUpWithEmail(dispatch, OpNames.SIGN_UP_WITH_EMAIL),
-    confirmSignUp: makeConfirmSignUp(dispatch, OpNames.CONFIRM_SIGN_UP),
-    initiateAuth: makeInitateAuth(dispatch, OpNames.INITIATE_AUTH),
-    initiateAuthForRefreshToken: makeInitateAuthForRefreshToken(
-      dispatch,
-      OpNames.INITIATE_AUTH_FOR_REFRESH_TOKEN
-    ),
+    // cognito methods
+    signUpWithEmail,
+    confirmSignUp,
+    initiateAuth,
+    initiateAuthForRefreshToken,
+    forgotPassword,
+    confirmForgotPassword,
+    // utils
     verifyToken: verify,
     decodedToken,
   }
