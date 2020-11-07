@@ -182,7 +182,7 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
  * yarn add -D @hot-loader/react-dom
  * @see https://github.com/gatsbyjs/gatsby/issues/11934#issuecomment-469046186
  */
-exports.onCreateWebpackConfig = ({ getConfig, stage }) => {
+exports.onCreateWebpackConfig = ({ getConfig, stage, actions }) => {
   const config = getConfig()
   if (stage.startsWith("develop") && config.resolve) {
     config.resolve.alias = {
@@ -190,4 +190,18 @@ exports.onCreateWebpackConfig = ({ getConfig, stage }) => {
       "react-dom": "@hot-loader/react-dom",
     }
   }
+  /**
+   * Fixing a jwks-rsa error
+   * - 'Can't resolve 'tls' in '/Users/kevin/repos/coffee-code-climb/node_modules/https-proxy-agent/dist'
+   *
+   * @see https://github.com/auth0/node-jwks-rsa/issues/48
+   * @see https://github.com/gatsbyjs/gatsby/issues/21500
+   */
+  actions.setWebpackConfig({
+    node: {
+      fs: "empty",
+      tls: "empty",
+      net: "empty",
+    },
+  })
 }

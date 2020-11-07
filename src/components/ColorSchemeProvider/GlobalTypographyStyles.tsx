@@ -31,6 +31,9 @@ export const GlobalTypographyStyles = createGlobalStyle<Props>`
   ::selection {
      background: var(--purple-or-cyan);
   }
+  pre {
+    color: var(--text);
+  }
   s {
     text-decoration-line: line-through;
     text-decoration-color: var(--purple-or-cyan);
