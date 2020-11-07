@@ -1,7 +1,7 @@
 import AWS from "aws-sdk"
 
 const credentials = new AWS.CognitoIdentityCredentials({
-  IdentityPoolId: process.env.IDENTITY_POOL_ID as string,
+  IdentityPoolId: process.env.GATSBY_IDENTITY_POOL_ID as string,
 })
 
 AWS.config.update({

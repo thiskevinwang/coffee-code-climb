@@ -3,7 +3,7 @@ import jwt, { JwtHeader } from "jsonwebtoken"
 import { promisify } from "util"
 
 const client: JwksClient = jwksClient({
-  jwksUri: process.env.JWKS_URI as string,
+  jwksUri: process.env.GATSBY_JWKS_URI as string,
 })
 
 const getKey: jwt.GetPublicKeyOrSecret = function (header, callback) {

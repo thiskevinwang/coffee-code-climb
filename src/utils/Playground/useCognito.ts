@@ -9,6 +9,8 @@ import { setCognito } from "_reduxState"
 import { cognito } from "./AWS"
 import { verifyTokenAsync } from "./jwt"
 
+const CLIENT_ID = process.env.GATSBY_COGNITO_CLIENT_ID as string
+
 const makeSignUpWithEmail = (rdxDispatch: Dispatch) => async (
   email: string,
   password: string
@@ -16,7 +18,7 @@ const makeSignUpWithEmail = (rdxDispatch: Dispatch) => async (
   console.group("cogSignUpWithEmail")
 
   const params: CognitoIdentityServiceProvider.SignUpRequest = {
-    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    ClientId: CLIENT_ID,
     Username: email,
     Password: password,
     UserAttributes: [
@@ -43,7 +45,7 @@ const makeConfirmSignUp = (rdxDispatch: Dispatch) => async (
   console.group("cogConfirmSignUp")
 
   const params: CognitoIdentityServiceProvider.ConfirmSignUpRequest = {
-    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    ClientId: CLIENT_ID,
     Username: email,
     ConfirmationCode: confirmationCode,
   }
@@ -65,7 +67,7 @@ const makeInitateAuth = (rdxDispatch: Dispatch) => async (
 
   const params: CognitoIdentityServiceProvider.InitiateAuthRequest = {
     AuthFlow: "USER_PASSWORD_AUTH",
-    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    ClientId: CLIENT_ID,
     AuthParameters: {
       USERNAME: email,
       PASSWORD: password,
@@ -89,7 +91,7 @@ const makeInitateAuthForRefreshToken = (rdxDispatch: Dispatch) => async (
 
   const params: CognitoIdentityServiceProvider.InitiateAuthRequest = {
     AuthFlow: "REFRESH_TOKEN",
-    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    ClientId: CLIENT_ID,
     AuthParameters: {
       USERNAME: email,
       REFRESH_TOKEN: refreshToken,
@@ -107,7 +109,7 @@ const makeInitateAuthForRefreshToken = (rdxDispatch: Dispatch) => async (
 
 const makeForgotPassword = (rdxDispatch: Dispatch) => async (email: string) => {
   const params: CognitoIdentityServiceProvider.ForgotPasswordRequest = {
-    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    ClientId: CLIENT_ID,
     Username: email,
   }
 
@@ -125,7 +127,7 @@ const makeConfirmForgotPassword = (rdxDispatch: Dispatch) => async (
   code: string
 ) => {
   const params: CognitoIdentityServiceProvider.ConfirmForgotPasswordRequest = {
-    ClientId: process.env.COGNITO_CLIENT_ID as string,
+    ClientId: CLIENT_ID,
     Username: email,
     Password: password,
     ConfirmationCode: code,
