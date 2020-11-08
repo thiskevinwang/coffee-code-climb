@@ -3,7 +3,7 @@ import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { animated } from "react-spring"
 import { Popover } from "@material-ui/core"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/client"
 import _ from "lodash"
 
 import * as Colors from "consts/Colors"
@@ -100,7 +100,7 @@ export const Overflow = ({
         data: {
           getCommentsByUrl: _.filter(
             getCommentsByUrl,
-            e => e.id !== deleteCommentById.id
+            (e) => e.id !== deleteCommentById.id
           ),
         },
       })

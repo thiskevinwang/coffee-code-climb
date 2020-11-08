@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { gql, ApolloError } from "apollo-boost"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/client"
 import axios, { AxiosRequestConfig } from "axios"
 import moment from "moment"
 
@@ -45,7 +45,7 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
   const [getSignedUrl, { data: data_1, loading: loading_1 }] = useMutation(
     S3_GET_SIGNED_PUT_OBJECT_URL,
     {
-      onCompleted: data => {},
+      onCompleted: (data) => {},
       onError: (error: ApolloError) => {
         console.error(error)
         throw new Error(error.message)
@@ -57,7 +57,7 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
   const [updateUserAvatar, { data: data_2, loading: loading_2 }] = useMutation(
     UPDATE_USER_AVATAR,
     {
-      onCompleted: data => {
+      onCompleted: (data) => {
         onSuccess?.()
       },
       onError: (error: ApolloError) => {
@@ -121,9 +121,7 @@ const formatFilename = ({
   currentUserId: number
 }) => {
   const date = moment().format("YYYYMMDD")
-  const randomString = Math.random()
-    .toString(36)
-    .substring(2, 7)
+  const randomString = Math.random().toString(36).substring(2, 7)
   const cleanFileName = filename.toLowerCase().replace(/[^a-z0-9]/g, "-")
   const newFilename = `images/${date}-${randomString}-user${currentUserId}-${cleanFileName}`
   return newFilename.substring(0, 60)

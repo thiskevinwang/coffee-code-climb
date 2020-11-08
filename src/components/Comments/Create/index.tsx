@@ -3,7 +3,7 @@ import { Link } from "gatsby"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
 import { useSpring, animated } from "react-spring"
-import { useApolloClient, useMutation, useLazyQuery } from "@apollo/react-hooks"
+import { useApolloClient, useMutation, useLazyQuery } from "@apollo/client"
 import _ from "lodash"
 
 // Hooks
@@ -25,8 +25,8 @@ import {
 } from "../Display/ByUrl/query"
 
 const borderColor = theme("mode", {
-  light: props => props.theme.commentRenderer.borderColor,
-  dark: props => props.theme.commentRenderer.borderColor,
+  light: (props) => props.theme.commentRenderer.borderColor,
+  dark: (props) => props.theme.commentRenderer.borderColor,
 })
 
 const Renderer = styled(animated.div)`

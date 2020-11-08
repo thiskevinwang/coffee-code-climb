@@ -6,7 +6,7 @@ import _ from "lodash"
 import { graphql } from "gatsby"
 import { animated } from "react-spring"
 import styled from "styled-components"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/client"
 import { gql, ApolloError } from "apollo-boost"
 import jwt from "jsonwebtoken"
 
@@ -66,7 +66,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
         Authorization: token ? `Bearer ${token}` : "",
       },
     },
-    onCompleted: data => {
+    onCompleted: (data) => {
       const { id } = data.resetPassword
 
       if (id) {
@@ -95,7 +95,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
         <Formik
           initialValues={{ password: "" }}
           validateOnMount={false}
-          validate={values => {
+          validate={(values) => {
             const errors: FormikErrors<Values> = {}
             if (!values.password) {
               errors.password = "Required"
@@ -108,7 +108,7 @@ const AuthResetPassword = ({ location }: { location: Location }) => {
         >
           {(props: FormikProps<Values>) => (
             <form
-              onSubmit={e => {
+              onSubmit={(e) => {
                 e.preventDefault()
                 props.handleSubmit(e)
               }}

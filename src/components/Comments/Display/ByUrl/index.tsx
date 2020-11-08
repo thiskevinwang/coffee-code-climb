@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 // import ms from "ms"
 import { useTransition, config } from "react-spring"
 import _ from "lodash"
-import { useLazyQuery } from "@apollo/react-hooks"
+import { useLazyQuery } from "@apollo/client"
 import moment from "moment"
 
 // Hooks
@@ -124,20 +124,20 @@ export const CommentsByUrl = ({ url }) => {
 
   const transition = useTransition(
     comments,
-    e => `${e.id}-${new Date(e.created).getTime()}-${e.user.id}`,
+    (e) => `${e.id}-${new Date(e.created).getTime()}-${e.user.id}`,
     {
-      from: item => ({
+      from: (item) => ({
         opacity: 0,
         transform: `scale(0.8)`,
         filter: `blur(10px)`,
         willChange: `opacity, transform, filter`,
       }),
-      enter: item => ({
+      enter: (item) => ({
         opacity: 1,
         transform: `scale(1)`,
         filter: `blur(0px)`,
       }),
-      update: item => ({
+      update: (item) => ({
         opacity: 1,
       }),
       leave: {
@@ -207,7 +207,7 @@ export const CommentsByUrl = ({ url }) => {
               <ReactionsContainer style={{ height: 30, marginBottom: `1rem` }}>
                 {_.flow(
                   _.partialRight(_.uniqBy, "variant"),
-                  _.partialRight(_.filter, e => e.variant !== "None")
+                  _.partialRight(_.filter, (e) => e.variant !== "None")
                 )(_comment.reactions).map((e, i) => {
                   return (
                     <Variant
@@ -232,18 +232,20 @@ export const CommentsByUrl = ({ url }) => {
                      * offset the reactionCount by # of unique
                      * reaction variants, + 1
                      */
-                    left: `${(_.flow(
-                      _.partialRight(_.uniqBy, "variant"),
-                      _.partialRight(_.filter, e => e.variant !== "None"),
-                      _.size
-                    )(_comment.reactions) +
-                      1) *
-                      LEFT_OFFSET}px`,
+                    left: `${
+                      (_.flow(
+                        _.partialRight(_.uniqBy, "variant"),
+                        _.partialRight(_.filter, (e) => e.variant !== "None"),
+                        _.size
+                      )(_comment.reactions) +
+                        1) *
+                      LEFT_OFFSET
+                    }px`,
                   }}
                 >
                   <small>
                     {_.flow(
-                      _.partialRight(_.filter, e => e.variant !== "None"),
+                      _.partialRight(_.filter, (e) => e.variant !== "None"),
                       _.size
                     )(_comment.reactions)}
                   </small>

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useLazyQuery, useApolloClient } from "@apollo/react-hooks"
+import { useLazyQuery, useApolloClient } from "@apollo/cient"
 import styled from "styled-components"
 
 import { GET_PAGE } from "apollo"
@@ -48,9 +48,7 @@ const PageViewCounter = ({ location }: { location: Location }) => {
   if (called && loading) return <Small>...</Small>
   if (error) return <Small>oops</Small>
 
-
-
-  if (!data ?.getPage) return <Small>oops</Small>
+  if (!data?.getPage) return <Small>oops</Small>
   if (!data?.getPage.attributes) return <Small>oops</Small>
 
   return (

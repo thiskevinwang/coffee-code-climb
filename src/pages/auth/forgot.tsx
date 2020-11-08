@@ -4,7 +4,7 @@ import _ from "lodash"
 import { graphql, Link } from "gatsby"
 import { animated } from "react-spring"
 import styled from "styled-components"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/client"
 import { gql, ApolloError } from "apollo-boost"
 
 import { LayoutManager } from "components/layoutManager"
@@ -51,7 +51,7 @@ const AuthForgotPassword = ({ location }: { location: Location }) => {
   const [requestPasswordResetLink, { data, loading }] = useMutation(
     REQUEST_PASSWORD_RESET_LINK,
     {
-      onCompleted: data => {
+      onCompleted: (data) => {
         const { message } = data.requestPasswordResetLink
         setSuccessMessage(message)
       },
@@ -68,7 +68,7 @@ const AuthForgotPassword = ({ location }: { location: Location }) => {
       <Formik
         initialValues={{ email: "", password: "" }}
         validateOnMount={false}
-        validate={values => {
+        validate={(values) => {
           const errors: FormikErrors<Values> = {}
           if (!values.email) {
             errors.email = "Required"
@@ -86,7 +86,7 @@ const AuthForgotPassword = ({ location }: { location: Location }) => {
       >
         {(props: FormikProps<Values>) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault()
               props.handleSubmit(e)
             }}

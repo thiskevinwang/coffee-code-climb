@@ -1,5 +1,5 @@
 import { gql } from "apollo-boost"
-import { useLazyQuery, useSubscription } from "@apollo/react-hooks"
+import { useLazyQuery, useSubscription } from "@apollo/client"
 
 const QUERY = gql`
   query {

@@ -6,7 +6,7 @@ import { graphql } from "gatsby"
 import { animated } from "react-spring"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
-import { useApolloClient } from "@apollo/react-hooks"
+import { useApolloClient } from "@apollo/client"
 
 // Hooks
 import { ITEM_HEIGHT } from "hooks/rds/useReactionLogic"
