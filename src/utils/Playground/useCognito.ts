@@ -6,10 +6,11 @@ import type { Dispatch } from "redux"
 
 import { setCognito } from "_reduxState"
 
-import { cognito } from "./AWS"
+import { AWS, cognito } from "./AWS"
 import { verifyTokenAsync } from "./jwt"
 
 const CLIENT_ID = process.env.GATSBY_COGNITO_CLIENT_ID as string
+const USER_POOL_ID = process.env.GATSBY_USER_POOL_ID as string
 
 const makeSignUpWithEmail = (rdxDispatch: Dispatch) => async (
   email: string,
@@ -107,6 +108,96 @@ const makeInitateAuthForRefreshToken = (rdxDispatch: Dispatch) => async (
   console.groupEnd()
 }
 
+const makeInitateAuthWithFacebook = (rdxDispatch: Dispatch) => async () => {
+  return alert("FIXME")
+
+  FB.login(function (response) {
+    // Check if the user logged in successfully.
+    if (response.authResponse) {
+      console.log("You are now logged in.")
+      console.log(response.authResponse.accessToken)
+      // Add the Facebook access token to the Amazon Cognito credentials login map.
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: process.env.GATSBY_IDENTITY_POOL_ID as string,
+        Logins: {
+          "graph.facebook.com": response.authResponse.accessToken,
+        },
+      })
+
+      // Obtain AWS credentials
+      AWS.config.credentials.get(async (err) => {
+        console.log("Error?:", err)
+
+        const accessKeyId = AWS.config.credentials.accessKeyId
+        const secretAccessKey = AWS.config.credentials.secretAccessKey
+        const sessionToken = AWS.config.credentials.sessionToken
+        const identityId = AWS.config.credentials.identityId
+
+        console.log({ accessKeyId, secretAccessKey, sessionToken, identityId })
+
+        // FB.api("/me", { fields: "email" }, async (response) => {
+        //   console.log("me:", response)
+        // })
+      })
+    } else {
+      console.log("There was a problem logging you in.")
+    }
+  })
+}
+
+const makeAdminLinkProviderForUser = (rdxDispatch: Dispatch) => async (
+  email: string
+) => {
+  return alert("FIXME")
+  FB.login(function (response) {
+    // Check if the user logged in successfully.
+    if (response.authResponse) {
+      console.log("You are now logged in.")
+      console.log(response.authResponse.accessToken)
+      // Add the Facebook access token to the Amazon Cognito credentials login map.
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: process.env.GATSBY_IDENTITY_POOL_ID as string,
+        Logins: {
+          "graph.facebook.com": response.authResponse.accessToken,
+        },
+      })
+
+      // Obtain AWS credentials
+      AWS.config.credentials.get(async (err) => {
+        console.log("Error?:", err)
+
+        const accessKeyId = AWS.config.credentials.accessKeyId
+        const secretAccessKey = AWS.config.credentials.secretAccessKey
+        const sessionToken = AWS.config.credentials.sessionToken
+        const identityId = AWS.config.credentials.identityId
+
+        console.log({ accessKeyId, secretAccessKey, sessionToken, identityId })
+        const cog = new AWS.CognitoIdentityServiceProvider()
+
+        const params: CognitoIdentityServiceProvider.AdminLinkProviderForUserRequest = {
+          UserPoolId: USER_POOL_ID,
+          DestinationUser: {
+            ProviderName: "Cognito",
+            // ProviderAttributeName: "", // --ignored
+            ProviderAttributeValue: email,
+          },
+          SourceUser: {
+            ProviderName: "Facebook",
+            ProviderAttributeName: "Cognito_Subject",
+            // ProviderAttributeValue: "",
+          },
+        }
+        await cog.adminLinkProviderForUser(params).promise()
+        // FB.api("/me", { fields: "email" }, async (response) => {
+        //   console.log("me:", response)
+        // })
+      })
+    } else {
+      console.log("There was a problem logging you in.")
+    }
+  })
+}
+
 const makeForgotPassword = (rdxDispatch: Dispatch) => async (email: string) => {
   const params: CognitoIdentityServiceProvider.ForgotPasswordRequest = {
     ClientId: CLIENT_ID,
@@ -185,6 +276,12 @@ export const useCognito = () => {
   const initiateAuthForRefreshToken = useThrottle(
     makeInitateAuthForRefreshToken(rdxDispatch)
   )
+  const initiateAuthWithFacebook = useThrottle(
+    makeInitateAuthWithFacebook(rdxDispatch)
+  )
+  const adminLinkProviderForUser = useThrottle(
+    makeAdminLinkProviderForUser(rdxDispatch)
+  )
   const forgotPassword = useThrottle(makeForgotPassword(rdxDispatch))
   const confirmForgotPassword = useThrottle(
     makeConfirmForgotPassword(rdxDispatch)
@@ -196,6 +293,8 @@ export const useCognito = () => {
     confirmSignUp,
     initiateAuth,
     initiateAuthForRefreshToken,
+    initiateAuthWithFacebook,
+    adminLinkProviderForUser,
     forgotPassword,
     confirmForgotPassword,
     // utils
