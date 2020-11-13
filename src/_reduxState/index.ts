@@ -7,6 +7,7 @@ import {
 } from "redux"
 import Cognito from "aws-sdk/clients/cognitoidentityserviceprovider"
 import { AWSError } from "aws-sdk"
+import { ApolloError } from "@apollo/client"
 
 /**
  * action
@@ -50,7 +51,10 @@ type Data =
  * - saves the `data` to localstorage
  * - this could be scaled up by redux-persist
  */
-export const setCognito = (data: Data, error: AWSError | null): AnyAction => {
+export const setCognito = (
+  data: Data,
+  error: AWSError | ApolloError | null
+): AnyAction => {
   window.localStorage.setItem("cognito", JSON.stringify(data))
   return {
     type: ActionTypes.SET_COGNITO,
