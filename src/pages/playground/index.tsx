@@ -102,7 +102,10 @@ const Playground = ({ location }: { location: Location }) => {
     <LayoutManager location={location}>
       <SEO title="Playground" />
       <h1>Playground</h1>
-
+      <h2>Location</h2>
+      <pre>
+        {JSON.stringify(location.state?.data ?? location.state?.error, null, 2)}
+      </pre>
       <p>
         <b>Username: </b>
         {decodedAccessToken?.username ??
@@ -208,6 +211,16 @@ const Playground = ({ location }: { location: Location }) => {
           >
             INITIATE AUTH (REFRESH_TOKEN)
           </button>
+          <br />
+
+          <button onClick={() => cognito.initiateAuthWithFacebook()}>
+            INITIATE AUTH (FACEBOOK)
+          </button>
+          <button onClick={() => cognito.adminLinkProviderForUser(email)}>
+            ADMIN LINK PROVIDER FOR USER (FACEBOOK)
+          </button>
+          <br />
+          <a href={process.env.GATSBY_COGNITO_REDIRECT_URI}>Launch Hosted UI</a>
         </fieldset>
 
         {/* ----------------------------
