@@ -4,6 +4,7 @@ import jwt, { TokenExpiredError } from "jsonwebtoken"
 import { SigningKeyNotFoundError } from "jwks-rsa"
 
 import { useVerify } from "utils/Playground/useCognito"
+import { isBrowser } from "utils"
 import type { RootState } from "_reduxState"
 
 /**
@@ -13,8 +14,7 @@ import type { RootState } from "_reduxState"
  * @returns {object} `{ currentUserId }`
  */
 export function useAuthentication() {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") ?? "" : ""
+  const token = isBrowser() ? localStorage.getItem("token") ?? "" : ""
   const [currentUserId, setCurrentUserId] = useState<number | null>()
   useDebugValue(currentUserId)
 
