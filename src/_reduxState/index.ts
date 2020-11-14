@@ -8,6 +8,7 @@ import {
 import Cognito from "aws-sdk/clients/cognitoidentityserviceprovider"
 import { AWSError } from "aws-sdk"
 import { ApolloError } from "@apollo/client"
+import { isBrowser } from "utils"
 
 /**
  * action
@@ -104,9 +105,7 @@ const initialState: RootState = {
   postsVersion: 1,
   [StateKeys.COGNITO]: {
     data: JSON.parse(
-      typeof window !== "undefined"
-        ? window.localStorage.getItem("cognito") ?? "{}"
-        : "{}"
+      isBrowser() ? window.localStorage.getItem("cognito") ?? "{}" : "{}"
     ),
     error: null,
     status: "idle",
@@ -139,7 +138,7 @@ const rootReducer: Reducer = (state = initialState, action) => {
 
 // Enable Redux Dev Tools
 const composeEnhancers =
-  typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  isBrowser() && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
         // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
       })
