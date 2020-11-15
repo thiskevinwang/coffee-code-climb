@@ -27,7 +27,7 @@ const ThemedBackground = styled(animated.div)`
 function Layout({ location, title, children }) {
   const rootPath: string = `${__PATH_PREFIX__}/`
   const topLink =
-    location.pathname === rootPath ? <h1>{title}</h1> : <h3>← Go home</h3>
+    location.pathname === rootPath ? <h1>{title}</h1> : <h3>← 🏠</h3>
 
   const isDarkMode = useSelector((state: any) => state.isDarkMode)
 
