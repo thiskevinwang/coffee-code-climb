@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
-import { navigate, Link } from "gatsby"
+import { navigate } from "gatsby"
+import styled from "styled-components"
 import _ from "lodash"
 import { graphql } from "gatsby"
-import { animated } from "react-spring"
-import styled from "styled-components"
-import { useMutation } from "@apollo/client"
-import { gql, ApolloError } from "apollo-boost"
-import jwt from "jsonwebtoken"
 
 import { LayoutManager } from "components/layoutManager"
-import { LoadingIndicator } from "components/LoadingIndicator"
 import SEO from "components/seo"
 import { Field, SubmitButton } from "components/Form"
+import { Button } from "components/Button"
+import { FacebookIcon } from "icons"
 
-const Error = styled(animated.div)`
+import { useVerifyTokenSet } from "utils"
+import { useCognito } from "utils/Playground/useCognito"
+
+const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK
+
+const GATSBY_COGNITO_REDIRECT_URI = process.env.GATSBY_COGNITO_REDIRECT_URI
+
+const Error = styled.p`
   border: 3px solid #ff7979;
   border-radius: 0.25rem;
   color: #ffaaaa;
@@ -24,64 +28,24 @@ const Error = styled(animated.div)`
   font-weight: 400;
 `
 
-const LOGIN = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      user {
-        id
-        email
-        username
-        password
-        last_name
-        first_name
-      }
-      token
-    }
-  }
-`
-
 type Values = {
   email: string
   password: string
 }
 const AuthLogin = ({ location }: { location: Location }) => {
-  const [errorMessage, setErrorMessage] = useState("")
-
-  const token = typeof window !== "undefined" && localStorage.getItem("token")
-  useEffect(() => {
-    jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {
-      const userId = decoded?.userId
-      if (userId) {
-        navigate("/rds/", {
-          replace: true,
-        })
-      }
-    })
-  }, [])
-
-  const [login, { data, loading }] = useMutation(LOGIN, {
-    onCompleted: (data) => {
-      const { token } = data.login
-      localStorage.setItem("token", data.login.token)
-
-      jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded) => {
-        /**
-         * @TODO Set an error, if the JWT isn't decoded correctly
-         * - ex. app secret is incorrect, or something
-         *
-         */
-        const userId = decoded?.userId
-        if (userId) {
-          navigate("/rds/", {
-            replace: true,
-          })
-        }
-      })
-    },
-    onError: (error: ApolloError) => {
-      setErrorMessage(error.message)
-    },
-  })
+  const { initiateAuth, errorMessage } = useCognito()
+  const { isLoggedIn } = useVerifyTokenSet()
+  if (isLoggedIn === true) {
+    navigate("/app")
+  }
+  if (isLoggedIn === null) {
+    return (
+      <LayoutManager location={location}>
+        <SEO title="Login" />
+        ...
+      </LayoutManager>
+    )
+  }
 
   return (
     <LayoutManager location={location}>
@@ -104,8 +68,12 @@ const AuthLogin = ({ location }: { location: Location }) => {
           }
           return errors
         }}
-        onSubmit={async (values, actions) => {
-          login({ variables: values })
+        onSubmit={async (values) => {
+          try {
+            await initiateAuth(values.email, values.password)
+          } catch (err) {
+            console.log("THIS IS ERROR", err)
+          }
         }}
       >
         {(props: FormikProps<Values>) => (
@@ -115,6 +83,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
               props.handleSubmit(e)
             }}
           >
+            {errorMessage && <Error>{errorMessage}</Error>}
             <Field
               id="email"
               name="email"
@@ -133,17 +102,31 @@ const AuthLogin = ({ location }: { location: Location }) => {
               type="submit"
               disabled={!props.isValid || props.isSubmitting}
             >
-              {loading ? <LoadingIndicator /> : "Login"}
+              Login
             </SubmitButton>
-            {errorMessage && <Error>{errorMessage}</Error>}
           </form>
         )}
       </Formik>
-      <small>
-        <Link to="/auth/signup">Sign up</Link>
-        &nbsp;|&nbsp;
-        <Link to="/auth/forgot">Forgot your password?</Link>
-      </small>
+      <Button
+        onClick={() => {
+          window.location.href = GATSBY_COGNITO_REDIRECT_URI
+        }}
+      >
+        Launch Hosted UI
+      </Button>
+      <br />
+      <Button
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+        onClick={() => {
+          window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
+        }}
+      >
+        <div>Login with Facebook</div> <FacebookIcon />
+      </Button>
     </LayoutManager>
   )
 }

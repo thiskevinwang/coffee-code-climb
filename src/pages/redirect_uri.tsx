@@ -45,7 +45,7 @@ const RedirectUri = ({ location }: { location: Location }) => {
       onCompleted: (data) => {
         const result = { AuthenticationResult: { ...data.getToken } }
         dispatch(setCognito(result, null))
-        navigate("/playground", {
+        navigate("/app/profile", {
           replace: true,
           state: { data: result, error: null },
         })
@@ -53,7 +53,7 @@ const RedirectUri = ({ location }: { location: Location }) => {
       onError: (err) => {
         const result = {}
         dispatch(setCognito(null, err))
-        navigate("/playground", {
+        navigate("/auth/login", {
           replace: true,
           state: { data: null, error: err },
         })
@@ -70,7 +70,7 @@ const RedirectUri = ({ location }: { location: Location }) => {
   useEffect(() => {
     console.log("code", code)
     if (!code) {
-      navigate("/playground", {
+      navigate("/auth/login", {
         replace: true,
         state: {
           data: null,

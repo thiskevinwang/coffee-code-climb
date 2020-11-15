@@ -1,6 +1,7 @@
 import React from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { Link } from "gatsby"
+import { Link, navigate } from "gatsby"
+import { Skeleton } from "@material-ui/lab"
 import styled, { css } from "styled-components"
 
 import { rhythm } from "utils/typography"
@@ -8,7 +9,9 @@ import { navbarZ } from "consts"
 import { ThemeSlider } from "components/ThemeSlider"
 import { Button } from "components/Button"
 
-import { setPostsVersion } from "_reduxState"
+import { setPostsVersion, setCognito, RootState } from "_reduxState"
+import { useVerifyTokenSet } from "utils"
+import { useCognito } from "utils/Playground/useCognito"
 
 const flexRowAlignItemsCenter = css`
   display: flex;
@@ -39,14 +42,12 @@ const BarItem = styled.div`
  * Also dispatches actions to update the store.
  */
 const NavBar2 = () => {
-  const postsVersion = useSelector((state) => state.postsVersion)
+  const postsVersion = useSelector((state: RootState) => state.postsVersion)
   const dispatch = useDispatch()
+  const { isLoggedIn, decoded } = useVerifyTokenSet()
 
   return (
     <Bar>
-      <BarItem>
-        <Link to={"/auth/login"}>Login</Link>
-      </BarItem>
       <BarItem>
         <Button
           style={{
@@ -79,6 +80,26 @@ const NavBar2 = () => {
           V2
         </Button>
         <ThemeSlider />
+      </BarItem>
+      <BarItem>
+        {isLoggedIn === true && (
+          <>
+            <a
+              href="/playground"
+              onClick={async (event) => {
+                event.preventDefault()
+                dispatch(setCognito(null, null))
+                navigate(`/auth/login`)
+              }}
+            >
+              Logout
+            </a>
+
+            <span>&nbsp;|&nbsp;Hello, {decoded?.email}</span>
+          </>
+        )}
+        {isLoggedIn === false && <Link to={"/auth/login"}>Login</Link>}
+        {isLoggedIn === null && <Skeleton variant="text" width={"5ch"} />}
       </BarItem>
     </Bar>
   )
