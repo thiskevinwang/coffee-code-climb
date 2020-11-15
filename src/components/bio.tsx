@@ -36,7 +36,6 @@ function Bio() {
         >
           {author}
         </a>
-        .
         <br />
         🎓 New School for Jazz '13
         <br />
