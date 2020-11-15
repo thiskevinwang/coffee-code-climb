@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - FacebookIcon
 - `useVerifyTokenSet` util/hook
   - This has confusing logic; Needs clean up
+- env var
+  - GATSBY_FACEBOOK_LOGIN_LINK
 
 ### Refactored
 
