@@ -1,11 +1,7 @@
 import { useState, useEffect, useDebugValue } from "react"
-import { useSelector } from "react-redux"
-import jwt, { TokenExpiredError } from "jsonwebtoken"
-import { SigningKeyNotFoundError } from "jwks-rsa"
+import jwt from "jsonwebtoken"
 
-import { useVerify } from "utils/Playground/useCognito"
 import { isBrowser } from "utils"
-import type { RootState } from "_reduxState"
 
 /**
  * - Checks local storage for `token`
@@ -41,32 +37,4 @@ export function useAuthentication() {
   }, [])
 
   return { currentUserId }
-}
-
-/**
- * returns a decoded AccessToken & IdToken
- */
-export function useNewAuthentication() {
-  const authResponse = useSelector((state: RootState) => state.cognito?.data)
-
-  const accessToken = authResponse?.AuthenticationResult?.AccessToken
-  // const refreshToken = authResponse?.AuthenticationResult?.RefreshToken
-  const idToken = authResponse?.AuthenticationResult?.IdToken
-
-  const [decodedAccessToken, verifyAccessToken] = useVerify()
-  const [decodedIdToken, verifyIdToken] = useVerify()
-
-  useEffect(() => {
-    verifyAccessToken(accessToken as string)
-  }, [accessToken])
-
-  useEffect(() => {
-    verifyIdToken(idToken as string)
-  }, [idToken])
-
-  if (decodedAccessToken instanceof TokenExpiredError) {
-  } else if (decodedAccessToken instanceof SigningKeyNotFoundError) {
-  }
-
-  return { decodedAccessToken, decodedIdToken }
 }

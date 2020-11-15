@@ -1,6 +1,6 @@
 import React, { useState, useReducer } from "react"
 import { useSelector } from "react-redux"
-import { graphql } from "gatsby"
+import { graphql, PageProps } from "gatsby"
 import styled from "styled-components"
 import Snackbar, { SnackbarCloseReason } from "@material-ui/core/Snackbar"
 import MuiAlert from "@material-ui/lab/Alert"
@@ -9,7 +9,6 @@ import SEO from "components/seo"
 import { LayoutManager } from "components/layoutManager"
 
 import { useCognito } from "utils/Playground/useCognito"
-import { useNewAuthentication } from "hooks/useAuthentication"
 import { RootState } from "_reduxState"
 
 const Styles = styled.div`
@@ -61,9 +60,7 @@ function reducer(state: typeof initialState, action: Action) {
   return { ...state, [action.name]: action.value }
 }
 
-const Playground = ({ location }: { location: Location }) => {
-  const { decodedAccessToken, decodedIdToken } = useNewAuthentication()
-
+const Playground = ({ location }: PageProps) => {
   const cognito = useCognito()
   const [{ code, email, password }, dispatch] = useReducer(
     reducer,
@@ -106,16 +103,6 @@ const Playground = ({ location }: { location: Location }) => {
       <pre>
         {JSON.stringify(location.state?.data ?? location.state?.error, null, 2)}
       </pre>
-      <p>
-        <b>Username: </b>
-        {decodedAccessToken?.username ??
-          decodedAccessToken?.sub ??
-          decodedAccessToken?.name}
-      </p>
-      <p>
-        <b>Email: </b>
-        {decodedIdToken?.email ?? "_"}
-      </p>
 
       <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
         <MuiAlert
@@ -221,23 +208,6 @@ const Playground = ({ location }: { location: Location }) => {
           </button>
           <br />
           <a href={process.env.GATSBY_COGNITO_REDIRECT_URI}>Launch Hosted UI</a>
-        </fieldset>
-
-        {/* ----------------------------
-                    VERIFY TOKENS
-           ----------------------------*/}
-        <fieldset>
-          <legend>Verify Tokens</legend>
-          <button onClick={() => cognito.verifyToken(accessToken)}>
-            Verify AccessToken
-          </button>
-          <button onClick={() => cognito.verifyToken(refreshToken)}>
-            Verify RefreshToken
-          </button>
-          <button onClick={() => cognito.verifyToken(idToken)}>
-            Verify IdToken
-          </button>
-          <pre>{JSON.stringify(cognito.decodedToken, null, 2)}</pre>
         </fieldset>
       </Styles>
     </LayoutManager>
