@@ -1,4 +1,4 @@
-import { ApolloProvider } from "@apollo/react-hooks"
+import { ApolloProvider } from "@apollo/client"
 import { HttpLink } from "apollo-link-http"
 import { setContext } from "apollo-link-context"
 import { ApolloClient } from "apollo-client"

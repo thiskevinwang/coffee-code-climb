@@ -5,7 +5,7 @@ import _ from "lodash"
 import { graphql } from "gatsby"
 import { animated } from "react-spring"
 import styled from "styled-components"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/client"
 import { gql, ApolloError } from "apollo-boost"
 import jwt from "jsonwebtoken"
 
@@ -75,7 +75,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
   }, [])
 
   const [signup, { data, loading }] = useMutation(SIGN_UP, {
-    onCompleted: data => {
+    onCompleted: (data) => {
       const { token } = data.signup
       localStorage.setItem("token", data.signup.token)
 
@@ -111,7 +111,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
           lastName: "",
         }}
         validateOnMount={false}
-        validate={values => {
+        validate={(values) => {
           const errors: FormikErrors<Values> = {}
 
           if (!values.email) {
@@ -149,7 +149,7 @@ const AuthLogin = ({ location }: { location: Location }) => {
       >
         {(props: FormikProps<Values>) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault()
               props.handleSubmit(e)
             }}

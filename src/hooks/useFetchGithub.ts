@@ -1,6 +1,6 @@
 import { useState } from "react"
 import ApolloClient, { gql, GraphQLRequest } from "apollo-boost"
-import { useLazyQuery, useQuery } from "@apollo/react-hooks"
+import { useLazyQuery, useQuery } from "@apollo/client"
 import fetch from "isomorphic-fetch"
 
 /**

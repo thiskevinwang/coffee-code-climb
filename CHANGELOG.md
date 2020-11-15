@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.17.0] - 2020-11-15
+
+### Added
+
+- `/app/*` client-only routes
+- `/redirect_uri` page
+- isBrowser util
+- FacebookIcon
+- `useVerifyTokenSet` util/hook
+  - This has confusing logic; Needs clean up
+- env var
+  - GATSBY_FACEBOOK_LOGIN_LINK
+
+### Refactored
+
+- apollo react-hooks -> client
+- update Field with Formik.ErrorMessage
+
+## [v0.16.1] - TODO
+
+### TODO
+
+## [v0.16.0] - TODO
+
+### TODO
+
+## [v0.15.21] - TODO
+
+### TODO
+
+## [v0.15.20] - TODO
+
+### TODO
+
+## [v0.15.19] - TODO
+
+### TODO
+
+## [v0.15.18] - 2020-08-01
+
+### TODO
+
+## [v0.15.17] - 2020-07-30
+
+### TODO
+
 ## [v0.15.16] - 2020-07-26
 
 ### Added
@@ -56,6 +102,14 @@ New:
 
 ### Added
 
+[v0.17.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.16.1...v0.17.0
+[v0.16.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.16.0...v0.16.1
+[v0.16.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.21...v0.16.0
+[v0.15.21]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.20...v0.15.21
+[v0.15.20]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.19...v0.15.20
+[v0.15.19]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.18...v0.15.19
+[v0.15.18]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.17...v0.15.18
+[v0.15.17]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.16...v0.15.17
 [v0.15.16]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.15...v0.15.16
 [v0.15.15]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.14...v0.15.15
 [v0.15.14]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.15.13...v0.15.14

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Link } from "gatsby"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/client"
 import { useMediaQuery, Popover } from "@material-ui/core"
 import { gql } from "apollo-boost"
 import styled, { BaseProps } from "styled-components"
@@ -130,7 +130,7 @@ export const LikeCommentShare = ({ commentId }) => {
   const id = open ? "simple-popover" : undefined
 
   const [reactToComment, { data, loading }] = useMutation(REACT_TO_COMMENT)
-  const handleSelectReaction = ({ variant }) => event => {
+  const handleSelectReaction = ({ variant }) => (event) => {
     reactToComment({
       variables: { variant: variant, commentId },
     })
