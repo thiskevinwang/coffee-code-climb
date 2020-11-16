@@ -69,7 +69,7 @@ interface FederatedIdentity {
   providerType: string
   userId: string // number
 }
-interface IdTokenPayload {
+export interface IdTokenPayload {
   at_hash: string
   aud: string
   auth_time: number
