@@ -1,4 +1,5 @@
 import * as React from "react"
+import { Link } from "gatsby"
 import { rhythm } from "utils/typography"
 
 const GIT = "https://github.com/thiskevinwang/coffee-code-climb"
@@ -11,10 +12,17 @@ const footerStyle = {
 export default function Footer() {
   return (
     <footer style={footerStyle}>
-      <a href={GIT}>Github</a>
-      {process.env.NODE_ENV === "development" && (
-        <code>{new Date(Date.now() - 1.44e7).toISOString()}</code>
-      )}
+      <p>
+        <a href={GIT}>Github</a>&nbsp;|&nbsp;
+        <Link to="/privacy">Privacy Policy</Link>&nbsp;|&nbsp;
+        <Link to="/terms">Terms of Service</Link>
+        {process.env.NODE_ENV === "development" && (
+          <>
+            &nbsp;|&nbsp;
+            <code>{new Date(Date.now() - 1.44e7).toISOString()}</code>
+          </>
+        )}
+      </p>
       <div id={`amzn-assoc-ad-${process.env.GATSBY_AD_INSTANCE_ID}`} />
       <script
         async
