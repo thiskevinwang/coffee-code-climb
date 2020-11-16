@@ -351,7 +351,7 @@ const TermsPage = ({ data, location }: PageProps<QueryProps>) => {
         The information contained in this web site is subject to change without
         notice. Copyright 2020 Coffee Code Climb. All rights reserved.
       </p>
-      Last updated on November 15, 2020
+      <h4>Last updated on November 15, 2020</h4>
     </LayoutManager>
   )
 }
