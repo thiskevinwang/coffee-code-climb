@@ -13,7 +13,10 @@ export default function Footer() {
   return (
     <footer style={footerStyle}>
       <p>
-        <a href={GIT}>Github</a>&nbsp;|&nbsp;
+        <a href={GIT} rel="noopener noreferrer" target="_blank">
+          Github
+        </a>
+        &nbsp;|&nbsp;
         <Link to="/privacy">Privacy Policy</Link>&nbsp;|&nbsp;
         <Link to="/terms">Terms of Service</Link>
         {process.env.NODE_ENV === "development" && (
