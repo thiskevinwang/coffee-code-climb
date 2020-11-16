@@ -91,9 +91,9 @@ const RedirectUri = ({ location }: { location: Location }) => {
   return (
     <LayoutManager location={location}>
       <SEO title="Redirecting..." />
-      <h3>{code}</h3>
+      {/* <h3>{code}</h3>
       <h3>{cognito_error}</h3>
-      <h4>{error_description}</h4>
+      <h4>{error_description}</h4> */}
 
       {!data && !error && (
         <>
@@ -102,21 +102,21 @@ const RedirectUri = ({ location }: { location: Location }) => {
         </>
       )}
 
-      {error && (
+      {/* {error && (
         <>
           <h2>ERROR</h2>
           <pre>{JSON.stringify(error, null, 2)}</pre>
         </>
-      )}
+      )} */}
 
-      {data && (
+      {/* {data && (
         <>
           <h2>Data</h2>
           <pre>{data.getToken.AccessToken}</pre>
           <pre>{data.getToken.IdToken}</pre>
           <pre>{data.getToken.RefreshToken}</pre>
         </>
-      )}
+      )} */}
     </LayoutManager>
   )
 }
