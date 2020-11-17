@@ -11,7 +11,6 @@ import { Button } from "components/Button"
 
 import { setPostsVersion, setCognito, RootState } from "_reduxState"
 import { useVerifyTokenSet } from "utils"
-import { useCognito } from "utils/Playground/useCognito"
 
 const flexRowAlignItemsCenter = css`
   display: flex;
@@ -84,6 +83,8 @@ const NavBar2 = () => {
       <BarItem>
         {isLoggedIn === true && (
           <>
+            <Link to={"/app"}>App</Link>
+            <span>&nbsp;|&nbsp;</span>
             <a
               href="/playground"
               onClick={async (event) => {
@@ -94,7 +95,6 @@ const NavBar2 = () => {
             >
               Logout
             </a>
-
             <span>&nbsp;|&nbsp;Hello, {decoded?.email}</span>
           </>
         )}
