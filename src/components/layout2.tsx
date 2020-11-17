@@ -2,7 +2,7 @@ import React, { memo } from "react"
 import { useSelector } from "react-redux"
 import { useSpring, animated, OpaqueInterpolation } from "react-spring"
 import { compose } from "redux"
-import { Link } from "gatsby"
+import { Link, PageProps } from "gatsby"
 import styled from "styled-components"
 
 import { NavBar2 } from "components/Layout2Components/NavBar2"
@@ -24,7 +24,11 @@ const ThemedBackground = styled(animated.div)`
   z-index: -9000;
 `
 
-function Layout({ location, title, children }) {
+interface Props {
+  location: PageProps["location"]
+  title: string
+}
+const Layout: React.FC<Props> = ({ location, title, children }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
   const topLink =
     location.pathname === rootPath ? <h1>{title}</h1> : <h3>← 🏠</h3>
@@ -42,7 +46,7 @@ function Layout({ location, title, children }) {
       <ThemedBackground style={{ background }} />
       <NavBar2 />
 
-      <animated.div
+      <div
         style={{
           marginLeft: `auto`,
           marginRight: `auto`,
@@ -64,7 +68,7 @@ function Layout({ location, title, children }) {
         </Link>
         <main>{children}</main>
         <Footer />
-      </animated.div>
+      </div>
       <BlobHolder>
         <Blob y={scrollYPercent} />
       </BlobHolder>
