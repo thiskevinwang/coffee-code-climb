@@ -1,13 +1,14 @@
 import React, { useEffect } from "react"
 import { useMutation, gql } from "@apollo/client"
 import { graphql, navigate } from "gatsby"
-import { Skeleton } from "@material-ui/lab"
 import queryString from "query-string"
 import { useDispatch } from "react-redux"
 
 import { setCognito } from "_reduxState"
 import SEO from "components/seo"
-import { LayoutManager } from "components/layoutManager"
+import { LoadingPage } from "components/LoadingPage"
+
+const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK
 
 const GET_TOKEN = gql`
   mutation GetToken($code: String!) {
@@ -36,30 +37,42 @@ interface GetTokenVars {
 
 const RedirectUri = ({ location }: { location: Location }) => {
   const dispatch = useDispatch()
+
+  // `error_description` is generated two ways
+  // 1. By Cognito
+  // 2. By my own lambda code
+  // -  `callback("LINK_SUCCESS")
   const { code, error_description, error: cognito_error } = queryString.parse(
     location.search
   )
-  const [getToken, { data, error }] = useMutation<GetTokenData, GetTokenVars>(
-    GET_TOKEN,
-    {
-      onCompleted: (data) => {
-        const result = { AuthenticationResult: { ...data.getToken } }
-        dispatch(setCognito(result, null))
-        navigate("/app/profile", {
-          replace: true,
-          state: { data: result, error: null },
-        })
-      },
-      onError: (err) => {
-        const result = {}
-        dispatch(setCognito(null, err))
-        navigate("/auth/login", {
-          replace: true,
-          state: { data: null, error: err },
-        })
-      },
-    }
-  )
+  console.log("error:", cognito_error)
+  console.log("error_description;", error_description)
+
+  if (
+    error_description?.includes?.("LINK_SUCCESS") ||
+    error_description?.includes?.("Already found an entry for username")
+  ) {
+    window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
+  }
+
+  const [getToken] = useMutation<GetTokenData, GetTokenVars>(GET_TOKEN, {
+    onCompleted: (data) => {
+      const result = { AuthenticationResult: { ...data.getToken } }
+      dispatch(setCognito(result, null))
+      navigate("/app/profile", {
+        replace: true,
+        state: { data: result, error: null },
+      })
+    },
+    onError: (err) => {
+      const result = {}
+      dispatch(setCognito(null, err))
+      navigate("/auth/login", {
+        replace: true,
+        state: { data: null, error: err },
+      })
+    },
+  })
 
   /**
    * @Warn this side effect will 'consume' the `code`
@@ -68,15 +81,14 @@ const RedirectUri = ({ location }: { location: Location }) => {
    * and Refresh Tokens.
    */
   useEffect(() => {
-    console.log("code", code)
     if (!code) {
-      navigate("/auth/login", {
-        replace: true,
-        state: {
-          data: null,
-          error: { code, error_description, cognito_error },
-        },
-      })
+      // navigate("/auth/login", {
+      //   replace: true,
+      //   state: {
+      //     data: null,
+      //     error: { code, error_description, cognito_error },
+      //   },
+      // })
     } else {
       const variables: GetTokenVars = {
         code: code as string,
@@ -89,35 +101,10 @@ const RedirectUri = ({ location }: { location: Location }) => {
   }, [code, getToken])
 
   return (
-    <LayoutManager location={location}>
+    <>
       <SEO title="Redirecting..." />
-      {/* <h3>{code}</h3>
-      <h3>{cognito_error}</h3>
-      <h4>{error_description}</h4> */}
-
-      {!data && !error && (
-        <>
-          <h1>Redirecting...</h1>
-          <Loaders />
-        </>
-      )}
-
-      {/* {error && (
-        <>
-          <h2>ERROR</h2>
-          <pre>{JSON.stringify(error, null, 2)}</pre>
-        </>
-      )} */}
-
-      {/* {data && (
-        <>
-          <h2>Data</h2>
-          <pre>{data.getToken.AccessToken}</pre>
-          <pre>{data.getToken.IdToken}</pre>
-          <pre>{data.getToken.RefreshToken}</pre>
-        </>
-      )} */}
-    </LayoutManager>
+      <LoadingPage />
+    </>
   )
 }
 
@@ -132,27 +119,3 @@ export const pageQuery = graphql`
     }
   }
 `
-
-const Loaders = () => {
-  return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Skeleton
-          animation="wave"
-          variant={"circle"}
-          style={{ marginRight: "20px", width: "50px", height: "50px" }}
-        />
-        <Skeleton animation="wave" height={"50px"} width={"60%"} />
-      </div>
-
-      <Skeleton animation="wave" />
-      <Skeleton animation="wave" />
-    </>
-  )
-}
