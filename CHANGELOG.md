@@ -5,6 +5,64 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.18.0] - 2020-11-19
+
+### Notes
+
+To make the Facebook <> Cognito login _smooth_, I needed **2 lambda triggers**, and to **catch Cognito errors, client side** ( see `src/pages/redirect_uri.tsx` ).
+
+**Pre Sign Up**
+
+- If the request is from **Facebook**
+  - auto create **Native** user
+    - auto verify email = TRUE
+    - auto confirm user = TRUE
+  - link the pending **Facebook** user
+  - return the **Facebook** event to Cognito
+  - expect Cognito to return an error: `Already found an entry for username ___`
+  - 👍 catch the error client side, and attempt to login with **Facebook** again
+    - 👍 when the user authenticates with **Facebook**, tokens for the **Native** user will be returned
+    - ❌ and the **Native** user's "email verified" will be auto set to FALSE
+      - as a result, password reset codes won't be emailed. Fix below
+
+**Pre Token Generation**
+
+- If the request is from **Facebook**
+  - `adminUpdateUserAttributes`
+    - ```ts
+      params = {
+        // ...
+        UserAttributes: [
+          {
+            Name: "email_verified",
+            Value: "true",
+          },
+        ],
+      }
+      ```
+  - This re-enables password reset codes to be sent for the **Native** user
+
+### Added
+
+- `/app/` client-only route
+  - `/app/profile`
+  - `/app/
+  - Followed: https://www.gatsbyjs.com/docs/client-only-routes-and-user-authentication/
+- LoadingPage component
+
+### Changed
+
+- LoadingIndicator style
+- numerous type annotation fix and improvements
+- return extra fields from `useVerifyTokenSet`
+- Simplified link/`<a>` styles
+
+### Todos
+
+- Add GOOGLE federated login w/ Cognito
+- Use new FS Route API
+  - https://www.gatsbyjs.com/blog/fs-route-api/
+
 ## [v0.17.1] - 2020-11-15
 
 ### Added
@@ -114,6 +172,7 @@ New:
 
 ### Added
 
+[v0.18.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.17.1...v0.18.0
 [v0.17.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.17.0...v0.17.1
 [v0.17.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.16.1...v0.17.0
 [v0.16.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.16.0...v0.16.1
