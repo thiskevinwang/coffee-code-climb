@@ -8,7 +8,8 @@ export const Profile = (
   return (
     <>
       <h2>Profile</h2>
-      <pre>{JSON.stringify(props.data, null, 2)}!</pre>
+      <p>Email: {props.data?.email}</p>
+      <p>Providers: {props.data?.identities?.map((e) => e.providerName)}</p>
     </>
   )
 }
