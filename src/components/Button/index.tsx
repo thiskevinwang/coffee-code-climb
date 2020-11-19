@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ButtonHTMLAttributes } from "react"
 import styled from "styled-components"
 import { animated, useSpring, config } from "react-spring"
 import { useGesture } from "react-use-gesture"
@@ -16,14 +16,13 @@ const MOUSEOVER_STYLE = {
 const MOUSEDOWN_STYLE = {
   transform: `scale(0.98)`,
 }
+
 interface Props {
-  isDarkMode: boolean
-  textSm: boolean
-  widthRem?: number
-  style?: React.CSSProperties
+  /** @deprecated Please remove and clean up */
+  textSm?: boolean
 }
 
-const Renderer = styled(animated.button)`
+const Renderer = styled(animated.button)<Props>`
   background: var(--background);
   color: var(--text);
 
@@ -64,7 +63,9 @@ const Renderer = styled(animated.button)`
  * </Button>
  * ```
  */
-export const Button = (props: Props) => {
+export const Button: React.FC<
+  Props & ButtonHTMLAttributes<HTMLButtonElement>
+> = ({ textSm, ...props }) => {
   const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
     config: config.stiff,
@@ -81,7 +82,7 @@ export const Button = (props: Props) => {
   return (
     <Renderer
       {...props}
-      style={{ ...springProps, width: `${props.widthRem}rem`, ...props.style }}
+      style={{ ...springProps, ...props.style }}
       {...bind()}
     />
   )

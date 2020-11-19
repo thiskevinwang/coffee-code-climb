@@ -352,11 +352,11 @@ function AttackAnimationSimulator(props) {
       <SEO title="Attack Animation Simulator" />
       <h1>Attack Animation Simulator</h1>
       <div className="container" style={{ height: `100vh` }}>
-        <Button isDarkMode={isDarkMode} onClick={attack}>
+        <Button onClick={attack}>
           <label>(Press A)</label>
           <span>Attack</span>
         </Button>
-        <Button isDarkMode={isDarkMode} onClick={reset}>
+        <Button onClick={reset}>
           <label>(Press R)</label>
           <span>Reset</span>
         </Button>

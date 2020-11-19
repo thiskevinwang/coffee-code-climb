@@ -80,30 +80,18 @@ const NavBar = () => {
 
   return (
     <Bar isDarkMode={isDarkMode}>
-      <Button
-        sm
-        textSm
-        isDarkMode={isDarkMode}
-        onClick={dispatchSetIsDarkMode(!isDarkMode)}
-      >
+      <Button textSm onClick={dispatchSetIsDarkMode(!isDarkMode)}>
         <span>{`Dark Mode`}</span>
         <label>{isDarkMode ? "on" : "off"}</label>
       </Button>
       <Button
-        sm
         textSm
-        isDarkMode={isDarkMode}
         onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}
       >
         <span>{`Layout Version`}</span>
         <label>V{layoutVersion}</label>
       </Button>
-      <Button
-        sm
-        textSm
-        isDarkMode={isDarkMode}
-        onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}
-      >
+      <Button textSm onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}>
         <span>{`Posts Version`}</span>
         <label>V{postsVersion}</label>
       </Button>

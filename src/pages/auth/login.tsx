@@ -14,9 +14,11 @@ import { FacebookIcon } from "icons"
 import { useVerifyTokenSet } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
 
-const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK
+const GATSBY_FACEBOOK_LOGIN_LINK = process.env
+  .GATSBY_FACEBOOK_LOGIN_LINK as string
 
-const GATSBY_COGNITO_REDIRECT_URI = process.env.GATSBY_COGNITO_REDIRECT_URI
+const GATSBY_COGNITO_REDIRECT_URI = process.env
+  .GATSBY_COGNITO_REDIRECT_URI as string
 
 const Error = styled.p`
   border: 3px solid #ff7979;

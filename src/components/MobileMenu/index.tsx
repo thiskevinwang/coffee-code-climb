@@ -47,21 +47,21 @@ export function usePrevious(value: boolean) {
  */
 export const MobileMenu = ({ defaultOpen = false }) => {
   const { isDarkMode, layoutVersion, showMobileMenu } = useSelector(
-    state => state
+    (state) => state
   )
-  const postsVersion: 1 | 2 | 3 = useSelector(state => state.postsVersion)
+  const postsVersion: 1 | 2 | 3 = useSelector((state) => state.postsVersion)
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
-    value => e => dispatch(setIsDarkMode(value)),
+    (value) => (e) => dispatch(setIsDarkMode(value)),
     []
   )
   const dispatchSetLayoutVersion = useCallback(
-    value => e => dispatch(setLayoutVersion(value)),
+    (value) => (e) => dispatch(setLayoutVersion(value)),
     []
   )
   const dispatchSetPostsVersion = useCallback(
-    value => e => dispatch(setPostsVersion(value)),
+    (value) => (e) => dispatch(setPostsVersion(value)),
     []
   )
 
@@ -93,26 +93,17 @@ export const MobileMenu = ({ defaultOpen = false }) => {
       }}
     >
       <Renderer style={{ transform }} {...bind}>
-        <Button
-          sm
-          textSm
-          isDarkMode={isDarkMode}
-          onClick={dispatchSetIsDarkMode(!isDarkMode)}
-        >
+        <Button textSm onClick={dispatchSetIsDarkMode(!isDarkMode)}>
           <span>{`Dark Mode`}</span> <label>{isDarkMode ? "on" : "off"}</label>
         </Button>
         <Button
-          sm
           textSm
-          isDarkMode={isDarkMode}
           onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}
         >
           <span>{`Layout Version`}</span> <label>V{layoutVersion}</label>
         </Button>
         <Button
-          sm
           textSm
-          isDarkMode={isDarkMode}
           onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}
         >
           <span>{`Posts Version`}</span> <label>V{postsVersion}</label>
