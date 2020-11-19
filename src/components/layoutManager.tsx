@@ -16,7 +16,7 @@ interface Props {
 /**
  * ⚠️ Don't destructure props!
  */
-const LayoutManager = (props: Props) => {
+const LayoutManager: React.FC<Props> = (props) => {
   const { pathname } = props.location
   const [showModal, setShowModal] = useState(false)
   const [shouldExit, setShouldExit] = useState(false)
