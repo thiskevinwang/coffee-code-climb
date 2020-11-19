@@ -48,6 +48,13 @@ const RedirectUri = ({ location }: { location: Location }) => {
   console.log("error:", cognito_error)
   console.log("error_description;", error_description)
 
+  /**
+   * @warn Login with facebook button link, causes the native Cognito user's
+   * `email_verified` to BECOME `false`, even if it was originally true...
+   *
+   * for "Already found an entry for username..." issue
+   * @see https://stackoverflow.com/questions/47815161/cognito-auth-flow-fails-with-already-found-an-entry-for-username-facebook-10155
+   */
   if (
     error_description?.includes?.("LINK_SUCCESS") ||
     error_description?.includes?.("Already found an entry for username")
@@ -65,7 +72,6 @@ const RedirectUri = ({ location }: { location: Location }) => {
       })
     },
     onError: (err) => {
-      const result = {}
       dispatch(setCognito(null, err))
       navigate("/auth/login", {
         replace: true,
@@ -82,13 +88,13 @@ const RedirectUri = ({ location }: { location: Location }) => {
    */
   useEffect(() => {
     if (!code) {
-      // navigate("/auth/login", {
-      //   replace: true,
-      //   state: {
-      //     data: null,
-      //     error: { code, error_description, cognito_error },
-      //   },
-      // })
+      navigate("/auth/login", {
+        replace: true,
+        state: {
+          data: null,
+          error: { code, error_description, cognito_error },
+        },
+      })
     } else {
       const variables: GetTokenVars = {
         code: code as string,
