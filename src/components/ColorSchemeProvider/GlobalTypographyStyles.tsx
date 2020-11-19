@@ -41,12 +41,17 @@ export const GlobalTypographyStyles = createGlobalStyle<Props>`
   }
   a {
     color: var(--text);
-    box-shadow: var(--purple-or-cyan) 0px -5px 0px inset;
+    text-shadow: var(--shadow);
+    transition: color 200ms ease-in-out;
+    :hover {
+      color: var(--purple-or-cyan);
+    }
+    /* box-shadow: var(--purple-or-cyan) 0px -5px 0px inset;
     transition: box-shadow 200ms ease-in-out;
 
     :hover {
       box-shadow: var(--purple-or-cyan) 0px -1.5rem 0px inset;
-    }
+    } */
   }
 
   /**

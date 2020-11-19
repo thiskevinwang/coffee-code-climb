@@ -1,6 +1,6 @@
 import React from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
-import { navigate } from "gatsby"
+import { navigate, PageProps } from "gatsby"
 import styled from "styled-components"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -14,9 +14,11 @@ import { FacebookIcon } from "icons"
 import { useVerifyTokenSet } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
 
-const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK
+const GATSBY_FACEBOOK_LOGIN_LINK = process.env
+  .GATSBY_FACEBOOK_LOGIN_LINK as string
 
-const GATSBY_COGNITO_REDIRECT_URI = process.env.GATSBY_COGNITO_REDIRECT_URI
+const GATSBY_COGNITO_REDIRECT_URI = process.env
+  .GATSBY_COGNITO_REDIRECT_URI as string
 
 const Error = styled.p`
   border: 3px solid #ff7979;
@@ -32,7 +34,7 @@ type Values = {
   email: string
   password: string
 }
-const AuthLogin = ({ location }: { location: Location }) => {
+const AuthLogin = ({ location }: PageProps) => {
   const { initiateAuth, errorMessage } = useCognito()
   const { isLoggedIn } = useVerifyTokenSet()
   if (isLoggedIn === true) {
@@ -112,8 +114,10 @@ const AuthLogin = ({ location }: { location: Location }) => {
           window.location.href = GATSBY_COGNITO_REDIRECT_URI
         }}
       >
-        Launch Hosted UI
+        Sign Up
       </Button>
+      <span>&nbsp;— OR —&nbsp;</span>
+
       <br />
       <Button
         style={{

@@ -1,26 +1,22 @@
-import React, {
-  useState,
-  useReducer,
-  useEffect,
-  useRef,
-  useCallback,
-} from "react"
-import { useSelector, useDispatch } from "react-redux"
-import styled from "styled-components"
-import { useSpring, useChain, animated, AnimatedValue } from "react-spring"
+import React, { useState, useReducer, useEffect, useCallback } from "react"
+import type { PageProps } from "gatsby"
+import { useSelector } from "react-redux"
+import { useSpring } from "react-spring"
 
 import Layout from "./layout"
 import Layout2 from "./layout2"
-import { setLayoutVersion, RootState } from "_reduxState"
-import { rhythm } from "utils/typography"
+import { RootState } from "_reduxState"
 import { FunButtonsModal } from "components/FunButtonsModal"
 
 import * as Colors from "consts/Colors"
 
+interface Props {
+  location: PageProps["location"]
+}
 /**
  * ⚠️ Don't destructure props!
  */
-const LayoutManager = (props) => {
+const LayoutManager: React.FC<Props> = (props) => {
   const { pathname } = props.location
   const [showModal, setShowModal] = useState(false)
   const [shouldExit, setShouldExit] = useState(false)
@@ -31,7 +27,6 @@ const LayoutManager = (props) => {
 
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const layoutVersion = useSelector((state: RootState) => state.layoutVersion)
-  const dispatch = useDispatch()
 
   const neverModalShowAgain =
     typeof window !== "undefined" &&

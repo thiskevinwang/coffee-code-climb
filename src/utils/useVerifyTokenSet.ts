@@ -33,7 +33,7 @@ const getKeyAsync = async (header?: JwtHeader) => {
   return pubKey
 }
 
-interface AccessTokenPayload {
+export interface AccessTokenPayload {
   /**
    * alias for username
    * @example '65a3f854-169b-48ab-b928-d5ddf747473c'
@@ -69,7 +69,7 @@ interface FederatedIdentity {
   providerType: string
   userId: string // number
 }
-interface IdTokenPayload {
+export interface IdTokenPayload {
   at_hash: string
   aud: string
   auth_time: number
@@ -95,6 +95,7 @@ export const useVerifyTokenSet = () => {
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
   const [decoded, setDecoded] = useState<IdTokenPayload | null>(null)
+  const [decodedAcc, setDecodedAcc] = useState<AccessTokenPayload | null>(null)
 
   useEffect(() => {
     const verifyAsync = async () => {
@@ -111,6 +112,7 @@ export const useVerifyTokenSet = () => {
       let idTokenPayload: IdTokenPayload
 
       const decodedIdToken = jwt.decode(idToken, { complete: true })
+
       idTokenPayload = decodedIdToken?.payload
       email = idTokenPayload?.email
       const exp = idTokenPayload.exp
@@ -130,6 +132,7 @@ export const useVerifyTokenSet = () => {
         const decodedAccessToken = jwt.decode(accessToken, {
           complete: true,
         })
+        setDecodedAcc(decodedAccessToken.payload)
         const tokenHeader: JwtHeader = decodedAccessToken?.header
         const pubKey = await getKeyAsync(tokenHeader)
         jwt.verify(accessToken, pubKey)
@@ -168,9 +171,9 @@ export const useVerifyTokenSet = () => {
             }
 
             let data = await cognito.initiateAuth(params).promise()
+            // copy over previous refresh token
             data.AuthenticationResult.RefreshToken = refreshToken
 
-            // window.localStorage.setItem("cognito", JSON.stringify(data))
             console.warn("Refresh succeeded; Updating redux")
             dispatch(setCognito(data, null))
 
@@ -184,6 +187,7 @@ export const useVerifyTokenSet = () => {
             jwt.verify(accessToken, pubKey) as AccessTokenPayload
             console.warn("verify refreshed token succeeded")
 
+            setDecodedAcc(decodedAccessToken.payload)
             setDecoded(idTokenPayload)
             setIsLoggedIn(true)
             return
@@ -204,5 +208,5 @@ export const useVerifyTokenSet = () => {
     verifyAsync()
   }, [accessToken, idToken, refreshToken])
 
-  return { isLoggedIn, decoded }
+  return { isLoggedIn, decoded, decodedAcc }
 }
