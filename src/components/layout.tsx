@@ -4,7 +4,7 @@ import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
 import styled from "styled-components"
 
-import { ButtonAndDrawer, Footer, Header, NavBar } from "components"
+import { Footer, Header, NavBar } from "components"
 import { StickyNumbers } from "components/StickyNumbers"
 import { rhythm } from "utils/typography"
 import { Colors } from "consts/Colors"
@@ -37,14 +37,12 @@ const LayoutFrame = styled(animated.div)`
   /* border: ${process.env.NODE_ENV === "development" && `1px dotted red`}; */
 `
 const Main = styled(animated.main)`
-  /* border: ${
-    process.env.NODE_ENV === "development" && `1px dotted orange`
-  }; */
+  /* border: ${process.env.NODE_ENV === "development" &&
+  `1px dotted orange`}; */
 `
 const Inner = styled(animated.div)`
-  /* border: ${
-    process.env.NODE_ENV === "development" && `1px dotted yellow`
-  }; */
+  /* border: ${process.env.NODE_ENV === "development" &&
+  `1px dotted yellow`}; */
 `
 
 function Layout({ location, title, children }: Props) {
@@ -128,7 +126,6 @@ function Layout({ location, title, children }: Props) {
             <Header location={location} title={title} />
           </animated.header>
 
-          <ButtonAndDrawer />
           <Main>{children}</Main>
           <Footer />
         </Inner>
