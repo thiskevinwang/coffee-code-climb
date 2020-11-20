@@ -16,9 +16,9 @@ export default function Footer() {
         <a href={GIT} rel="noopener noreferrer" target="_blank">
           Github
         </a>
-        &nbsp;|&nbsp;
+        {/* &nbsp;|&nbsp;
         <Link to="/privacy">Privacy Policy</Link>&nbsp;|&nbsp;
-        <Link to="/terms">Terms of Service</Link>
+        <Link to="/terms">Terms of Service</Link> */}
         {process.env.NODE_ENV === "development" && (
           <>
             &nbsp;|&nbsp;
