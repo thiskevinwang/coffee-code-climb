@@ -5,6 +5,7 @@ import {
   HttpLink,
 } from "@apollo/client"
 import { setContext } from "@apollo/client/link/context"
+import fetch from "isomorphic-fetch"
 
 const ENDPOINT = process.env.GATSBY_RDS_API_ENDPOINT
 const HTTPS_PROTOCOL = "https://"
@@ -76,6 +77,11 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
+  /**
+   * Passing fetch here fixes "Webpack Invariant" error when gatsby compiles
+   * https://github.com/gatsbyjs/gatsby/issues/3650#issuecomment-410146046
+   */
+  fetch,
 })
 
 export { ApolloProvider, client }
