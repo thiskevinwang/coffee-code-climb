@@ -7,7 +7,6 @@ import Layout from "components/layout"
 import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import {
-  Discussion,
   DocumentToReactComponents,
   PrevNextNavigation,
 } from "components/TemplateComponents"
@@ -63,12 +62,6 @@ export default function ContentfulBlogPostTemplate({
       <Bio />
 
       <PrevNextNavigation previous={previous} next={next} />
-
-      <Discussion
-        locationPathname={location.pathname}
-        identifier={post.id}
-        title={post.title}
-      />
     </LayoutManager>
   )
 }
