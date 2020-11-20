@@ -13,8 +13,6 @@ import { rhythm } from "utils/typography"
 import { Colors } from "consts/Colors"
 import Footer from "./Footer"
 
-import "prismjs/plugins/line-numbers/prism-line-numbers.css"
-
 const ThemedBackground = styled(animated.div)`
   position: fixed;
   top: 0;

@@ -12,8 +12,6 @@ import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
 
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
 
-import "prismjs/plugins/line-numbers/prism-line-numbers.css"
-
 const ThemedBackground = styled(animated.div)`
   position: fixed;
   top: 0;
