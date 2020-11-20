@@ -168,7 +168,7 @@ export const pageQuery = graphql`
           title
           date
         }
-      }[]
+      }
     }
   }
 `
