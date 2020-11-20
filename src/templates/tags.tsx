@@ -1,19 +1,25 @@
 import React from "react"
-import PropTypes from "prop-types"
-import union from "lodash/union"
 import sortBy from "lodash/sortBy"
 
 // Components
-import { Link, graphql } from "gatsby"
+import { Link, graphql, PageProps } from "gatsby"
 import Bio from "components/bio"
-import Layout from "components/layout"
 import { LayoutManager } from "components/layoutManager"
 // import SEO from "../components/seo"
 
 // Utilities
 import { rhythm } from "utils/typography"
 
-const Tags = ({ pageContext, data, location }) => {
+/** @deprecated - This will be broken by the new File System Route API */
+interface PageContext {
+  tag: string
+}
+
+const Tags = ({
+  data,
+  pageContext,
+  location,
+}: PageProps<QueryData, PageContext>) => {
   const { tag } = pageContext
   const {
     edges: markdownRemarkEdges,
@@ -30,14 +36,11 @@ const Tags = ({ pageContext, data, location }) => {
    * Combine Markdown & Contentful posts. Sort by newest Date.
    */
   let edges = sortBy(
-    union(contentfulEdges, markdownRemarkEdges),
+    [...contentfulEdges, ...markdownRemarkEdges],
     ({ node }) => {
       let date = new Date(
-        node.internal.type === `MarkdownRemark`
-          ? node.frontmatter.date
-          : node.date
+        "frontmatter" in node ? node.frontmatter.date : node.date
       )
-
       return -date
     }
   )
@@ -48,7 +51,7 @@ const Tags = ({ pageContext, data, location }) => {
   const siteTitle = data.site.siteMetadata.title
 
   return (
-    <LayoutManager location={location} title={siteTitle}>
+    <LayoutManager location={location}>
       <div
         style={{
           marginBottom: rhythm(1 / 4),
@@ -57,10 +60,8 @@ const Tags = ({ pageContext, data, location }) => {
         <h1>{tagHeader}</h1>
         <ul>
           {edges.map(({ node }) => {
-            const { slug } =
-              node.internal.type === `MarkdownRemark` ? node.fields : node
-            const { title } =
-              node.internal.type === `MarkdownRemark` ? node.frontmatter : node
+            const { slug } = "fields" in node ? node.fields : node
+            const { title } = "frontmatter" in node ? node.frontmatter : node
             return (
               <li key={slug}>
                 <Link to={slug}>{title}</Link>
@@ -84,30 +85,45 @@ const Tags = ({ pageContext, data, location }) => {
   )
 }
 
-Tags.propTypes = {
-  pageContext: PropTypes.shape({
-    tag: PropTypes.string.isRequired,
-  }),
-  data: PropTypes.shape({
-    allMarkdownRemark: PropTypes.shape({
-      totalCount: PropTypes.number.isRequired,
-      edges: PropTypes.arrayOf(
-        PropTypes.shape({
-          node: PropTypes.shape({
-            frontmatter: PropTypes.shape({
-              title: PropTypes.string.isRequired,
-            }),
-            fields: PropTypes.shape({
-              slug: PropTypes.string.isRequired,
-            }),
-          }),
-        }).isRequired
-      ),
-    }),
-  }),
-}
-
 export default Tags
+
+interface QueryData {
+  site: {
+    siteMetadata: {
+      title: string
+    }
+  }
+  allMarkdownRemark: {
+    totalCount: number
+    edges: {
+      node: {
+        internal: {
+          type: "MarkdownRemark"
+        }
+        fields: {
+          slug: string
+        }
+        frontmatter: {
+          title: string
+          date: string
+        }
+      }
+    }[]
+  }
+  allContentfulBlogPost: {
+    totalCount: number
+    edges: {
+      node: {
+        internal: {
+          type: "ContentfulBlogPost"
+        }
+        slug: string
+        title: string
+        date: string
+      }
+    }[]
+  }
+}
 
 export const pageQuery = graphql`
   query($tag: String) {
@@ -152,7 +168,7 @@ export const pageQuery = graphql`
           title
           date
         }
-      }
+      }[]
     }
   }
 `
