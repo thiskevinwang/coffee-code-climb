@@ -1,7 +1,10 @@
 import { useState } from "react"
-import ApolloClient, { gql, GraphQLRequest } from "apollo-boost"
-import { useLazyQuery, useQuery } from "@apollo/client"
-import fetch from "isomorphic-fetch"
+import {
+  useQuery,
+  ApolloClient,
+  DocumentNode,
+  InMemoryCache,
+} from "@apollo/client"
 
 /**
  * # token
@@ -12,7 +15,7 @@ const token = process.env.GATSBY_GITHUB_TOKEN
 const URI = "https://api.github.com/graphql"
 
 const useFetchGithub = (
-  query: GraphQLRequest,
+  query: DocumentNode,
   variables = { owner: "thiskevinwang", name: "coffee-code-climb" }
 ) => {
   const [githubClient] = useState(
@@ -22,7 +25,7 @@ const useFetchGithub = (
         headers: {
           authorization: token ? `Bearer ${token}` : "",
         },
-        fetch,
+        cache: new InMemoryCache(),
       })
   )
   const { loading, error, data } = useQuery(query, {

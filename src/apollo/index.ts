@@ -1,21 +1,11 @@
-import { ApolloProvider } from "@apollo/client"
-import { HttpLink } from "apollo-link-http"
-import { setContext } from "apollo-link-context"
-import { ApolloClient } from "apollo-client"
-import { InMemoryCache } from "apollo-cache-inmemory"
+import {
+  ApolloProvider,
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+} from "@apollo/client"
+import { setContext } from "@apollo/client/link/context"
 import fetch from "isomorphic-fetch"
-
-/**
- * @NOTE
- * ignore SubscriptionClient for now
- */
-// import { split } from "apollo-link"
-// import { getMainDefinition } from "apollo-utilities"
-// import { WebSocketLink } from "apollo-link-ws"
-// import { gql } from "apollo-boost"
-// import { SubscriptionClient } from "subscriptions-transport-ws"
-// import * as ws from "ws"
-// import { OperationDefinitionNode } from "graphql"
 
 const ENDPOINT = process.env.GATSBY_RDS_API_ENDPOINT
 const HTTPS_PROTOCOL = "https://"
@@ -85,11 +75,6 @@ const authLink = setContext((_, { headers }) => {
 })
 
 const client = new ApolloClient({
-  /**
-   * @NOTE
-   * Ignore subscriptionClient for now
-   */
-  // link: authLink.concat(link),
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
   /**

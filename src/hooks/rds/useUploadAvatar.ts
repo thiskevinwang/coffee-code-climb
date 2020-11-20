@@ -1,6 +1,5 @@
 import { useState } from "react"
-import { gql, ApolloError } from "apollo-boost"
-import { useMutation } from "@apollo/client"
+import { gql, ApolloError, useMutation } from "@apollo/client"
 import axios, { AxiosRequestConfig } from "axios"
 import moment from "moment"
 

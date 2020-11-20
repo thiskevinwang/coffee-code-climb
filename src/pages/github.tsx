@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from "react"
-import { graphql } from "gatsby"
-import { gql } from "apollo-boost"
+import React from "react"
+import { graphql, PageProps } from "gatsby"
+import { gql } from "@apollo/client"
 
 import { LayoutManager } from "components/layoutManager"
 import SEO from "../components/seo"
@@ -24,7 +24,7 @@ const QUERY = gql`
     }
   }
 `
-const GitHubPage = (props) => {
+const GitHubPage = (props: PageProps) => {
   const { loading, error, data } = useFetchGithub(QUERY)
 
   if (loading) return "loading..."

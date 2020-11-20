@@ -1,7 +1,6 @@
 import React from "react"
-import PropTypes from "prop-types"
 import styled from "styled-components"
-import { Link, graphql } from "gatsby"
+import { Link, graphql, PageProps } from "gatsby"
 import kebabCase from "lodash/kebabCase"
 
 import { rhythm } from "utils/typography"
@@ -34,11 +33,11 @@ const TagsPage = ({
     },
   },
   location,
-}) => {
+}: PageProps<QueryData>) => {
   let group = combineTagGroups(group1, group2)
 
   return (
-    <LayoutManager location={location} title={title}>
+    <LayoutManager location={location}>
       <SEO title={title} />
 
       <h2>{`Tags (${group.length})`}</h2>
@@ -82,22 +81,24 @@ const TagsPage = ({
   )
 }
 
-TagsPage.propTypes = {
-  data: PropTypes.shape({
-    allMarkdownRemark: PropTypes.shape({
-      group: PropTypes.arrayOf(
-        PropTypes.shape({
-          fieldValue: PropTypes.string.isRequired,
-          totalCount: PropTypes.number.isRequired,
-        }).isRequired
-      ),
-    }),
-    site: PropTypes.shape({
-      siteMetadata: PropTypes.shape({
-        title: PropTypes.string.isRequired,
-      }),
-    }),
-  }),
+interface QueryData {
+  allMarkdownRemark: {
+    group: {
+      fieldValue: string
+      totalCount: number
+    }[]
+  }
+  allContentfulBlogPost: {
+    group: {
+      fieldValue: string
+      totalCount: number
+    }[]
+  }
+  site: {
+    siteMetadata: {
+      title: string
+    }
+  }
 }
 
 export default TagsPage

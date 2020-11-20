@@ -1,4 +1,4 @@
-import { gql } from "apollo-boost"
+import { gql } from "@apollo/client"
 
 export enum CommentOrderByInput {
   created_ASC = "created_ASC",

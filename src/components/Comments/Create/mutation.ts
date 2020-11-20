@@ -1,4 +1,4 @@
-import { gql } from "apollo-boost"
+import { gql } from "@apollo/client"
 
 export const CREATE_COMMENT_MUTATION = gql`
   mutation($body: String!, $url: String!) {

@@ -1,4 +1,3 @@
-export { default as ButtonAndDrawer } from "./ButtonAndDrawer"
 export { default as NavBar } from "./NavBar"
 export { default as Footer } from "./Footer"
 export { default as Header } from "./Header"
