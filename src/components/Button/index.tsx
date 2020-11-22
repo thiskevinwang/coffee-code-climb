@@ -17,14 +17,14 @@ const MOUSEDOWN_STYLE = {
   transform: `scale(0.98)`,
 }
 
-interface Props {
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** @deprecated Please remove and clean up */
   textSm?: boolean
 }
 
 const Renderer = styled(animated.button)<Props>`
   background: var(--background);
-  color: var(--text);
+  color: ${(p) => (p.disabled ? "var(--table-border)" : "var(--text)")};
 
   border-radius: 5px;
   border-style: solid;
@@ -63,9 +63,7 @@ const Renderer = styled(animated.button)<Props>`
  * </Button>
  * ```
  */
-export const Button: React.FC<
-  Props & ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ textSm, ...props }) => {
+export const Button: React.FC<Props> = ({ textSm, ...props }) => {
   const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
     config: config.stiff,

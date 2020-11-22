@@ -106,31 +106,38 @@ const AuthLogin = ({ location }: PageProps) => {
             >
               Login
             </SubmitButton>
+
+            <br />
+            <Button
+              onClick={() => {
+                props.setSubmitting(true)
+                window.location.href = GATSBY_COGNITO_REDIRECT_URI
+              }}
+              disabled={props.isSubmitting}
+            >
+              Sign Up
+            </Button>
+
+            <span>&nbsp;— OR —&nbsp;</span>
+
+            <br />
+            <Button
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+              onClick={() => {
+                props.setSubmitting(true)
+                window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
+              }}
+              disabled={props.isSubmitting}
+            >
+              <div>Login with Facebook</div> <FacebookIcon />
+            </Button>
           </form>
         )}
       </Formik>
-      <Button
-        onClick={() => {
-          window.location.href = GATSBY_COGNITO_REDIRECT_URI
-        }}
-      >
-        Sign Up
-      </Button>
-      <span>&nbsp;— OR —&nbsp;</span>
-
-      <br />
-      <Button
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-        onClick={() => {
-          window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
-        }}
-      >
-        <div>Login with Facebook</div> <FacebookIcon />
-      </Button>
     </LayoutManager>
   )
 }
