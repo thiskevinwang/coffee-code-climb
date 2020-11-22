@@ -14,9 +14,16 @@ module.exports = {
   },
   plugins: [
     `gatsby-plugin-typescript`,
-    /**
-     * https://www.gatsbyjs.org/packages/gatsby-plugin-styled-components/
-     */
+    /** https://www.gatsbyjs.com/plugins/gatsby-plugin-material-ui/ */
+    {
+      resolve: `gatsby-plugin-material-ui`,
+      options: {
+        stylesProvider: {
+          injectFirst: true,
+        },
+      },
+    },
+    /** https://www.gatsbyjs.org/packages/gatsby-plugin-styled-components/ */
     `gatsby-plugin-styled-components`,
     {
       resolve: `gatsby-plugin-amazon-onetag`,

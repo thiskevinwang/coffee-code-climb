@@ -25,6 +25,10 @@ const Renderer = styled(animated.button)<Props>`
   border-radius: 5px;
   border-style: solid;
   border-width: 0;
+
+  padding: 0 var(--geist-gap-half);
+  height: var(--geist-form-small-height);
+  font-size: var(--geist-form-small-font);
 `
 
 /**

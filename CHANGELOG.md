@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - disabled button style on Login page
 - geist-styles.css
   - import in gatsby-browser & gatsby-ssr
+- `gatsby-plugin-material-ui`
+  - fix SSR css issues like with `<Box mr={1} mb={1} display={"inline-block"}>`
 
 ### Removed
 
