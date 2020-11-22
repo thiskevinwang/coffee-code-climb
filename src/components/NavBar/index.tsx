@@ -1,6 +1,5 @@
 import React, { useCallback } from "react"
-import { Link } from "gatsby"
-import styled, { css } from "styled-components"
+import styled, { BaseProps } from "styled-components"
 import { useSelector, useDispatch } from "react-redux"
 
 import {
@@ -9,22 +8,13 @@ import {
   setPostsVersion,
   RootState,
 } from "_reduxState"
-import { rhythm } from "utils/typography"
 import { Button } from "components/Button"
 import * as Colors from "consts/Colors"
 import { navbarZ } from "consts"
 
-interface BarProps {
-  isDarkMode: boolean
-}
-/**
- * Bar
- * A styled component that is our navbar.
- * @prop {boolean} isDarkMode - redux state
- */
 const Bar = styled.div`
-  background: ${(props: BarProps) =>
-    props.isDarkMode ? Colors.blackDarker : Colors.silverLight};
+  background: ${(props: BaseProps) =>
+    props.theme.mode === "dark" ? Colors.blackDarker : Colors.silverLight};
   box-shadow: var(--shadow);
   color: white;
   display: flex;
@@ -45,54 +35,41 @@ const Bar = styled.div`
 const NavBar = () => {
   // const rootPath = `${__PATH_PREFIX__}/`
 
-  /**
-   * @todo: typed Selector
-   * @example export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector
-   * @see https://stackoverflow.com/a/57472389/9823455
-   *
-   * useSelector<TState, TSelected>
-   */
-  const { isDarkMode, layoutVersion } = useSelector<
-    RootState,
-    { isDarkMode: boolean; layoutVersion: number }
-  >((state) => ({
-    isDarkMode: state.isDarkMode,
-    layoutVersion: state.layoutVersion,
-  }))
-
-  const postsVersion = useSelector<RootState, any>(
-    (state) => state.postsVersion
+  const { isDarkMode, layoutVersion, postsVersion } = useSelector(
+    (state: RootState) => ({
+      isDarkMode: state.isDarkMode,
+      layoutVersion: state.layoutVersion,
+      postsVersion: state.postsVersion,
+    })
   )
+
   const dispatch = useDispatch()
 
   const dispatchSetIsDarkMode = useCallback(
-    (value: boolean) => (e) => dispatch(setIsDarkMode(value)),
+    (value: boolean) => () => dispatch(setIsDarkMode(value)),
     []
   )
   const dispatchSetLayoutVersion = useCallback(
-    (value: number) => (e) => dispatch(setLayoutVersion(value)),
+    (value: number) => () => dispatch(setLayoutVersion(value)),
     []
   )
   const dispatchSetPostsVersion = useCallback(
-    (value: number) => (e) => dispatch(setPostsVersion(value)),
+    (value: number) => () => dispatch(setPostsVersion(value)),
     []
   )
 
   return (
-    <Bar isDarkMode={isDarkMode}>
-      <Button textSm onClick={dispatchSetIsDarkMode(!isDarkMode)}>
-        <span>{`Dark Mode`}</span>
-        <label>{isDarkMode ? "on" : "off"}</label>
+    <Bar>
+      <Button onClick={dispatchSetIsDarkMode(!isDarkMode)}>
+        <span>{`Dark Mode: `}</span>
+        <label>{isDarkMode ? "🌙" : "☀️"}</label>
       </Button>
-      <Button
-        textSm
-        onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}
-      >
-        <span>{`Layout Version`}</span>
+      <Button onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}>
+        <span>{`Layout: `}</span>
         <label>V{layoutVersion}</label>
       </Button>
-      <Button textSm onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}>
-        <span>{`Posts Version`}</span>
+      <Button onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}>
+        <span>{`Posts: `}</span>
         <label>V{postsVersion}</label>
       </Button>
     </Bar>
