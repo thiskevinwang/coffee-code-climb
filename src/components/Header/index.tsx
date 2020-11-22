@@ -1,11 +1,15 @@
 import React, { useRef, useMemo, memo } from "react"
-import { Link } from "gatsby"
-import { useTransition, useChain, a } from "react-spring"
+import { Link, PageProps } from "gatsby"
+import { useTransition, useChain, animated } from "react-spring"
 import uuid from "uuid/v4"
 
 import { rhythm, scale } from "utils/typography"
 
-function Header({ location, title }: { location: Location; title: string }) {
+interface HeaderProps {
+  location?: PageProps["location"]
+  title?: string
+}
+const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
   let header: JSX.Element
 
@@ -18,9 +22,9 @@ function Header({ location, title }: { location: Location; title: string }) {
    */
   let data: { character: string; id: string; index: number }[] = useMemo(
     () =>
-      Array.from(location.pathname === rootPath ? title : "Home").map(
-        (e, i) => ({ character: e, id: uuid(), index: i })
-      ),
+      Array.from(
+        location?.pathname === rootPath ? title : "Home"
+      ).map((e, i) => ({ character: e, id: uuid(), index: i })),
     []
   )
 
@@ -34,7 +38,7 @@ function Header({ location, title }: { location: Location; title: string }) {
    * the useChain call.
    */
 
-  const transitions = useTransition(data, item => item.id, {
+  const transitions = useTransition(data, (item) => item.id, {
     ref: transRef,
     unique: true,
     trail: 500 / data.length,
@@ -42,8 +46,9 @@ function Header({ location, title }: { location: Location; title: string }) {
     from: ({ index }) => {
       const n: number = index - data.length / 2
       return {
-        transform: `translate(${100 * n}px, -400px) scale(3) rotate(${n *
-          90}deg)`,
+        transform: `translate(${100 * n}px, -400px) scale(3) rotate(${
+          n * 90
+        }deg)`,
       }
     },
     enter: { transform: `translate(0px, 0px) scale(1) rotate(0)` },
@@ -57,7 +62,7 @@ function Header({ location, title }: { location: Location; title: string }) {
    * Use the animated props from the transition
    */
   const animatedTitle = transitions.map(({ item, key, props }) => (
-    <a.div
+    <animated.div
       key={key}
       style={{
         ...props,
@@ -66,7 +71,7 @@ function Header({ location, title }: { location: Location; title: string }) {
       }}
     >
       {item.character}
-    </a.div>
+    </animated.div>
   ))
 
   /** A container for the animatedTitle */
@@ -85,7 +90,7 @@ function Header({ location, title }: { location: Location; title: string }) {
     </Link>
   )
 
-  if (location.pathname === rootPath) {
+  if (location?.pathname === rootPath) {
     header = (
       <h1
         style={{
