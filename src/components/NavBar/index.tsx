@@ -1,6 +1,7 @@
 import React, { useCallback } from "react"
 import styled, { BaseProps } from "styled-components"
 import { useSelector, useDispatch } from "react-redux"
+import Box from "@material-ui/core/Box"
 
 import {
   setIsDarkMode,
@@ -60,18 +61,24 @@ const NavBar = () => {
 
   return (
     <Bar>
-      <Button onClick={dispatchSetIsDarkMode(!isDarkMode)}>
-        <span>{`Dark Mode: `}</span>
-        <label>{isDarkMode ? "🌙" : "☀️"}</label>
-      </Button>
-      <Button onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}>
-        <span>{`Layout: `}</span>
-        <label>V{layoutVersion}</label>
-      </Button>
-      <Button onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}>
-        <span>{`Posts: `}</span>
-        <label>V{postsVersion}</label>
-      </Button>
+      <Box mx={1} my={"auto"}>
+        <Button onClick={dispatchSetIsDarkMode(!isDarkMode)}>
+          <span>{`Dark Mode: `}</span>
+          <label>{isDarkMode ? "🌙" : "☀️"}</label>
+        </Button>
+      </Box>
+      <Box mx={1} my={"auto"}>
+        <Button onClick={dispatchSetLayoutVersion((layoutVersion % 2) + 1)}>
+          <span>{`Layout: `}</span>
+          <label>V{layoutVersion}</label>
+        </Button>
+      </Box>
+      <Box mx={1} my={"auto"}>
+        <Button onClick={dispatchSetPostsVersion((postsVersion % 2) + 1)}>
+          <span>{`Posts: `}</span>
+          <label>V{postsVersion}</label>
+        </Button>
+      </Box>
     </Bar>
   )
 }
