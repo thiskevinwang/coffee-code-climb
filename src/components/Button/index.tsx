@@ -3,8 +3,6 @@ import styled from "styled-components"
 import { animated, useSpring, config } from "react-spring"
 import { useGesture } from "react-use-gesture"
 
-import { rhythm } from "utils/typography"
-
 const FROM_STYLE = {
   transform: `scale(1)`,
 }
@@ -17,36 +15,16 @@ const MOUSEDOWN_STYLE = {
   transform: `scale(0.98)`,
 }
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** @deprecated Please remove and clean up */
-  textSm?: boolean
-}
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {}
 
 const Renderer = styled(animated.button)<Props>`
   background: var(--background);
   color: ${(p) => (p.disabled ? "var(--table-border)" : "var(--text)")};
+  box-shadow: var(--shadow);
 
   border-radius: 5px;
   border-style: solid;
   border-width: 0;
-  box-shadow: var(--shadow);
-
-  font-size: ${(props) => props.textSm && `12px`};
-  font-weight: lighter;
-
-  line-height: 1.2;
-  display: inline-block;
-  text-align: center;
-  padding: ${rhythm(0.5)};
-
-  margin-right: 10px;
-  margin-bottom: 10px;
-
-  > label {
-    background: var(--background);
-    padding: 5px 10px;
-    margin-left: 5px;
-  }
 `
 
 /**
@@ -63,7 +41,7 @@ const Renderer = styled(animated.button)<Props>`
  * </Button>
  * ```
  */
-export const Button: React.FC<Props> = ({ textSm, ...props }) => {
+export const Button: React.FC<Props> = (props) => {
   const [springProps, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
     config: config.stiff,
