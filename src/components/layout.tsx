@@ -7,7 +7,7 @@ import styled from "styled-components"
 import { Footer, Header, NavBar } from "components"
 import { StickyNumbers } from "components/StickyNumbers"
 import { rhythm } from "utils/typography"
-import { Colors } from "consts/Colors"
+import { Colors, LIGHT_GRADIENTS, DARK_GRADIENTS } from "consts/Colors"
 import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
 
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
@@ -63,9 +63,7 @@ function Layout({ location, title, children }: Props) {
           style={{
             background: scrollYPercent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
-              output: isDarkMode
-                ? Colors.DARK_GRADIENTS
-                : Colors.LIGHT_GRADIENTS,
+              output: isDarkMode ? DARK_GRADIENTS : LIGHT_GRADIENTS,
             }),
             transform: scrollYPercent.interpolate({
               range: [0, 1],
