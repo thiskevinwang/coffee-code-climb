@@ -42,7 +42,7 @@ export const GlobalTypographyStyles = createGlobalStyle<Props>`
   a {
     color: var(--text);
     text-shadow: var(--shadow);
-    transition: color 200ms ease-in-out;
+
     :hover {
       color: var(--purple-or-cyan);
     }
