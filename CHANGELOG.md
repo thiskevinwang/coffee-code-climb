@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - NavBar, Header, Layout (old) - improve types
 - ThemeSlider style to use some Geist css vars
+- `<a>` styles
 
 ## [v0.18.2] - 2020-11-20
 

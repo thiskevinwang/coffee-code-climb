@@ -40,18 +40,11 @@ export const GlobalTypographyStyles = createGlobalStyle<Props>`
     text-decoration-style: wavy;
   }
   a {
-    color: var(--text);
-    text-shadow: var(--shadow);
-
+    color: var(--accents-5);
+    box-shadow: none;
     :hover {
-      color: var(--purple-or-cyan);
+      color: var(--geist-foreground);
     }
-    /* box-shadow: var(--purple-or-cyan) 0px -5px 0px inset;
-    transition: box-shadow 200ms ease-in-out;
-
-    :hover {
-      box-shadow: var(--purple-or-cyan) 0px -1.5rem 0px inset;
-    } */
   }
 
   /**
