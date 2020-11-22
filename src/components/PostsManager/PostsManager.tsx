@@ -11,6 +11,7 @@ import {
   interpolate,
 } from "react-spring"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
+import Box from "@material-ui/core/Box"
 
 import { Button } from "components/Button"
 import * as Posts from "components/Posts"
@@ -35,7 +36,6 @@ interface PostsManagerProps {
 
 const PostsManager = ({ allPosts, location }: PostsManagerProps) => {
   const postsVersion = useSelector((state) => state.postsVersion)
-
   const posts = useMemo(() => generatePosts(allPosts), [allPosts])
 
   const [items, setItems] = useState(() => posts)
@@ -218,19 +218,41 @@ const PostsManager = ({ allPosts, location }: PostsManagerProps) => {
   if (postsVersion === 1) {
     return (
       <Manager>
-        <div>
-          <Button onClick={handleDeleteFirst}>delete first</Button>
-          <Button onClick={handleDeleteAll}>delete all</Button>
-          <Button onClick={handleReset}>reset</Button>
-          <Button onClick={handleSortByNewest}>newest</Button>
-          <Button onClick={handleSortByOldest}>oldest</Button>
-          <Button onClick={() => setIsRandom((s) => !s)}>randomize</Button>
-          <Button onClick={resize(2)}>2</Button>
-          <Button onClick={resize(3)}>3</Button>
-          <Button onClick={resize(4)}>4</Button>
-          <Button onClick={resize(5)}>5</Button>
-          <Button onClick={resize(6)}>6</Button>
-        </div>
+        <>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={handleDeleteFirst}>delete first</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={handleDeleteAll}>delete all</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={handleReset}>reset</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={handleSortByNewest}>newest</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={handleSortByOldest}>oldest</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={() => setIsRandom((s) => !s)}>randomize</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={resize(2)}>2</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={resize(3)}>3</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={resize(4)}>4</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={resize(5)}>5</Button>
+          </Box>
+          <Box mr={1} mb={1} display={"inline-block"}>
+            <Button onClick={resize(6)}>6</Button>
+          </Box>
+        </>
         <animated.div style={{ position: `relative`, ...cardHolderProps }}>
           {transitions.map(({ item: { node }, key, props }, index) => {
             const isMarkdownRemark = checkIsMarkdownRemark(node)
