@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - disabled button style on Login page
+- geist-styles.css
+  - import in gatsby-browser & gatsby-ssr
 
 ### Removed
 

@@ -9,6 +9,7 @@ import { ColorSchemeProvider } from "components/ColorSchemeProvider"
 import { Facebook } from "components/Facebook"
 
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
+import "./geist-styles.css"
 
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
