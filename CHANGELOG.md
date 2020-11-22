@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - import in gatsby-browser & gatsby-ssr
 - `gatsby-plugin-material-ui`
   - fix SSR css issues like with `<Box mr={1} mb={1} display={"inline-block"}>`
+- `Geist.tsx`
+  - a styled-components global stylesheet copy of Vercel's css vars
 
 ### Removed
 
