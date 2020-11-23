@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The bulk of this version is styling the `/pages/app` component, to mimic Vercel.
 Also added is a Vercel-like Menu
 
+![](https://user-images.githubusercontent.com/26389321/99961241-0b9cd200-2d5c-11eb-9ae5-b8a668853ea9.png)
+![](https://user-images.githubusercontent.com/26389321/99961369-4dc61380-2d5c-11eb-9530-97c882adf7f0.png)
+
 ### Added
 
 - Vercel-like menu to NavBar2
