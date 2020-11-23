@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.18.3] - 2020-11-22
 
 The bulk of this version is styling the `/pages/app` component, to mimic Vercel.
+Also added is a Vercel-like Menu
 
 ### Added
 
+- Vercel-like menu to NavBar2
 - disabled button style on Login page
 - geist-styles.css
   - import in gatsby-browser & gatsby-ssr
@@ -35,6 +37,10 @@ The bulk of this version is styling the `/pages/app` component, to mimic Vercel.
 - Layout 1 & 2
   - maxWidth: `var(--geist-page-width-with-margin)`
   - paddingX: `var(--geist-gap)`
+
+### Todos
+
+- extract new menu out of NavBar2.tsx
 
 ## [v0.18.2] - 2020-11-20
 
