@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `<a>` styles
 - NavBar2
   - add dope Menu!!!
+- Layout 1 & 2: maxWidth: `var(--geist-page-width-with-margin)`
 
 ## [v0.18.2] - 2020-11-20
 

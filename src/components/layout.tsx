@@ -104,7 +104,12 @@ const Layout: React.FC<LayoutProps> = ({ location, title, children }) => {
           style={{
             marginLeft: `auto`,
             marginRight: `auto`,
-            maxWidth: rhythm(location?.pathname === rootPath ? 48 : 24),
+            maxWidth:
+              location.pathname === rootPath
+                ? rhythm(48)
+                : location.pathname.startsWith("/app")
+                ? "var(--geist-page-width-with-margin)"
+                : rhythm(24),
             padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
           }}
         >
