@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.18.3] - 2020-11-22
 
+The bulk of this version is styling the `/pages/app` component, to mimic Vercel.
+
 ### Added
 
 - disabled button style on Login page
@@ -24,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Refactored
 
+- /pages/app.tsx - vercel mimic
 - NavBar, Header, Layout (old) - improve types
 - ThemeSlider style to use some Geist css vars
 - `<a>` styles
