@@ -42,6 +42,8 @@ export const GlobalTypographyStyles = createGlobalStyle<Props>`
   a {
     color: var(--accents-5);
     box-shadow: none;
+    /* match .MuiListItem transition */
+    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; 
     :hover {
       color: var(--geist-foreground);
     }
