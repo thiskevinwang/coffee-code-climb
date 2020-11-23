@@ -221,7 +221,7 @@ const App = ({ location }: PageProps) => {
                   <p>
                     This is your avatar.
                     <br />
-                    Click on the avatar to upload a custom one from your files.
+                    Upload feature coming soon! 🚧
                   </p>
                 </Box>
                 <Box display="flex" alignItems="center">

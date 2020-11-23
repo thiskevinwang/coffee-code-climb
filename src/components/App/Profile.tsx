@@ -9,7 +9,7 @@ export const Profile = (
     <>
       <h2>Profile</h2>
       <p>
-        Email: <span style={{ filter: "blur(4px)" }}>{props.data?.email}</span>
+        Email: <span>{props.data?.email}</span>
       </p>
     </>
   )
