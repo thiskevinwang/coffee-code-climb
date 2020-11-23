@@ -37,7 +37,10 @@ Wordpress2016.overrideThemeStyles = (a, b) => {
     p: {
       fontWeight: 300,
     },
-    "h1, h2, h3, h4, h5, h6, p, label, span, li, td, th, summary": {
+    "h1, h2, h3, h4, h5, h6, p, label, li, td, th, summary": {
+      color: "var(--text)",
+    },
+    "span:not([class*='Mui'])": {
       color: "var(--text)",
     },
     "h1 > code, h2 > code, h3 > code, h4 > code, h5 > code, h6 > code": {
