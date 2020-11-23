@@ -8,8 +8,9 @@ export const Profile = (
   return (
     <>
       <h2>Profile</h2>
-      <p>Email: {props.data?.email}</p>
-      <p>Providers: {props.data?.identities?.map((e) => e.providerName)}</p>
+      <p>
+        Email: <span>{props.data?.email}</span>
+      </p>
     </>
   )
 }

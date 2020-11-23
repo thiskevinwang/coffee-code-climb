@@ -20,7 +20,8 @@ const Moon = styled(animated.div)`
   height: 2rem;
 `
 const Container = styled(animated.div)`
-  border-color: lightgrey;
+  background: var(--geist-background);
+  border-color: var(--accents-2);
   border-width: 1px;
   border-style: solid;
   border-radius: 25% / 50%;

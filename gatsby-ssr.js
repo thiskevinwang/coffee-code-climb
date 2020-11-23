@@ -6,6 +6,9 @@ import { ApolloProvider, client } from "apollo"
 import { SvgTrail } from "components/SvgTrail"
 import { ColorSchemeProvider } from "components/ColorSchemeProvider"
 
+import "prismjs/plugins/line-numbers/prism-line-numbers.css"
+import "./geist-styles.css"
+
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (

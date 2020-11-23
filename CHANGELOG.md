@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.18.3] - 2020-11-22
+
+The bulk of this version is styling the `/pages/app` component, to mimic Vercel.
+Also added is a Vercel-like Menu
+
+![](https://user-images.githubusercontent.com/26389321/99961241-0b9cd200-2d5c-11eb-9ae5-b8a668853ea9.png)
+![](https://user-images.githubusercontent.com/26389321/99961369-4dc61380-2d5c-11eb-9530-97c882adf7f0.png)
+
+### Added
+
+- Vercel-like menu to NavBar2
+- disabled button style on Login page
+- geist-styles.css
+  - import in gatsby-browser & gatsby-ssr
+- `gatsby-plugin-material-ui`
+  - fix SSR css issues like with `<Box mr={1} mb={1} display={"inline-block"}>`
+- `Geist.tsx`
+  - a styled-components global stylesheet copy of Vercel's css vars
+
+### Removed
+
+- 'a' transition css
+- unused `MobileMenu` component
+
+### Refactored
+
+- /pages/app.tsx - vercel mimic
+- NavBar, Header, Layout (old) - improve types
+- ThemeSlider style to use some Geist css vars
+- `<a>` styles
+- NavBar2
+  - add dope Menu!!!
+- Layout 1 & 2
+  - maxWidth: `var(--geist-page-width-with-margin)`
+  - paddingX: `var(--geist-gap)`
+
+### Todos
+
+- extract new menu out of NavBar2.tsx
+
 ## [v0.18.2] - 2020-11-20
 
 ### Removed
@@ -191,6 +231,7 @@ New:
 
 ### Added
 
+[v0.18.3]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.2...v0.18.3
 [v0.18.2]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.1...v0.18.2
 [v0.18.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.0...v0.18.1
 [v0.18.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.17.1...v0.18.0

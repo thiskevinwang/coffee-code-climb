@@ -4,6 +4,7 @@ import { navigate, PageProps } from "gatsby"
 import styled from "styled-components"
 import _ from "lodash"
 import { graphql } from "gatsby"
+import Box from "@material-ui/core/Box"
 
 import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
@@ -106,31 +107,42 @@ const AuthLogin = ({ location }: PageProps) => {
             >
               Login
             </SubmitButton>
+
+            <br />
+            <Box mr={1} mb={1} display={"inline-block"}>
+              <Button
+                onClick={() => {
+                  props.setSubmitting(true)
+                  window.location.href = GATSBY_COGNITO_REDIRECT_URI
+                }}
+                disabled={props.isSubmitting}
+              >
+                Sign Up
+              </Button>
+            </Box>
+
+            <span>&nbsp;— OR —&nbsp;</span>
+
+            <br />
+            <Box mr={1} mb={1} display={"inline-block"}>
+              <Button
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+                onClick={() => {
+                  props.setSubmitting(true)
+                  window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
+                }}
+                disabled={props.isSubmitting}
+              >
+                <div>Login with Facebook</div> <FacebookIcon />
+              </Button>
+            </Box>
           </form>
         )}
       </Formik>
-      <Button
-        onClick={() => {
-          window.location.href = GATSBY_COGNITO_REDIRECT_URI
-        }}
-      >
-        Sign Up
-      </Button>
-      <span>&nbsp;— OR —&nbsp;</span>
-
-      <br />
-      <Button
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-        onClick={() => {
-          window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
-        }}
-      >
-        <div>Login with Facebook</div> <FacebookIcon />
-      </Button>
     </LayoutManager>
   )
 }

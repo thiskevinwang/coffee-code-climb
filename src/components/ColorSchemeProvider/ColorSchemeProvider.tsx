@@ -8,6 +8,7 @@ import { darkTheme } from "./Themes/dark"
 import { lightTheme } from "./Themes/light"
 import { GlobalStyles } from "./GlobalStyles"
 import { GlobalTypographyStyles } from "./GlobalTypographyStyles"
+import { Geist } from "./Geist"
 
 /**
  * # ColorSchemeProvider
@@ -38,6 +39,7 @@ export const ColorSchemeProvider = memo(({ children }) => {
     <ThemeProvider theme={theme}>
       <GlobalStyles isDarkMode={isDarkMode} />
       <GlobalTypographyStyles isDarkMode={isDarkMode} />
+      <Geist isDarkMode={isDarkMode} />
       {children}
     </ThemeProvider>
   )

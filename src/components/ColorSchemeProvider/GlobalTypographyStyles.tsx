@@ -40,18 +40,13 @@ export const GlobalTypographyStyles = createGlobalStyle<Props>`
     text-decoration-style: wavy;
   }
   a {
-    color: var(--text);
-    text-shadow: var(--shadow);
-    transition: color 200ms ease-in-out;
+    color: var(--accents-5);
+    box-shadow: none;
+    /* match .MuiListItem transition */
+    transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; 
     :hover {
-      color: var(--purple-or-cyan);
+      color: var(--geist-foreground);
     }
-    /* box-shadow: var(--purple-or-cyan) 0px -5px 0px inset;
-    transition: box-shadow 200ms ease-in-out;
-
-    :hover {
-      box-shadow: var(--purple-or-cyan) 0px -1.5rem 0px inset;
-    } */
   }
 
   /**

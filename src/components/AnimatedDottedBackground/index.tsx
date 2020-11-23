@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled, { BaseProps } from "styled-components"
 import { animated } from "react-spring"
 
 const AnimatedDottedBackground = styled(animated.div)`
@@ -13,10 +13,14 @@ const AnimatedDottedBackground = styled(animated.div)`
 
   background-image: -webkit-repeating-radial-gradient(
     center center,
-    ${props =>
-      props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`},
-    ${props =>
-        props.isDarkMode ? `rgba(255, 255, 255, 0.8)` : `rgba(0, 0, 0, 0.5)`}
+    ${(props: BaseProps) =>
+      props.theme.mode === "dark"
+        ? `rgba(255, 255, 255, 0.8)`
+        : `rgba(0, 0, 0, 0.5)`},
+    ${(props: BaseProps) =>
+        props.theme.mode === "dark"
+          ? `rgba(255, 255, 255, 0.8)`
+          : `rgba(0, 0, 0, 0.5)`}
       1px,
     transparent 1px,
     transparent 100%

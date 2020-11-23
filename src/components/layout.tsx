@@ -3,14 +3,16 @@ import { useSelector } from "react-redux"
 import { useSpring, animated } from "react-spring"
 import { compose } from "redux"
 import styled from "styled-components"
+import type { PageProps } from "gatsby"
 
 import { Footer, Header, NavBar } from "components"
 import { StickyNumbers } from "components/StickyNumbers"
-import { rhythm } from "utils/typography"
-import { Colors } from "consts/Colors"
+import { Colors, LIGHT_GRADIENTS, DARK_GRADIENTS } from "consts/Colors"
 import { AnimatedDottedBackground } from "components/AnimatedDottedBackground"
 
+import { rhythm } from "utils/typography"
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
+import type { RootState } from "_reduxState"
 
 const ThemedBackground = styled(animated.div)`
   position: fixed;
@@ -43,9 +45,13 @@ const Inner = styled(animated.div)`
   `1px dotted yellow`}; */
 `
 
-function Layout({ location, title, children }: Props) {
+interface LayoutProps {
+  title?: string
+  location?: PageProps["location"]
+}
+const Layout: React.FC<LayoutProps> = ({ location, title, children }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const isDarkMode = useSelector((state) => state.isDarkMode)
+  const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const themedBackgroundProps = useSpring({
     background: isDarkMode ? Colors.BLACK : Colors.SILVER,
   })
@@ -63,9 +69,7 @@ function Layout({ location, title, children }: Props) {
           style={{
             background: scrollYPercent.interpolate({
               range: [0, 0.25, 0.5, 0.75, 1],
-              output: isDarkMode
-                ? Colors.DARK_GRADIENTS
-                : Colors.LIGHT_GRADIENTS,
+              output: isDarkMode ? DARK_GRADIENTS : LIGHT_GRADIENTS,
             }),
             transform: scrollYPercent.interpolate({
               range: [0, 1],
@@ -82,7 +86,6 @@ function Layout({ location, title, children }: Props) {
           }}
         />
         <AnimatedDottedBackground
-          isDarkMode={isDarkMode}
           style={{
             backgroundSize: scrollYPercent
               .interpolate({
@@ -101,8 +104,13 @@ function Layout({ location, title, children }: Props) {
           style={{
             marginLeft: `auto`,
             marginRight: `auto`,
-            maxWidth: rhythm(location.pathname === rootPath ? 48 : 24),
-            padding: `${rhythm(1.5)} ${rhythm(3 / 4)}`,
+            maxWidth:
+              location.pathname === rootPath
+                ? rhythm(48)
+                : location.pathname.startsWith("/app")
+                ? "var(--geist-page-width-with-margin)"
+                : rhythm(24),
+            padding: `${rhythm(1.5)} var(--geist-gap)`,
           }}
         >
           <animated.header
