@@ -31,8 +31,10 @@ const makeSignUpWithEmail = (rdxDispatch: Dispatch) => async (
 
   try {
     const data = await cognito.signUp(params).promise()
+    rdxDispatch(setCognito(data, null))
   } catch (err) {
     rdxDispatch(setCognito(null, err))
+    throw err
   }
 
   console.log("\tend")

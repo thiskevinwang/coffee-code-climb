@@ -1,6 +1,6 @@
 import React from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
-import { navigate, PageProps } from "gatsby"
+import { Link, navigate, PageProps } from "gatsby"
 import styled from "styled-components"
 import _ from "lodash"
 import { graphql } from "gatsby"
@@ -186,7 +186,7 @@ const AuthLogin = ({ location }: PageProps) => {
                 {props.status === "User not found" && (
                   <Error>
                     <b>Error:</b> There is no account associated with this email
-                    address. <a href={GATSBY_COGNITO_REDIRECT_URI}>Sign up?</a>
+                    address. <Link href="/auth/signup">Sign up?</Link>
                   </Error>
                 )}
               </Box>

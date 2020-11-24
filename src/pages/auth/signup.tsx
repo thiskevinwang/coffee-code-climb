@@ -74,6 +74,7 @@ const AuthSignup = ({ location }: PageProps) => {
         onSubmit={async (values, helpers) => {
           try {
             await signUpWithEmail(values.email, values.password)
+            navigate("/auth/login")
           } catch (err) {
             console.log("ERR!!!!", err)
             helpers.setStatus(err.toString())
@@ -108,14 +109,15 @@ const AuthSignup = ({ location }: PageProps) => {
             >
               Signup
             </SubmitButton>
-            {errorMessage && <Error>{errorMessage}</Error>}
+            {errorMessage && (
+              <Error>
+                <b>Error:</b>&nbsp;{errorMessage}&nbsp;{" "}
+                <Link to="/auth/login">Login?</Link>
+              </Error>
+            )}
           </form>
         )}
       </Formik>
-
-      <small>
-        <Link to="/auth/login">Login</Link>
-      </small>
     </LayoutManager>
   )
 }
