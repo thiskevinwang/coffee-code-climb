@@ -1,4 +1,5 @@
 export { FacebookIcon } from "./facebook-icon"
+export { GoogleIcon } from "./google-icon"
 export { QuestionCircle } from "./question-circle"
 export { Moon } from "./moon"
 export { Sun } from "./sun"
