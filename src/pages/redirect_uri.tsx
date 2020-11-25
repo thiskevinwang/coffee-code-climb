@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useMutation, gql } from "@apollo/client"
 import { graphql, navigate } from "gatsby"
 import queryString from "query-string"
@@ -8,7 +8,8 @@ import { setCognito } from "_reduxState"
 import SEO from "components/seo"
 import { LoadingPage } from "components/LoadingPage"
 
-const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK
+const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK!
+const GATSBY_GOOGLE_LOGIN_LINK = process.env.GATSBY_GOOGLE_LOGIN_LINK!
 
 const GET_TOKEN = gql`
   mutation GetToken($code: String!) {
@@ -35,18 +36,30 @@ interface GetTokenVars {
   code: string
 }
 
-const RedirectUri = ({ location }: { location: Location }) => {
-  const dispatch = useDispatch()
+const loader = (
+  <>
+    <SEO title="Redirecting..." />
+    <LoadingPage />
+  </>
+)
 
+const RedirectUri = ({ location }: { location: Location }) => {
   // `error_description` is generated two ways
   // 1. By Cognito
   // 2. By my own lambda code
   // -  `callback("LINK_SUCCESS")
-  const { code, error_description, error: cognito_error } = queryString.parse(
-    location.search
-  )
-  console.log("error:", cognito_error)
-  console.log("error_description;", error_description)
+  const [{ code, error_description, cognito_error }] = useState(() => {
+    const { code, error_description, error: cognito_error } = queryString.parse(
+      location.search
+    )
+    console.log(`%cRedirectUri`, `color:#f5a623; font-size:20px`)
+    console.log("\tcode:", code)
+    console.log("\terror:", cognito_error)
+    console.log("\terror_description:", error_description)
+    return { code, error_description, cognito_error }
+  })
+
+  const dispatch = useDispatch()
 
   /**
    * @warn Login with facebook button link, causes the native Cognito user's
@@ -59,20 +72,35 @@ const RedirectUri = ({ location }: { location: Location }) => {
     error_description?.includes?.("LINK_SUCCESS") ||
     error_description?.includes?.("Already found an entry for username")
   ) {
-    window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
+    if (error_description?.includes?.("facebook")) {
+      console.log(`%c=> Facebook`, `color:lightblue; font-size:16px`)
+      window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
+    }
+    if (error_description?.includes?.("google")) {
+      console.log(`%c=> Google`, `color:lightblue; font-size:16px`)
+      window.location.href = GATSBY_GOOGLE_LOGIN_LINK
+    }
+    return loader
   }
 
   const [getToken] = useMutation<GetTokenData, GetTokenVars>(GET_TOKEN, {
     onCompleted: (data) => {
+      console.log(`%cgetToken::success`, `color:#0070f3; font-size:16px`)
       const result = { AuthenticationResult: { ...data.getToken } }
       dispatch(setCognito(result, null))
+
+      console.log(`redirecting to /app/profile`)
       navigate("/app/profile", {
         replace: true,
         state: { data: result, error: null },
       })
     },
     onError: (err) => {
+      console.log(`%cgetToken::error`, `color:#e00; font-size:16px`)
+      console.log(err)
       dispatch(setCognito(null, err))
+
+      console.log(`redirecting to /auth/login`)
       navigate("/auth/login", {
         replace: true,
         state: { data: null, error: err },
@@ -80,20 +108,14 @@ const RedirectUri = ({ location }: { location: Location }) => {
     },
   })
 
-  /**
-   * @Warn this side effect will 'consume' the `code`
-   * query param that is appended by Cognito's Hosted
-   * UI redirect, and exchange it for Cognito Access, Id
-   * and Refresh Tokens.
-   */
   useEffect(() => {
-    if (!code) {
+    if (!code && !error_description && !cognito_error) {
+      console.log(
+        `%cOops, something went wrong`,
+        `color:yellow; font-size:16px`
+      )
       navigate("/auth/login", {
         replace: true,
-        state: {
-          data: null,
-          error: { code, error_description, cognito_error },
-        },
       })
     } else {
       const variables: GetTokenVars = {
@@ -106,12 +128,7 @@ const RedirectUri = ({ location }: { location: Location }) => {
     return () => {}
   }, [code, getToken])
 
-  return (
-    <>
-      <SEO title="Redirecting..." />
-      <LoadingPage />
-    </>
-  )
+  return loader
 }
 
 export default RedirectUri

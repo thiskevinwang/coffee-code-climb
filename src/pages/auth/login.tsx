@@ -17,6 +17,7 @@ import { useVerifyTokenSet } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
 
 const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK!
+const GATSBY_GOOGLE_LOGIN_LINK = process.env.GATSBY_GOOGLE_LOGIN_LINK!
 const GATSBY_COGNITO_REDIRECT_URI = process.env.GATSBY_COGNITO_REDIRECT_URI!
 
 const Error = styled.div`
@@ -133,17 +134,18 @@ const AuthLogin = ({ location }: PageProps) => {
               >
                 <Button
                   type="button"
-                  // color="33"
-                  // background="#fff"
                   style={{
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
                     height: "var(--geist-space-medium)",
                     width: "var(--geist-space-64x)",
-                    cursor: "not-allowed",
                   }}
-                  disabled
+                  onClick={() => {
+                    props.setSubmitting(true)
+                    window.location.href = GATSBY_GOOGLE_LOGIN_LINK
+                  }}
+                  disabled={props.isSubmitting}
                 >
                   <Box mr={2} display="flex" alignItems="center">
                     <GoogleIcon />
@@ -154,7 +156,7 @@ const AuthLogin = ({ location }: PageProps) => {
                     justifyContent="center"
                     width="100%"
                   >
-                    Coming soon!
+                    Continue with Google
                   </Box>
                 </Button>
               </Box>
@@ -168,13 +170,14 @@ const AuthLogin = ({ location }: PageProps) => {
                 <span>—or—</span>
               </Box>
 
-              <Box display="flex" flexDirection="column" alignItems="center">
+              <Box>
                 <Field
                   id="email"
                   name="email"
                   type="email"
                   label="email"
                   placeholder="email"
+                  style={{ width: "var(--geist-space-64x)" }}
                 />
                 <SubmitButton
                   type="submit"
