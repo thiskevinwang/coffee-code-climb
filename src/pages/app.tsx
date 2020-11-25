@@ -163,11 +163,6 @@ const App = ({ location }: PageProps) => {
             </Box>
             <Box display="flex" flexDirection="column">
               <h1>{decodedAcc?.username}</h1>
-              <h4>
-                {decoded?.identities?.map((e, i) => (
-                  <small key={`${e}${i}`}>{e.providerName}</small>
-                ))}
-              </h4>
             </Box>
           </Box>
         </AppHeader>
