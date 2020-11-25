@@ -31,8 +31,10 @@ const makeSignUpWithEmail = (rdxDispatch: Dispatch) => async (
 
   try {
     const data = await cognito.signUp(params).promise()
+    rdxDispatch(setCognito(data, null))
   } catch (err) {
     rdxDispatch(setCognito(null, err))
+    throw err
   }
 
   console.log("\tend")
@@ -234,6 +236,60 @@ const makeConfirmForgotPassword = (rdxDispatch: Dispatch) => async (
   }
 }
 
+const makeInitateAuthCustom = (rdxDispatch: Dispatch) => async (
+  email: string
+) => {
+  console.log("cogInitateAuthCustom")
+
+  const params: CognitoIdentityServiceProvider.InitiateAuthRequest = {
+    AuthFlow: "CUSTOM_AUTH",
+    ClientId: CLIENT_ID,
+    AuthParameters: {
+      USERNAME: email,
+    },
+  }
+
+  try {
+    const data = await cognito.initiateAuth(params).promise()
+    rdxDispatch(setCognito(data, null))
+    return data
+  } catch (err) {
+    rdxDispatch(setCognito(null, err))
+    throw err
+  } finally {
+    console.log("\tend")
+  }
+}
+
+const makeRespondToAuthChallenge = (rdxDispatch: Dispatch) => async (
+  username: string,
+  answer: string,
+  session: string
+) => {
+  console.log("cogRespondToAuthChallenge")
+
+  const params: CognitoIdentityServiceProvider.RespondToAuthChallengeRequest = {
+    ClientId: CLIENT_ID,
+    ChallengeName: "CUSTOM_CHALLENGE",
+    Session: session,
+    ChallengeResponses: {
+      ["USERNAME"]: username,
+      ["ANSWER"]: answer,
+    },
+  }
+
+  try {
+    const data = await cognito.respondToAuthChallenge(params).promise()
+    rdxDispatch(setCognito(data, null))
+    return data
+  } catch (err) {
+    rdxDispatch(setCognito(null, err))
+    throw err
+  } finally {
+    console.log("\tend")
+  }
+}
+
 const THROTTLE_INTERVAL = 1500
 
 /**
@@ -271,6 +327,10 @@ export const useCognito = () => {
   const confirmForgotPassword = useThrottle(
     makeConfirmForgotPassword(rdxDispatch)
   )
+  const initiateAuthCustom = useThrottle(makeInitateAuthCustom(rdxDispatch))
+  const respondToAuthChallenge = useThrottle(
+    makeRespondToAuthChallenge(rdxDispatch)
+  )
 
   return {
     // cognito methods
@@ -279,6 +339,8 @@ export const useCognito = () => {
     initiateAuth,
     initiateAuthForRefreshToken,
     initiateAuthWithFacebook,
+    initiateAuthCustom,
+    respondToAuthChallenge,
     adminLinkProviderForUser,
     forgotPassword,
     confirmForgotPassword,

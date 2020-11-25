@@ -2,63 +2,33 @@ import * as React from "react"
 import { useField, ErrorMessage } from "formik"
 import styled, { BaseProps } from "styled-components"
 import { animated } from "react-spring"
-import theme from "styled-theming"
 
-const background = theme("mode", {
-  light: (props: BaseProps) => props.theme.formInput.background,
-  dark: (props: BaseProps) => props.theme.formInput.background,
-})
-const borderColorBase = theme("mode", {
-  light: (props: BaseProps) => props.theme.formInput.borderColorBase,
-  dark: (props: BaseProps) => props.theme.formInput.borderColorBase,
-})
-const borderColorFocus = theme("mode", {
-  light: (props: BaseProps) => props.theme.formInput.borderColorFocus,
-  dark: (props: BaseProps) => props.theme.formInput.borderColorFocus,
-})
-const color = theme("mode", {
-  light: (props: BaseProps) => props.theme.formInput.color,
-  dark: (props: BaseProps) => props.theme.formInput.color,
-})
-
-const FieldRenderer = styled(animated.div)`
-  --geist-cyan: #79ffe1;
-  --geist-purple: #f81ce5;
-
+interface Props {
+  hasError: boolean
+}
+const FieldRenderer = styled(animated.div)<Props>`
   display: flex;
   flex-direction: column;
-  max-width: 15rem;
   margin-bottom: 2.5rem;
   position: relative;
 
   > input {
     ::selection {
-      background: ${theme("mode", {
-        light: "var(--geist-cyan)",
-        dark: "var(--geist-purple)",
-      })}; /* WebKit/Blink Browsers */
+      background: var(--geist-selection);
     }
     ::-moz-selection {
-      background: ${theme("mode", {
-        light: "var(--geist-cyan)",
-        dark: "var(--geist-purple)",
-      })}; /* Gecko Browsers */
+      background: var(--geist-selection);
     }
-    caret-color: ${theme("mode", {
-      light: "var(--geist-cyan)",
-      dark: "var(--geist-purple)",
-    })};
+    caret-color: var(--geist-selection);
 
     height: 2.8rem;
-    background: ${background};
-    border-color: ${theme("mode", {
-      light: (props) => (props.hasError ? "red" : borderColorBase),
-      dark: (props) => (props.hasError ? "darkred" : borderColorBase),
-    })};
+    background: var(--accents-1);
+    border-color: ${(props) =>
+      props.hasError ? "var(--geist-error)" : "var(--accents-2)"};
     border-width: 1px;
     border-style: solid;
     border-radius: 0.25rem;
-    color: ${color};
+    color: var(--geist-foreground);
     transition: border-color 150ms ease-in-out, background 150ms ease-in-out;
     will-change: border-color, background;
     padding-left: 0.4rem;
@@ -68,16 +38,14 @@ const FieldRenderer = styled(animated.div)`
   > input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {
-    -webkit-text-fill-color: ${color};
-    -webkit-box-shadow: 0 0 0px 1000px ${background} inset;
-    box-shadow: 0 0 0px 1000px ${background} inset;
+    -webkit-text-fill-color: var(--geist-foreground);
+    -webkit-box-shadow: 0 0 0px 1000px var(--accents-1) inset;
+    box-shadow: 0 0 0px 1000px var(--accents-1) inset;
   }
 
   > input:focus {
-    border-color: ${theme("mode", {
-      light: (props) => (props.hasError ? "red" : borderColorFocus),
-      dark: (props) => (props.hasError ? "darkred" : borderColorFocus),
-    })};
+    border-color: ${(props) =>
+      props.hasError ? "var(--geist-error)" : "var(--geist-foreground)"};
   }
 
   > input::placeholder {
@@ -105,10 +73,8 @@ const FieldRenderer = styled(animated.div)`
     left: 0.4rem;
     text-transform: uppercase;
 
-    color: ${theme("mode", {
-      light: (props) => (props.hasError ? "red" : color),
-      dark: (props) => (props.hasError ? "darkred" : color),
-    })};
+    color: ${(props) =>
+      props.hasError ? "var(--geist-error)" : "var(--geist-foreground)"};
   }
 `
 
@@ -118,16 +84,17 @@ FieldRenderer.defaultProps = {
 
 const FieldError = styled(animated.div)`
   font-size: 0.7rem;
-  right: 0.3rem;
+  right: 0rem;
   position: absolute;
-  color: ${theme("mode", {
-    light: "red",
-    dark: "darkred",
-  })};
+  color: var(--geist-error);
   transform: translateY(2.7rem);
 `
 
-interface FieldProps {
+interface FieldProps
+  extends React.DetailedHTMLProps<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {
   id: string
   name: string
   type: string

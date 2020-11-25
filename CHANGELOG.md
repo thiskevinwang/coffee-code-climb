@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.19.0] - 2020-11-25
+
+Google federated signin & Email magic codes
+
+- see https://aws.amazon.com/blogs/mobile/implementing-passwordless-email-authentication-with-amazon-cognito/ for TypeScript lambda triggers
+
 ## [v0.18.3] - 2020-11-22
 
 The bulk of this version is styling the `/pages/app` component, to mimic Vercel.
@@ -231,6 +237,7 @@ New:
 
 ### Added
 
+[v0.19.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.3...v0.19.0
 [v0.18.3]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.2...v0.18.3
 [v0.18.2]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.1...v0.18.2
 [v0.18.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.0...v0.18.1

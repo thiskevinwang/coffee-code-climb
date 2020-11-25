@@ -6,8 +6,6 @@ import { ApolloProvider, client } from "apollo"
 import { SvgTrail } from "components/SvgTrail"
 import { ColorSchemeProvider } from "components/ColorSchemeProvider"
 
-import { Facebook } from "components/Facebook"
-
 import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 import "./geist-styles.css"
 
@@ -17,7 +15,6 @@ export const wrapRootElement = ({ element }) => {
     <ApolloProvider client={client}>
       <Provider store={store}>
         <ColorSchemeProvider>
-          <Facebook />
           <SvgTrail />
           {element}
         </ColorSchemeProvider>

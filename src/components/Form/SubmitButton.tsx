@@ -1,39 +1,15 @@
 import styled, { BaseProps } from "styled-components"
 import { animated } from "react-spring"
-import theme from "styled-theming"
-
-const background = theme("mode", {
-  light: (props: BaseProps) => props.theme.formButton.background,
-  dark: (props: BaseProps) => props.theme.formButton.background,
-})
-const backgroundDisabled = theme("mode", {
-  light: (props: BaseProps) => props.theme.formButton.backgroundDisabled,
-  dark: (props: BaseProps) => props.theme.formButton.backgroundDisabled,
-})
-const borderColorDisabled = theme("mode", {
-  light: (props: BaseProps) => props.theme.formButton.borderColorDisabled,
-  dark: (props: BaseProps) => props.theme.formButton.borderColorDisabled,
-})
-const backgroundHover = theme("mode", {
-  light: (props: BaseProps) => props.theme.formButton.backgroundHover,
-  dark: (props: BaseProps) => props.theme.formButton.backgroundHover,
-})
-const color = theme("mode", {
-  light: (props: BaseProps) => props.theme.formButton.color,
-  dark: (props: BaseProps) => props.theme.formButton.color,
-})
-const colorHover = theme("mode", {
-  light: (props: BaseProps) => props.theme.formButton.colorHover,
-  dark: (props: BaseProps) => props.theme.formButton.colorHover,
-})
 
 export const SubmitButton = styled(animated.button)`
-  background: ${background};
-  border-color: ${background};
+  background: var(--accents-8);
+  border-color: var(--accents-8);
   border-width: 1px;
   border-radius: 0.25rem;
-  color: ${color};
+  border-style: solid;
+  color: var(--accents-1);
   width: 7rem;
+  height: var(--geist-form-small-height);
   margin-bottom: 2rem;
   /* outline: none; */
   transition: background 150ms ease-in-out, border-color 150ms ease-in-out,
@@ -42,13 +18,13 @@ export const SubmitButton = styled(animated.button)`
 
   :hover,
   :focus {
-    background: ${backgroundHover};
-    color: ${colorHover};
+    background: var(--accents-1);
+    color: var(--accents-8);
   }
 
   :disabled {
-    background: ${backgroundDisabled};
-    border-color: ${borderColorDisabled};
-    color: ${borderColorDisabled};
+    background: var(--accents-3);
+    border-color: var(--accents-6);
+    color: var(--accents-6);
   }
 `

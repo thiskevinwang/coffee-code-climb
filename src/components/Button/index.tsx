@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from "react"
+import React, { ButtonHTMLAttributes, CSSProperties } from "react"
 import styled from "styled-components"
 import { animated, useSpring, config } from "react-spring"
 import { useGesture } from "react-use-gesture"
@@ -15,11 +15,17 @@ const MOUSEDOWN_STYLE = {
   transform: `scale(0.98)`,
 }
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {}
+interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+  background?: CSSProperties["background"]
+  color?: CSSProperties["color"]
+}
 
 const Renderer = styled(animated.button)<Props>`
-  background: var(--background);
-  color: ${(p) => (p.disabled ? "var(--table-border)" : "var(--text)")};
+  cursor: ${(p) => (p.disabled ? "not-allowed" : "pointer")};
+  color: ${(p) =>
+    p.disabled ? "var(--accents-5)" : p.color || "var(--geist-foreground)"};
+
+  background: ${(p) => p.background || "var(--geist-background)"};
   box-shadow: var(--shadow);
 
   border-radius: 5px;

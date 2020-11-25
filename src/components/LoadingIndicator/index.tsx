@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect, FC, CSSProperties } from "react"
 import styled, { BaseProps } from "styled-components"
 import theme from "styled-theming"
+import { useTransition, animated, config } from "react-spring"
 
 // https://en.wiktionary.org/wiki/%E2%A0%BC
 const ICONS = ["⠇", "⠋", "⠙", "⠸", "⠴", "⠦"]
@@ -32,6 +33,7 @@ const Spinner = styled.div<Props & { interval: number }>`
       dark: COLORS_DARK[p.interval],
     })};
   text-shadow: var(--shadow);
+  cursor: wait;
 `
 
 /**
@@ -40,14 +42,30 @@ const Spinner = styled.div<Props & { interval: number }>`
 export const LoadingIndicator: FC<Props> = ({ style = {} }) => {
   const [i, spin] = useReducer((s) => (s + 1) % 6, 0)
   useEffect(() => {
-    const interval = setInterval(spin, 50)
+    const interval = setInterval(spin, 75)
     return () => {
       clearInterval(interval)
     }
   }, [])
+
+  const transitions = useTransition(ICONS[i], (item) => item, {
+    from: {
+      position: "absolute",
+      transform: "translate(-50%,-50%)",
+      opacity: 0,
+    },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+    config: { ...config.stiff, velocity: 10 },
+  })
+
   return (
     <Spinner style={{ ...style }} interval={i}>
-      {ICONS[i]}
+      {transitions.map(({ item, props, key }) => (
+        <animated.div key={key} style={props}>
+          {item}
+        </animated.div>
+      ))}
     </Spinner>
   )
 }
