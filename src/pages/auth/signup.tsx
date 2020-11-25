@@ -76,6 +76,11 @@ const AuthSignup = ({ location }: PageProps) => {
             try {
               await signUpWithEmail(values.email, values.password)
               navigate("/auth/login")
+              /**
+               * @TODO
+               * Navigate w/ state, & display some message like "now
+               * you're ready to sign in!"
+               */
             } catch (err) {
               console.log("ERR!!!!", err)
               helpers.setStatus(err.toString())
