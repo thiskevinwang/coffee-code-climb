@@ -48,76 +48,82 @@ const AuthSignup = ({ location }: PageProps) => {
   return (
     <LayoutManager location={location}>
       <SEO title="Signup" />
-      <h1>Signup</h1>
-      <Formik<Values>
-        initialValues={{
-          email: "",
-          password: "",
-        }}
-        validateOnMount={false}
-        validate={(values) => {
-          const errors: FormikErrors<Values> = {}
-          if (!values.email) {
-            errors.email = "Required"
-          } else if (
-            !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
-          ) {
-            errors.email = "Invalid email address"
-          }
-          if (!values.password) {
-            errors.password = "Required"
-          } else if (values.password.length < 8) {
-            errors.password = "Must be 8 or more characters"
-          }
-          return errors
-        }}
-        onSubmit={async (values, helpers) => {
-          try {
-            await signUpWithEmail(values.email, values.password)
-            navigate("/auth/login")
-          } catch (err) {
-            console.log("ERR!!!!", err)
-            helpers.setStatus(err.toString())
-          }
-        }}
-      >
-        {(props: FormikProps<Values>) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              props.handleSubmit(e)
-            }}
-          >
-            <Field
-              id="email"
-              name="email"
-              type="email"
-              label="email"
-              placeholder="email"
-            />
-            <Field
-              id="password"
-              name="password"
-              type="password"
-              label="password"
-              placeholder="password"
-            />
-
-            <SubmitButton
-              type="submit"
-              disabled={!props.isValid || props.isSubmitting}
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <h1>Signup</h1>
+        <Formik<Values>
+          initialValues={{
+            email: "",
+            password: "",
+          }}
+          validateOnMount={false}
+          validate={(values) => {
+            const errors: FormikErrors<Values> = {}
+            if (!values.email) {
+              errors.email = "Required"
+            } else if (
+              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+            ) {
+              errors.email = "Invalid email address"
+            }
+            if (!values.password) {
+              errors.password = "Required"
+            } else if (values.password.length < 8) {
+              errors.password = "Must be 8 or more characters"
+            }
+            return errors
+          }}
+          onSubmit={async (values, helpers) => {
+            try {
+              await signUpWithEmail(values.email, values.password)
+              navigate("/auth/login")
+            } catch (err) {
+              console.log("ERR!!!!", err)
+              helpers.setStatus(err.toString())
+            }
+          }}
+        >
+          {(props: FormikProps<Values>) => (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                props.handleSubmit(e)
+              }}
             >
-              Signup
-            </SubmitButton>
-            {errorMessage && (
-              <Error>
-                <b>Error:</b>&nbsp;{errorMessage}&nbsp;{" "}
-                <Link to="/auth/login">Login?</Link>
-              </Error>
-            )}
-          </form>
-        )}
-      </Formik>
+              <Field
+                id="email"
+                name="email"
+                type="email"
+                label="email"
+                placeholder="email"
+                style={{ width: "var(--geist-space-64x)" }}
+              />
+              <Field
+                id="password"
+                name="password"
+                type="password"
+                label="password"
+                placeholder="password"
+                style={{ width: "var(--geist-space-64x)" }}
+              />
+
+              <Box display="flex" flexDirection="column" alignItems="center">
+                <SubmitButton
+                  type="submit"
+                  disabled={!props.isValid || props.isSubmitting}
+                >
+                  Signup
+                </SubmitButton>
+                {errorMessage && (
+                  <Error>
+                    <b>Error:</b>&nbsp;{errorMessage}&nbsp;{" "}
+                    <Link to="/auth/login">Login?</Link>
+                  </Error>
+                )}
+              </Box>
+            </form>
+          )}
+        </Formik>
+      </Box>
     </LayoutManager>
   )
 }

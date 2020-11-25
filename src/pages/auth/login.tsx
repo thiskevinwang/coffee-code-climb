@@ -170,7 +170,7 @@ const AuthLogin = ({ location }: PageProps) => {
                 <span>—or—</span>
               </Box>
 
-              <Box>
+              <Box display="flex" flexDirection="column" alignItems="center">
                 <Field
                   id="email"
                   name="email"
