@@ -10,7 +10,7 @@ import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { Field, SubmitButton } from "components/Form"
 
-import { useVerifyTokenSet } from "utils"
+import { useVerifyTokenSet, isBrowser } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
 import { LoadingPage } from "components/LoadingPage"
 import type { RootState } from "_reduxState"
@@ -19,6 +19,12 @@ const Error = styled.div`
   color: var(--geist-error);
 `
 
+const loader = (
+  <>
+    <SEO title="Verify" />
+    <LoadingPage />
+  </>
+)
 type Values = {
   code: string
 }
@@ -31,30 +37,17 @@ const AuthVerify = ({ location }: PageProps) => {
   const { respondToAuthChallenge, errorMessage } = useCognito()
 
   const { isLoggedIn } = useVerifyTokenSet()
-  if (isLoggedIn === true) {
-    navigate("/app")
-    return (
-      <>
-        <SEO title="Verify" />
-        <LoadingPage />
-      </>
-    )
-  } else if (!session && !email) {
-    navigate("/auth/login")
-    return (
-      <>
-        <SEO title="Verify" />
-        <LoadingPage />
-      </>
-    )
-  }
-  if (isLoggedIn === null) {
-    return (
-      <>
-        <SEO title="Verify" />
-        <LoadingPage />
-      </>
-    )
+  if (isBrowser()) {
+    if (isLoggedIn === true) {
+      navigate("/app")
+      return loader
+    } else if (!session && !email) {
+      navigate("/auth/login")
+      return loader
+    }
+    if (isLoggedIn === null) {
+      return loader
+    }
   }
 
   return (

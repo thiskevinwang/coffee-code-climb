@@ -10,14 +10,20 @@ import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { LoadingPage } from "components/LoadingPage"
 import { Field, SubmitButton } from "components/Form"
-import { Button } from "components/Button"
 
-import { useVerifyTokenSet } from "utils"
+import { useVerifyTokenSet, isBrowser } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
 
 const Error = styled.div`
   color: var(--geist-error);
 `
+
+const loader = (
+  <>
+    <SEO title="Signup" />
+    <LoadingPage />
+  </>
+)
 
 type Values = {
   email: string
@@ -27,22 +33,14 @@ const AuthSignup = ({ location }: PageProps) => {
   const { signUpWithEmail, errorMessage } = useCognito()
   const { isLoggedIn } = useVerifyTokenSet()
 
-  if (isLoggedIn === true) {
-    navigate("/app")
-    return (
-      <>
-        <SEO title="Signup" />
-        <LoadingPage />
-      </>
-    )
-  }
-  if (isLoggedIn === null) {
-    return (
-      <>
-        <SEO title="Signup" />
-        <LoadingPage />
-      </>
-    )
+  if (isBrowser()) {
+    if (isLoggedIn === true) {
+      navigate("/app")
+      return loader
+    }
+    if (isLoggedIn === null) {
+      return loader
+    }
   }
 
   return (
