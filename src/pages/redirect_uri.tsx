@@ -118,12 +118,14 @@ const RedirectUri = ({ location }: { location: Location }) => {
         replace: true,
       })
     } else {
-      const variables: GetTokenVars = {
-        code: code as string,
+      if (code) {
+        const variables: GetTokenVars = {
+          code: code as string,
+        }
+        getToken({
+          variables,
+        })
       }
-      getToken({
-        variables,
-      })
     }
     return () => {}
   }, [code, getToken])
