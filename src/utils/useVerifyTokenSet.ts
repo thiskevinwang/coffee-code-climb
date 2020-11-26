@@ -83,6 +83,13 @@ export interface IdTokenPayload {
   nonce: string
   sub: string // uuid
   token_use: string
+  // potentially optional fields
+  /** full name */
+  name?: string
+  /** last name */
+  family_name?: string
+  /**  name */
+  given_name?: string
 }
 
 export const useVerifyTokenSet = () => {
@@ -94,8 +101,13 @@ export const useVerifyTokenSet = () => {
   const refreshToken = cog.data?.AuthenticationResult?.RefreshToken
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
-  const [decoded, setDecoded] = useState<IdTokenPayload | null>(null)
-  const [decodedAcc, setDecodedAcc] = useState<AccessTokenPayload | null>(null)
+  const [idTokenPayload, setIdTokenPayload] = useState<IdTokenPayload | null>(
+    null
+  )
+  const [
+    accessTokenPayload,
+    setAccessTokenPayload,
+  ] = useState<AccessTokenPayload | null>(null)
 
   useEffect(() => {
     const verifyAsync = async () => {
@@ -132,7 +144,7 @@ export const useVerifyTokenSet = () => {
         const decodedAccessToken = jwt.decode(accessToken, {
           complete: true,
         })
-        setDecodedAcc(decodedAccessToken.payload)
+        setAccessTokenPayload(decodedAccessToken.payload)
         const tokenHeader: JwtHeader = decodedAccessToken?.header
         const pubKey = await getKeyAsync(tokenHeader)
         jwt.verify(accessToken, pubKey)
@@ -144,14 +156,14 @@ export const useVerifyTokenSet = () => {
         const nowMs = +new Date()
         console.log("\tin:", ms(exp * 1000 - nowMs))
 
-        setDecoded(idTokenPayload)
+        setIdTokenPayload(idTokenPayload)
         setIsLoggedIn(true)
       } catch (err) {
         // Expect to be in this branch if the 2nd access token expires
         if (!refreshToken) {
           console.warn("Cannot refresh; Clearing Redux")
           dispatch(setCognito(null, null))
-          setDecoded(null)
+          setIdTokenPayload(null)
           setIsLoggedIn(false)
           return
         }
@@ -187,18 +199,18 @@ export const useVerifyTokenSet = () => {
             jwt.verify(accessToken, pubKey) as AccessTokenPayload
             console.warn("verify refreshed token succeeded")
 
-            setDecodedAcc(decodedAccessToken.payload)
-            setDecoded(idTokenPayload)
+            setAccessTokenPayload(decodedAccessToken.payload)
+            setIdTokenPayload(idTokenPayload)
             setIsLoggedIn(true)
             return
           } catch (err2) {
-            setDecoded(null)
+            setIdTokenPayload(null)
             setIsLoggedIn(false)
             return
           }
         }
         if (err instanceof SigningKeyNotFoundError) {
-          setDecoded(null)
+          setIdTokenPayload(null)
           setIsLoggedIn(false)
           return
         }
@@ -208,5 +220,5 @@ export const useVerifyTokenSet = () => {
     verifyAsync()
   }, [accessToken, idToken, refreshToken])
 
-  return { isLoggedIn, decoded, decodedAcc }
+  return { isLoggedIn, idTokenPayload, accessTokenPayload }
 }
