@@ -177,62 +177,11 @@ const App = ({ location }: PageProps) => {
                 "min(calc(var(--geist-page-width-with-margin) - 2 * var(--geist-gap)), calc(100vw - 2 * var(--geist-gap)))",
             }}
           >
-            <Paper
-              classes={{ root: classes.paperRoot }}
-              style={{
-                overflow: "hidden",
-                marginBottom: "var(--geist-gap)",
-              }}
-            >
-              <Box p={3}>
-                <Router basepath="/app">
-                  <Profile path="/profile" data={idTokenPayload} />
-                  <Settings path="/settings" />
-                  <Default path="/*" />
-                </Router>
-              </Box>
-              <Divider classes={{ root: classes.divider }} />
-              <Box
-                py={1.5}
-                px={3}
-                bgcolor="var(--accents-1)"
-                color="var(--accents-6)"
-                component="footer"
-              >
-                Put something here...
-              </Box>
-            </Paper>
-
-            <Paper
-              classes={{ root: classes.paperRoot }}
-              style={{
-                overflow: "hidden",
-              }}
-            >
-              <Box p={3} display="flex">
-                <Box flex={1}>
-                  <h2>Your Avatar</h2>
-                  <p>
-                    This is your avatar.
-                    <br />
-                    Upload feature coming soon! 🚧
-                  </p>
-                </Box>
-                <Box display="flex" alignItems="center">
-                  <Avatar classes={{ root: classes.avatarRoot }} />
-                </Box>
-              </Box>
-              <Divider classes={{ root: classes.divider }} />
-              <Box
-                py={1.5}
-                px={3}
-                bgcolor="var(--accents-1)"
-                color="var(--accents-6)"
-                component="footer"
-              >
-                alsaldjljaslkjfas
-              </Box>
-            </Paper>
+            <Router basepath="/app">
+              <Profile path="/profile" data={idTokenPayload} />
+              <Settings path="/settings" data={idTokenPayload} />
+              <Default path="/*" />
+            </Router>
           </Box>
         </AppBody>
       </LayoutManager>
