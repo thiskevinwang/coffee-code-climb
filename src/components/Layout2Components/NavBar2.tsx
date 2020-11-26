@@ -194,7 +194,9 @@ const NavBar2 = () => {
         </Tooltip>
       </BarItem>
       <BarItem>
-        {isLoggedIn === null && <Skeleton variant="text" width={"5ch"} />}
+        {isLoggedIn === null && (
+          <Skeleton animation="wave" variant="text" width={"5ch"} />
+        )}
         {isLoggedIn === false && (
           <Link activeStyle={{ cursor: "not-allowed" }} to={"/auth/login"}>
             Login
