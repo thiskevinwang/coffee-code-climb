@@ -128,7 +128,7 @@ const NavBar2 = () => {
     })
   )
   const dispatch = useDispatch()
-  const { isLoggedIn, decoded } = useVerifyTokenSet()
+  const { isLoggedIn } = useVerifyTokenSet()
 
   const [anchorEl, setAnchorEl] = React.useState(null)
 
