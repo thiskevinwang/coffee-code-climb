@@ -45,7 +45,10 @@ export interface AccessTokenPayload {
   token_use: string
   /** @example 'aws.cognito.signin.user.admin' */
   scope: string
-  /** @example 1604461360 */
+  /**
+   * Timestamp, in SECONDS
+   * @example 1604461360
+   */
   auth_time: number
   /** @example 'https://cognito-idp.us-east-1.amazonaws.com/{pool_id}' */
   iss: string

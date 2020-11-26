@@ -1,9 +1,9 @@
 import React from "react"
-import { useTheme, withStyles } from "@material-ui/core/styles"
 import MuiDivider from "@material-ui/core/Divider"
 import Paper from "@material-ui/core/Paper"
 import Grid from "@material-ui/core/Grid"
 import Box, { BoxProps } from "@material-ui/core/Box"
+import { useTheme, withStyles } from "@material-ui/core/styles"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 const FieldSetContainer = withStyles({

@@ -161,6 +161,12 @@ const App = ({ location }: PageProps) => {
             </Box>
             <Box display="flex" flexDirection="column">
               <h1>{idTokenPayload?.name ?? accessTokenPayload?.username}</h1>
+              <p>
+                Signed in:{" "}
+                {new Date(
+                  accessTokenPayload?.auth_time * 1000
+                ).toLocaleString()}
+              </p>
             </Box>
           </Box>
         </AppHeader>
