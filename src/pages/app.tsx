@@ -105,7 +105,7 @@ const AppBody = styled.div`
  * Anything at `/app/*` requires the user to be authenticated
  */
 const App = ({ location }: PageProps) => {
-  const { isLoggedIn, decoded, decodedAcc } = useVerifyTokenSet()
+  const { isLoggedIn, idTokenPayload, accessTokenPayload } = useVerifyTokenSet()
   const classes = useStyles()
 
   if (isLoggedIn === null) {
@@ -162,7 +162,7 @@ const App = ({ location }: PageProps) => {
               <Avatar classes={{ root: classes.avatarRoot }}></Avatar>
             </Box>
             <Box display="flex" flexDirection="column">
-              <h1>{decodedAcc?.username}</h1>
+              <h1>{idTokenPayload?.name ?? accessTokenPayload?.username}</h1>
             </Box>
           </Box>
         </AppHeader>
@@ -184,10 +184,9 @@ const App = ({ location }: PageProps) => {
                 marginBottom: "var(--geist-gap)",
               }}
             >
-              {/* <pre>{JSON.stringify(decodedAcc, null, 2)}</pre> */}
               <Box p={3}>
                 <Router basepath="/app">
-                  <Profile path="/profile" data={decoded} />
+                  <Profile path="/profile" data={idTokenPayload} />
                   <Settings path="/settings" />
                   <Default path="/*" />
                 </Router>
