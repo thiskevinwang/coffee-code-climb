@@ -2,12 +2,14 @@ import React from "react"
 import type { RouteComponentProps } from "@reach/router"
 import type { IdTokenPayload } from "utils"
 import Paper from "@material-ui/core/Paper"
-import Box from "@material-ui/core/Box"
-import Divider from "@material-ui/core/Divider"
+import Box, { BoxProps } from "@material-ui/core/Box"
+import Grid from "@material-ui/core/Grid"
+import MuiDivider from "@material-ui/core/Divider"
 import Avatar from "@material-ui/core/Avatar"
 import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
-import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 const CssTextField = withStyles((theme) => ({
   root: {
@@ -76,9 +78,7 @@ const useStyles = makeStyles((theme) => {
       display: "flex",
       flexDirection: "column",
     },
-    divider: {
-      background: "var(--accents-2)",
-    },
+
     avatarRoot: {
       height: "var(--geist-space-24x)",
       width: "var(--geist-space-24x)",
@@ -86,146 +86,190 @@ const useStyles = makeStyles((theme) => {
   }
 })
 
+const Divider = withStyles({
+  root: {
+    background: "var(--accents-2)",
+  },
+})(MuiDivider)
+
 export const Settings = (
   props: RouteComponentProps<{ data: IdTokenPayload | null }>
 ) => {
   const classes = useStyles()
   return (
     <>
-      <Paper
-        classes={{ root: classes.paperRoot }}
-        style={{
-          marginBottom: "var(--geist-gap)",
-        }}
-      >
-        <Box p={3}>
-          <Box flex={1}>
-            <h2>Your Username</h2>
-            <p>
-              This is your URL namespace within CoffeeCodeClimb.
-              <br />
-              <CssTextField
-                disabled
-                variant="outlined"
-                value={props.data?.sub}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment
-                      classes={{ root: classes.inputAdornment }}
-                      position="start"
-                      disableTypography
-                    >
-                      /u/
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </p>
-          </Box>
-        </Box>
-        <Divider classes={{ root: classes.divider }} />
-        <Box
-          py={1.5}
-          px={3}
-          bgcolor="var(--accents-1)"
-          color="var(--accents-6)"
-          component="footer"
-        >
-          Put something here...
-        </Box>
-      </Paper>
+      <fs.Fieldset>
+        <fs.Content>
+          <fs.Title>Your Username</fs.Title>
+          <fs.Subtitle>
+            This is your URL namespace within CoffeeCodeClimb.
+          </fs.Subtitle>
+          <CssTextField
+            disabled
+            variant="outlined"
+            value={props.data?.sub}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment
+                  classes={{ root: classes.inputAdornment }}
+                  position="start"
+                  disableTypography
+                >
+                  /u/
+                </InputAdornment>
+              ),
+            }}
+          />
+        </fs.Content>
+        <fs.Footer>
+          <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
+        </fs.Footer>
+      </fs.Fieldset>
 
-      <Paper
-        classes={{ root: classes.paperRoot }}
-        style={{
-          marginBottom: "var(--geist-gap)",
-        }}
-      >
-        <Box p={3}>
-          <Box flex={1}>
-            <h2>Your Name</h2>
-            <p>
-              Please enter your full name, or a display name you are comfortable
-              with.
-              <br />
-              <CssTextField
-                disabled
-                variant="outlined"
-                value={props.data?.name}
-              />
-            </p>
-          </Box>
-        </Box>
-        <Divider classes={{ root: classes.divider }} />
-        <Box
-          py={1.5}
-          px={3}
-          bgcolor="var(--accents-1)"
-          color="var(--accents-6)"
-          component="footer"
-        >
-          Put something here...
-        </Box>
-      </Paper>
+      <fs.Fieldset>
+        <fs.Content>
+          <fs.Title>Your Name</fs.Title>
+          <fs.Subtitle>
+            Please enter your full name, or a display name you are comfortable
+            with.
+          </fs.Subtitle>
+          <CssTextField disabled variant="outlined" value={props.data?.name} />
+        </fs.Content>
+        <fs.Footer>
+          <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
+        </fs.Footer>
+      </fs.Fieldset>
 
-      <Paper
-        classes={{ root: classes.paperRoot }}
-        style={{
-          marginBottom: "var(--geist-gap)",
-        }}
-      >
-        <Box p={3}>
-          <Box flex={1}>
-            <h2>Your Email</h2>
-            <p>
-              Please enter the email address you want to use to log in with
-              CoffeeCodeClimb.
-              <br />
-              <CssTextField
-                disabled
-                variant="outlined"
-                value={props.data?.email}
-              />
-            </p>
-          </Box>
-        </Box>
-        <Divider classes={{ root: classes.divider }} />
-        <Box
-          py={1.5}
-          px={3}
-          bgcolor="var(--accents-1)"
-          color="var(--accents-6)"
-          component="footer"
-        >
-          Put something here...
-        </Box>
-      </Paper>
+      <fs.Fieldset>
+        <fs.Content>
+          <fs.Title>Your Email</fs.Title>
+          <fs.Subtitle>
+            Please enter the email address you want to use to log in with
+            CoffeeCodeClimb.
+          </fs.Subtitle>
+          <CssTextField disabled variant="outlined" value={props.data?.email} />
+        </fs.Content>
+        <fs.Footer>
+          <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
+        </fs.Footer>
+      </fs.Fieldset>
 
-      <Paper classes={{ root: classes.paperRoot }} style={{}}>
-        <Box p={3} display="flex">
+      <fs.Fieldset>
+        <fs.Content display="flex">
           <Box flex={1}>
             <h2>Your Avatar</h2>
-            <p>
-              This is your avatar.
-              <br />
-              Upload feature coming soon! 🚧
-            </p>
+            <p>This is your avatar.</p>
           </Box>
           <Box display="flex" alignItems="center">
             <Avatar classes={{ root: classes.avatarRoot }} />
           </Box>
-        </Box>
-        <Divider classes={{ root: classes.divider }} />
-        <Box
-          py={1.5}
-          px={3}
-          bgcolor="var(--accents-1)"
-          color="var(--accents-6)"
-          component="footer"
-        >
-          alsaldjljaslkjfas
-        </Box>
-      </Paper>
+        </fs.Content>
+        <fs.Footer>
+          <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
+        </fs.Footer>
+      </fs.Fieldset>
+
+      <FieldSet />
     </>
+  )
+}
+
+const FieldSetContainer = withStyles({
+  root: {
+    background: "var(--geist-background)",
+    boxShadow: "var(--shadow-medium)",
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "var(--geist-gap)",
+    overflow: "hidden",
+  },
+})(Paper)
+
+const Status: React.FC = ({ children }) => {
+  const theme = useTheme()
+  const smUp = useMediaQuery(theme.breakpoints.up("sm"))
+  return (
+    <Grid
+      item
+      xs={12}
+      sm={"auto"}
+      style={{ marginBottom: !smUp ? "var(--geist-gap-half)" : "0" }}
+    >
+      <Grid container justify={smUp ? "flex-start" : "center"}>
+        {children}
+      </Grid>
+    </Grid>
+  )
+}
+const Action: React.FC = ({ children }) => {
+  const theme = useTheme()
+  const smUp = useMediaQuery(theme.breakpoints.up("sm"))
+  return (
+    <Grid item xs={12} sm>
+      <Grid container justify={smUp ? "flex-end" : "center"}>
+        {children}
+      </Grid>
+    </Grid>
+  )
+}
+interface IFooter extends React.FC {
+  Status: typeof Status
+  Action: typeof Action
+}
+const Footer: IFooter = function ({ children }) {
+  const theme = useTheme()
+  const smUp = useMediaQuery(theme.breakpoints.up("sm"))
+  return (
+    <>
+      <Divider />
+
+      <Box
+        py={smUp ? "var(--geist-gap-half)" : "var(--geist-gap)"}
+        px={"var(--geist-gap)"}
+        bgcolor="var(--accents-1)"
+        color="var(--accents-6)"
+        component="footer"
+      >
+        <Grid container spacing={0}>
+          {children}
+        </Grid>
+      </Box>
+    </>
+  )
+}
+Footer.Status = Status
+Footer.Action = Action
+
+interface Fs {
+  Fieldset: React.FC
+  Content: React.ComponentType<BoxProps>
+  Title: React.FC
+  Subtitle: React.FC
+  Footer: typeof Footer
+}
+
+const fs: Fs = {
+  Fieldset: (props) => <FieldSetContainer {...props} />,
+  Content: (props) => <Box p={3} {...props} />,
+  Title: (props) => <h2 {...props} />,
+  Subtitle: (props) => <p {...props} />,
+  Footer: Footer,
+}
+
+/** @see https://vercel.com/design/fieldset#default */
+const FieldSet = () => {
+  return (
+    <fs.Fieldset>
+      <fs.Content>
+        <fs.Title>fs.Title</fs.Title>
+        <fs.Subtitle>fs.Subtitle</fs.Subtitle>
+      </fs.Content>
+      <fs.Footer>
+        <fs.Footer.Status>fs.Footer.Status</fs.Footer.Status>
+        <fs.Footer.Action>
+          <button>fs.Footer.Action</button>
+        </fs.Footer.Action>
+      </fs.Footer>
+    </fs.Fieldset>
   )
 }
