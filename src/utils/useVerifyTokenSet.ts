@@ -91,7 +91,7 @@ export interface IdTokenPayload {
   name?: string
   /** last name */
   family_name?: string
-  /**  name */
+  /** first name */
   given_name?: string
 }
 
