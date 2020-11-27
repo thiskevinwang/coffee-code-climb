@@ -27,8 +27,13 @@ interface Props {
 }
 const Layout2: React.FC<Props> = ({ location, title, children }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  const topLink =
-    location.pathname === rootPath ? <h1>{title}</h1> : <h3>← 🏠</h3>
+  const isAppPage = location.pathname.startsWith("/app")
+  const isHomePage = location.pathname === rootPath
+  const header = isAppPage ? null : isHomePage ? (
+    <h1>{title}</h1>
+  ) : (
+    <h3>← 🏠</h3>
+  )
 
   const isDarkMode = useSelector((state: any) => state.isDarkMode)
 
@@ -50,24 +55,26 @@ const Layout2: React.FC<Props> = ({ location, title, children }) => {
           maxWidth:
             location.pathname === rootPath
               ? rhythm(36)
-              : location.pathname.startsWith("/app")
+              : isAppPage
               ? "var(--geist-page-width-with-margin)"
               : rhythm(24),
           padding: `${rhythm(1.5)} var(--geist-gap)`,
         }}
       >
-        <Link
-          to={`/`}
-          style={{
-            display: "flex",
-            flexFlow: "row wrap",
-            boxShadow: `none`,
-            textDecoration: `none`,
-            color: `inherit`,
-          }}
-        >
-          {topLink}
-        </Link>
+        {header && (
+          <Link
+            to={`/`}
+            style={{
+              display: "flex",
+              flexFlow: "row wrap",
+              boxShadow: `none`,
+              textDecoration: `none`,
+              color: `inherit`,
+            }}
+          >
+            {header}
+          </Link>
+        )}
         <main>{children}</main>
         <Footer />
       </div>

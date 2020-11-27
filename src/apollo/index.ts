@@ -55,7 +55,11 @@ const httpLink = new HttpLink({
  */
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
-  const token = localStorage.getItem("token")
+  let token
+  const cognito = localStorage.getItem("cognito")
+  if (cognito) {
+    token = JSON.parse(cognito)?.AuthenticationResult?.AccessToken
+  }
   // return the headers to the context so thhe link can read them
 
   /**

@@ -11,7 +11,10 @@ interface HeaderProps {
 }
 const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
-  let header: JSX.Element
+  const isAppPage = location.pathname.startsWith("/app")
+  const isHomePage = location.pathname === rootPath
+
+  let header: JSX.Element | null
 
   /**
    * This is the array that gets passed to useTransition
@@ -22,9 +25,11 @@ const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
    */
   let data: { character: string; id: string; index: number }[] = useMemo(
     () =>
-      Array.from(
-        location?.pathname === rootPath ? title : "Home"
-      ).map((e, i) => ({ character: e, id: uuid(), index: i })),
+      Array.from(isAppPage ? "" : isHomePage ? title : "Home").map((e, i) => ({
+        character: e,
+        id: uuid(),
+        index: i,
+      })),
     []
   )
 
@@ -90,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
     </Link>
   )
 
-  if (location?.pathname === rootPath) {
+  if (isHomePage) {
     header = (
       <h1
         style={{
@@ -101,6 +106,8 @@ const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
         {titleLink}
       </h1>
     )
+  } else if (isAppPage) {
+    header = null
   } else {
     header = <h3>{titleLink}</h3>
   }

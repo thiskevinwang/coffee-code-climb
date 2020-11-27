@@ -128,7 +128,7 @@ const NavBar2 = () => {
     })
   )
   const dispatch = useDispatch()
-  const { isLoggedIn, decoded } = useVerifyTokenSet()
+  const { isLoggedIn } = useVerifyTokenSet()
 
   const [anchorEl, setAnchorEl] = React.useState(null)
 
@@ -185,6 +185,8 @@ const NavBar2 = () => {
           title={
             <>
               Toggle between <code>light</code> and <code>dark</code> mode
+              <br />
+              You can also press <kbd>Ctrl</kbd> + <kbd>d</kbd>
             </>
           }
         >
@@ -194,7 +196,9 @@ const NavBar2 = () => {
         </Tooltip>
       </BarItem>
       <BarItem>
-        {isLoggedIn === null && <Skeleton variant="text" width={"5ch"} />}
+        {isLoggedIn === null && (
+          <Skeleton animation="wave" variant="text" width={"5ch"} />
+        )}
         {isLoggedIn === false && (
           <Link activeStyle={{ cursor: "not-allowed" }} to={"/auth/login"}>
             Login

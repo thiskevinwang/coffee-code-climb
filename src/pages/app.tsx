@@ -1,12 +1,11 @@
 import React from "react"
+import ms from "ms"
 import { navigate, PageProps, Link } from "gatsby"
 import { Router } from "@reach/router"
 import Avatar from "@material-ui/core/Avatar"
 import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
 import Box from "@material-ui/core/Box"
-import Paper from "@material-ui/core/Paper"
-import { Divider } from "@material-ui/core"
 import { makeStyles } from "@material-ui/core/styles"
 import styled, { css, createGlobalStyle } from "styled-components"
 
@@ -105,7 +104,7 @@ const AppBody = styled.div`
  * Anything at `/app/*` requires the user to be authenticated
  */
 const App = ({ location }: PageProps) => {
-  const { isLoggedIn, decoded, decodedAcc } = useVerifyTokenSet()
+  const { isLoggedIn, idTokenPayload, accessTokenPayload } = useVerifyTokenSet()
   const classes = useStyles()
 
   if (isLoggedIn === null) {
@@ -162,7 +161,13 @@ const App = ({ location }: PageProps) => {
               <Avatar classes={{ root: classes.avatarRoot }}></Avatar>
             </Box>
             <Box display="flex" flexDirection="column">
-              <h1>{decodedAcc?.username}</h1>
+              <h1>{idTokenPayload?.name ?? accessTokenPayload?.username}</h1>
+              <p>
+                Logged in:&nbsp;
+                {ms(
+                  +new Date() - +new Date(accessTokenPayload?.auth_time * 1000)
+                )}
+              </p>
             </Box>
           </Box>
         </AppHeader>
@@ -177,63 +182,11 @@ const App = ({ location }: PageProps) => {
                 "min(calc(var(--geist-page-width-with-margin) - 2 * var(--geist-gap)), calc(100vw - 2 * var(--geist-gap)))",
             }}
           >
-            <Paper
-              classes={{ root: classes.paperRoot }}
-              style={{
-                overflow: "hidden",
-                marginBottom: "var(--geist-gap)",
-              }}
-            >
-              {/* <pre>{JSON.stringify(decodedAcc, null, 2)}</pre> */}
-              <Box p={3}>
-                <Router basepath="/app">
-                  <Profile path="/profile" data={decoded} />
-                  <Settings path="/settings" />
-                  <Default path="/*" />
-                </Router>
-              </Box>
-              <Divider classes={{ root: classes.divider }} />
-              <Box
-                py={1.5}
-                px={3}
-                bgcolor="var(--accents-1)"
-                color="var(--accents-6)"
-                component="footer"
-              >
-                Put something here...
-              </Box>
-            </Paper>
-
-            <Paper
-              classes={{ root: classes.paperRoot }}
-              style={{
-                overflow: "hidden",
-              }}
-            >
-              <Box p={3} display="flex">
-                <Box flex={1}>
-                  <h2>Your Avatar</h2>
-                  <p>
-                    This is your avatar.
-                    <br />
-                    Upload feature coming soon! 🚧
-                  </p>
-                </Box>
-                <Box display="flex" alignItems="center">
-                  <Avatar classes={{ root: classes.avatarRoot }} />
-                </Box>
-              </Box>
-              <Divider classes={{ root: classes.divider }} />
-              <Box
-                py={1.5}
-                px={3}
-                bgcolor="var(--accents-1)"
-                color="var(--accents-6)"
-                component="footer"
-              >
-                alsaldjljaslkjfas
-              </Box>
-            </Paper>
+            <Router basepath="/app">
+              <Profile path="/profile" data={idTokenPayload} />
+              <Settings path="/settings" data={idTokenPayload} />
+              <Default path="/*" />
+            </Router>
           </Box>
         </AppBody>
       </LayoutManager>
