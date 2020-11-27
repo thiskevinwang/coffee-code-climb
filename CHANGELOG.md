@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.19.1] - 2020-11-26
+
+### Added
+
+- FieldSet component
+  - see https://vercel.com/design/fieldset
+- /app/profile fetches data; depends on:
+  - [rds-ts-node-server #28](https://github.com/thiskevinwang/rds-ts-node-server/pull/28)
+  - [rds-ts-node-server v0.4.0](https://github.com/thiskevinwang/rds-ts-node-server/compare/v0.3.1...v0.4.0)
+  - ![image](https://user-images.githubusercontent.com/26389321/100408368-d254b280-3038-11eb-8751-b57e0f59f2c9.png)
+- /app/settings significant UI changes
+  - ![image](https://user-images.githubusercontent.com/26389321/100408402-e4365580-3038-11eb-8f22-7cb017a65786.png)
+
+### Removed
+
+- /auth/forgot page
+- /auth/reset page
+- header links on /app pages
+
 ## [v0.19.0] - 2020-11-25
 
 Google federated signin & Email magic codes
@@ -237,6 +256,7 @@ New:
 
 ### Added
 
+[v0.19.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.0...v0.19.1
 [v0.19.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.3...v0.19.0
 [v0.18.3]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.2...v0.18.3
 [v0.18.2]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.1...v0.18.2
