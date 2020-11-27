@@ -11,6 +11,7 @@ import styled, { css, createGlobalStyle } from "styled-components"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingPage } from "components/LoadingPage"
+import SEO from "components/seo"
 
 import { Profile, Settings, Default } from "components/App"
 
@@ -116,6 +117,7 @@ const App = ({ location }: PageProps) => {
   }
   return (
     <>
+      <SEO title="App" />
       <AppOverrideStyles />
       <LayoutManager location={location}>
         <Box py={2}>
