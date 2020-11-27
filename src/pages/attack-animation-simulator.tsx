@@ -7,10 +7,9 @@ import React, {
   useCallback,
 } from "react"
 import { useSelector } from "react-redux"
-import { graphql } from "gatsby"
+import { graphql, PageProps } from "gatsby"
 import styled, { css } from "styled-components"
 import {
-  a,
   animated,
   useTransition,
   useSpring,
@@ -26,27 +25,22 @@ import uuid from "uuid"
 
 import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
-import { rhythm, scale } from "utils/typography"
+import { rhythm } from "utils/typography"
 import { Button } from "components/Button"
-import * as Colors from "consts/Colors"
 
-const AnimatedPre = a(styled.pre`
+const AnimatedPre = styled(animated.pre)`
   transition: color 200ms ease-in-out;
-  color: ${(props) =>
-    props.isDarkMode ? Colors.silverLight : Colors.blackLight};
-`)
-const AnimatedBar = memo(
-  animated(styled.div`
-    max-width: 100%;
-  `)
-)
-const StyledDescription = memo(styled.div`
+`
+const AnimatedBar = styled(animated.div)`
+  max-width: 100%;
+`
+const StyledDescription = styled.div`
   border: 1px solid grey;
   border-radius: 5px;
   display: block;
   padding: ${rhythm(0.5)};
   margin: ${rhythm(0.5)};
-`)
+`
 
 /**
  * # AttackCounter
@@ -55,7 +49,7 @@ const StyledDescription = memo(styled.div`
  * @param {...*} props
  * @param {string|number} props.value some attack.damage value
  */
-const AttackCounter = styled.div`
+const AttackCounter = styled(animated.div)`
   position: fixed;
   top: 50%;
   left: 50%;
@@ -76,7 +70,7 @@ const AttackCounter = styled.div`
  * An `animated`, `styled-component`
  */
 
-const AnimatedAttackCounter = memo(animated(AttackCounter))
+const AnimatedAttackCounter = memo(AttackCounter)
 
 /**
  * # <Damage />
@@ -90,16 +84,14 @@ const AnimatedAttackCounter = memo(animated(AttackCounter))
 const Damage = memo(
   ({
     totalDamage,
-    isDarkMode,
   }: {
     totalDamage: AnimatedValue<{ number: number }>
-    isDarkMode: boolean
   }): ReactElement => {
     return (
       <>
         <StyledDescription>
-          <>Damage</>
-          <AnimatedPre isDarkMode={isDarkMode}>
+          <p>Damage</p>
+          <AnimatedPre>
             {totalDamage.number.interpolate((x) => x.toFixed(0))}
           </AnimatedPre>
           <AnimatedBar
@@ -136,17 +128,15 @@ const Damage = memo(
 const Stamina = memo(
   ({
     totalStamina,
-    isDarkMode,
   }: {
     totalStamina: AnimatedValue<{ number: number }>
-    isDarkMode
   }): ReactElement => {
     return (
       <>
         <StyledDescription>
-          <>Stamina</>
-          <AnimatedPre isDarkMode={isDarkMode}>
-            {/* interpolate on the anivated value to return a string */}
+          <p>Stamina</p>
+          <AnimatedPre>
+            {/* interpolate on the animated value to return a string */}
             {totalStamina.number.interpolate((x) => x.toFixed(0))}
           </AnimatedPre>
           <AnimatedBar
@@ -174,7 +164,7 @@ const Stamina = memo(
  * # AttackAnimationSimulator
  * Cool thing
  */
-function AttackAnimationSimulator(props) {
+function AttackAnimationSimulator(props: PageProps) {
   const { data } = props
   const siteTitle = data.site.siteMetadata.title
 
@@ -361,9 +351,9 @@ function AttackAnimationSimulator(props) {
           <span>Reset</span>
         </Button>
 
-        <Damage totalDamage={totalDamage} isDarkMode={isDarkMode} />
+        <Damage totalDamage={totalDamage} />
 
-        <Stamina totalStamina={totalStamina} isDarkMode={isDarkMode} />
+        <Stamina totalStamina={totalStamina} />
 
         {/* <AnimatedPre className="damage-dealt">{d}</AnimatedPre> */}
 
