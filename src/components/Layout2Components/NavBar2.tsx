@@ -185,6 +185,8 @@ const NavBar2 = () => {
           title={
             <>
               Toggle between <code>light</code> and <code>dark</code> mode
+              <br />
+              You can also press <kbd>Ctrl</kbd> + <kbd>d</kbd>
             </>
           }
         >

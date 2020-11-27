@@ -90,4 +90,10 @@ export const GlobalTypographyStyles = createGlobalStyle<Props>`
     blockquote p {
       color: var(--blockquote-text);
     }
+    kbd {
+      padding: 2px var(--geist-space);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--accents-4);
+      border-radius: var(--geist-radius);
+    }
 `
