@@ -1,4 +1,5 @@
 import React from "react"
+import ms from "ms"
 import { navigate, PageProps, Link } from "gatsby"
 import { Router } from "@reach/router"
 import Avatar from "@material-ui/core/Avatar"
@@ -162,10 +163,10 @@ const App = ({ location }: PageProps) => {
             <Box display="flex" flexDirection="column">
               <h1>{idTokenPayload?.name ?? accessTokenPayload?.username}</h1>
               <p>
-                Signed in:{" "}
-                {new Date(
-                  accessTokenPayload?.auth_time * 1000
-                ).toLocaleString()}
+                Logged in:&nbsp;
+                {ms(
+                  +new Date() - +new Date(accessTokenPayload?.auth_time * 1000)
+                )}
               </p>
             </Box>
           </Box>
