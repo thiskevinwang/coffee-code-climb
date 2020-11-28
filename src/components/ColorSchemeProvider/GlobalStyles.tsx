@@ -2,6 +2,9 @@ import { createGlobalStyle, css } from "styled-components"
 
 type Props = { isDarkMode: boolean }
 export const GlobalStyles = createGlobalStyle<Props>`
+  #___gatsby {
+    position: relative;
+  }
   .TOC {
     transition-property: color, font-weight, box-shadow;
     transition-duration: 200ms;
