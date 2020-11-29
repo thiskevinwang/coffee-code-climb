@@ -28,12 +28,14 @@ interface Props {
 const Layout2: React.FC<Props> = ({ location, title, children }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
   const isAppPage = location.pathname.startsWith("/app")
+  const isAuthPage = location.pathname.startsWith("/auth")
   const isHomePage = location.pathname === rootPath
-  const header = isAppPage ? null : isHomePage ? (
-    <h1>{title}</h1>
-  ) : (
-    <h3>← 🏠</h3>
-  )
+  const header =
+    isAppPage || isAuthPage ? null : isHomePage ? (
+      <h1>{title}</h1>
+    ) : (
+      <h3>← 🏠</h3>
+    )
 
   const isDarkMode = useSelector((state: any) => state.isDarkMode)
 
@@ -140,8 +142,8 @@ const Blob = memo(({ y }: BlobProps) => {
       </animated.defs> */}
 
       <animated.path
-        d={y.interpolate({ range: [0, 0.5, 1], output: [D1, D2, D3] })}
-        fill={y.interpolate({
+        d={y?.interpolate?.({ range: [0, 0.5, 1], output: [D1, D2, D3] }) ?? D1}
+        fill={y?.interpolate({
           range: [0, 0.33, 0.66, 1],
           output: [Colors.VIOLET, Colors.ALERT, Colors.PURPLE, Colors.CYAN],
         })}

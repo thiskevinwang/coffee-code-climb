@@ -12,6 +12,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
   const isAppPage = location.pathname.startsWith("/app")
+  const isAuthPage = location.pathname.startsWith("/auth")
   const isHomePage = location.pathname === rootPath
 
   let header: JSX.Element | null
@@ -25,7 +26,9 @@ const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
    */
   let data: { character: string; id: string; index: number }[] = useMemo(
     () =>
-      Array.from(isAppPage ? "" : isHomePage ? title : "Home").map((e, i) => ({
+      Array.from(
+        isAppPage || isAuthPage ? "" : isHomePage ? title : "Home"
+      ).map((e, i) => ({
         character: e,
         id: uuid(),
         index: i,
@@ -106,7 +109,7 @@ const Header: React.FC<HeaderProps> = ({ location, title = "default" }) => {
         {titleLink}
       </h1>
     )
-  } else if (isAppPage) {
+  } else if (isAppPage || isAuthPage) {
     header = null
   } else {
     header = <h3>{titleLink}</h3>
