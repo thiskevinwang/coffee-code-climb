@@ -17,7 +17,7 @@ const FieldSetContainer = withStyles({
   },
 })(Paper)
 
-const Divider = withStyles({
+export const Divider = withStyles({
   root: {
     background: "var(--accents-2)",
   },
