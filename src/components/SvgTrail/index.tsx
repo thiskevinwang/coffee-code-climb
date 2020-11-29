@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { animated, useTrail, config, interpolate } from "react-spring"
-import { useMove, addV } from "react-use-gesture"
+import { useMove } from "react-use-gesture"
 import styled from "styled-components"
 import _ from "lodash"
 
 import { svgZ } from "consts"
-import { setIsDarkMode } from "_reduxState"
+import { setIsDarkMode, RootState } from "_reduxState"
+import { isBrowser } from "utils"
 import * as SVG from "svg"
 
 const SVGS = [SVG.REACT, SVG.APOLLO, SVG.Lambda, SVG.GRAPHQL, SVG.Rust]
@@ -21,13 +22,10 @@ const configs = [
 
 const AnimatedSVG = styled(animated.div)`
   border-radius: 100%;
-  box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-    0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
   display: flex;
   pointer-events: none;
   position: absolute;
   z-index: 999;
-  transition: background 500ms ease, border 500ms ease;
 `
 
 // interpolation handler
@@ -35,13 +33,13 @@ const AnimatedSVG = styled(animated.div)`
 const translate2d = (x, y) =>
   `translate3d(${x}px,${y}px,0) translate3d(-50%,-50%,0)`
 
-export const SvgTrail = ({ children }) => {
+export const SvgTrail: React.ComponentType = ({ children }) => {
   /** instance variables */
   const slowMoRef = useRef(false)
   const showTrailRef = useRef(false)
 
   // Redux hooks
-  const isDarkMode = useSelector((state) => state.isDarkMode)
+  const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const dispatch = useDispatch()
   const dispatchSetIsDarkMode = useCallback(
     (state: boolean) => dispatch(setIsDarkMode(state)),
@@ -52,10 +50,10 @@ export const SvgTrail = ({ children }) => {
   const [trail, setTrail] = useTrail(SVGS.length, () => ({
     xy: [0, 0],
     opacity: showTrailRef.current ? 1 : 0,
+    boxShadow: "var(--shadow-medium)",
     background: isDarkMode
       ? `rgba(10, 10, 10, 0.3)`
       : `rgba(255, 255, 255, 0.5)`,
-    border: isDarkMode ? `1px dotted black` : `1px dotted white`,
     padding: isDarkMode ? 0 : 1,
     /**
      * Config ref-based logic needs to be specified here in the initial spring declaration.
@@ -68,10 +66,6 @@ export const SvgTrail = ({ children }) => {
 
   useEffect(() => {
     setTrail({
-      background: isDarkMode
-        ? `rgba(10, 10, 10, 0.3)`
-        : `rgba(255, 255, 255, 0.5)`,
-      border: isDarkMode ? `1px dotted black` : `1px dotted white`,
       padding: isDarkMode ? 0 : 1,
     })
   }, [isDarkMode])
@@ -79,16 +73,13 @@ export const SvgTrail = ({ children }) => {
   const bindMoveGesture = useMove(
     ({
       last,
-
       /**
        * event is undefined when last === true
        */
       event,
-
       /**
        * The return value of this callback
        */
-
       memo,
     }) => {
       setTrail({
@@ -97,11 +88,10 @@ export const SvgTrail = ({ children }) => {
         background: isDarkMode
           ? `rgba(10, 10, 10, 0.3)`
           : `rgba(255, 255, 255, 0.5)`,
-        border: isDarkMode ? `1px dotted black` : `1px dotted white`,
       })
       return !last && [event.pageX, event.pageY]
     },
-    { domTarget: typeof window !== "undefined" && window }
+    { domTarget: isBrowser() ? window : null }
   )
   useEffect(bindMoveGesture, [bindMoveGesture])
 
@@ -130,9 +120,7 @@ export const SvgTrail = ({ children }) => {
       }
     }
 
-    typeof window !== "undefined" &&
-      window.addEventListener("keyup", handleKeyUp)
-
+    isBrowser() && window.addEventListener("keyup", handleKeyUp)
     return () => {
       window.removeEventListener("keyup", handleKeyUp)
     }
@@ -144,7 +132,16 @@ export const SvgTrail = ({ children }) => {
    * @see dispatchSetIsDarkMode
    */
   return (
-    <div style={{ overflow: "hidden", maxHeight: 0 }}>
+    <div
+      className="trail-container"
+      style={{
+        overflow: "hidden",
+        height: "100%",
+        width: "100%",
+        position: "absolute",
+        pointerEvents: "none",
+      }}
+    >
       {trail.map((props, index) => (
         <AnimatedSVG
           key={index}

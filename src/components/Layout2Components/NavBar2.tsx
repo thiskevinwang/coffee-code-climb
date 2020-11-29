@@ -200,9 +200,18 @@ const NavBar2 = () => {
           <Skeleton animation="wave" variant="text" width={"5ch"} />
         )}
         {isLoggedIn === false && (
-          <Link activeStyle={{ cursor: "not-allowed" }} to={"/auth/login"}>
-            Login
-          </Link>
+          <>
+            <Box mr={2}>
+              <Link activeStyle={{ cursor: "not-allowed" }} to={"/"}>
+                Home
+              </Link>
+            </Box>
+            <Box>
+              <Link activeStyle={{ cursor: "not-allowed" }} to={"/auth/login"}>
+                Login
+              </Link>
+            </Box>
+          </>
         )}
         {isLoggedIn === true && (
           <>
@@ -237,6 +246,17 @@ const NavBar2 = () => {
                 disableRipple
               >
                 Profile
+              </MenuItem>
+
+              <MenuItem
+                onClick={handleClose}
+                classes={{ root: classes.menuItemRoot }}
+                component={Link}
+                activeStyle={menuItemLinkActiveStyle}
+                to="/app/settings"
+                disableRipple
+              >
+                Settings
               </MenuItem>
 
               <Box py={1}>
