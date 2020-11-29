@@ -1,9 +1,7 @@
 import React from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
-import { Link, navigate, PageProps } from "gatsby"
-import styled from "styled-components"
+import { Link, navigate, PageProps, graphql } from "gatsby"
 import _ from "lodash"
-import { graphql } from "gatsby"
 import Box from "@material-ui/core/Box"
 
 import { LayoutManager } from "components/layoutManager"
@@ -11,41 +9,46 @@ import SEO from "components/seo"
 import { LoadingPage } from "components/LoadingPage"
 import { Field, SubmitButton } from "components/Form"
 import { Button } from "components/Button"
-import { FacebookIcon, GoogleIcon } from "icons"
+import { Alert } from "components/Alert"
+// Todo: extract Divider
+import { Divider } from "components/Fieldset"
 
-import { useVerifyTokenSet } from "utils"
+import { FacebookIcon, GoogleIcon } from "icons"
+import { useVerifyTokenSet, isBrowser } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
 
 const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK!
 const GATSBY_GOOGLE_LOGIN_LINK = process.env.GATSBY_GOOGLE_LOGIN_LINK!
 const GATSBY_COGNITO_REDIRECT_URI = process.env.GATSBY_COGNITO_REDIRECT_URI!
 
-const Error = styled.div`
-  color: var(--geist-error);
-`
-
 type Values = {
   email: string
 }
-const AuthLogin = ({ location }: PageProps) => {
+
+const loader = (
+  <>
+    <SEO title="Login" />
+    <LoadingPage />
+  </>
+)
+type LocationState = {
+  isSuccess?: boolean
+  isError?: boolean
+  message?: string
+}
+
+const AuthLogin = ({ location }: PageProps<{}, {}, LocationState>) => {
   const { initiateAuthCustom } = useCognito()
   const { isLoggedIn } = useVerifyTokenSet()
-  if (isLoggedIn === true) {
-    navigate("/app")
-    return (
-      <>
-        <SEO title="Login" />
-        <LoadingPage />
-      </>
-    )
-  }
-  if (isLoggedIn === null) {
-    return (
-      <>
-        <SEO title="Login" />
-        <LoadingPage />
-      </>
-    )
+
+  if (isBrowser()) {
+    if (isLoggedIn === true) {
+      navigate("/app")
+      return loader
+    }
+    if (isLoggedIn === null) {
+      return loader
+    }
   }
 
   return (
@@ -54,30 +57,34 @@ const AuthLogin = ({ location }: PageProps) => {
       <Box display="flex" flexDirection="column" alignItems="center">
         <h1>Login</h1>
 
-        <Formik
+        <Formik<Values>
           initialValues={{ email: "" }}
           validateOnMount={false}
-          validate={(values) => {
+          validate={({ email }) => {
             const errors: FormikErrors<Values> = {}
-            if (!values.email) {
+            if (!email) {
               errors.email = "Required"
             } else if (
-              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)
             ) {
               errors.email = "Invalid email address"
             }
             return errors
           }}
-          onSubmit={async (values, helpers) => {
+          onSubmit={async ({ email }, { setStatus, setFieldError }) => {
             try {
-              // await initiateAuth(values.email, values.password)
-              await initiateAuthCustom(values.email)
+              await initiateAuthCustom(email)
               await navigate("/auth/verify")
             } catch (err) {
-              // console.log(Object.getOwnPropertyNames(err))
-              // console.log(err.message, err.code)
+              // err.message => 'CreateAuthChallenge failed with error User not found.'
               if (err.message.includes("User not found")) {
-                helpers.setStatus("User not found")
+                setStatus({ isError: true, message: "User not found" })
+                setFieldError("email", " ")
+
+                /* One-Click Flow? */
+                // await signUpWithEmail(email, uuid())
+                // await initiateAuthCustom(email)
+                // await navigate("/auth/verify")
               }
             }
           }}
@@ -95,6 +102,31 @@ const AuthLogin = ({ location }: PageProps) => {
                 flexDirection="column"
                 alignItems="center"
               >
+                {/* Display message successful redirect from /auth/signup */}
+                {location.state?.isSuccess && (
+                  <Box mb={3}>
+                    <Alert
+                      severity="success"
+                      variant="standard"
+                      style={{ width: "var(--geist-space-64x)" }}
+                    >
+                      <b>Success:</b>&nbsp;{location.state?.message}
+                    </Alert>
+                  </Box>
+                )}
+                {location.state?.isError && (
+                  <Box mb={2}>
+                    <Alert
+                      severity="error"
+                      variant="standard"
+                      style={{ width: "var(--geist-space-64x)" }}
+                    >
+                      <b>Error:</b>&nbsp;{location.state?.message}
+                    </Alert>
+                  </Box>
+                )}
+
+                <p>Sign In with your social account</p>
                 <Button
                   type="button"
                   background="#4267B2"
@@ -164,13 +196,28 @@ const AuthLogin = ({ location }: PageProps) => {
               <Box
                 mb={2}
                 display="flex"
-                flexDirection="column"
+                flexDirection="row"
                 alignItems="center"
               >
-                <span>—or—</span>
+                <Box flex={1}>
+                  <Divider />
+                </Box>
+                <span
+                  style={{
+                    color: "var(--accents-4)",
+                    padding: "0 var(--geist-gap)",
+                    fontWeight: "bold",
+                  }}
+                >
+                  OR
+                </span>
+                <Box flex={1}>
+                  <Divider />
+                </Box>
               </Box>
 
               <Box display="flex" flexDirection="column" alignItems="center">
+                <p>Request a one-time login code</p>
                 <Field
                   id="email"
                   name="email"
@@ -186,11 +233,16 @@ const AuthLogin = ({ location }: PageProps) => {
                   Continue
                 </SubmitButton>
 
-                {props.status === "User not found" && (
-                  <Error>
-                    <b>Error:</b> There is no account associated with this email
-                    address. <Link href="/auth/signup">Sign up?</Link>
-                  </Error>
+                {props.status?.message === "User not found" && (
+                  <>
+                    <Alert
+                      severity="error"
+                      style={{ width: "var(--geist-space-64x)" }}
+                    >
+                      <b>Error:</b> There is no account associated with this
+                      email address. <Link to="/auth/signup">Sign up?</Link>
+                    </Alert>
+                  </>
                 )}
               </Box>
             </form>

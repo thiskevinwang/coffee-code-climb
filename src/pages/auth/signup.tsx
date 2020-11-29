@@ -1,22 +1,18 @@
 import React from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
-import { Link, navigate, PageProps } from "gatsby"
-import styled from "styled-components"
+import { Link, navigate, PageProps, graphql } from "gatsby"
 import _ from "lodash"
-import { graphql } from "gatsby"
+import { v4 as uuid } from "uuid"
 import Box from "@material-ui/core/Box"
 
 import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { LoadingPage } from "components/LoadingPage"
 import { Field, SubmitButton } from "components/Form"
+import { Alert } from "components/Alert"
 
 import { useVerifyTokenSet, isBrowser } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
-
-const Error = styled.div`
-  color: var(--geist-error);
-`
 
 const loader = (
   <>
@@ -27,10 +23,9 @@ const loader = (
 
 type Values = {
   email: string
-  password: string
 }
 const AuthSignup = ({ location }: PageProps) => {
-  const { signUpWithEmail, errorMessage } = useCognito()
+  const { signUpWithEmail } = useCognito()
   const { isLoggedIn } = useVerifyTokenSet()
 
   if (isBrowser()) {
@@ -49,39 +44,32 @@ const AuthSignup = ({ location }: PageProps) => {
       <Box display="flex" flexDirection="column" alignItems="center">
         <h1>Signup</h1>
         <Formik<Values>
-          initialValues={{
-            email: "",
-            password: "",
-          }}
+          initialValues={{ email: "" }}
           validateOnMount={false}
-          validate={(values) => {
+          validate={({ email }) => {
             const errors: FormikErrors<Values> = {}
-            if (!values.email) {
+            if (!email) {
               errors.email = "Required"
             } else if (
-              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)
             ) {
               errors.email = "Invalid email address"
             }
-            if (!values.password) {
-              errors.password = "Required"
-            } else if (values.password.length < 8) {
-              errors.password = "Must be 8 or more characters"
-            }
             return errors
           }}
-          onSubmit={async (values, helpers) => {
+          onSubmit={async ({ email }, { setStatus, setFieldError }) => {
             try {
-              await signUpWithEmail(values.email, values.password)
-              navigate("/auth/login")
-              /**
-               * @TODO
-               * Navigate w/ state, & display some message like "now
-               * you're ready to sign in!"
-               */
+              await signUpWithEmail(email, uuid())
+              await navigate("/auth/login", {
+                state: {
+                  isSuccess: true,
+                  message:
+                    "Your account was created! Request a login code to verify your email.",
+                },
+              })
             } catch (err) {
-              console.log("ERR!!!!", err)
-              helpers.setStatus(err.toString())
+              setStatus({ isError: true, message: err.message })
+              setFieldError("email", " ")
             }
           }}
         >
@@ -92,35 +80,37 @@ const AuthSignup = ({ location }: PageProps) => {
                 props.handleSubmit(e)
               }}
             >
-              <Field
-                id="email"
-                name="email"
-                type="email"
-                label="email"
-                placeholder="email"
-                style={{ width: "var(--geist-space-64x)" }}
-              />
-              <Field
-                id="password"
-                name="password"
-                type="password"
-                label="password"
-                placeholder="password"
-                style={{ width: "var(--geist-space-64x)" }}
-              />
+              <Box display="flex" flexDirection="column" alignItems="center">
+                <Field
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="email"
+                  placeholder="email"
+                  style={{ width: "var(--geist-space-64x)" }}
+                  disabled={props.isSubmitting || props.status?.isSuccess}
+                />
+              </Box>
 
               <Box display="flex" flexDirection="column" alignItems="center">
                 <SubmitButton
                   type="submit"
-                  disabled={!props.isValid || props.isSubmitting}
+                  disabled={
+                    !props.isValid ||
+                    props.isSubmitting ||
+                    props.status?.isSuccess
+                  }
                 >
                   Signup
                 </SubmitButton>
-                {errorMessage && (
-                  <Error>
-                    <b>Error:</b>&nbsp;{errorMessage}&nbsp;{" "}
+                {props.status?.isError && (
+                  <Alert
+                    severity="error"
+                    style={{ width: "var(--geist-space-64x)" }}
+                  >
+                    <b>Error:</b>&nbsp;{props.status?.message}&nbsp;
                     <Link to="/auth/login">Login?</Link>
-                  </Error>
+                  </Alert>
                 )}
               </Box>
             </form>

@@ -1,23 +1,18 @@
 import React from "react"
 import { Formik, FormikProps, FormikErrors } from "formik"
-import { navigate, PageProps } from "gatsby"
-import styled from "styled-components"
-import { graphql } from "gatsby"
+import { navigate, PageProps, graphql } from "gatsby"
 import Box from "@material-ui/core/Box"
 import { useSelector } from "react-redux"
 
 import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
 import { Field, SubmitButton } from "components/Form"
+import { Alert } from "components/Alert"
+import { LoadingPage } from "components/LoadingPage"
 
 import { useVerifyTokenSet, isBrowser } from "utils"
 import { useCognito } from "utils/Playground/useCognito"
-import { LoadingPage } from "components/LoadingPage"
 import type { RootState } from "_reduxState"
-
-const Error = styled.div`
-  color: var(--geist-error);
-`
 
 const loader = (
   <>
@@ -25,16 +20,18 @@ const loader = (
     <LoadingPage />
   </>
 )
+
 type Values = {
   code: string
 }
+
 const AuthVerify = ({ location }: PageProps) => {
   const { session, email } = useSelector((s: RootState) => ({
     session: s.cognito?.data?.Session,
     email: s.cognito?.data?.ChallengeParameters?.email,
   }))
 
-  const { respondToAuthChallenge, errorMessage } = useCognito()
+  const { respondToAuthChallenge } = useCognito()
 
   const { isLoggedIn } = useVerifyTokenSet()
   if (isBrowser()) {
@@ -55,24 +52,52 @@ const AuthVerify = ({ location }: PageProps) => {
       <SEO title="Verify" />
       <Box display="flex" flexDirection="column" alignItems="center">
         <h1>Verify</h1>
-        <p>Please check your email and enter the 6-digit verification code</p>
-        <Formik
+
+        <Box mb={3} style={{ width: "var(--geist-space-64x)" }}>
+          <Alert variant="standard" severity="info">
+            Please check your email and enter the 6-digit verification code here
+          </Alert>
+        </Box>
+
+        <Formik<Values>
           initialValues={{ code: "" }}
           validateOnMount={false}
-          validate={(values) => {
+          validate={({ code }) => {
             const errors: FormikErrors<Values> = {}
-            if (!values.code) {
+            if (!code) {
               errors.code = "Required"
-            } else if (!/^[0-9]{6}$/i.test(values.code)) {
+            } else if (!/^[0-9]{6}$/i.test(code)) {
               errors.code = "Must be 6 digits"
             }
             return errors
           }}
-          onSubmit={async (values) => {
+          onSubmit={async ({ code }, { setFieldError }) => {
             try {
-              await respondToAuthChallenge(email!, values.code, session!)
+              const result = await respondToAuthChallenge(
+                email!,
+                code,
+                session!
+              )
+              if (result.Session) {
+                // failed attempt 1-2
+                // failed attempt 3 will be a 400
+                setFieldError("code", "Incorrect code")
+              }
             } catch (err) {
-              console.error("THIS IS ERROR", err)
+              // err.code => 'InvalidParameterException' | 'NotAuthorizedException'
+              // err.message => 'Missing required parameter USERNAME' | 'Incorrect username or password.'
+              if (
+                err.code.includes("NotAuthorizedException") ||
+                err.message.includes("Incorrect username or password")
+              ) {
+                await navigate("/auth/login", {
+                  state: {
+                    isError: true,
+                    message:
+                      "You failed to verify too many times. Please request another code and try again.",
+                  },
+                })
+              }
             }
           }}
         >
@@ -83,7 +108,12 @@ const AuthVerify = ({ location }: PageProps) => {
                 props.handleSubmit(e)
               }}
             >
-              <Box display="flex" flexDirection="column" alignItems="center">
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                style={{ width: "var(--geist-space-64x)" }}
+              >
                 <Field
                   id="code"
                   name="code"
@@ -91,6 +121,7 @@ const AuthVerify = ({ location }: PageProps) => {
                   label="code"
                   placeholder="code"
                   autoComplete="off"
+                  style={{ width: "var(--geist-space-64x)" }}
                 />
                 <SubmitButton
                   type="submit"
@@ -98,7 +129,6 @@ const AuthVerify = ({ location }: PageProps) => {
                 >
                   Verify
                 </SubmitButton>
-                {errorMessage && <Error>{errorMessage}</Error>}
               </Box>
             </form>
           )}
