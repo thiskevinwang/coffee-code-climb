@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.19.3] - 2020-11-29
+
+### Added
+
+- Alert component; implented in auth flow
+  - /auth/login
+  - /auth/signup
+  - /auth/verify
+
+### Changed
+
+- facebook svg icon
+
+### Fixed
+
+- SvgTrail overflow problems
+  - `#___gatsby` position relative
+- 'breakoutFromMaxWidth' margin errors b0c6cae
+  - TODO: figure out why it worked
+
 ## [v0.19.2] - 2020-11-27
 
 ### Fixed
@@ -262,6 +282,7 @@ New:
 
 ### Added
 
+[v0.19.3]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.2...v0.19.3
 [v0.19.2]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.1...v0.19.2
 [v0.19.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.0...v0.19.1
 [v0.19.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.18.3...v0.19.0
