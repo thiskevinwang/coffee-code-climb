@@ -86,13 +86,16 @@ export interface IdTokenPayload {
   nonce: string
   sub: string // uuid
   token_use: string
-  // potentially optional fields
+  // optional standard claims
+  // see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
   /** full name */
   name?: string
   /** last name */
   family_name?: string
   /** first name */
   given_name?: string
+  /** preferred username */
+  preferred_username?: string
 }
 
 export const useVerifyTokenSet = () => {
