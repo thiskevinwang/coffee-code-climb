@@ -9,10 +9,10 @@ import { useEffect, memo } from "react"
  *
  * @see https://developers.facebook.com/docs/javascript/quickstart
  */
-export const Facebook = memo(() => {
+export const FacebookSDK = memo(() => {
   useEffect(() => {
     const script: HTMLScriptElement = document.createElement("script")
-    const appId = "1234150196787151"
+    const appId = process.env.GATSBY_FACEBOOK_APP_ID
     script.innerHTML = `
       window.fbAsyncInit = function() {
         FB.init({
