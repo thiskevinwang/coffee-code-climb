@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.19.4] - 2020-11-30
+
+### Changed
+
+- SubmitButton style
+- bumped `aws-sdk` ^2.778.0 to 2.799.0
+  - removed `credentials` because I deleted an Identity Pool
+- extracted Blob component
+
 ## [v0.19.3] - 2020-11-29
 
 ### Added
@@ -282,6 +291,7 @@ New:
 
 ### Added
 
+[v0.19.4]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.3...v0.19.4
 [v0.19.3]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.2...v0.19.3
 [v0.19.2]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.1...v0.19.2
 [v0.19.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.19.0...v0.19.1
