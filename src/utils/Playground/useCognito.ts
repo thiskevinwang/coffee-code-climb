@@ -261,6 +261,65 @@ const makeInitateAuthCustom = (rdxDispatch: Dispatch) => async (
   }
 }
 
+/**
+ * Don't use this. It works but I haven't figured out an easy
+ * way to guarantee attribute uniques, unless I "admin-query"
+ * or list all the users first, and check their usernames.
+ */
+const makeUpdatePreferredUsername = (rdxDispatch: Dispatch) => async (
+  accessToken: string,
+  refreshToken: string,
+  preferredUsername: string,
+  email: string
+) => {
+  console.log("cogUpdateUserAttributes")
+
+  const updateUserAttributesParams: CognitoIdentityServiceProvider.UpdateUserAttributesRequest = {
+    AccessToken: accessToken,
+    UserAttributes: [{ Name: "preferred_username", Value: preferredUsername }],
+  }
+
+  try {
+    const data = await cognito
+      .updateUserAttributes(updateUserAttributesParams)
+      .promise()
+
+    const initiateAuthParams: CognitoIdentityServiceProvider.InitiateAuthRequest = {
+      AuthFlow: "REFRESH_TOKEN",
+      ClientId: CLIENT_ID,
+      AuthParameters: {
+        USERNAME: email,
+        REFRESH_TOKEN: refreshToken,
+      },
+    }
+
+    try {
+      const data2 = await cognito.initiateAuth(initiateAuthParams).promise()
+      // copy over current refreshToken because the 'REFRESH_TOKEN' flow will not return a new one
+
+      const newTokenSet = {
+        ...data2,
+        AuthenticationResult: {
+          ...data2.AuthenticationResult,
+          RefreshToken: refreshToken,
+        },
+      }
+      rdxDispatch(setCognito(newTokenSet, null))
+    } catch (err2) {
+      rdxDispatch(setCognito(null, err2))
+      throw err2
+    }
+
+    // rdxDispatch(setCognito(data, null))
+    return data
+  } catch (err) {
+    // rdxDispatch(setCognito(null, err))
+    throw err
+  } finally {
+    console.log("\tend")
+  }
+}
+
 const makeRespondToAuthChallenge = (rdxDispatch: Dispatch) => async (
   username: string,
   answer: string,
@@ -331,6 +390,9 @@ export const useCognito = () => {
   const respondToAuthChallenge = useThrottle(
     makeRespondToAuthChallenge(rdxDispatch)
   )
+  const updateUserAttributes = useThrottle(
+    makeUpdatePreferredUsername(rdxDispatch)
+  )
 
   return {
     // cognito methods
@@ -344,6 +406,7 @@ export const useCognito = () => {
     adminLinkProviderForUser,
     forgotPassword,
     confirmForgotPassword,
+    updateUserAttributes,
     //
     errorMessage,
   }
