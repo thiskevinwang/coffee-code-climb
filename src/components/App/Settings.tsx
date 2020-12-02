@@ -1,6 +1,6 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import type { RouteComponentProps } from "@reach/router"
-import type { IdTokenPayload } from "utils"
+import { useMutation, gql } from "@apollo/client"
 import Box from "@material-ui/core/Box"
 import Avatar from "@material-ui/core/Avatar"
 import TextField from "@material-ui/core/TextField"
@@ -8,6 +8,14 @@ import InputAdornment from "@material-ui/core/InputAdornment"
 import { makeStyles, withStyles } from "@material-ui/core/styles"
 
 import { fs } from "components/Fieldset"
+import { SubmitButton } from "components/Form/SubmitButton"
+import {
+  Mutation,
+  MutationUpdateUsernameArgs,
+  Query,
+  QueryGetOrCreateUserArgs,
+} from "types"
+import { GET_OR_CREATE_USER } from "pages/app"
 
 const CssTextField = withStyles((theme) => ({
   root: {
@@ -84,10 +92,84 @@ const useStyles = makeStyles((theme) => {
   }
 })
 
-export const Settings = (
-  props: RouteComponentProps<{ data: IdTokenPayload | null }>
-) => {
+const UPDATE_USERNAME = gql`
+  mutation UpdateUsername($id: ID!, $username: String!) {
+    updateUsername(id: $id, username: $username) {
+      PK
+      SK
+      created
+      updated
+      identities {
+        providerName
+      }
+      name
+      email
+      family_name
+      given_name
+      preferred_username
+      cognitoUsername
+      avatar_url
+    }
+  }
+`
+
+interface Props {
+  user: Query["getOrCreateUser"]
+  variablesForCacheUpdate: QueryGetOrCreateUserArgs
+}
+export const Settings = ({
+  user,
+  variablesForCacheUpdate,
+}: RouteComponentProps<Props>) => {
+  console.log("user", user)
   const classes = useStyles()
+
+  const [username, setUsername] = useState(user?.preferred_username)
+  const [error, setError] = useState("")
+
+  const [updateUsername] = useMutation<
+    {
+      updateUsername: Mutation["updateUsername"]
+    },
+    MutationUpdateUsernameArgs
+  >(UPDATE_USERNAME, {
+    onCompleted: (res) => {},
+    onError: (err) => {
+      setError(err.message)
+    },
+    update: (cache, mutationResult) => {
+      const preferred_username =
+        mutationResult.data?.updateUsername?.preferred_username
+
+      // Get the cached data
+      const cacheData = cache.readQuery<{ user: Query["getOrCreateUser"] }>({
+        query: GET_OR_CREATE_USER,
+        variables: variablesForCacheUpdate,
+      })
+
+      // Create fresh data
+      const freshData = {
+        user: {
+          ...cacheData?.user,
+          preferred_username: preferred_username,
+        },
+      }
+
+      // Update the cache with fresh data
+      cache.writeQuery({
+        query: GET_OR_CREATE_USER,
+        data: freshData,
+        variables: variablesForCacheUpdate,
+      })
+    },
+  })
+
+  useEffect(() => {
+    setUsername(user?.preferred_username)
+  }, [user])
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   return (
     <>
       <fs.Fieldset>
@@ -97,9 +179,15 @@ export const Settings = (
             This is your URL namespace within CoffeeCodeClimb.
           </fs.Subtitle>
           <CssTextField
-            disabled
             variant="outlined"
-            value={props.data?.sub}
+            error={!!error}
+            helperText={error}
+            placeholder={user?.cognitoUsername!}
+            value={username}
+            onChange={(e) => {
+              setError("")
+              setUsername(e.target.value)
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment
@@ -114,7 +202,34 @@ export const Settings = (
           />
         </fs.Content>
         <fs.Footer>
-          <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
+          <fs.Footer.Status>
+            {true
+              ? "Please use 48 characters at maximum."
+              : "Usernames must be lowercase, begin with an alphanumeric character followed by more alphanumeric characters or dashes and ending with an alphanumeric character."}
+          </fs.Footer.Status>
+          <fs.Footer.Action>
+            <SubmitButton
+              disabled={
+                isSubmitting || username === user?.preferred_username || !!error
+              }
+              onClick={async () => {
+                setIsSubmitting(true)
+                try {
+                  await updateUsername({
+                    variables: {
+                      id: user?.cognitoUsername!,
+                      username: username!, // modified by user input
+                    },
+                  })
+                  setIsSubmitting(false)
+                } catch (err) {
+                  console.err(err)
+                }
+              }}
+            >
+              Save
+            </SubmitButton>
+          </fs.Footer.Action>
         </fs.Footer>
       </fs.Fieldset>
 
@@ -125,7 +240,7 @@ export const Settings = (
             Please enter your full name, or a display name you are comfortable
             with.
           </fs.Subtitle>
-          <CssTextField disabled variant="outlined" value={props.data?.name} />
+          <CssTextField disabled variant="outlined" value={user?.name} />
         </fs.Content>
         <fs.Footer>
           <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
@@ -139,7 +254,7 @@ export const Settings = (
             Please enter the email address you want to use to log in with
             CoffeeCodeClimb.
           </fs.Subtitle>
-          <CssTextField disabled variant="outlined" value={props.data?.email} />
+          <CssTextField disabled variant="outlined" value={user?.email} />
         </fs.Content>
         <fs.Footer>
           <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
