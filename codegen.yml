@@ -1,0 +1,8 @@
+schema: http://localhost:4044/graphql
+generates:
+  ./src/types.d.ts:
+    hooks:
+      afterOneFileWrite:
+        - prettier --write
+    plugins:
+      - typescript

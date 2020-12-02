@@ -1,5 +1,6 @@
-import React from "react"
+import React, { useEffect } from "react"
 import ms from "ms"
+import { useLazyQuery, gql } from "@apollo/client"
 import { navigate, PageProps, Link } from "gatsby"
 import { Router } from "@reach/router"
 import Avatar from "@material-ui/core/Avatar"
@@ -12,10 +13,10 @@ import styled, { css, createGlobalStyle } from "styled-components"
 import { LayoutManager } from "components/layoutManager"
 import { LoadingPage } from "components/LoadingPage"
 import SEO from "components/seo"
-
 import { Profile, Settings, Default } from "components/App"
 
 import { useVerifyTokenSet } from "utils"
+import { Query, QueryGetOrCreateUserArgs, UserInput } from "types"
 
 const ACTIVE_LINK = "ACTIVE_LINK"
 const useStyles = makeStyles((theme) => {
@@ -104,12 +105,90 @@ const AppBody = styled.div`
   background: var(--accents-1);
 `
 
+export const GET_OR_CREATE_USER = gql`
+  query GetOrCreateUser($userInput: UserInput!) {
+    user: getOrCreateUser(userInput: $userInput) {
+      PK
+      SK
+      created
+      updated
+      identities {
+        providerName
+        dateCreated
+      }
+      name
+      email
+      family_name
+      given_name
+      preferred_username
+      cognitoUsername
+      avatar_url
+    }
+  }
+`
+
+const GET_USERS = gql`
+  query GetUsers {
+    users: getUsers {
+      PK
+      SK
+      created
+      updated
+      # identities {
+      #   providerName
+      # }
+      name
+      family_name
+      given_name
+      preferred_username
+      cognitoUsername
+      avatar_url
+    }
+  }
+`
+
 /**
  * Anything at `/app/*` requires the user to be authenticated
  */
 const App = ({ location }: PageProps) => {
   const { isLoggedIn, idTokenPayload, accessTokenPayload } = useVerifyTokenSet()
   const classes = useStyles()
+
+  const userInput: UserInput = {
+    cognitoUsername: idTokenPayload?.["cognito:username"],
+    email: idTokenPayload?.email,
+    email_verified: idTokenPayload?.email_verified,
+    identities: idTokenPayload?.identities,
+    sub: idTokenPayload?.sub,
+    name: idTokenPayload?.name,
+    family_name: idTokenPayload?.family_name,
+    given_name: idTokenPayload?.given_name,
+    preferred_username: idTokenPayload?.preferred_username,
+  }
+  const getOrCreateUserVariables: QueryGetOrCreateUserArgs = {
+    userInput,
+  }
+
+  const [getUsers, { data: usersData }] = useLazyQuery<{
+    users: Query["getUsers"]
+  }>(GET_USERS)
+  const users = usersData?.users
+
+  const [getOrCreateUser, { data: userData }] = useLazyQuery<{
+    user: Query["getOrCreateUser"]
+  }>(GET_OR_CREATE_USER, {
+    variables: getOrCreateUserVariables,
+    onCompleted: async (res) => {
+      await getUsers()
+    },
+    onError: (err) => {},
+  })
+
+  const user = userData?.user
+
+  useEffect(() => {
+    if (isLoggedIn === true) getOrCreateUser()
+  }, [isLoggedIn])
 
   if (isLoggedIn === null) {
     return <LoadingPage />
@@ -118,6 +197,7 @@ const App = ({ location }: PageProps) => {
     navigate("/auth/login")
     return null
   }
+
   return (
     <>
       <SEO title="App" />
@@ -188,8 +268,12 @@ const App = ({ location }: PageProps) => {
             }}
           >
             <Router basepath="/app">
-              <Profile path="/profile" data={idTokenPayload} />
-              <Settings path="/settings" data={idTokenPayload} />
+              <Profile path="/profile" user={user} users={users} />
+              <Settings
+                path="/settings"
+                user={user}
+                variablesForCacheUpdate={getOrCreateUserVariables}
+              />
               <Default path="/*" />
             </Router>
           </Box>
