@@ -11,6 +11,7 @@ import { LoadingPage } from "components/LoadingPage"
 
 const GATSBY_FACEBOOK_LOGIN_LINK = process.env.GATSBY_FACEBOOK_LOGIN_LINK!
 const GATSBY_GOOGLE_LOGIN_LINK = process.env.GATSBY_GOOGLE_LOGIN_LINK!
+const __DEV__ = process.env.NODE_ENV !== "production"
 
 const GET_TOKEN = gql`
   mutation GetToken($code: String!) {
@@ -54,10 +55,14 @@ const RedirectUri = ({ location }: { location: Location }) => {
     const { code, error_description, error: cognito_error } = queryString.parse(
       location.search
     )
-    console.log(`%cRedirectUri`, `color:#f5a623; font-size:20px`)
-    console.log("\tcode:", code)
-    console.log("\terror:", cognito_error)
-    console.log("\terror_description:", error_description)
+    console.log(`%cʕ •́؈•̀)`, `color:#f5a623; font-size:20px`)
+
+    if (__DEV__) {
+      console.log("\tcode:", code)
+      console.log("\terror:", cognito_error)
+      console.log("\terror_description:", error_description)
+    }
+
     return { code, error_description, cognito_error }
   })
 
@@ -75,11 +80,15 @@ const RedirectUri = ({ location }: { location: Location }) => {
     error_description?.includes?.("Already found an entry for username")
   ) {
     if (error_description?.includes?.("facebook")) {
-      console.log(`%c=> Facebook`, `color:lightblue; font-size:16px`)
+      if (__DEV__) {
+        console.log(`%c=> Facebook`, `color:#0070f3; font-size:16px`)
+      }
       window.location.href = GATSBY_FACEBOOK_LOGIN_LINK
     }
     if (error_description?.includes?.("google")) {
-      console.log(`%c=> Google`, `color:lightblue; font-size:16px`)
+      if (__DEV__) {
+        console.log(`%c=> Google`, `color:#0070f3; font-size:16px`)
+      }
       window.location.href = GATSBY_GOOGLE_LOGIN_LINK
     }
     return loader
@@ -87,23 +96,25 @@ const RedirectUri = ({ location }: { location: Location }) => {
 
   const [getToken] = useMutation<GetTokenData, GetTokenVars>(GET_TOKEN, {
     onCompleted: (data) => {
-      console.log(`%cgetToken::success`, `color:#0070f3; font-size:16px`)
+      if (__DEV__) {
+        console.log(`%cgetToken::success`, `color:#0070f3; font-size:16px`)
+      }
       const result = { AuthenticationResult: { ...data.getToken } }
       dispatch(setCognito(result, null))
       enqueueSnackbar("Welcome!", { variant: "success" })
 
-      console.log(`redirecting to /app/profile`)
       navigate("/app/profile", {
         replace: true,
         state: { data: result, error: null },
       })
     },
     onError: (err) => {
-      console.log(`%cgetToken::error`, `color:#e00; font-size:16px`)
-      console.log(err)
+      if (__DEV__) {
+        console.log(`%cgetToken::error`, `color:#e00; font-size:16px`)
+        console.log(err)
+      }
       dispatch(setCognito(null, err))
 
-      console.log(`redirecting to /auth/login`)
       navigate("/auth/login", {
         replace: true,
         state: { data: null, error: err },

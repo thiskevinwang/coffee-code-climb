@@ -12,6 +12,7 @@ import { RootState, setCognito } from "_reduxState"
 
 const JWKS_URI = process.env.GATSBY_JWKS_URI as string
 const CLIENT_ID = process.env.GATSBY_COGNITO_CLIENT_ID as string
+const __DEV__ = process.env.NODE_ENV !== "production"
 
 const client: JwksClient = jwksClient({
   jwksUri: JWKS_URI,
@@ -135,10 +136,13 @@ export const useVerifyTokenSet = () => {
       email = idTokenPayload?.email
       const exp = idTokenPayload.exp
       const expDate = new Date(exp * 1000)
-      console.log("IdToken expires")
-      console.log("\tat:", expDate.toLocaleString())
       const nowMs = +new Date()
-      console.log("\tin:", ms(exp * 1000 - nowMs))
+
+      if (__DEV__) {
+        console.log("IdToken expires")
+        console.log("\tat:", expDate.toLocaleString())
+        console.log("\tin:", ms(exp * 1000 - nowMs))
+      }
 
       if (!email) {
         // idtoken is borked
@@ -157,17 +161,20 @@ export const useVerifyTokenSet = () => {
 
         const exp = decodedAccessToken?.payload?.exp
         const expDate = new Date(exp * 1000)
-        console.log("AccessToken expires")
-        console.log("\tat:", expDate.toLocaleString())
         const nowMs = +new Date()
-        console.log("\tin:", ms(exp * 1000 - nowMs))
+
+        if (__DEV__) {
+          console.log("AccessToken expires")
+          console.log("\tat:", expDate.toLocaleString())
+          console.log("\tin:", ms(exp * 1000 - nowMs))
+        }
 
         setIdTokenPayload(idTokenPayload)
         setIsLoggedIn(true)
       } catch (err) {
         // Expect to be in this branch if the 2nd access token expires
         if (!refreshToken) {
-          console.warn("Cannot refresh; Clearing Redux")
+          console.warn("Cannot refresh; Clearing Storage")
           dispatch(setCognito(null, null))
           setIdTokenPayload(null)
           setIsLoggedIn(false)
@@ -192,7 +199,7 @@ export const useVerifyTokenSet = () => {
             // copy over previous refresh token
             data.AuthenticationResult.RefreshToken = refreshToken
 
-            console.warn("Refresh succeeded; Updating redux")
+            console.warn("Refresh succeeded;")
             dispatch(setCognito(data, null))
 
             const accessToken = data.AuthenticationResult?.AccessToken
