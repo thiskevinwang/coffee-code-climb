@@ -1,8 +1,7 @@
 {
   "name": "coffee-code-climb",
-  "private": true,
   "description": "A blog by Kevin Wang",
-  "version": "0.15.16",
+  "version": "0.20.0",
   "author": "Kevin Wang <kwangsan@gmail.com>",
   "bugs": {
     "url": "https://github.com/thiskevinwang/coffee-code-climb/issues"
@@ -15,7 +14,7 @@
   "main": "n/a",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gatsbyjs/gatsby-starter-blog.git"
+    "url": "git+https://github.com/thiskevinwang/coffee-code-climb.git"
   },
   "scripts": {
     "build": "gatsby build",
