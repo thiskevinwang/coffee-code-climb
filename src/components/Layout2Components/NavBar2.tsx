@@ -1,8 +1,9 @@
 import React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { Link, navigate } from "gatsby"
-import { Skeleton } from "@material-ui/lab"
+import { useSnackbar } from "notistack"
 
+import { Skeleton } from "@material-ui/lab"
 import Avatar from "@material-ui/core/Avatar"
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
@@ -120,6 +121,7 @@ const useStyles = makeStyles({
  * Also dispatches actions to update the store.
  */
 const NavBar2 = () => {
+  const { enqueueSnackbar } = useSnackbar()
   const { postsVersion, layoutVersion, isDarkMode } = useSelector(
     (state: RootState) => ({
       postsVersion: state.postsVersion,
@@ -301,6 +303,9 @@ const NavBar2 = () => {
               <MenuItem
                 onClick={async () => {
                   handleClose()
+                  enqueueSnackbar("Logged out successfully", {
+                    variant: "success",
+                  })
                   dispatch(setCognito(null, null))
                   await navigate(`/auth/login`)
                 }}

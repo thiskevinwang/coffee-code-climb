@@ -3,6 +3,7 @@ import { Formik, FormikProps, FormikErrors } from "formik"
 import { navigate, PageProps, graphql } from "gatsby"
 import Box from "@material-ui/core/Box"
 import { useSelector } from "react-redux"
+import { useSnackbar } from "notistack"
 
 import { LayoutManager } from "components/layoutManager"
 import SEO from "components/seo"
@@ -26,6 +27,7 @@ type Values = {
 }
 
 const AuthVerify = ({ location }: PageProps) => {
+  const { enqueueSnackbar } = useSnackbar()
   const { session, email } = useSelector((s: RootState) => ({
     session: s.cognito?.data?.Session,
     email: s.cognito?.data?.ChallengeParameters?.email,
@@ -82,6 +84,8 @@ const AuthVerify = ({ location }: PageProps) => {
                 // failed attempt 1-2
                 // failed attempt 3 will be a 400
                 setFieldError("code", "Incorrect code")
+              } else if (result.AuthenticationResult) {
+                enqueueSnackbar("Welcome!", { variant: "success" })
               }
             } catch (err) {
               // err.code => 'InvalidParameterException' | 'NotAuthorizedException'

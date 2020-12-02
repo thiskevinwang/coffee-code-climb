@@ -3,6 +3,7 @@ import { useMutation, gql } from "@apollo/client"
 import { graphql, navigate } from "gatsby"
 import queryString from "query-string"
 import { useDispatch } from "react-redux"
+import { useSnackbar } from "notistack"
 
 import { setCognito } from "_reduxState"
 import SEO from "components/seo"
@@ -44,6 +45,7 @@ const loader = (
 )
 
 const RedirectUri = ({ location }: { location: Location }) => {
+  const { enqueueSnackbar } = useSnackbar()
   // `error_description` is generated two ways
   // 1. By Cognito
   // 2. By my own lambda code
@@ -88,6 +90,7 @@ const RedirectUri = ({ location }: { location: Location }) => {
       console.log(`%cgetToken::success`, `color:#0070f3; font-size:16px`)
       const result = { AuthenticationResult: { ...data.getToken } }
       dispatch(setCognito(result, null))
+      enqueueSnackbar("Welcome!", { variant: "success" })
 
       console.log(`redirecting to /app/profile`)
       navigate("/app/profile", {

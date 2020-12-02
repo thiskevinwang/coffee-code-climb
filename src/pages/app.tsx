@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
 import Box from "@material-ui/core/Box"
 import { makeStyles } from "@material-ui/core/styles"
+
 import styled, { css, createGlobalStyle } from "styled-components"
 
 import { LayoutManager } from "components/layoutManager"
@@ -78,15 +79,17 @@ const AppOverrideStyles = createGlobalStyle`
   }
 `
 
+// --geist-gap = 24px
 const breakoutFromMaxWidth = css`
+  /* -24px */
   --negative-gap: calc(var(--geist-gap) * -1);
+  /* 48px */
   --two-gap: calc(var(--geist-gap) * 2);
+  /* 1048px */
   --max: var(--geist-page-width-with-margin);
-  /* uh WTF!?!? Figure out where/why I need '- 15px'  */
+
   --negative-margin: min(
-    calc(
-      calc(100vw - min(100vw, calc(var(--max) - var(--two-gap))) - 15px) / -2
-    ),
+    calc(calc(100vw - min(100vw, calc(var(--max) - var(--two-gap)))) / -2),
     var(--negative-gap)
   );
   margin-left: var(--negative-margin);
@@ -165,16 +168,25 @@ const App = ({ location }: PageProps) => {
     given_name: idTokenPayload?.given_name,
     preferred_username: idTokenPayload?.preferred_username,
   }
+
+  /**
+   * This is the input for the `GET_OR_CREATE_USER` query and
+   * it is also passed to <Settings/> so that another mutation
+   * may update the Apollo InMemoryCache
+   */
   const getOrCreateUserVariables: QueryGetOrCreateUserArgs = {
     userInput,
   }
 
-  const [getUsers, { data: usersData }] = useLazyQuery<{
+  const [getUsers, { data: usersData, loading: usersLoading }] = useLazyQuery<{
     users: Query["getUsers"]
   }>(GET_USERS)
   const users = usersData?.users
 
-  const [getOrCreateUser, { data: userData }] = useLazyQuery<{
+  const [
+    getOrCreateUser,
+    { data: userData, loading: userLoading },
+  ] = useLazyQuery<{
     user: Query["getOrCreateUser"]
   }>(GET_OR_CREATE_USER, {
     variables: getOrCreateUserVariables,
@@ -268,7 +280,13 @@ const App = ({ location }: PageProps) => {
             }}
           >
             <Router basepath="/app">
-              <Profile path="/profile" user={user} users={users} />
+              <Profile
+                path="/profile"
+                user={user}
+                userLoading={userLoading}
+                users={users}
+                usersLoading={usersLoading}
+              />
               <Settings
                 path="/settings"
                 user={user}

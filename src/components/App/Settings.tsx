@@ -6,6 +6,7 @@ import Avatar from "@material-ui/core/Avatar"
 import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { useSnackbar } from "notistack"
 
 import { fs } from "components/Fieldset"
 import { SubmitButton } from "components/Form/SubmitButton"
@@ -117,12 +118,14 @@ interface Props {
   user: Query["getOrCreateUser"]
   variablesForCacheUpdate: QueryGetOrCreateUserArgs
 }
+
 export const Settings = ({
   user,
   variablesForCacheUpdate,
 }: RouteComponentProps<Props>) => {
   console.log("user", user)
   const classes = useStyles()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [username, setUsername] = useState(user?.preferred_username)
   const [error, setError] = useState("")
@@ -133,9 +136,12 @@ export const Settings = ({
     },
     MutationUpdateUsernameArgs
   >(UPDATE_USERNAME, {
-    onCompleted: (res) => {},
+    onCompleted: (res) => {
+      enqueueSnackbar("Username updated", { variant: "success" })
+    },
     onError: (err) => {
       setError(err.message)
+      enqueueSnackbar(err.message, { variant: "error" })
     },
     update: (cache, mutationResult) => {
       const preferred_username =
