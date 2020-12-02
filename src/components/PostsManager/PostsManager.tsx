@@ -11,7 +11,6 @@ import {
   interpolate,
 } from "react-spring"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
-import Box from "@material-ui/core/Box"
 
 import { Button } from "components/Button"
 import * as Posts from "components/Posts"
@@ -216,42 +215,48 @@ const PostsManager = ({ allPosts, location }: PostsManagerProps) => {
       })
     )
   if (postsVersion === 1) {
+    /** TODO: figure out MUI / 'jss' / ssr styles being incorrect */
+    const style = {
+      display: "inline-block",
+      marginRight: "5px",
+      marginBottom: "5px",
+    }
     return (
       <Manager>
         <>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          <div style={style}>
             <Button onClick={handleDeleteFirst}>delete first</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={handleDeleteAll}>delete all</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={handleReset}>reset</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={handleSortByNewest}>newest</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={handleSortByOldest}>oldest</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={() => setIsRandom((s) => !s)}>randomize</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={resize(2)}>2</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={resize(3)}>3</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={resize(4)}>4</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={resize(5)}>5</Button>
-          </Box>
-          <Box mr={1} mb={1} display={"inline-block"}>
+          </div>
+          <div style={style}>
             <Button onClick={resize(6)}>6</Button>
-          </Box>
+          </div>
         </>
         <animated.div style={{ position: `relative`, ...cardHolderProps }}>
           {transitions.map(({ item: { node }, key, props }, index) => {
