@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - one-time code success triggers snackbar message
 - username success/error triggers snackbar message
 
+### Fixed
+
+- 'breakoutFromMaxWidth'.. again
+
 ## [v0.20.0] - 2020-12-01
 
 ### Added

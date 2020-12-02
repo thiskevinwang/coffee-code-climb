@@ -79,15 +79,17 @@ const AppOverrideStyles = createGlobalStyle`
   }
 `
 
+// --geist-gap = 24px
 const breakoutFromMaxWidth = css`
+  /* -24px */
   --negative-gap: calc(var(--geist-gap) * -1);
+  /* 48px */
   --two-gap: calc(var(--geist-gap) * 2);
+  /* 1048px */
   --max: var(--geist-page-width-with-margin);
-  /* uh WTF!?!? Figure out where/why I need '- 15px'  */
+
   --negative-margin: min(
-    calc(
-      calc(100vw - min(100vw, calc(var(--max) - var(--two-gap))) - 15px) / -2
-    ),
+    calc(calc(100vw - min(100vw, calc(var(--max) - var(--two-gap)))) / -2),
     var(--negative-gap)
   );
   margin-left: var(--negative-margin);
