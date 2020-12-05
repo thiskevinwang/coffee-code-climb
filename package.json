@@ -73,7 +73,6 @@
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.11.0",
     "lodash": "^4.17.19",
-    "moment": "^2.24.0",
     "ms": "^2.1.2",
     "notistack": "^1.0.2",
     "prismjs": "^1.20.0",

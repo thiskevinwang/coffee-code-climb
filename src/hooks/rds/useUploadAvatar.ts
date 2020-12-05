@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { gql, ApolloError, useMutation } from "@apollo/client"
 import axios, { AxiosRequestConfig } from "axios"
-import moment from "moment"
 
 import { useAuthentication } from "hooks/useAuthentication"
 
@@ -119,9 +118,8 @@ const formatFilename = ({
   filename: string
   currentUserId: number
 }) => {
-  const date = moment().format("YYYYMMDD")
   const randomString = Math.random().toString(36).substring(2, 7)
   const cleanFileName = filename.toLowerCase().replace(/[^a-z0-9]/g, "-")
-  const newFilename = `images/${date}-${randomString}-user${currentUserId}-${cleanFileName}`
+  const newFilename = `images/${randomString}-user${currentUserId}-${cleanFileName}`
   return newFilename.substring(0, 60)
 }
