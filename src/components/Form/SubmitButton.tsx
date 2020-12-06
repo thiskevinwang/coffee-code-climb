@@ -11,7 +11,6 @@ export const SubmitButton = styled(animated.button)`
   cursor: pointer;
   font-size: 14px;
   height: var(--geist-form-small-height);
-  margin-bottom: 2rem;
   min-width: 80px;
   /* outline: none; */
   transition: all 200ms ease-in-out;
