@@ -2,6 +2,7 @@ import React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { Link, navigate } from "gatsby"
 import { useSnackbar } from "notistack"
+import { useApolloClient, gql } from "@apollo/client"
 
 import { Skeleton } from "@material-ui/lab"
 import Avatar from "@material-ui/core/Avatar"
@@ -130,7 +131,18 @@ const NavBar2 = () => {
     })
   )
   const dispatch = useDispatch()
-  const { isLoggedIn } = useVerifyTokenSet()
+  const { isLoggedIn, accessTokenPayload } = useVerifyTokenSet()
+  const id = accessTokenPayload?.username
+  const client = useApolloClient()
+
+  const avatarUrl = client.readFragment({
+    id: `User:${id}`,
+    fragment: gql`
+      fragment UserAvatar on User {
+        avatar_url
+      }
+    `,
+  })?.avatar_url
 
   const [anchorEl, setAnchorEl] = React.useState(null)
 
@@ -218,7 +230,7 @@ const NavBar2 = () => {
         {isLoggedIn === true && (
           <>
             <MuiButton disableRipple onClick={handleClick}>
-              <Avatar classes={{ root: classes.avatarRoot }} />
+              <Avatar src={avatarUrl} classes={{ root: classes.avatarRoot }} />
             </MuiButton>
             <Menu
               anchorEl={anchorEl}

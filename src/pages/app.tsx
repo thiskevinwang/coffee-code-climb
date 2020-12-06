@@ -96,6 +96,7 @@ const AppBody = styled.div`
 export const GET_OR_CREATE_USER = gql`
   query GetOrCreateUser($userInput: UserInput!) {
     user: getOrCreateUser(userInput: $userInput) {
+      id
       PK
       SK
       created
@@ -118,6 +119,7 @@ export const GET_OR_CREATE_USER = gql`
 const GET_USERS = gql`
   query GetUsers {
     users: getUsers {
+      id
       PK
       SK
       created
