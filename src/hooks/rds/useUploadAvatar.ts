@@ -1,89 +1,107 @@
 import { useState } from "react"
-import { gql, ApolloError, useMutation } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 import axios, { AxiosRequestConfig } from "axios"
 
-import { useAuthentication } from "hooks/useAuthentication"
+import { Query, S3Payload } from "types"
+import { useVerifyTokenSet } from "utils"
+import { GET_OR_CREATE_USER } from "pages/app"
 
 const S3_GET_SIGNED_PUT_OBJECT_URL = gql`
   mutation($fileName: String!, $fileType: String!) {
-    s3GetSignedPutObjectUrl(fileName: $fileName, fileType: $fileType) {
+    s3: s3GetSignedPutObjectUrl(fileName: $fileName, fileType: $fileType) {
       objectUrl
       signedPutObjectUrl
     }
   }
 `
 type S3 = {
-  data: {
-    s3GetSignedPutObjectUrl: {
-      objectUrl: string
-      signedPutObjectUrl: string
-    }
-  }
+  s3: S3Payload
 }
 
 const UPDATE_USER_AVATAR = gql`
-  mutation($avatarUrl: String!) {
-    updateUserAvatar(avatarUrl: $avatarUrl) {
-      id
-      username
-      first_name
-      last_name
+  mutation($avatarUrl: String!, $id: String!) {
+    updateAvatarUrl(avatarUrl: $avatarUrl, id: $id) {
       avatar_url
     }
   }
 `
 interface IUploadAvatarArgs {
   onSuccess: () => void
+  onError?: (err: any) => void
+  croppedImgSrc?: string
+  variablesForCacheUpdate: any
 }
-export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
-  const { currentUserId } = useAuthentication()
+
+export function useUploadAvatar({
+  onSuccess,
+  onError,
+  croppedImgSrc,
+  variablesForCacheUpdate,
+}: IUploadAvatarArgs) {
   const [isLoading, setIsLoading] = useState(false)
 
   // These args just come from client state
-  const [getSignedUrl, { data: data_1, loading: loading_1 }] = useMutation(
-    S3_GET_SIGNED_PUT_OBJECT_URL,
-    {
-      onCompleted: (data) => {},
-      onError: (error: ApolloError) => {
-        console.error(error)
-        throw new Error(error.message)
-      },
-    }
-  )
+  const [getSignedUrl] = useMutation<S3>(S3_GET_SIGNED_PUT_OBJECT_URL, {
+    onCompleted: (data) => {},
+    onError: (err) => {
+      console.error(err)
+      onError?.(err)
+      throw err
+    },
+  })
 
   // These args are dependent on the response from the earlier mutation
-  const [updateUserAvatar, { data: data_2, loading: loading_2 }] = useMutation(
-    UPDATE_USER_AVATAR,
-    {
-      onCompleted: (data) => {
-        onSuccess?.()
-      },
-      onError: (error: ApolloError) => {
-        console.error(error)
-        throw new Error(error.message)
-      },
-    }
-  )
+  const [updateAvatarUrl] = useMutation(UPDATE_USER_AVATAR, {
+    onCompleted: (data) => {
+      onSuccess?.()
+    },
+    onError: (err) => {
+      console.error(err)
+      onError?.(err)
+      throw err
+    },
+    update: (cache, mutationResult) => {
+      // Get the cached data
+      const cacheData = cache.readQuery<{ user: Query["getOrCreateUser"] }>({
+        query: GET_OR_CREATE_USER,
+        variables: variablesForCacheUpdate,
+      })
+
+      // Create fresh data
+      const freshData = {
+        user: {
+          ...cacheData?.user,
+          avatar_url: croppedImgSrc,
+        },
+      }
+
+      // Update the cache with fresh data
+      cache.writeQuery({
+        query: GET_OR_CREATE_USER,
+        data: freshData,
+        variables: variablesForCacheUpdate,
+      })
+    },
+  })
+
+  const { accessTokenPayload } = useVerifyTokenSet()
+  const userId = accessTokenPayload?.username
 
   const uploadAvatar = async (file: File, imgSrc: string) => {
-    if (!currentUserId) throw new Error("User ID needed to upload an avatar")
     if (!file) throw new Error("Missing a required 'file' argument")
+    setIsLoading(true)
 
     try {
-      setIsLoading(true)
-      const response: S3 = await getSignedUrl({
+      const response = await getSignedUrl({
         variables: {
-          fileName: formatFilename({
-            filename: file?.name ?? "",
-            currentUserId,
-          }),
-          fileType: file?.type ?? "",
+          fileName: `${userId}/avatar`,
+          fileType: file.type,
         },
       })
-      console.log("getSignedUrl succeeded")
-      const avatarUrl = response.data?.s3GetSignedPutObjectUrl.objectUrl
-      const signedPutObjectUrl =
-        response.data?.s3GetSignedPutObjectUrl.signedPutObjectUrl
+      console.log("signed url response", response)
+
+      const avatarUrl = response?.data?.s3.objectUrl
+      const signedPutObjectUrl = response?.data?.s3.signedPutObjectUrl
 
       const config: AxiosRequestConfig = {
         headers: {
@@ -97,29 +115,19 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
         imgSrc.replace(/^data:image\/\w+;base64,/, ""),
         "base64"
       )
-      await axios.put(signedPutObjectUrl, buffer, config)
-      console.log("upload to S3 succeeded")
-      await updateUserAvatar({ variables: { avatarUrl } })
-      console.log("User avatar update succeeded")
+
+      console.log(signedPutObjectUrl!, buffer, config)
+      const axiosRes = await axios.put(signedPutObjectUrl!, buffer, config)
+      console.log("axiosRes", axiosRes.data)
+      await updateAvatarUrl({ variables: { avatarUrl, id: userId } })
+
       setIsLoading(false)
-    } catch (error) {
+    } catch (err) {
+      onError?.(err)
       setIsLoading(false)
-      console.error(error)
+      console.error(err)
     }
   }
 
   return { uploadAvatar, isLoading }
-}
-
-const formatFilename = ({
-  filename,
-  currentUserId,
-}: {
-  filename: string
-  currentUserId: number
-}) => {
-  const randomString = Math.random().toString(36).substring(2, 7)
-  const cleanFileName = filename.toLowerCase().replace(/[^a-z0-9]/g, "-")
-  const newFilename = `images/${randomString}-user${currentUserId}-${cleanFileName}`
-  return newFilename.substring(0, 60)
 }
