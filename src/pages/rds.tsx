@@ -18,7 +18,6 @@ import { LayoutManager } from "components/layoutManager"
 import { CreateComment } from "components/Comments/Create"
 import { SubmitButton } from "components/Form"
 import { CommentsByUrl } from "components/Comments/Display/ByUrl"
-import { AvatarUploader } from "components/AvatarUploader"
 
 export const LEFT_OFFSET = 20
 
@@ -111,8 +110,6 @@ const RdsPage = ({ location }: { location: Location }) => {
     <LayoutManager location={location}>
       <SEO title="RDS" />
       <h1>RDS</h1>
-
-      <AvatarUploader />
 
       <SubmitButton onClick={handleLogout}>
         {currentUserId ? "Logout" : "Login"}
