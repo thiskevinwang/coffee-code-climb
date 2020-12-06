@@ -2,9 +2,8 @@ import { useState } from "react"
 import { gql, useMutation } from "@apollo/client"
 import axios, { AxiosRequestConfig } from "axios"
 
-import { Query, S3Payload } from "types"
+import { Mutation, S3Payload } from "types"
 import { useVerifyTokenSet } from "utils"
-import { GET_OR_CREATE_USER } from "pages/app"
 
 const S3_GET_SIGNED_PUT_OBJECT_URL = gql`
   mutation($fileName: String!, $fileType: String!) {
@@ -19,8 +18,9 @@ type S3 = {
 }
 
 const UPDATE_USER_AVATAR = gql`
-  mutation($avatarUrl: String!, $id: String!) {
+  mutation UpdateUserAvatar($avatarUrl: String!, $id: ID!) {
     updateAvatarUrl(avatarUrl: $avatarUrl, id: $id) {
+      id
       avatar_url
     }
   }
@@ -51,7 +51,9 @@ export function useUploadAvatar({
   })
 
   // These args are dependent on the response from the earlier mutation
-  const [updateAvatarUrl] = useMutation(UPDATE_USER_AVATAR, {
+  const [updateAvatarUrl] = useMutation<{
+    updateAvatarUrl: Mutation["updateAvatarUrl"]
+  }>(UPDATE_USER_AVATAR, {
     onCompleted: (data) => {
       onSuccess?.()
     },
@@ -61,25 +63,16 @@ export function useUploadAvatar({
       throw err
     },
     update: (cache, mutationResult) => {
-      // Get the cached data
-      const cacheData = cache.readQuery<{ user: Query["getOrCreateUser"] }>({
-        query: GET_OR_CREATE_USER,
-        variables: variablesForCacheUpdate,
-      })
-
-      // Create fresh data
-      const freshData = {
-        user: {
-          ...cacheData?.user,
+      cache.writeFragment({
+        id: `User:${mutationResult.data?.updateAvatarUrl?.id}`,
+        fragment: USER_AVATAR_URL_FRAGMENT,
+        data: {
+          // Optimistically update local avatar url to the base64 data string
+          // because the s3 avatar url will always be the same
+          // and will require a re-fetch or page refresh in order
+          // to display the new avatar
           avatar_url: croppedImgSrc,
         },
-      }
-
-      // Update the cache with fresh data
-      cache.writeQuery({
-        query: GET_OR_CREATE_USER,
-        data: freshData,
-        variables: variablesForCacheUpdate,
       })
     },
   })
@@ -128,6 +121,12 @@ export function useUploadAvatar({
       console.error(err)
     }
   }
+
+  const USER_AVATAR_URL_FRAGMENT = gql`
+    fragment UserAvatar on User {
+      avatar_url
+    }
+  `
 
   return { uploadAvatar, isLoading }
 }

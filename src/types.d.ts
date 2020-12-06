@@ -79,12 +79,12 @@ export type MutationGetTokenArgs = {
 }
 
 export type MutationUpdateUsernameArgs = {
-  id: Scalars["String"]
+  id: Scalars["ID"]
   username: Scalars["String"]
 }
 
 export type MutationUpdateAvatarUrlArgs = {
-  id: Scalars["String"]
+  id: Scalars["ID"]
   avatarUrl: Scalars["String"]
 }
 

@@ -17,7 +17,6 @@ import {
   Query,
   QueryGetOrCreateUserArgs,
 } from "types"
-import { GET_OR_CREATE_USER } from "pages/app"
 
 const CssTextField = withStyles((theme) => ({
   root: {
@@ -96,8 +95,9 @@ const useStyles = makeStyles((theme) => {
 })
 
 const UPDATE_USERNAME = gql`
-  mutation UpdateUsername($id: String!, $username: String!) {
+  mutation UpdateUsername($id: ID!, $username: String!) {
     updateUsername(id: $id, username: $username) {
+      id
       PK
       SK
       created
@@ -148,25 +148,16 @@ export const Settings = ({
       const preferred_username =
         mutationResult.data?.updateUsername?.preferred_username
 
-      // Get the cached data
-      const cacheData = cache.readQuery<{ user: Query["getOrCreateUser"] }>({
-        query: GET_OR_CREATE_USER,
-        variables: variablesForCacheUpdate,
-      })
-
-      // Create fresh data
-      const freshData = {
-        user: {
-          ...cacheData?.user,
-          preferred_username: preferred_username,
+      cache.writeFragment({
+        id: `User:${mutationResult.data?.updateUsername?.id}`,
+        fragment: gql`
+          fragment UserPreferredUsername on User {
+            preferred_username
+          }
+        `,
+        data: {
+          preferred_username,
         },
-      }
-
-      // Update the cache with fresh data
-      cache.writeQuery({
-        query: GET_OR_CREATE_USER,
-        data: freshData,
-        variables: variablesForCacheUpdate,
       })
     },
   })

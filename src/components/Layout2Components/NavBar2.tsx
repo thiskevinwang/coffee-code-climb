@@ -99,6 +99,7 @@ const useStyles = makeStyles({
     width: 38,
     height: 38,
     border: `2px solid var(--accents-2)`,
+    "& .MuiAvatar-img": { marginBottom: 0 },
   },
   divider: {
     background: "var(--accents-2)",
@@ -135,13 +136,10 @@ const NavBar2 = () => {
   const id = accessTokenPayload?.username
   const client = useApolloClient()
 
+  /** this will be null if refreshing on a non /app route */
   const avatarUrl = client.readFragment({
     id: `User:${id}`,
-    fragment: gql`
-      fragment UserAvatar on User {
-        avatar_url
-      }
-    `,
+    fragment: USER_AVATAR_URL_FRAGMENT,
   })?.avatar_url
 
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -333,5 +331,11 @@ const NavBar2 = () => {
     </Bar>
   )
 }
+
+const USER_AVATAR_URL_FRAGMENT = gql`
+  fragment UserAvatar on User {
+    avatar_url
+  }
+`
 
 export { NavBar2 }
