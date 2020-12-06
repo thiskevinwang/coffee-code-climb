@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => {
 })
 
 const UPDATE_USERNAME = gql`
-  mutation UpdateUsername($id: String!, $username: String!) {
+  mutation UpdateUsername($id: ID!, $username: String!) {
     updateUsername(id: $id, username: $username) {
       id
       PK
