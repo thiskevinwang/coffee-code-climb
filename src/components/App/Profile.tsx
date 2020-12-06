@@ -140,6 +140,7 @@ export const Profile = ({
                           height: "var(--geist-space-gap)",
                           width: "var(--geist-space-gap)",
                           marginRight: "var(--geist-gap-half)",
+                          border: "1px solid var(--accents-2)",
                         }}
                       >
                         {firstInitial}
