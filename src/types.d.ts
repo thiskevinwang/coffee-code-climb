@@ -58,12 +58,19 @@ export type FederatedIdentityInput = {
 
 export type Mutation = {
   __typename?: "Mutation"
+  /** 🔒 This field requires you to be authenticated */
+  s3GetSignedPutObjectUrl: S3Payload
   /** Trade a code—appended by the Cognito Hosted UI—for Cognito Tokens */
   getToken?: Maybe<AuthResponse>
   /** 🔒 This field requires you to be authenticated */
   getOrCreateUser: User
   /** 🔒 This field requires you to be authenticated */
   updateUsername: User
+}
+
+export type MutationS3GetSignedPutObjectUrlArgs = {
+  fileName: Scalars["String"]
+  fileType: Scalars["String"]
 }
 
 export type MutationGetTokenArgs = {
@@ -84,16 +91,9 @@ export type MutationUpdateUsernameArgs = {
 export type Query = {
   __typename?: "Query"
   /** 🔒 This field requires you to be authenticated */
-  s3GetSignedPutObjectUrl: S3Payload
-  /** 🔒 This field requires you to be authenticated */
   getOrCreateUser: User
   /** 🔒 This field requires you to be authenticated */
   getUsers?: Maybe<Array<Maybe<User>>>
-}
-
-export type QueryS3GetSignedPutObjectUrlArgs = {
-  fileName: Scalars["String"]
-  fileType: Scalars["String"]
 }
 
 export type QueryGetOrCreateUserArgs = {
