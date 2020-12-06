@@ -51,6 +51,10 @@ interface LayoutProps {
 }
 const Layout: React.FC<LayoutProps> = ({ location, title, children }) => {
   const rootPath: string = `${__PATH_PREFIX__}/`
+  const isAppPage = location.pathname.startsWith("/app")
+  const isAuthPage = location.pathname.startsWith("/auth")
+  const isHomePage = location.pathname === rootPath
+
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const themedBackgroundProps = useSpring({
     background: isDarkMode ? Colors.BLACK : Colors.SILVER,
@@ -107,10 +111,10 @@ const Layout: React.FC<LayoutProps> = ({ location, title, children }) => {
             maxWidth:
               location.pathname === rootPath
                 ? rhythm(48)
-                : location.pathname.startsWith("/app")
-                ? "var(--geist-page-width-with-margin)"
+                : isAppPage
+                ? "100vw"
                 : rhythm(24),
-            padding: `${rhythm(1.5)} var(--geist-gap)`,
+            padding: isAppPage ? 0 : `${rhythm(1.5)} var(--geist-gap)`,
           }}
         >
           <animated.header
@@ -133,7 +137,7 @@ const Layout: React.FC<LayoutProps> = ({ location, title, children }) => {
           </animated.header>
 
           <Main>{children}</Main>
-          <Footer />
+          {!isAppPage && <Footer />}
         </Inner>
       </LayoutFrame>
     </>

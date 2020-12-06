@@ -31,6 +31,7 @@ const Layout2: React.FC<Props> = ({ location, title, children }) => {
   const isAppPage = location.pathname.startsWith("/app")
   const isAuthPage = location.pathname.startsWith("/auth")
   const isHomePage = location.pathname === rootPath
+
   const header =
     isAppPage || isAuthPage ? null : isHomePage ? (
       <h1>{title}</h1>
@@ -59,9 +60,9 @@ const Layout2: React.FC<Props> = ({ location, title, children }) => {
             location.pathname === rootPath
               ? rhythm(36)
               : isAppPage
-              ? "var(--geist-page-width-with-margin)"
+              ? "100vw"
               : rhythm(24),
-          padding: `${rhythm(1.5)} var(--geist-gap)`,
+          padding: isAppPage ? 0 : `${rhythm(1.5)} var(--geist-gap)`,
         }}
       >
         {header && (
@@ -79,7 +80,7 @@ const Layout2: React.FC<Props> = ({ location, title, children }) => {
           </Link>
         )}
         <main>{children}</main>
-        <Footer />
+        {!isAppPage && <Footer />}
       </div>
       <Blob.Holder>
         <Blob y={scrollYPercent} />

@@ -38,10 +38,18 @@ In this tag, I went back and tried to refactor S3-avatar-uploading code that I c
 - override typography.js `img` margin on `/app` pages
 - SubmitButton: removed `margin-bottom`
 - Updated graphql-generated types
+- unset `maxWidth` on layout.tsx & layout2.tsx
+  - `Box`'s under /app should have
+    ```ts
+    px = "var(--geist-gap)"
+    mx = "auto"
+    maxWidth = "var(--geist-page-width-with-margin)"
+    ```
 
 ### Removed
 
 - momentjs
+- `breakoutFromMaxWidth` - no more legacy layout headache to deal with
 
 ## [v0.20.3] - 2020-12-02
 

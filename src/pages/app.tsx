@@ -9,7 +9,7 @@ import ButtonGroup from "@material-ui/core/ButtonGroup"
 import Box from "@material-ui/core/Box"
 import { makeStyles } from "@material-ui/core/styles"
 
-import styled, { css, createGlobalStyle } from "styled-components"
+import styled, { createGlobalStyle } from "styled-components"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingPage } from "components/LoadingPage"
@@ -84,32 +84,12 @@ const AppOverrideStyles = createGlobalStyle`
   }
 `
 
-// --geist-gap = 24px
-const breakoutFromMaxWidth = css`
-  /* -24px */
-  --negative-gap: calc(var(--geist-gap) * -1);
-  /* 48px */
-  --two-gap: calc(var(--geist-gap) * 2);
-  /* 1048px */
-  --max: var(--geist-page-width-with-margin);
-
-  --negative-margin: min(
-    calc(calc(100vw - min(100vw, calc(var(--max) - var(--two-gap)))) / -2),
-    var(--negative-gap)
-  );
-  margin-left: var(--negative-margin);
-  margin-right: var(--negative-margin);
-`
-
 const AppHeader = styled.header`
-  ${breakoutFromMaxWidth}
-
   background: var(--geist-background);
   border-bottom: 1px solid var(--accents-2);
 `
 
 const AppBody = styled.div`
-  ${breakoutFromMaxWidth}
   background: var(--accents-1);
 `
 
@@ -220,7 +200,12 @@ const App = ({ location }: PageProps) => {
       <SEO title="App" />
       <AppOverrideStyles />
       <LayoutManager location={location}>
-        <Box py={2}>
+        <Box
+          py={2}
+          px="var(--geist-gap)"
+          mx="auto"
+          maxWidth="var(--geist-page-width-with-margin)"
+        >
           <ButtonGroup
             disableRipple
             variant="outlined"
@@ -252,12 +237,10 @@ const App = ({ location }: PageProps) => {
           <Box
             pt={6}
             pb={10.5}
+            px="var(--geist-gap)"
+            mx="auto"
+            maxWidth="var(--geist-page-width-with-margin)"
             display="flex"
-            maxWidth={
-              "min(calc(var(--geist-page-width-with-margin) - 2 * var(--geist-gap)), calc(100vw - 2 * var(--geist-gap)))"
-            }
-            marginLeft="auto"
-            marginRight="auto"
           >
             <Box mr={2}>
               <Avatar
@@ -279,12 +262,11 @@ const App = ({ location }: PageProps) => {
 
         <AppBody>
           <Box
+            px="var(--geist-gap)"
+            mx="auto"
+            maxWidth="var(--geist-page-width-with-margin)"
             style={{
               transform: "translateY(var(--geist-space-small-negative))",
-              marginLeft: "auto",
-              marginRight: "auto",
-              maxWidth:
-                "min(calc(var(--geist-page-width-with-margin) - 2 * var(--geist-gap)), calc(100vw - 2 * var(--geist-gap)))",
             }}
           >
             <Router basepath="/app">
