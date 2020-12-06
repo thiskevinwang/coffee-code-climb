@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => {
     avatarRoot: {
       height: "var(--geist-space-24x)",
       width: "var(--geist-space-24x)",
+      border: "1px solid var(--accents-2)",
     },
   }
 })
@@ -76,6 +77,10 @@ const AppOverrideStyles = createGlobalStyle`
   }
   p {
     margin: var(--geist-space-gap-half) 0;
+  }
+  img {
+    /* override typography.js */
+    margin: unset;
   }
 `
 
@@ -255,7 +260,10 @@ const App = ({ location }: PageProps) => {
             marginRight="auto"
           >
             <Box mr={2}>
-              <Avatar classes={{ root: classes.avatarRoot }}></Avatar>
+              <Avatar
+                src={user?.avatar_url}
+                classes={{ root: classes.avatarRoot }}
+              ></Avatar>
             </Box>
             <Box display="flex" flexDirection="column">
               <h1>{idTokenPayload?.name ?? accessTokenPayload?.username}</h1>
