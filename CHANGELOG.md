@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.21.0] - 2020-12-06
+
+**NEW**: AvatarCropper (again)
+
+In this tag, I went back and tried to refactor S3-avatar-uploading code that I completely forgot how to do.
+
+🐛 I encountered a _pretty real_ bug with object versioning on an S3 bucket.
+
+- I uploaded images on the same **key**: 🐳 -> 🐈 -> 🦜
+  - The object gets created and displays on the frontend fine (🐳)
+- I'd the second image (🐈)
+  - The version ID & revision-date would get bumped correctly, but the actual object would still be the previous image, (🐳)
+- Meanwhile in S3, the (🐈) would be _floating around, somewhere in the AWS ether, invisibly..._
+- I'd upload a third image (🦜)
+  - The more recent object **still** displayed (🐳)
+  - The (🐈) image would suddenly appear in version history
+  - The (🦜) would be next to _float around in the ether_
+
+☝️ Solution? ... delete and recreate the bucket 🤷🏻‍♂️
+
+- Needed to make it public
+- And add [CORS json](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html#how-do-i-enable-cors)
+
+### Added
+
+- `<Modal.*>` component
+- `<AvatarCropper>` component
+
+### Changed
+
+- override typography.js `img` margin on `/app` pages
+- SubmitButton: removed `margin-bottom`
+- Updated graphql-generated types
+
+### Removed
+
+- momentjs
+
 ## [v0.20.3] - 2020-12-02
 
 ### Fixed
@@ -342,6 +380,7 @@ New:
 
 ### Added
 
+[v0.21.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.20.3...v0.21.0
 [v0.20.3]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.20.2...v0.20.3
 [v0.20.2]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.20.1...v0.20.2
 [v0.20.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.20.0...v0.20.1
