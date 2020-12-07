@@ -134,7 +134,7 @@ const NavBar2 = () => {
         width: "100%",
         boxShadow: "var(--shadow-large)",
         backgroundColor: "var(--accents-1)",
-        // display: "flex",
+        height: "var(--header-height)",
         flexDirection: "row",
         padding: "0 var(--geist-gap)",
       }}
@@ -188,12 +188,12 @@ const NavBar2 = () => {
           <ThemeSlider />
         </Tooltip>
       </Box>
-      <Box>
+      <Box display="flex" flexDirection="row" alignItems="center">
         {isLoggedIn === null && (
           <Skeleton animation="wave" variant="text" width={"5ch"} />
         )}
         {isLoggedIn === false && (
-          <>
+          <Box display="flex" flexDirection="row">
             <Box mr={2}>
               <Link activeStyle={{ cursor: "not-allowed" }} to={"/"}>
                 Home
@@ -204,7 +204,7 @@ const NavBar2 = () => {
                 Login
               </Link>
             </Box>
-          </>
+          </Box>
         )}
         {isLoggedIn === true && (
           <>
