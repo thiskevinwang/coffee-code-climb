@@ -17,7 +17,8 @@ import Box from "@material-ui/core/Box"
 import Tooltip from "@material-ui/core/Tooltip"
 import InputBase from "@material-ui/core/InputBase"
 import NativeSelect from "@material-ui/core/NativeSelect"
-import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 import { ThemeSlider } from "components/ThemeSlider"
 import { Button } from "components/Button"
@@ -113,6 +114,9 @@ const AppBar = styled(MuiAppBar)`
  * Replaced a few with <div>s
  */
 const NavBar2 = () => {
+  const theme = useTheme()
+  const xsDown = useMediaQuery(theme.breakpoints.down("xs"))
+
   const { enqueueSnackbar } = useSnackbar()
   const { postsVersion, layoutVersion, isDarkMode } = useSelector(
     (state: RootState) => ({
@@ -144,8 +148,22 @@ const NavBar2 = () => {
     setAnchorEl(null)
   }
 
+  if (xsDown) {
+    return null
+  }
+
   return (
-    <AppBar>
+    <AppBar
+      style={{
+        height: "var(--header-height)",
+        width: "100%",
+        boxShadow: "var(--shadow-large)",
+        backgroundColor: "var(--accents-1)",
+        // display: "flex",
+        flexDirection: "row",
+        padding: "0 var(--geist-gap)",
+      }}
+    >
       <div
         style={{
           flexGrow: 1,

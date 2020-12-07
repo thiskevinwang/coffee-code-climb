@@ -47,6 +47,8 @@ In this tag, I went back and tried to refactor S3-avatar-uploading code that I c
 
 ### Changed
 
+- NavBar2 uses MUI AppBar
+  - hide NavBar2 on "xs down"
 - override typography.js `img` margin on `/app` pages
 - SubmitButton: removed `margin-bottom`
 - Updated graphql-generated types
