@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react"
 import { useTransition, config } from "react-spring"
 import _ from "lodash"
 import { useLazyQuery } from "@apollo/client"
-import moment from "moment"
 
 // Hooks
 import { useIO } from "hooks/useIO"
@@ -194,9 +193,7 @@ export const CommentsByUrl = ({ url }) => {
                       {_comment.user.first_name} {_comment.user.last_name}
                     </b>
                   </small>
-                  <small>
-                    {moment(_comment.created).format("MMMM DD \\at h:mm A")}
-                  </small>
+                  <small>{_comment.created}</small>
                 </FlexColumn>
                 {parseInt(_comment.user.id) === currentUserId && (
                   <Overflow commentId={_comment.id} url={url} />

@@ -2,12 +2,15 @@ import React from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { Link, navigate } from "gatsby"
 import { useSnackbar } from "notistack"
+import { useApolloClient, gql } from "@apollo/client"
+import styled from "styled-components"
 
 import { Skeleton } from "@material-ui/lab"
 import Avatar from "@material-ui/core/Avatar"
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import MuiButton from "@material-ui/core/Button"
+import MuiAppBar from "@material-ui/core/AppBar"
 import Divider from "@material-ui/core/Divider"
 import Fade from "@material-ui/core/Fade"
 import Box from "@material-ui/core/Box"
@@ -16,10 +19,6 @@ import InputBase from "@material-ui/core/InputBase"
 import NativeSelect from "@material-ui/core/NativeSelect"
 import { makeStyles, withStyles } from "@material-ui/core/styles"
 
-import styled, { css } from "styled-components"
-
-import { rhythm } from "utils/typography"
-import { navbarZ } from "consts"
 import { ThemeSlider } from "components/ThemeSlider"
 import { Button } from "components/Button"
 
@@ -33,29 +32,6 @@ import {
   RootState,
 } from "_reduxState"
 import { useVerifyTokenSet } from "utils"
-
-const flexRowAlignItemsCenter = css`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`
-const justifyContentSpaceBetween = css`
-  justify-content: space-between;
-`
-
-const Bar = styled.div`
-  ${flexRowAlignItemsCenter};
-  ${justifyContentSpaceBetween}
-  padding: ${rhythm(0.5)};
-
-  height: ${rhythm(2)};
-  top: 0px;
-  width: 100%;
-  z-index: ${navbarZ};
-`
-const BarItem = styled.div`
-  ${flexRowAlignItemsCenter};
-`
 
 const BootstrapInput = withStyles((theme) => ({
   input: {
@@ -98,6 +74,7 @@ const useStyles = makeStyles({
     width: 38,
     height: 38,
     border: `2px solid var(--accents-2)`,
+    "& .MuiAvatar-img": { marginBottom: 0 },
   },
   divider: {
     background: "var(--accents-2)",
@@ -115,10 +92,25 @@ const useStyles = makeStyles({
   },
 })
 
+const AppBar = styled(MuiAppBar)`
+  width: 100%;
+  box-shadow: var(--shadow-large);
+  background-color: var(--accents-1);
+  height: var(--header-height);
+  flex-direction: row;
+  padding: 0 var(--geist-gap);
+`
 /**
  * NavBar2
  * Subscribed to a few redux state changes.
  * Also dispatches actions to update the store.
+ *
+ * @TODO 2020-12-07
+ * THERE ARE ISSUES with Material-UI's <Box> and SSR Styles
+ * - hard-refresh results in "incorrect styles"
+ * - regular-refresh results in "correct styles"
+ *
+ * Replaced a few with <div>s
  */
 const NavBar2 = () => {
   const { enqueueSnackbar } = useSnackbar()
@@ -130,7 +122,15 @@ const NavBar2 = () => {
     })
   )
   const dispatch = useDispatch()
-  const { isLoggedIn } = useVerifyTokenSet()
+  const { isLoggedIn, accessTokenPayload } = useVerifyTokenSet()
+  const id = accessTokenPayload?.username
+  const client = useApolloClient()
+
+  /** this will be null if refreshing on a non /app route */
+  const avatarUrl = client.readFragment({
+    id: `User:${id}`,
+    fragment: USER_AVATAR_URL_FRAGMENT,
+  })?.avatar_url
 
   const [anchorEl, setAnchorEl] = React.useState(null)
 
@@ -145,8 +145,15 @@ const NavBar2 = () => {
   }
 
   return (
-    <Bar>
-      <BarItem>
+    <AppBar>
+      <div
+        style={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
         <Tooltip
           classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
           arrow
@@ -158,20 +165,20 @@ const NavBar2 = () => {
             </>
           }
         >
-          <Box mr={1}>
+          <div style={{ marginRight: "var(--geist-space-2x)" }}>
             <Button
               onClick={() => dispatch(setPostsVersion((postsVersion % 2) + 1))}
             >
               P{postsVersion}
             </Button>
-          </Box>
+          </div>
         </Tooltip>
         <Tooltip
           classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
           arrow
           title={<>Toggle the "Layout" version</>}
         >
-          <Box mr={1}>
+          <div style={{ marginRight: "var(--geist-space-2x)" }}>
             <Button
               onClick={() =>
                 dispatch(setLayoutVersion((layoutVersion % 2) + 1))
@@ -179,7 +186,7 @@ const NavBar2 = () => {
             >
               L{layoutVersion}
             </Button>
-          </Box>
+          </div>
         </Tooltip>
         <Tooltip
           classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
@@ -192,17 +199,21 @@ const NavBar2 = () => {
             </>
           }
         >
-          <Box>
-            <ThemeSlider />
-          </Box>
+          <ThemeSlider />
         </Tooltip>
-      </BarItem>
-      <BarItem>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
         {isLoggedIn === null && (
           <Skeleton animation="wave" variant="text" width={"5ch"} />
         )}
         {isLoggedIn === false && (
-          <>
+          <Box display="flex" flexDirection="row">
             <Box mr={2}>
               <Link activeStyle={{ cursor: "not-allowed" }} to={"/"}>
                 Home
@@ -213,12 +224,12 @@ const NavBar2 = () => {
                 Login
               </Link>
             </Box>
-          </>
+          </Box>
         )}
         {isLoggedIn === true && (
           <>
             <MuiButton disableRipple onClick={handleClick}>
-              <Avatar classes={{ root: classes.avatarRoot }} />
+              <Avatar src={avatarUrl} classes={{ root: classes.avatarRoot }} />
             </MuiButton>
             <Menu
               anchorEl={anchorEl}
@@ -317,9 +328,15 @@ const NavBar2 = () => {
             </Menu>
           </>
         )}
-      </BarItem>
-    </Bar>
+      </div>
+    </AppBar>
   )
 }
+
+const USER_AVATAR_URL_FRAGMENT = gql`
+  fragment UserAvatar on User {
+    avatar_url
+  }
+`
 
 export { NavBar2 }

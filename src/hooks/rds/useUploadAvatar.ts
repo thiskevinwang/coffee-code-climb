@@ -1,90 +1,100 @@
 import { useState } from "react"
-import { gql, ApolloError, useMutation } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 import axios, { AxiosRequestConfig } from "axios"
-import moment from "moment"
 
-import { useAuthentication } from "hooks/useAuthentication"
+import { Mutation, S3Payload } from "types"
+import { useVerifyTokenSet } from "utils"
 
 const S3_GET_SIGNED_PUT_OBJECT_URL = gql`
   mutation($fileName: String!, $fileType: String!) {
-    s3GetSignedPutObjectUrl(fileName: $fileName, fileType: $fileType) {
+    s3: s3GetSignedPutObjectUrl(fileName: $fileName, fileType: $fileType) {
       objectUrl
       signedPutObjectUrl
     }
   }
 `
 type S3 = {
-  data: {
-    s3GetSignedPutObjectUrl: {
-      objectUrl: string
-      signedPutObjectUrl: string
-    }
-  }
+  s3: S3Payload
 }
 
 const UPDATE_USER_AVATAR = gql`
-  mutation($avatarUrl: String!) {
-    updateUserAvatar(avatarUrl: $avatarUrl) {
+  mutation UpdateUserAvatar($avatarUrl: String!, $id: ID!) {
+    updateAvatarUrl(avatarUrl: $avatarUrl, id: $id) {
       id
-      username
-      first_name
-      last_name
       avatar_url
     }
   }
 `
 interface IUploadAvatarArgs {
   onSuccess: () => void
+  onError?: (err: any) => void
+  croppedImgSrc?: string
+  variablesForCacheUpdate: any
 }
-export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
-  const { currentUserId } = useAuthentication()
+
+export function useUploadAvatar({
+  onSuccess,
+  onError,
+  croppedImgSrc,
+  variablesForCacheUpdate,
+}: IUploadAvatarArgs) {
   const [isLoading, setIsLoading] = useState(false)
 
   // These args just come from client state
-  const [getSignedUrl, { data: data_1, loading: loading_1 }] = useMutation(
-    S3_GET_SIGNED_PUT_OBJECT_URL,
-    {
-      onCompleted: (data) => {},
-      onError: (error: ApolloError) => {
-        console.error(error)
-        throw new Error(error.message)
-      },
-    }
-  )
+  const [getSignedUrl] = useMutation<S3>(S3_GET_SIGNED_PUT_OBJECT_URL, {
+    onCompleted: (data) => {},
+    onError: (err) => {
+      console.error(err)
+      onError?.(err)
+      throw err
+    },
+  })
 
   // These args are dependent on the response from the earlier mutation
-  const [updateUserAvatar, { data: data_2, loading: loading_2 }] = useMutation(
-    UPDATE_USER_AVATAR,
-    {
-      onCompleted: (data) => {
-        onSuccess?.()
-      },
-      onError: (error: ApolloError) => {
-        console.error(error)
-        throw new Error(error.message)
-      },
-    }
-  )
-
-  const uploadAvatar = async (file: File, imgSrc: string) => {
-    if (!currentUserId) throw new Error("User ID needed to upload an avatar")
-    if (!file) throw new Error("Missing a required 'file' argument")
-
-    try {
-      setIsLoading(true)
-      const response: S3 = await getSignedUrl({
-        variables: {
-          fileName: formatFilename({
-            filename: file?.name ?? "",
-            currentUserId,
-          }),
-          fileType: file?.type ?? "",
+  const [updateAvatarUrl] = useMutation<{
+    updateAvatarUrl: Mutation["updateAvatarUrl"]
+  }>(UPDATE_USER_AVATAR, {
+    onCompleted: (data) => {
+      onSuccess?.()
+    },
+    onError: (err) => {
+      console.error(err)
+      onError?.(err)
+      throw err
+    },
+    update: (cache, mutationResult) => {
+      cache.writeFragment({
+        id: `User:${mutationResult.data?.updateAvatarUrl?.id}`,
+        fragment: USER_AVATAR_URL_FRAGMENT,
+        data: {
+          // Optimistically update local avatar url to the base64 data string
+          // because the s3 avatar url will always be the same
+          // and will require a re-fetch or page refresh in order
+          // to display the new avatar
+          avatar_url: croppedImgSrc,
         },
       })
-      console.log("getSignedUrl succeeded")
-      const avatarUrl = response.data?.s3GetSignedPutObjectUrl.objectUrl
-      const signedPutObjectUrl =
-        response.data?.s3GetSignedPutObjectUrl.signedPutObjectUrl
+    },
+  })
+
+  const { accessTokenPayload } = useVerifyTokenSet()
+  const userId = accessTokenPayload?.username
+
+  const uploadAvatar = async (file: File, imgSrc: string) => {
+    if (!file) throw new Error("Missing a required 'file' argument")
+    setIsLoading(true)
+
+    try {
+      const response = await getSignedUrl({
+        variables: {
+          fileName: `${userId}/avatar`,
+          fileType: file.type,
+        },
+      })
+      console.log("signed url response", response)
+
+      const avatarUrl = response?.data?.s3.objectUrl
+      const signedPutObjectUrl = response?.data?.s3.signedPutObjectUrl
 
       const config: AxiosRequestConfig = {
         headers: {
@@ -98,30 +108,25 @@ export function useUploadAvatar({ onSuccess }: IUploadAvatarArgs) {
         imgSrc.replace(/^data:image\/\w+;base64,/, ""),
         "base64"
       )
-      await axios.put(signedPutObjectUrl, buffer, config)
-      console.log("upload to S3 succeeded")
-      await updateUserAvatar({ variables: { avatarUrl } })
-      console.log("User avatar update succeeded")
+
+      console.log(signedPutObjectUrl!, buffer, config)
+      const axiosRes = await axios.put(signedPutObjectUrl!, buffer, config)
+      console.log("axiosRes", axiosRes.data)
+      await updateAvatarUrl({ variables: { avatarUrl, id: userId } })
+
       setIsLoading(false)
-    } catch (error) {
+    } catch (err) {
+      onError?.(err)
       setIsLoading(false)
-      console.error(error)
+      console.error(err)
     }
   }
 
-  return { uploadAvatar, isLoading }
-}
+  const USER_AVATAR_URL_FRAGMENT = gql`
+    fragment UserAvatar on User {
+      avatar_url
+    }
+  `
 
-const formatFilename = ({
-  filename,
-  currentUserId,
-}: {
-  filename: string
-  currentUserId: number
-}) => {
-  const date = moment().format("YYYYMMDD")
-  const randomString = Math.random().toString(36).substring(2, 7)
-  const cleanFileName = filename.toLowerCase().replace(/[^a-z0-9]/g, "-")
-  const newFilename = `images/${date}-${randomString}-user${currentUserId}-${cleanFileName}`
-  return newFilename.substring(0, 60)
+  return { uploadAvatar, isLoading }
 }

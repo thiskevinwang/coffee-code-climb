@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import type { RouteComponentProps } from "@reach/router"
 import { useMutation, gql } from "@apollo/client"
 import Box from "@material-ui/core/Box"
-import Avatar from "@material-ui/core/Avatar"
 import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import { makeStyles, withStyles } from "@material-ui/core/styles"
@@ -10,13 +9,14 @@ import { useSnackbar } from "notistack"
 
 import { fs } from "components/Fieldset"
 import { SubmitButton } from "components/Form/SubmitButton"
+import { AvatarCropper } from "components/AvatarCropper"
+
 import {
   Mutation,
   MutationUpdateUsernameArgs,
   Query,
   QueryGetOrCreateUserArgs,
 } from "types"
-import { GET_OR_CREATE_USER } from "pages/app"
 
 const CssTextField = withStyles((theme) => ({
   root: {
@@ -89,6 +89,7 @@ const useStyles = makeStyles((theme) => {
     avatarRoot: {
       height: "var(--geist-space-24x)",
       width: "var(--geist-space-24x)",
+      cursor: "pointer",
     },
   }
 })
@@ -96,6 +97,7 @@ const useStyles = makeStyles((theme) => {
 const UPDATE_USERNAME = gql`
   mutation UpdateUsername($id: ID!, $username: String!) {
     updateUsername(id: $id, username: $username) {
+      id
       PK
       SK
       created
@@ -123,7 +125,6 @@ export const Settings = ({
   user,
   variablesForCacheUpdate,
 }: RouteComponentProps<Props>) => {
-  console.log("user", user)
   const classes = useStyles()
   const { enqueueSnackbar } = useSnackbar()
 
@@ -147,25 +148,16 @@ export const Settings = ({
       const preferred_username =
         mutationResult.data?.updateUsername?.preferred_username
 
-      // Get the cached data
-      const cacheData = cache.readQuery<{ user: Query["getOrCreateUser"] }>({
-        query: GET_OR_CREATE_USER,
-        variables: variablesForCacheUpdate,
-      })
-
-      // Create fresh data
-      const freshData = {
-        user: {
-          ...cacheData?.user,
-          preferred_username: preferred_username,
+      cache.writeFragment({
+        id: `User:${mutationResult.data?.updateUsername?.id}`,
+        fragment: gql`
+          fragment UserPreferredUsername on User {
+            preferred_username
+          }
+        `,
+        data: {
+          preferred_username,
         },
-      }
-
-      // Update the cache with fresh data
-      cache.writeQuery({
-        query: GET_OR_CREATE_USER,
-        data: freshData,
-        variables: variablesForCacheUpdate,
       })
     },
   })
@@ -272,13 +264,19 @@ export const Settings = ({
           <Box flex={1}>
             <h2>Your Avatar</h2>
             <p>This is your avatar.</p>
+            <p>Click on the avatar to upload a custom one from your files.</p>
           </Box>
           <Box display="flex" alignItems="center">
-            <Avatar classes={{ root: classes.avatarRoot }} />
+            <AvatarCropper
+              src={user?.avatar_url}
+              variablesForCacheUpdate={variablesForCacheUpdate}
+            />
           </Box>
         </fs.Content>
         <fs.Footer>
-          <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
+          <fs.Footer.Status>
+            An avatar is optional but strongly recommended.
+          </fs.Footer.Status>
         </fs.Footer>
       </fs.Fieldset>
     </>

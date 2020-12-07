@@ -31,7 +31,8 @@ export type AuthResponse = {
 
 /** Implemented by every 'row' in the Dynamo table */
 export type Base = {
-  PK: Scalars["ID"]
+  id: Scalars["ID"]
+  PK: Scalars["String"]
   SK?: Maybe<Scalars["String"]>
   created?: Maybe<Scalars["Date"]>
   updated?: Maybe<Scalars["Date"]>
@@ -58,22 +59,23 @@ export type FederatedIdentityInput = {
 
 export type Mutation = {
   __typename?: "Mutation"
+  /** 🔒 This field requires you to be authenticated */
+  s3GetSignedPutObjectUrl: S3Payload
   /** Trade a code—appended by the Cognito Hosted UI—for Cognito Tokens */
   getToken?: Maybe<AuthResponse>
   /** 🔒 This field requires you to be authenticated */
-  getOrCreateUser: User
-  /** 🔒 This field requires you to be authenticated */
   updateUsername: User
+  /** 🔒 This field requires you to be authenticated */
+  updateAvatarUrl: User
+}
+
+export type MutationS3GetSignedPutObjectUrlArgs = {
+  fileName: Scalars["String"]
+  fileType: Scalars["String"]
 }
 
 export type MutationGetTokenArgs = {
   code: Scalars["String"]
-}
-
-export type MutationGetOrCreateUserArgs = {
-  email: Scalars["String"]
-  firstName?: Maybe<Scalars["String"]>
-  lastName?: Maybe<Scalars["String"]>
 }
 
 export type MutationUpdateUsernameArgs = {
@@ -81,19 +83,17 @@ export type MutationUpdateUsernameArgs = {
   username: Scalars["String"]
 }
 
+export type MutationUpdateAvatarUrlArgs = {
+  id: Scalars["ID"]
+  avatarUrl: Scalars["String"]
+}
+
 export type Query = {
   __typename?: "Query"
-  /** 🔒 This field requires you to be authenticated */
-  s3GetSignedPutObjectUrl: S3Payload
   /** 🔒 This field requires you to be authenticated */
   getOrCreateUser: User
   /** 🔒 This field requires you to be authenticated */
   getUsers?: Maybe<Array<Maybe<User>>>
-}
-
-export type QueryS3GetSignedPutObjectUrlArgs = {
-  fileName: Scalars["String"]
-  fileType: Scalars["String"]
 }
 
 export type QueryGetOrCreateUserArgs = {
@@ -130,7 +130,8 @@ export type S3Payload = {
 
 export type User = Base & {
   __typename?: "User"
-  PK: Scalars["ID"]
+  id: Scalars["ID"]
+  PK: Scalars["String"]
   SK?: Maybe<Scalars["String"]>
   created: Scalars["Date"]
   updated?: Maybe<Scalars["Date"]>

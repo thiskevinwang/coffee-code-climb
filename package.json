@@ -1,7 +1,7 @@
 {
   "name": "coffee-code-climb",
   "description": "A blog by Kevin Wang",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "author": "Kevin Wang <kwangsan@gmail.com>",
   "bugs": {
     "url": "https://github.com/thiskevinwang/coffee-code-climb/issues"
@@ -73,7 +73,6 @@
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.11.0",
     "lodash": "^4.17.19",
-    "moment": "^2.24.0",
     "ms": "^2.1.2",
     "notistack": "^1.0.2",
     "prismjs": "^1.20.0",
@@ -82,7 +81,7 @@
     "react-device-detect": "^1.9.10",
     "react-dom": "17.0.0",
     "react-helmet": "^6.1.0",
-    "react-image-crop": "^8.4.2",
+    "react-image-crop": "8.4.2",
     "react-is": "17.0.0",
     "react-redux": "^7.1.3",
     "react-spring": "8.0.27",

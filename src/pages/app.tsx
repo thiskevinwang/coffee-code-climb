@@ -9,7 +9,7 @@ import ButtonGroup from "@material-ui/core/ButtonGroup"
 import Box from "@material-ui/core/Box"
 import { makeStyles } from "@material-ui/core/styles"
 
-import styled, { css, createGlobalStyle } from "styled-components"
+import styled, { createGlobalStyle } from "styled-components"
 
 import { LayoutManager } from "components/layoutManager"
 import { LoadingPage } from "components/LoadingPage"
@@ -66,6 +66,7 @@ const useStyles = makeStyles((theme) => {
     avatarRoot: {
       height: "var(--geist-space-24x)",
       width: "var(--geist-space-24x)",
+      border: "1px solid var(--accents-2)",
     },
   }
 })
@@ -77,40 +78,25 @@ const AppOverrideStyles = createGlobalStyle`
   p {
     margin: var(--geist-space-gap-half) 0;
   }
-`
-
-// --geist-gap = 24px
-const breakoutFromMaxWidth = css`
-  /* -24px */
-  --negative-gap: calc(var(--geist-gap) * -1);
-  /* 48px */
-  --two-gap: calc(var(--geist-gap) * 2);
-  /* 1048px */
-  --max: var(--geist-page-width-with-margin);
-
-  --negative-margin: min(
-    calc(calc(100vw - min(100vw, calc(var(--max) - var(--two-gap)))) / -2),
-    var(--negative-gap)
-  );
-  margin-left: var(--negative-margin);
-  margin-right: var(--negative-margin);
+  img {
+    /* override typography.js */
+    margin: unset;
+  }
 `
 
 const AppHeader = styled.header`
-  ${breakoutFromMaxWidth}
-
   background: var(--geist-background);
   border-bottom: 1px solid var(--accents-2);
 `
 
 const AppBody = styled.div`
-  ${breakoutFromMaxWidth}
   background: var(--accents-1);
 `
 
 export const GET_OR_CREATE_USER = gql`
   query GetOrCreateUser($userInput: UserInput!) {
     user: getOrCreateUser(userInput: $userInput) {
+      id
       PK
       SK
       created
@@ -133,6 +119,7 @@ export const GET_OR_CREATE_USER = gql`
 const GET_USERS = gql`
   query GetUsers {
     users: getUsers {
+      id
       PK
       SK
       created
@@ -215,7 +202,13 @@ const App = ({ location }: PageProps) => {
       <SEO title="App" />
       <AppOverrideStyles />
       <LayoutManager location={location}>
-        <Box py={2}>
+        <Box
+          py={2}
+          px="var(--geist-gap)"
+          mx="auto"
+          mt="var(--header-height)"
+          maxWidth="var(--geist-page-width-with-margin)"
+        >
           <ButtonGroup
             disableRipple
             variant="outlined"
@@ -247,15 +240,16 @@ const App = ({ location }: PageProps) => {
           <Box
             pt={6}
             pb={10.5}
+            px="var(--geist-gap)"
+            mx="auto"
+            maxWidth="var(--geist-page-width-with-margin)"
             display="flex"
-            maxWidth={
-              "min(calc(var(--geist-page-width-with-margin) - 2 * var(--geist-gap)), calc(100vw - 2 * var(--geist-gap)))"
-            }
-            marginLeft="auto"
-            marginRight="auto"
           >
             <Box mr={2}>
-              <Avatar classes={{ root: classes.avatarRoot }}></Avatar>
+              <Avatar
+                src={user?.avatar_url}
+                classes={{ root: classes.avatarRoot }}
+              ></Avatar>
             </Box>
             <Box display="flex" flexDirection="column">
               <h1>{idTokenPayload?.name ?? accessTokenPayload?.username}</h1>
@@ -271,12 +265,11 @@ const App = ({ location }: PageProps) => {
 
         <AppBody>
           <Box
+            px="var(--geist-gap)"
+            mx="auto"
+            maxWidth="var(--geist-page-width-with-margin)"
             style={{
               transform: "translateY(var(--geist-space-small-negative))",
-              marginLeft: "auto",
-              marginRight: "auto",
-              maxWidth:
-                "min(calc(var(--geist-page-width-with-margin) - 2 * var(--geist-gap)), calc(100vw - 2 * var(--geist-gap)))",
             }}
           >
             <Router basepath="/app">
