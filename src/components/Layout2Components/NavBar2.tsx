@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from "react-redux"
 import { Link, navigate } from "gatsby"
 import { useSnackbar } from "notistack"
 import { useApolloClient, gql } from "@apollo/client"
+import styled from "styled-components"
 
 import { Skeleton } from "@material-ui/lab"
 import Avatar from "@material-ui/core/Avatar"
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import MuiButton from "@material-ui/core/Button"
-import AppBar from "@material-ui/core/AppBar"
+import MuiAppBar from "@material-ui/core/AppBar"
 import Divider from "@material-ui/core/Divider"
 import Fade from "@material-ui/core/Fade"
 import Box from "@material-ui/core/Box"
@@ -91,10 +92,25 @@ const useStyles = makeStyles({
   },
 })
 
+const AppBar = styled(MuiAppBar)`
+  width: 100%;
+  box-shadow: var(--shadow-large);
+  background-color: var(--accents-1);
+  height: var(--header-height);
+  flex-direction: row;
+  padding: 0 var(--geist-gap);
+`
 /**
  * NavBar2
  * Subscribed to a few redux state changes.
  * Also dispatches actions to update the store.
+ *
+ * @TODO 2020-12-07
+ * THERE ARE ISSUES with Material-UI's <Box> and SSR Styles
+ * - hard-refresh results in "incorrect styles"
+ * - regular-refresh results in "correct styles"
+ *
+ * Replaced a few with <div>s
  */
 const NavBar2 = () => {
   const { enqueueSnackbar } = useSnackbar()
@@ -129,17 +145,15 @@ const NavBar2 = () => {
   }
 
   return (
-    <AppBar
-      style={{
-        width: "100%",
-        boxShadow: "var(--shadow-large)",
-        backgroundColor: "var(--accents-1)",
-        height: "var(--header-height)",
-        flexDirection: "row",
-        padding: "0 var(--geist-gap)",
-      }}
-    >
-      <Box flexGrow={1} display="flex" flexDirection="row" alignItems="center">
+    <AppBar>
+      <div
+        style={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
         <Tooltip
           classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
           arrow
@@ -151,20 +165,20 @@ const NavBar2 = () => {
             </>
           }
         >
-          <Box mr={1}>
+          <div style={{ marginRight: "var(--geist-space-2x)" }}>
             <Button
               onClick={() => dispatch(setPostsVersion((postsVersion % 2) + 1))}
             >
               P{postsVersion}
             </Button>
-          </Box>
+          </div>
         </Tooltip>
         <Tooltip
           classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
           arrow
           title={<>Toggle the "Layout" version</>}
         >
-          <Box mr={1}>
+          <div style={{ marginRight: "var(--geist-space-2x)" }}>
             <Button
               onClick={() =>
                 dispatch(setLayoutVersion((layoutVersion % 2) + 1))
@@ -172,7 +186,7 @@ const NavBar2 = () => {
             >
               L{layoutVersion}
             </Button>
-          </Box>
+          </div>
         </Tooltip>
         <Tooltip
           classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
@@ -187,8 +201,14 @@ const NavBar2 = () => {
         >
           <ThemeSlider />
         </Tooltip>
-      </Box>
-      <Box display="flex" flexDirection="row" alignItems="center">
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
         {isLoggedIn === null && (
           <Skeleton animation="wave" variant="text" width={"5ch"} />
         )}
@@ -308,7 +328,7 @@ const NavBar2 = () => {
             </Menu>
           </>
         )}
-      </Box>
+      </div>
     </AppBar>
   )
 }
