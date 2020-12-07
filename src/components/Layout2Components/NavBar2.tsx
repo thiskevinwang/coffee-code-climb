@@ -9,6 +9,7 @@ import Avatar from "@material-ui/core/Avatar"
 import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import MuiButton from "@material-ui/core/Button"
+import AppBar from "@material-ui/core/AppBar"
 import Divider from "@material-ui/core/Divider"
 import Fade from "@material-ui/core/Fade"
 import Box from "@material-ui/core/Box"
@@ -17,10 +18,6 @@ import InputBase from "@material-ui/core/InputBase"
 import NativeSelect from "@material-ui/core/NativeSelect"
 import { makeStyles, withStyles } from "@material-ui/core/styles"
 
-import styled, { css } from "styled-components"
-
-import { rhythm } from "utils/typography"
-import { navbarZ } from "consts"
 import { ThemeSlider } from "components/ThemeSlider"
 import { Button } from "components/Button"
 
@@ -34,29 +31,6 @@ import {
   RootState,
 } from "_reduxState"
 import { useVerifyTokenSet } from "utils"
-
-const flexRowAlignItemsCenter = css`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`
-const justifyContentSpaceBetween = css`
-  justify-content: space-between;
-`
-
-const Bar = styled.div`
-  ${flexRowAlignItemsCenter};
-  ${justifyContentSpaceBetween}
-  padding: ${rhythm(0.5)};
-
-  height: ${rhythm(2)};
-  top: 0px;
-  width: 100%;
-  z-index: ${navbarZ};
-`
-const BarItem = styled.div`
-  ${flexRowAlignItemsCenter};
-`
 
 const BootstrapInput = withStyles((theme) => ({
   input: {
@@ -155,8 +129,17 @@ const NavBar2 = () => {
   }
 
   return (
-    <Bar>
-      <BarItem>
+    <AppBar
+      style={{
+        width: "100%",
+        boxShadow: "var(--shadow-large)",
+        backgroundColor: "var(--accents-1)",
+        // display: "flex",
+        flexDirection: "row",
+        padding: "0 var(--geist-gap)",
+      }}
+    >
+      <Box flexGrow={1} display="flex" flexDirection="row" alignItems="center">
         <Tooltip
           classes={{ tooltip: classes.tooltip, arrow: classes.arrow }}
           arrow
@@ -202,12 +185,10 @@ const NavBar2 = () => {
             </>
           }
         >
-          <Box>
-            <ThemeSlider />
-          </Box>
+          <ThemeSlider />
         </Tooltip>
-      </BarItem>
-      <BarItem>
+      </Box>
+      <Box>
         {isLoggedIn === null && (
           <Skeleton animation="wave" variant="text" width={"5ch"} />
         )}
@@ -327,8 +308,8 @@ const NavBar2 = () => {
             </Menu>
           </>
         )}
-      </BarItem>
-    </Bar>
+      </Box>
+    </AppBar>
   )
 }
 

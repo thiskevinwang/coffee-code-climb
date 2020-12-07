@@ -206,6 +206,7 @@ const App = ({ location }: PageProps) => {
           py={2}
           px="var(--geist-gap)"
           mx="auto"
+          mt="var(--header-height)"
           maxWidth="var(--geist-page-width-with-margin)"
         >
           <ButtonGroup
