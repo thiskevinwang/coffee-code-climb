@@ -3,15 +3,19 @@ import styled from "styled-components"
 import { animated, useSpring, config } from "react-spring"
 import { useGesture } from "react-use-gesture"
 
-const FROM_STYLE = {
+const FROM_STYLE: CSSProperties = {
+  // background: `-webkit-linear-gradient(-70deg, var(--geist-background) 0%, #9867f0 0%, #ed4e50 0%, var(--geist-background) 0%)`,
+  o: 0,
   transform: `scale(1)`,
 }
 
-const MOUSEOVER_STYLE = {
+const MOUSEOVER_STYLE: CSSProperties = {
+  // background: `-webkit-linear-gradient(-70deg, var(--geist-background) 100%, #9867f0 100%, #ed4e50 100%, var(--geist-background) 100%)`,
+  o: 1,
   transform: `scale(1.1)`,
 }
 
-const MOUSEDOWN_STYLE = {
+const MOUSEDOWN_STYLE: CSSProperties = {
   transform: `scale(0.98)`,
 }
 
@@ -52,7 +56,7 @@ const Renderer = styled(animated.button)<Props>`
  * ```
  */
 export const Button: React.FC<Props> = (props) => {
-  const [springProps, set] = useSpring(() => ({
+  const [{ o, ...springProps }, set] = useSpring(() => ({
     from: { ...FROM_STYLE },
     config: config.stiff,
   }))
@@ -68,7 +72,18 @@ export const Button: React.FC<Props> = (props) => {
   return (
     <Renderer
       {...props}
-      style={{ ...springProps, ...props.style }}
+      style={{
+        background: o.interpolate(
+          (o) =>
+            `-webkit-linear-gradient(-70deg, var(--geist-background) ${
+              (o * 1.3 - 0.3) * 100
+            }%, #9867f0 ${(o * 1.3 - 0.2) * 100}%, #ed4e50 ${
+              (o * 1.3 - 0.1) * 100
+            }%, var(--geist-background) ${o * 1.3 * 100}%)`
+        ),
+        ...springProps,
+        ...props.style,
+      }}
       {...bind()}
     />
   )
