@@ -22,6 +22,27 @@ const ThemedBackground = styled(animated.div)`
   z-index: -9000;
 `
 
+const GradientH1 = styled(animated.h1)`
+  :hover {
+    background: -webkit-linear-gradient(-70deg, #9867f0, #ed4e50);
+    background-clip: text;
+    box-decoration-break: clone;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: rgba(255, 255, 255, 0);
+    -webkit-box-decoration-break: clone;
+  }
+`
+const GradientH3 = styled(animated.h3)`
+  :hover {
+    background: -webkit-linear-gradient(-70deg, #9867f0, #ed4e50);
+    background-clip: text;
+    box-decoration-break: clone;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-box-decoration-break: clone;
+  }
+`
+
 interface Props {
   location: PageProps["location"]
   title: string
@@ -34,9 +55,9 @@ const Layout2: React.FC<Props> = ({ location, title, children }) => {
 
   const header =
     isAppPage || isAuthPage ? null : isHomePage ? (
-      <h1>{title}</h1>
+      <GradientH1>{title}</GradientH1>
     ) : (
-      <h3>← 🏠</h3>
+      <GradientH3>← Home</GradientH3>
     )
 
   const isDarkMode = useSelector((state: any) => state.isDarkMode)
