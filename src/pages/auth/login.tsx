@@ -227,6 +227,7 @@ const AuthLogin = ({ location }: PageProps<{}, {}, LocationState>) => {
                   style={{ width: "var(--geist-space-64x)" }}
                 />
                 <SubmitButton
+                  style={{ marginBottom: "var(--geist-gap)" }}
                   type="submit"
                   disabled={!props.isValid || props.isSubmitting}
                 >

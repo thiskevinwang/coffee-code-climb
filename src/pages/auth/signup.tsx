@@ -94,6 +94,7 @@ const AuthSignup = ({ location }: PageProps) => {
 
               <Box display="flex" flexDirection="column" alignItems="center">
                 <SubmitButton
+                  style={{ marginBottom: "var(--geist-gap)" }}
                   type="submit"
                   disabled={
                     !props.isValid ||
