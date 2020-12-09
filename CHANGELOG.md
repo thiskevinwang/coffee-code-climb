@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.22.1] - 2020-12-09
+
+I _think_ this finally fixes exif-data-caused orientation problems as well as incorrect cropping with `react-crop`.
+
+See https://github.com/DominicTobias/react-image-crop/issues/181
+
+### Fixed
+
+- mobile image upload orientation & cropping
+
+### Added
+
+- `blueimp-load-image`
+- @types/blueimp-load-image`
+- DEV section in `AvatarCropper`
+
+### Todo
+
+- Document the image orientation fix
+
 ## [v0.22.0] - 2020-12-08
 
 This change introduces a bottom navigation component & drawer.
@@ -418,6 +438,7 @@ New:
 
 ### Added
 
+[v0.22.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.22.0...v0.22.1
 [v0.22.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.21.2...v0.22.0
 [v0.21.2]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.21.1...v0.21.2
 [v0.21.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.21.0...v0.21.1

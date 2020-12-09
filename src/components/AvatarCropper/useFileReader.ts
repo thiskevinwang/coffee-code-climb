@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import exif from "exif-js"
+import loadImage from "blueimp-load-image"
 
 /**
  * A helper
@@ -28,28 +29,21 @@ export const useFileReader = () => {
   /** state for file, uploaded by inputRef */
   const [file, setFile] = useState<File>()
   const { orientation } = useOrientation(file!)
-  /** memo-ized FileReader (FileReader not available in SSR) */
-  const [reader] = useState(() =>
-    typeof FileReader !== "undefined" ? new FileReader() : undefined
-  )
 
   const [imgSrc, setImgSrc] = useState<string | ArrayBuffer | null>(null)
 
-  if (reader) {
-    // attach ev listener
-    reader.onload = () => {
-      // console.log("reader.onload", e.target?.result, reader.result)
-      setImgSrc(reader.result)
-    }
-  }
-
   useEffect(() => {
-    if (file && reader) {
-      // imperatively read file, which triggers the
-      // event listener above
-      reader.readAsDataURL(file)
+    if (file) {
+      loadImage(
+        file,
+        (img) => {
+          const base64data = img.toDataURL?.(`image/jpeg`)
+          setImgSrc(base64data)
+        },
+        { orientation: true, canvas: true }
+      )
     }
-  }, [file, reader])
+  }, [file])
 
   return { file, setFile, imgSrc, setImgSrc, orientation }
 }

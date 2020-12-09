@@ -77,7 +77,7 @@ export const AvatarCropper = ({
 
       setCroppedImgSrc(_croppedImageSrc)
     }
-  }, [crop, file, imageRef.current, canvasRef.current])
+  }, [crop, file, orientation, imageRef.current, canvasRef.current])
 
   // our api call... less important for now
   const { uploadAvatar, isLoading } = useUploadAvatar({
@@ -91,7 +91,7 @@ export const AvatarCropper = ({
       })
     },
     onError: (err) => {
-      enqueueSnackbar(`Error: ${err.message}`, {
+      enqueueSnackbar(`Error: ${err.message}, ${err.stack}`, {
         variant: "error",
       })
     },
@@ -125,6 +125,29 @@ export const AvatarCropper = ({
               setCrop(c)
             }}
           />
+
+          {process.env.NODE_ENV === "development" && (
+            <>
+              <p>Orientation: {orientation}</p>
+              <Box
+                display="flex"
+                flexDirection="column"
+                justifyContent="center"
+                alignItems="center"
+                border="1px dashed red"
+                boxShadow="var(--shadow-medium)"
+                mb="var(--geist-gap)"
+              >
+                <img
+                  src={croppedImgSrc ?? src}
+                  style={{
+                    maxHeight: 200,
+                    maxWidth: 200,
+                  }}
+                />
+              </Box>
+            </>
+          )}
         </Modal.Body>
         <Modal.Actions>
           <Modal.Action onClick={handleCancel} disabled={isLoading}>
@@ -140,7 +163,7 @@ export const AvatarCropper = ({
       </Modal.Modal>
 
       {/* Image feedback is optional... vercel only shows the crop box */}
-      {/* {process.env.NODE_ENV === "development" && (
+      {process.env.NODE_ENV === "development" && (
         <Box
           display="flex"
           flexDirection="column"
@@ -151,14 +174,14 @@ export const AvatarCropper = ({
           mb="var(--geist-gap)"
         >
           <img
-            src={croppedImgSrc as string}
+            src={croppedImgSrc ?? src}
             style={{
-              maxHeight: 150,
-              maxWidth: 150,
+              maxHeight: 200,
+              maxWidth: 200,
             }}
           />
         </Box>
-      )} */}
+      )}
 
       <Box display="none">
         {/* Invisible elements */}
