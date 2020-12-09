@@ -17,6 +17,15 @@ export function getCroppedImgSrc({
 }: IGetCroppedImgSrcArgs) {
   if (!_file) return
 
+  // const scaleX =
+  //   _orientation > 4
+  //     ? _image.naturalHeight / _image.height
+  //     : _image.naturalWidth / _image.width
+
+  // const scaleY =
+  //   _orientation > 4
+  //     ? _image.naturalWidth / _image.width
+  //     : _image.naturalHeight / _image.height
   const scaleX = _image.naturalWidth / _image.width
   const scaleY = _image.naturalHeight / _image.height
 
@@ -30,31 +39,27 @@ export function getCroppedImgSrc({
   // prettier-ignore
   switch (_orientation) {
     case  2: ctx?.transform(-1,  0,  0,  1,  rawWidth,  0        ); break;
-    case  3: ctx?.transform(-1,  0,  0, -1,  rawWidth,  rawHeight); break;
+    case  3:                                                        break;
     case  4: ctx?.transform( 1,  0,  0, -1,  0,         rawHeight); break;
     case  5: ctx?.transform( 0,  1,  1,  0,  0,         0        ); break;
-    case  6: ctx?.transform( 0,  1, -1,  0,  rawHeight, 0        ); break;
+    case  6:                                                        break;
     case  7: ctx?.transform( 0, -1, -1,  0,  rawHeight, rawWidth ); break;
-    case  8: ctx?.transform( 0, -1,  1,  0,  0,         rawWidth ); break;
+    case  8:                                                        break;
     default: break;
   }
 
   if (/* PORTRAIT */ _orientation > 4) {
-    ctx?.rotate(0.05)
+    ctx?.translate(_crop.width - rawWidth, _crop.height - rawHeight)
     ctx?.drawImage(
       _image,
-      /**
-       * swapping x & y makes the crop selection and canvas feedback match in scroll behavior.
-       */
-      _crop.y * scaleY,
       _crop.x * scaleX,
-      _crop.height * scaleY,
-      _crop.width * scaleX,
+      _crop.y * scaleY,
+      rawHeight * scaleY,
+      rawWidth * scaleX,
       _image.height - _crop.height,
-      /** this fixes smaller crop sizes creating black space on the preview canvas */
       _image.width - _crop.width,
-      _crop.width,
-      _crop.height
+      rawHeight,
+      rawWidth
     )
   } /* LANDSCAPE */ else {
     ctx?.drawImage(
@@ -69,17 +74,6 @@ export function getCroppedImgSrc({
       _crop.height
     )
   }
-  // ctx?.drawImage(
-  //   _image,
-  //   _crop.x * scaleX,
-  //   _crop.y * scaleY,
-  //   _crop.width * scaleX,
-  //   _crop.height * scaleY,
-  //   0,
-  //   0,
-  //   _crop.width,
-  //   _crop.height
-  // )
 
   const croppedImgSrc = _canvas.toDataURL(_file.type, 1)
   return croppedImgSrc
