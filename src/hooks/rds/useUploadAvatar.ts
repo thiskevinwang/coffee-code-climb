@@ -21,7 +21,6 @@ const UPDATE_USER_AVATAR = gql`
   mutation UpdateUserAvatar($avatarUrl: String!, $id: ID!) {
     updateAvatarUrl(avatarUrl: $avatarUrl, id: $id) {
       id
-      avatar_url
     }
   }
 `
@@ -122,11 +121,11 @@ export function useUploadAvatar({
     }
   }
 
-  const USER_AVATAR_URL_FRAGMENT = gql`
-    fragment UserAvatar on User {
-      avatar_url
-    }
-  `
-
   return { uploadAvatar, isLoading }
 }
+
+const USER_AVATAR_URL_FRAGMENT = gql`
+  fragment UserAvatar on User {
+    avatar_url
+  }
+`

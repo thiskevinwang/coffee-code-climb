@@ -7,7 +7,8 @@ import Avatar from "@material-ui/core/Avatar"
 import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
 import Box from "@material-ui/core/Box"
-import { makeStyles } from "@material-ui/core/styles"
+import { useTheme, makeStyles } from "@material-ui/core/styles"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 import styled, { createGlobalStyle } from "styled-components"
 
@@ -143,6 +144,8 @@ const GET_USERS = gql`
 const App = ({ location }: PageProps) => {
   const { isLoggedIn, idTokenPayload, accessTokenPayload } = useVerifyTokenSet()
   const classes = useStyles()
+  const theme = useTheme()
+  const xsDown = useMediaQuery(theme.breakpoints.down("xs"))
 
   const userInput: UserInput = {
     cognitoUsername: idTokenPayload?.["cognito:username"],
@@ -206,7 +209,7 @@ const App = ({ location }: PageProps) => {
           py={2}
           px="var(--geist-gap)"
           mx="auto"
-          mt="var(--header-height)"
+          mt={xsDown ? 0 : "var(--header-height)"}
           maxWidth="var(--geist-page-width-with-margin)"
         >
           <ButtonGroup
@@ -288,6 +291,12 @@ const App = ({ location }: PageProps) => {
               <Default path="/*" />
             </Router>
           </Box>
+
+          <div
+            style={{
+              paddingTop: "56px", // match the SimpleBottomNavigation height
+            }}
+          />
         </AppBody>
       </LayoutManager>
     </>
