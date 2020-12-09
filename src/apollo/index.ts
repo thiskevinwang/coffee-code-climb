@@ -7,13 +7,11 @@ import {
 import { setContext } from "@apollo/client/link/context"
 import fetch from "isomorphic-fetch"
 
-const ENDPOINT = process.env.GATSBY_RDS_API_ENDPOINT
-const HTTPS_PROTOCOL = "https://"
-const WSS_PROTOCOL = "wss://"
-const QUERY_ENDPOINT = `${HTTPS_PROTOCOL}${ENDPOINT}`
-const SUBSCRIPTION_ENDPOINT = `${WSS_PROTOCOL}${ENDPOINT}`
-
 const __DEV__ = process.env.NODE_ENV !== "production"
+
+// TODO Cleanup netlify env vars
+const PROD_API_ENDPOINT = `https://${process.env.GATSBY_RDS_API_ENDPOINT}`
+const DEV_API_ENDPOINT = `http://${process.env.GATSBY_DEV_API_ENDPOINT}`
 
 /**
  * @NOTE
@@ -36,7 +34,7 @@ const __DEV__ = process.env.NODE_ENV !== "production"
 
 // const wsLink = new WebSocketLink(subscriptionClient)
 const httpLink = new HttpLink({
-  uri: __DEV__ ? "http://localhost:4044/graphql" : QUERY_ENDPOINT,
+  uri: __DEV__ ? DEV_API_ENDPOINT : PROD_API_ENDPOINT,
 })
 // const link = split(
 //   // split based on operation type
