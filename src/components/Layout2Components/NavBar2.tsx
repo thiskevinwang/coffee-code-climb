@@ -153,17 +153,7 @@ const NavBar2 = () => {
   }
 
   return (
-    <AppBar
-      style={{
-        height: "var(--header-height)",
-        width: "100%",
-        boxShadow: "var(--shadow-large)",
-        backgroundColor: "var(--accents-1)",
-        // display: "flex",
-        flexDirection: "row",
-        padding: "0 var(--geist-gap)",
-      }}
-    >
+    <AppBar>
       <div
         style={{
           flexGrow: 1,
