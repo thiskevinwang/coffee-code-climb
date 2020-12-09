@@ -7,7 +7,8 @@ import Avatar from "@material-ui/core/Avatar"
 import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
 import Box from "@material-ui/core/Box"
-import { makeStyles, useTheme } from "@material-ui/core/styles"
+import { useTheme, makeStyles } from "@material-ui/core/styles"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 import styled, { createGlobalStyle } from "styled-components"
 
@@ -18,7 +19,6 @@ import { Profile, Settings, Default } from "components/App"
 
 import { useVerifyTokenSet } from "utils"
 import { Query, QueryGetOrCreateUserArgs, UserInput } from "types"
-import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 const ACTIVE_LINK = "ACTIVE_LINK"
 const useStyles = makeStyles((theme) => {
@@ -291,6 +291,12 @@ const App = ({ location }: PageProps) => {
               <Default path="/*" />
             </Router>
           </Box>
+
+          <div
+            style={{
+              paddingTop: "56px", // match the SimpleBottomNavigation height
+            }}
+          />
         </AppBody>
       </LayoutManager>
     </>

@@ -5,6 +5,7 @@ import { Link, PageProps } from "gatsby"
 import styled from "styled-components"
 
 import { NavBar2 } from "components/Layout2Components/NavBar2"
+import { SimpleBottomNavigation } from "components/SimpleBottomNavigation"
 import { Blob } from "components/Blob"
 
 import { useWindowScrollPercent } from "hooks/useWindowScrollPercent"
@@ -72,6 +73,7 @@ const Layout2: React.FC<Props> = ({ location, title, children }) => {
     <>
       <ThemedBackground style={{ background }} />
       <NavBar2 />
+      <SimpleBottomNavigation />
 
       <div
         style={{

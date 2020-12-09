@@ -1,5 +1,6 @@
 import React from "react"
-import { makeStyles } from "@material-ui/core/styles"
+import { useTheme, makeStyles } from "@material-ui/core/styles"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { SnackbarProvider as Provider } from "notistack"
 
 /**
@@ -14,8 +15,14 @@ const useStyles = makeStyles((theme) => ({
 
 export const SnackbarProvider: React.ComponentType = ({ children }) => {
   const classes = useStyles()
+  const theme = useTheme()
+  const xsDown = useMediaQuery(theme.breakpoints.down("xs"))
+
   return (
     <Provider
+      anchorOrigin={
+        xsDown ? { vertical: "top", horizontal: "left" } : undefined
+      }
       maxSnack={3}
       classes={{
         variantSuccess: classes.success,
