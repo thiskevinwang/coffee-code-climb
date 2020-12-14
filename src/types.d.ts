@@ -51,16 +51,6 @@ export type Comment = Base & {
   replies?: Maybe<Array<Maybe<Comment>>>
 }
 
-export type CommentReaction = Base & {
-  __typename?: "CommentReaction"
-  id: Scalars["ID"]
-  PK: Scalars["String"]
-  SK: Scalars["String"]
-  created: Scalars["Date"]
-  updated?: Maybe<Scalars["Date"]>
-  reaction: Scalars["String"]
-}
-
 export type CreateCommentInput = {
   content: Scalars["String"]
   discussionId: Scalars["String"]
@@ -130,7 +120,9 @@ export type Mutation = {
   __typename?: "Mutation"
   /** 🔒 This field requires you to be authenticated */
   s3GetSignedPutObjectUrl: S3Payload
+  /** 🔒 This field requires you to be authenticated */
   createDiscussion?: Maybe<Discussion>
+  /** 🔒 This field requires you to be authenticated */
   createComment?: Maybe<Comment>
   /** Trade a code—appended by the Cognito Hosted UI—for Cognito Tokens */
   getToken?: Maybe<AuthResponse>
@@ -169,7 +161,9 @@ export type MutationUpdateAvatarUrlArgs = {
 
 export type Query = {
   __typename?: "Query"
+  /** 🔒 This field requires you to be authenticated */
   getDiscussions?: Maybe<GetDiscussionsQueryResult>
+  /** 🔒 This field requires you to be authenticated */
   getDiscussionById?: Maybe<Discussion>
   /** 🔒 This field requires you to be authenticated */
   getOrCreateUser: User
@@ -219,15 +213,17 @@ export type S3Payload = {
 
 export type User = Base & {
   __typename?: "User"
+  /**
+   * This might end up being the same value as Cognito's
+   * - `sub`
+   * - `cogntio:username`
+   */
   id: Scalars["ID"]
   PK: Scalars["String"]
   SK?: Maybe<Scalars["String"]>
   created: Scalars["Date"]
   updated?: Maybe<Scalars["Date"]>
-  /** This maps to a cognito idTokenPayload's `cognito:username` */
-  cognitoUsername?: Maybe<Scalars["String"]>
   email?: Maybe<Scalars["String"]>
-  email_verified?: Maybe<Scalars["Boolean"]>
   identities?: Maybe<Array<Maybe<FederatedIdentity>>>
   sub?: Maybe<Scalars["String"]>
   name?: Maybe<Scalars["String"]>
@@ -238,13 +234,10 @@ export type User = Base & {
 }
 
 export type UserInput = {
-  cognitoUsername?: Maybe<Scalars["String"]>
+  id?: Maybe<Scalars["String"]>
   email?: Maybe<Scalars["String"]>
-  email_verified?: Maybe<Scalars["Boolean"]>
   identities?: Maybe<Array<Maybe<FederatedIdentityInput>>>
-  sub?: Maybe<Scalars["String"]>
   name?: Maybe<Scalars["String"]>
   family_name?: Maybe<Scalars["String"]>
   given_name?: Maybe<Scalars["String"]>
-  preferred_username?: Maybe<Scalars["String"]>
 }

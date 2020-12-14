@@ -126,7 +126,7 @@ export const Profile = ({
                   user?.preferred_username ||
                   (user?.given_name && user?.family_name
                     ? `${user?.given_name} ${user?.family_name}`
-                    : user?.cognitoUsername)
+                    : user?.id)
                 return (
                   <div key={user?.PK}>
                     <Box

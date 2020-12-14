@@ -105,10 +105,7 @@ export const GET_OR_CREATE_USER = gql`
   query GetOrCreateUser($userInput: UserInput!) {
     user: getOrCreateUser(userInput: $userInput) {
       id
-      PK
-      SK
       created
-      updated
       identities {
         providerName
         dateCreated
@@ -118,7 +115,6 @@ export const GET_OR_CREATE_USER = gql`
       family_name
       given_name
       preferred_username
-      cognitoUsername
       avatar_url
     }
   }
@@ -128,18 +124,12 @@ const GET_USERS = gql`
   query GetUsers {
     users: getUsers {
       id
-      PK
-      SK
       created
-      updated
       # identities {
       #   providerName
       # }
       name
-      family_name
-      given_name
       preferred_username
-      cognitoUsername
       avatar_url
     }
   }
@@ -155,15 +145,12 @@ const App = ({ location }: PageProps) => {
   const xsDown = useMediaQuery(theme.breakpoints.down("xs"))
 
   const userInput: UserInput = {
-    cognitoUsername: idTokenPayload?.["cognito:username"],
+    id: idTokenPayload?.["cognito:username"] || idTokenPayload?.sub,
     email: idTokenPayload?.email,
-    email_verified: idTokenPayload?.email_verified,
     identities: idTokenPayload?.identities,
-    sub: idTokenPayload?.sub,
     name: idTokenPayload?.name,
     family_name: idTokenPayload?.family_name,
     given_name: idTokenPayload?.given_name,
-    preferred_username: idTokenPayload?.preferred_username,
   }
 
   /**
