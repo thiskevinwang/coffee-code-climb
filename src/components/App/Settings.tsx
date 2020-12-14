@@ -49,8 +49,6 @@ const UPDATE_USERNAME = gql`
   mutation UpdateUsername($id: ID!, $username: String!) {
     updateUsername(id: $id, username: $username) {
       id
-      PK
-      SK
       created
       updated
       identities {
@@ -61,7 +59,6 @@ const UPDATE_USERNAME = gql`
       family_name
       given_name
       preferred_username
-      cognitoUsername
       avatar_url
     }
   }
@@ -131,7 +128,7 @@ export const Settings = ({
             variant="outlined"
             error={!!error}
             helperText={error}
-            placeholder={user?.cognitoUsername!}
+            placeholder={user?.id!}
             value={username}
             onChange={(e) => {
               setError("")
@@ -166,7 +163,7 @@ export const Settings = ({
                 try {
                   await updateUsername({
                     variables: {
-                      id: user?.cognitoUsername!,
+                      id: user?.id!,
                       username: username!, // modified by user input
                     },
                   })
