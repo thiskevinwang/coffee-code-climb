@@ -30,14 +30,30 @@ export const TextField = withStyles((theme) => ({
           easing: theme.transitions.easing.easeInOut,
         }),
       },
-      "&:hover fieldset": {
-        borderColor: "var(--geist-foreground)",
+      "&:hover": {
+        "& fieldset": {
+          borderColor: "var(--geist-foreground)",
+        },
+        "&.Mui-error": {
+          "& fieldset": {
+            borderColor: "var(--geist-error)",
+          },
+        },
       },
-      "&.Mui-focused fieldset": {
-        borderColor: "var(--geist-foreground)",
+      "&.Mui-focused": {
+        "& fieldset": {
+          borderColor: "var(--geist-foreground)",
+        },
+        "&.Mui-error": {
+          "& fieldset": {
+            borderColor: "var(--geist-error)",
+          },
+        },
       },
-      "&.Mui-disabled fieldset": {
-        borderColor: "var(--accents-3)",
+      "&.Mui-disabled": {
+        "& fieldset": {
+          borderColor: "var(--accents-3)",
+        },
       },
     },
 
