@@ -7,14 +7,20 @@ import { useTheme, withStyles } from "@material-ui/core/styles"
 import useMediaQuery from "@material-ui/core/useMediaQuery"
 
 const FieldSetContainer = withStyles({
-  root: {
+  root: ({ hoverable }) => ({
     background: "var(--geist-background)",
     boxShadow: "var(--shadow-medium)",
     display: "flex",
     flexDirection: "column",
     marginBottom: "var(--geist-gap)",
     overflow: "hidden",
-  },
+
+    border: hoverable && "1px solid var(--accents-2)",
+    transition: hoverable && "border-color 200ms ease-in-out",
+    "&:hover": {
+      border: hoverable && "1px solid var(--geist-foreground)",
+    },
+  }),
 })(Paper)
 
 export const Divider = withStyles({
@@ -78,7 +84,7 @@ Footer.Status = Status
 Footer.Action = Action
 
 interface Fs {
-  Fieldset: React.FC
+  Fieldset: React.FC<{ hoverable?: boolean }>
   Content: React.ComponentType<BoxProps>
   Title: React.FC
   Subtitle: React.FC

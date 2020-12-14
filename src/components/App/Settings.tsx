@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import type { RouteComponentProps } from "@reach/router"
 import { useMutation, gql } from "@apollo/client"
 import Box from "@material-ui/core/Box"
-import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import { makeStyles, withStyles } from "@material-ui/core/styles"
 import { useSnackbar } from "notistack"
@@ -10,6 +9,7 @@ import { useSnackbar } from "notistack"
 import { fs } from "components/Fieldset"
 import { SubmitButton } from "components/Form/SubmitButton"
 import { AvatarCropper } from "components/AvatarCropper"
+import { TextField } from "./Shared/TextField"
 
 import {
   Mutation,
@@ -17,55 +17,6 @@ import {
   Query,
   QueryGetOrCreateUserArgs,
 } from "types"
-
-const CssTextField = withStyles((theme) => ({
-  root: {
-    "& .MuiOutlinedInput-adornedStart": {
-      // remove auto added padding when
-      // 'startAdornment' is present
-      paddingLeft: "0",
-    },
-    "& label.Mui-focused": {},
-    "& .MuiInput-underline:after": {},
-    "& .MuiOutlinedInput-root": {
-      // hack to hide 'startAdornment' background
-      // from bleeding over the rounded border
-      overflow: "hidden",
-      height: 40,
-      // Input
-      "& input": {
-        color: "var(--geist-foreground)",
-        "&.Mui-disabled": {
-          cursor: "not-allowed",
-          color: "var(--accents-3)",
-        },
-      },
-      // Border
-      "& fieldset": {
-        borderColor: "var(--accents-3)",
-        transition: theme.transitions.create(["border-color"], {
-          easing: theme.transitions.easing.easeInOut,
-        }),
-      },
-      "&:hover fieldset": {
-        borderColor: "var(--geist-foreground)",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "var(--geist-foreground)",
-      },
-      "&.Mui-disabled fieldset": {
-        borderColor: "var(--accents-3)",
-      },
-    },
-
-    [theme.breakpoints.down("xs")]: {
-      width: "100%",
-    },
-    [theme.breakpoints.up("sm")]: {
-      width: "40ch",
-    },
-  },
-}))(TextField)
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -176,7 +127,7 @@ export const Settings = ({
           <fs.Subtitle>
             This is your URL namespace within CoffeeCodeClimb.
           </fs.Subtitle>
-          <CssTextField
+          <TextField
             variant="outlined"
             error={!!error}
             helperText={error}
@@ -238,7 +189,7 @@ export const Settings = ({
             Please enter your full name, or a display name you are comfortable
             with.
           </fs.Subtitle>
-          <CssTextField disabled variant="outlined" value={user?.name} />
+          <TextField disabled variant="outlined" value={user?.name} />
         </fs.Content>
         <fs.Footer>
           <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>
@@ -252,7 +203,7 @@ export const Settings = ({
             Please enter the email address you want to use to log in with
             CoffeeCodeClimb.
           </fs.Subtitle>
-          <CssTextField disabled variant="outlined" value={user?.email} />
+          <TextField disabled variant="outlined" value={user?.email} />
         </fs.Content>
         <fs.Footer>
           <fs.Footer.Status>Feature in progress 🚧</fs.Footer.Status>

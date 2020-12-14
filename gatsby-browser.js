@@ -1,5 +1,6 @@
 import React from "react"
 import { Provider } from "react-redux"
+import { Helmet } from "react-helmet"
 
 import { store } from "_reduxState"
 import { ApolloProvider, client } from "apollo"
@@ -17,6 +18,9 @@ export const wrapRootElement = ({ element }) => {
       <Provider store={store}>
         <SnackbarProvider>
           <ColorSchemeProvider>
+            <Helmet>
+              <meta charset="utf-8" />
+            </Helmet>
             <SvgTrail />
             {element}
           </ColorSchemeProvider>

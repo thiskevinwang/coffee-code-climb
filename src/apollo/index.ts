@@ -6,6 +6,7 @@ import {
 } from "@apollo/client"
 import { setContext } from "@apollo/client/link/context"
 import fetch from "isomorphic-fetch"
+import _ from "lodash"
 
 const __DEV__ = process.env.NODE_ENV !== "production"
 
@@ -78,7 +79,32 @@ const authLink = setContext((_, { headers }) => {
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          // this bit of code is to support `fetchMore`
+          getDiscussions: {
+            // Don't cache separate results based on
+            // any of this field's arguments.
+            keyArgs: false,
+            // Concatenate the incoming list items with
+            // the existing list items.
+            merge(existing, incoming) {
+              if (!!existing?.items) {
+                return {
+                  items: [...existing.items, ...incoming.items],
+                  lastEvaluatedKey: incoming.lastEvaluatedKey,
+                }
+              } else {
+                return incoming
+              }
+            },
+          },
+        },
+      },
+    },
+  }),
   /**
    * Passing fetch here fixes "Webpack Invariant" error when gatsby compiles
    * https://github.com/gatsbyjs/gatsby/issues/3650#issuecomment-410146046

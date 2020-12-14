@@ -15,7 +15,14 @@ import styled, { createGlobalStyle } from "styled-components"
 import { LayoutManager } from "components/layoutManager"
 import { LoadingPage } from "components/LoadingPage"
 import SEO from "components/seo"
-import { Profile, Settings, Default } from "components/App"
+import {
+  Profile,
+  Settings,
+  Discussion,
+  Discussions,
+  Submit,
+  Default,
+} from "components/App"
 
 import { useVerifyTokenSet } from "utils"
 import { Query, QueryGetOrCreateUserArgs, UserInput } from "types"
@@ -236,6 +243,23 @@ const App = ({ location }: PageProps) => {
             >
               Settings
             </Button>
+
+            <Button
+              classes={{ root: classes.buttonRoot }}
+              component={Link}
+              to="/app/discussions"
+              activeClassName={ACTIVE_LINK}
+            >
+              Discussions
+            </Button>
+            <Button
+              classes={{ root: classes.buttonRoot }}
+              component={Link}
+              to="/app/post"
+              activeClassName={ACTIVE_LINK}
+            >
+              Post
+            </Button>
           </ButtonGroup>
         </Box>
 
@@ -288,6 +312,9 @@ const App = ({ location }: PageProps) => {
                 user={user}
                 variablesForCacheUpdate={getOrCreateUserVariables}
               />
+              <Submit path="/post" />
+              <Discussions path="/discussions" />
+              <Discussion path="/discussions/:discussionId" />
               <Default path="/*" />
             </Router>
           </Box>

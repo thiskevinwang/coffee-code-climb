@@ -1,6 +1,8 @@
-import * as React from "react"
+import { useEffect } from "react"
 import { useSpring, OpaqueInterpolation } from "react-spring"
 import { useScroll } from "react-use-gesture"
+
+import { isBrowser } from "utils"
 
 /**
  * This hooks binds a scroll gesture listener to the window
@@ -13,7 +15,7 @@ export const useWindowScrollPercent = (): [OpaqueInterpolation<number>] => {
     scrollPercent: 0,
   }))
 
-  const bindScrollGesture: React.EffectCallback = useScroll(
+  const bindScrollGesture = useScroll(
     (state) => {
       // These two are the same
       // console.log("state", state.values[1])
@@ -25,20 +27,19 @@ export const useWindowScrollPercent = (): [OpaqueInterpolation<number>] => {
       // const clientHeight = state?.event?.target?.documentElement?.clientHeight
 
       const scrollHeight: number =
-        typeof window !== "undefined" &&
-        window.document.scrollingElement.scrollHeight
+        (isBrowser() && window.document.scrollingElement?.scrollHeight) || 0
       const clientHeight: number =
-        typeof window !== "undefined" &&
-        window.document.scrollingElement.clientHeight
+        (isBrowser() && window.document.scrollingElement?.clientHeight) || 0
 
-      // console.log(scrollTop / (scrollHeight - clientHeight))
+      const scrollPercent = values[1] / (scrollHeight - clientHeight)
+
       setScrollProps({
-        scrollPercent: values[1] / (scrollHeight - clientHeight),
+        scrollPercent: isNaN(scrollPercent) ? 0 : scrollPercent,
       })
     },
-    { domTarget: typeof window !== "undefined" && window }
+    { domTarget: isBrowser() ? window : null }
   )
-  React.useEffect(bindScrollGesture, [bindScrollGesture])
+  useEffect(bindScrollGesture, [bindScrollGesture])
 
   return [scrollPercent]
 }
