@@ -385,7 +385,7 @@ export const Discussion = ({
           createComment({
             variables: {
               input: {
-                // authorId: userId,
+                authorId: userId,
                 discussionId: discussionId!,
                 content: contentString,
               },

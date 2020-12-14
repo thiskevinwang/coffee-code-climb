@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.23.1] - 2020-12-14
+
+### 🐛 Fix
+
+- uncommented code, which was resulting in undefined authorId when commenting
+
 ## [v0.23.0] - 2020-12-14
 
 This version encompasses work for a POC of recreating GitHub's 'Discussions' feature, and depends on [v0.7.0 Backend](https://github.com/thiskevinwang/rds-ts-node-server/compare/v0.6.3...v0.7.0)
@@ -458,6 +464,7 @@ New:
 
 ### Added
 
+[v0.23.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.23.0...v0.23.1
 [v0.23.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.22.1...v0.23.0
 [v0.22.1]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.22.0...v0.22.1
 [v0.22.0]: https://github.com/thiskevinwang/coffee-code-climb/compare/v0.21.2...v0.22.0
