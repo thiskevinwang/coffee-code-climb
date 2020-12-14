@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `draft.js`
 - `secondary` prop & styles to `SubmitButton`
+- `RichEditor` component
 
 ## [v0.22.1] - 2020-12-09
 
