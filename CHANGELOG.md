@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `draft.js`
 - `secondary` prop & styles to `SubmitButton`
 - `RichEditor` component
+- extracted `components/App/Shared/TextField`
 
 ### Changed
 
