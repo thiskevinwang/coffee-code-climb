@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `secondary` prop & styles to `SubmitButton`
 - `RichEditor` component
 
+### Changed
+
+- enabled a `fs.Fieldset` `hoverable` prop
+
 ## [v0.22.1] - 2020-12-09
 
 I _think_ this finally fixes exif-data-caused orientation problems as well as incorrect cropping with `react-crop`.
