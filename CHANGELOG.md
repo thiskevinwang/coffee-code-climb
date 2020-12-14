@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.23.0] - 2020-12-14
 
+This version encompasses work for a POC of recreating GitHub's 'Discussions' feature, and depends on [v0.7.0 Backend](https://github.com/thiskevinwang/rds-ts-node-server/compare/v0.6.3...v0.7.0)
+
 ### Added
 
 - `draft.js`

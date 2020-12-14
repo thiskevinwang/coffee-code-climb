@@ -1,3 +1,6 @@
 export { Default } from "./Default"
 export { Profile } from "./Profile"
 export { Settings } from "./Settings"
+export { Discussion } from "./Discussion"
+export { Discussions } from "./Discussions"
+export { Submit } from "./Submit"
