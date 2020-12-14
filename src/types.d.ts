@@ -38,6 +38,56 @@ export type Base = {
   updated?: Maybe<Scalars["Date"]>
 }
 
+export type Comment = Base & {
+  __typename?: "Comment"
+  id: Scalars["ID"]
+  PK: Scalars["String"]
+  SK: Scalars["String"]
+  created: Scalars["Date"]
+  updated?: Maybe<Scalars["Date"]>
+  content: Scalars["String"]
+  authorId: Scalars["String"]
+  replyToId?: Maybe<Scalars["String"]>
+  replies?: Maybe<Array<Maybe<Comment>>>
+}
+
+export type CommentReaction = Base & {
+  __typename?: "CommentReaction"
+  id: Scalars["ID"]
+  PK: Scalars["String"]
+  SK: Scalars["String"]
+  created: Scalars["Date"]
+  updated?: Maybe<Scalars["Date"]>
+  reaction: Scalars["String"]
+}
+
+export type CreateCommentInput = {
+  content: Scalars["String"]
+  discussionId: Scalars["String"]
+  /** The id of another comment */
+  authorId: Scalars["String"]
+  replyToId?: Maybe<Scalars["String"]>
+}
+
+export type CreateDiscussionInput = {
+  title: Scalars["String"]
+  content: Scalars["String"]
+  authorId: Scalars["String"]
+}
+
+export type Discussion = Base & {
+  __typename?: "Discussion"
+  id: Scalars["ID"]
+  PK: Scalars["String"]
+  SK: Scalars["String"]
+  created: Scalars["Date"]
+  updated?: Maybe<Scalars["Date"]>
+  title: Scalars["String"]
+  content: Scalars["String"]
+  authorId: Scalars["String"]
+  comments?: Maybe<Array<Maybe<Comment>>>
+}
+
 export type FederatedIdentity = {
   __typename?: "FederatedIdentity"
   dateCreated?: Maybe<Scalars["String"]>
@@ -57,10 +107,31 @@ export type FederatedIdentityInput = {
   userId?: Maybe<Scalars["String"]>
 }
 
+export type GetDiscussionsKey = {
+  __typename?: "GetDiscussionsKey"
+  PK?: Maybe<Scalars["String"]>
+  SK?: Maybe<Scalars["String"]>
+  created?: Maybe<Scalars["Date"]>
+}
+
+export type GetDiscussionsQueryResult = {
+  __typename?: "GetDiscussionsQueryResult"
+  items?: Maybe<Array<Maybe<Discussion>>>
+  lastEvaluatedKey?: Maybe<GetDiscussionsKey>
+}
+
+export type LastEvaluatedKey = {
+  PK?: Maybe<Scalars["String"]>
+  SK?: Maybe<Scalars["String"]>
+  created?: Maybe<Scalars["Date"]>
+}
+
 export type Mutation = {
   __typename?: "Mutation"
   /** 🔒 This field requires you to be authenticated */
   s3GetSignedPutObjectUrl: S3Payload
+  createDiscussion?: Maybe<Discussion>
+  createComment?: Maybe<Comment>
   /** Trade a code—appended by the Cognito Hosted UI—for Cognito Tokens */
   getToken?: Maybe<AuthResponse>
   /** 🔒 This field requires you to be authenticated */
@@ -72,6 +143,14 @@ export type Mutation = {
 export type MutationS3GetSignedPutObjectUrlArgs = {
   fileName: Scalars["String"]
   fileType: Scalars["String"]
+}
+
+export type MutationCreateDiscussionArgs = {
+  input: CreateDiscussionInput
+}
+
+export type MutationCreateCommentArgs = {
+  input: CreateCommentInput
 }
 
 export type MutationGetTokenArgs = {
@@ -90,10 +169,20 @@ export type MutationUpdateAvatarUrlArgs = {
 
 export type Query = {
   __typename?: "Query"
+  getDiscussions?: Maybe<GetDiscussionsQueryResult>
+  getDiscussionById?: Maybe<Discussion>
   /** 🔒 This field requires you to be authenticated */
   getOrCreateUser: User
   /** 🔒 This field requires you to be authenticated */
   getUsers?: Maybe<Array<Maybe<User>>>
+}
+
+export type QueryGetDiscussionsArgs = {
+  lastEvaluatedKey?: Maybe<LastEvaluatedKey>
+}
+
+export type QueryGetDiscussionByIdArgs = {
+  id: Scalars["ID"]
 }
 
 export type QueryGetOrCreateUserArgs = {
