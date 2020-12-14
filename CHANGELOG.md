@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - enabled a `fs.Fieldset` `hoverable` prop
 
+### Fixed
+
+- `useWindowScrollPercent` sometimes causing `Blob`'s path to throw a NaNNaNNaN error
+
 ## [v0.22.1] - 2020-12-09
 
 I _think_ this finally fixes exif-data-caused orientation problems as well as incorrect cropping with `react-crop`.
