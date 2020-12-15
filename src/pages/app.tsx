@@ -129,6 +129,8 @@ const GET_USERS = gql`
       #   providerName
       # }
       name
+      family_name
+      given_name
       preferred_username
       avatar_url
     }

@@ -2,11 +2,9 @@ import React from "react"
 import styled from "styled-components"
 
 import { LoadingIndicator } from "components/LoadingIndicator"
-import { useSelector } from "react-redux"
-import { useSpring, animated } from "react-spring"
-import { Colors } from "consts/Colors"
 
-const FullPage = styled(animated.div)`
+const FullPage = styled.div`
+  background: var(--geist-background);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -15,18 +13,9 @@ const FullPage = styled(animated.div)`
   width: 100%;
 `
 
-const useAnimatedBg = () => {
-  const isDarkMode = useSelector((state: any) => state.isDarkMode)
-  const { background } = useSpring({
-    background: isDarkMode ? Colors.BLACK_DARKER : Colors.SILVER_LIGHT,
-  })
-  return { style: { background } }
-}
-
 export const LoadingPage = () => {
-  const props = useAnimatedBg()
   return (
-    <FullPage {...props}>
+    <FullPage>
       <LoadingIndicator style={{ fontSize: 96 }} />
     </FullPage>
   )
