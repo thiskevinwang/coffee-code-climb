@@ -2,7 +2,7 @@ import React from "react"
 import { Provider } from "react-redux"
 
 import { store } from "_reduxState"
-import { ApolloProvider, client } from "apollo"
+import { ApolloProvider } from "apollo"
 import { SvgTrail } from "components/SvgTrail"
 import { ColorSchemeProvider } from "components/ColorSchemeProvider"
 import { SnackbarProvider } from "src/snackbar"
@@ -13,7 +13,7 @@ import "./geist-styles.css"
 // export const wrapRootElement vs. exports.wrapRootElement...
 export const wrapRootElement = ({ element }) => {
   return (
-    <ApolloProvider client={client}>
+    <ApolloProvider>
       <Provider store={store}>
         <SnackbarProvider>
           <ColorSchemeProvider>
