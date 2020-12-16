@@ -12,6 +12,7 @@ import Avatar from "@material-ui/core/Avatar"
 import { Divider, fs } from "components/Fieldset"
 import { RichEditor } from "components/RichEditor"
 import { SubmitButton } from "components/Form/SubmitButton"
+import { MapIdToUser } from "components/MapIdToUser"
 import { TextField } from "./Shared/TextField"
 import { Mutation, MutationCreateCommentArgs, Query } from "types"
 import { useVerifyTokenSet } from "utils"
@@ -144,10 +145,13 @@ export const Discussion = ({
       <br />
       <br />
       <h1 style={{ fontWeight: "bold" }}>{data?.getDiscussionById?.title}</h1>
-      <small>By {data?.getDiscussionById?.authorId},</small>&nbsp;
+      <small style={{ display: "inline-flex" }}>
+        By&nbsp;
+        <MapIdToUser.Username id={data?.getDiscussionById?.authorId} />
+      </small>
       <br />
       <br />
-      <fs.Fieldset>
+      <fs.Fieldset /* TOP LEVEL DISCUSSION */>
         <fs.Content>
           <Box
             display="flex"
@@ -155,15 +159,16 @@ export const Discussion = ({
             alignItems="center"
             marginBottom={1}
           >
-            <Avatar
+            <MapIdToUser.Avatar
+              id={data?.getDiscussionById?.authorId}
               style={{
-                height: 28,
-                width: 28,
-                marginRight: "var(--geist-gap-half)",
+                marginRight: "var(--geist-space-2x)",
               }}
             />
             <span>
-              <b>{data?.getDiscussionById?.authorId}</b>
+              <b>
+                <MapIdToUser.Username id={data?.getDiscussionById?.authorId} />
+              </b>
             </span>
             &nbsp;
             <small>
@@ -183,27 +188,24 @@ export const Discussion = ({
             style={{ marginLeft: "var(--geist-gap-double)" }}
             key={comment?.id}
           >
-            <Box /* CONTENT */>
-              <Box /* ROOT COMMENT */
+            <Box /* ROOT COMMENT */>
+              <Box /* ROOT COMMENT USER INFO*/
                 padding={"var(--geist-gap) var(--geist-gap) 0"}
               >
                 <Box display="flex" flexDirection="row" alignItems="center">
-                  <Avatar
-                    style={{
-                      height: 28,
-                      width: 28,
-                      marginRight: "var(--geist-gap-half)",
-                    }}
+                  <MapIdToUser.Avatar
+                    id={comment?.authorId}
+                    style={{ marginRight: "var(--geist-space-2x)" }}
                   />
                   <span>
-                    <b>{comment?.authorId}</b>&nbsp;
+                    <b>
+                      <MapIdToUser.Username id={comment?.authorId} />
+                    </b>
                   </span>
-                  <small>
-                    {ms(+new Date() - +new Date(comment?.created))} ago
-                  </small>
+                  <small>{getTimeAgo(comment?.created)}&nbsp;ago</small>
                 </Box>
               </Box>
-              <Box /* ROOT COMMENT 2 */
+              <Box /* ROOT COMMENT CONTENT */
                 marginTop={1}
                 padding={"0 var(--geist-gap) var(--geist-gap)"}
                 borderBottom="1px solid var(--accents-2)"
@@ -232,19 +234,23 @@ export const Discussion = ({
                       padding="var(--geist-gap)"
                     >
                       <Box display="flex" flexDirection="row">
-                        <Avatar
-                          style={{
-                            height: 28,
-                            width: 28,
-                            marginRight: "var(--geist-gap-half)",
-                          }}
+                        <MapIdToUser.Avatar
+                          id={reply?.authorId}
+                          style={{ marginRight: "var(--geist-space-2x)" }}
                         />
                         <Box>
-                          <span>
-                            <b>{reply?.authorId}</b>
-                          </span>
-                          &nbsp;
-                          <small>{getTimeAgo(reply?.created)}&nbsp;ago</small>
+                          <Box
+                            display="flex"
+                            flexDirection="row"
+                            alignItems="center"
+                          >
+                            <b>
+                              <MapIdToUser.Username id={reply?.authorId} />
+                            </b>
+
+                            <small>{getTimeAgo(reply?.created)}&nbsp;ago</small>
+                          </Box>
+
                           <Editor
                             editorState={editorState}
                             onChange={() => {}}

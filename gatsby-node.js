@@ -166,6 +166,12 @@ exports.onCreatePage = async ({ page, actions }) => {
     // Update the page.
     createPage(page)
   }
+
+  if (page.path.match(/^\/u/)) {
+    page.matchPath = "/u/*"
+    // Update the page.
+    createPage(page)
+  }
 }
 
 exports.onCreateNode = ({ node, actions, getNode }) => {

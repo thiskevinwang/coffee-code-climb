@@ -6,10 +6,12 @@ import ms from "ms"
 import { Link } from "gatsby"
 import { RouteComponentProps } from "@reach/router"
 import { useQuery, gql } from "@apollo/client"
+import Box from "@material-ui/core/Box"
 
 import { Query } from "types"
 import { SubmitButton } from "components/Form/SubmitButton"
 import { fs } from "components/Fieldset"
+import { MapIdToUser } from "components/MapIdToUser"
 
 const GET_DISCUSSIONS_QUERY = gql`
   query GetDiscussions($lastEvaluatedKey: LastEvaluatedKey) {
@@ -87,8 +89,14 @@ export const Discussions = (props: RouteComponentProps) => {
                 </fs.Title>
               </fs.Content>
               <fs.Footer>
-                <small>Posted by {e?.authorId}</small>&nbsp;
-                <small>{ms(+new Date() - +new Date(e?.created))} ago</small>
+                <Box>
+                  <small style={{ display: "inline-flex" }}>
+                    Posted by&nbsp;
+                    <MapIdToUser.Username id={e?.authorId} />
+                    &nbsp;
+                  </small>
+                  <small>{ms(+new Date() - +new Date(e?.created))} ago</small>
+                </Box>
               </fs.Footer>
             </fs.Fieldset>
           </Link>
