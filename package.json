@@ -69,7 +69,7 @@
     "gatsby-source-google-analytics-reporting-api": "^1.0.2",
     "gatsby-transformer-remark": "^2.6.37",
     "gatsby-transformer-sharp": "^2.3.5",
-    "html-parse-stringify": "^1.0.3",
+    "html-parse-stringify": "^2.0.1",
     "intersection-observer": "^0.7.0",
     "isomorphic-fetch": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
