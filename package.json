@@ -67,7 +67,7 @@
     "gatsby-source-contentful": "^2.1.62",
     "gatsby-source-filesystem": "^2.1.38",
     "gatsby-source-google-analytics-reporting-api": "^1.0.2",
-    "gatsby-transformer-remark": "^2.6.37",
+    "gatsby-transformer-remark": "^5.25.1",
     "gatsby-transformer-sharp": "^2.3.5",
     "html-parse-stringify": "^1.0.3",
     "intersection-observer": "^0.7.0",
